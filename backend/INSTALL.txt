@@ -1,0 +1,13 @@
+============ BACKEND================
+sudo pip2 install -t py_libs -r requirements.txt
+
+
+
+============ FRONTEND ==============
+nvm install 11.3.0
+nvm use 11.3
+npm install -g @vue/cli
+vue ui --port 8081 --host 0.0.0.0
+cd frontend
+npm install
+npm run build
