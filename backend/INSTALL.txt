@@ -1,10 +1,4 @@
 ============ GIT ================
-First:
-    git init
-    git add .
-    git commit -m "first commit"
-    git remote add origin https://github.com/enf644/axy
-    git push -u origin master
 Install:
     git init
     git fetch
@@ -15,15 +9,18 @@ Comit and push:
     git push
 
 ============ BACKEND ================
-sudo pip2 install -t py_libs -r requirements.txt
+Install:
+    sudo pip2 install -t py_libs -r requirements.txt
 
-
+cd py_libs
+sudo rm -r *
 
 ============ FRONTEND ==============
-nvm install 11.3.0
-nvm use 11.3
-npm install -g @vue/cli
-vue ui --port 8081 --host 0.0.0.0
-cd frontend
-npm install
-npm run build
+First:
+    nvm install 11.3.0
+    nvm use 11.3
+    npm install -g @vue/cli
+    vue ui --port 8081 --host 0.0.0.0
+Install:
+    npm install
+    npm run build

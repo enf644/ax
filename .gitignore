@@ -1,5 +1,5 @@
 /.c9
 /.git
 /dist
-/backend/py_libs
-/frontend/node_modules
+/py_libs
+/node_modules
