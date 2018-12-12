@@ -1,4 +1,20 @@
-============ BACKEND================
+============ GIT ================
+First:
+    git init
+    git add .
+    git commit -m "first commit"
+    git remote add origin https://github.com/enf644/axy
+    git push -u origin master
+Install:
+    git init
+    git fetch
+    git pull origin master
+Comit and push:
+    git add -A
+    git commit -a -m "Moved to new repo."
+    git push
+
+============ BACKEND ================
 sudo pip2 install -t py_libs -r requirements.txt
 
 
