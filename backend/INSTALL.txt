@@ -10,7 +10,8 @@ Comit and push:
 
 ============ BACKEND ================
 Install:
-    sudo pip2 install -t py_libs -r requirements.txt
+    sudo pip3 install --upgrade setuptools
+    sudo pip3 install -t py_libs -r requirements.txt
 
 cd py_libs
 sudo rm -r *
@@ -24,3 +25,48 @@ First:
 Install:
     npm install
     npm run build
+    npm run serve
+Usefull:
+    npm install axios --save
+    
+    
+    
+=== LINKS =================================
+https://github.com/vuejs/awesome-vue
+
+
+=== LINT =================================
+http://google.github.io/styleguide/pyguide.html
+
+
+
+
+<ax-grid settings="" >
+    <ax-field-string-grid-cell settings="" />
+    <ax-field-int-grid-cell />
+    <ax-field-datetime-grid-cell />
+</ax-grid>
+
+
+<ax-form>
+    <ax-field-string />
+    <ax-field-int />
+    <ax-field-datetime />
+</ax-form>
+
+
+ax-grid
+    ax-pop-up
+        ax-form
+            ax-tab
+                ax-field-string
+                
+                
+                
+ax-field-string
+ax-field-string-options
+ax-field-string-cell
+ax-field-string-cell-inline
+ax-field-string-cell-options
+
+    

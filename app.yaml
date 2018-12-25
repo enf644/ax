@@ -1,0 +1,5 @@
+env_variables:
+  LOCAL_DB: 'c34'
+  AXY_VERSION: '0.1.6'
+
+  

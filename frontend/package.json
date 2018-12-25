@@ -3,13 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --host 0.0.0.0 --port 8081 --public axy-20-enf644.c9users.io:8081",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
+    "axios": "^0.18.0",
+    "document-register-element": "^1.13.1",
     "vue": "^2.5.17",
+    "vue-custom-element": "^3.2.6",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
   },
