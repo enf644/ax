@@ -3,3 +3,4 @@
 /dist
 /backend/py_libs
 /frontend/node_modules
+.db
