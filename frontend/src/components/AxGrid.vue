@@ -10,7 +10,7 @@
             name: null
         },
         created() {
-            console.log('demo-basic created()');
+            // console.log('demo-basic created()');
         }
     };
 </script>

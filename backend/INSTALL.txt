@@ -16,8 +16,13 @@ Install:
 cd py_libs
 sudo rm -r *
 
+
+
+3.7.1
+
 ============ FRONTEND ==============
 First:
+    cd frontend
     nvm install 11.3.0
     nvm use 11.3
     npm install -g @vue/cli
@@ -29,7 +34,9 @@ Install:
 Usefull:
     npm install axios --save
     
-    
+=== DOCUMENTATION =========================
+https://axy.gitbook.io/project/
+
     
 === LINKS =================================
 https://github.com/vuejs/awesome-vue
@@ -70,3 +77,9 @@ ax-field-string-cell-inline
 ax-field-string-cell-options
 
     
+===============================================
+
+
+862910a2-e05d-4231-a42f-e826e51538c5
+97d9ea6d-5985-4b0c-9099-40e920f30438
+f9f80b67-8de8-4936-8199-05c53dbdc1b6
