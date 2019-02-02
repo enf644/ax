@@ -1,5 +1,7 @@
 /.c9
 /.git
+/.venv
+/.vscode
 /dist
 /backend/py_libs
 /frontend/node_modules

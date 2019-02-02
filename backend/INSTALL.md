@@ -1,3 +1,9 @@
+============ MUST BE INSTALLED ============
+    Python 3
+    Git
+    NVM
+
+
 ============ GIT ================
 Install:
     git init
@@ -12,13 +18,11 @@ Comit and push:
 Install:
     sudo pip3 install --upgrade setuptools
     sudo pip3 install -t py_libs -r requirements.txt
+Delete py_libs:
+    cd py_libs
+    sudo rm -r *
 
-cd py_libs
-sudo rm -r *
 
-
-
-3.7.1
 
 ============ FRONTEND ==============
 First:
@@ -45,6 +49,9 @@ https://github.com/vuejs/awesome-vue
 === LINT =================================
 http://google.github.io/styleguide/pyguide.html
 
+
+
+package-lock.json
 
 
 
