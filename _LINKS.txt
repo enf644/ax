@@ -1,0 +1,51 @@
+
+CODE STYLE
+	https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
+
+
+AUTH
+	https://auth0.com/pricing
+	https://stackabuse.com/single-page-apps-with-vue-js-and-flask-jwt-authentication/
+	http://python-eve.org/authentication.html
+	https://python-social-auth-docs.readthedocs.io/en/latest/
+	https://www.keycloak.org/about.html
+	http://www.passportjs.org/
+	
+	
+	
+	
+GRAPHQL
+	https://github.com/Getmrahul/Flask-Graphene-SQLAlchemy
+	https://github.com/Akryum/vue-cli-plugin-apollo
+	Appolo - https://www.apollographql.com/docs/react/why-apollo.html
+	https://github.com/graphql-python/graphene
+	https://hasura.io/all-features
+	https://aws.amazon.com/ru/cognito/
+
+
+Legal
+	https://habrahabr.ru/post/133643/
+
+
+Конкуренты
+	Список - https://www.getapp.com/s/bpm-tools-comparison-saas
+	https://developers.google.com/appmaker/tutorials/work-with-data/
+	KissFlow
+	http://www.servicenow.com/  - https://demonowprod.service-now.com/$demonow.do#/home/ITSM
+
+
+Startups:
+	https://angel.co
+	
+
+Документация
+	https://pycco-docs.github.io/pycco/
+	http://docs.python-guide.org/en/latest/writing/documentation/#sphinx-ref
+	http://repo.or.cz/pylit.git
+	http://nevir.github.io/groc/
+
+
+Autodocumentation
+	https://readme.readme.io
+	https://docsify.js.org
+	https://readthedocs.org

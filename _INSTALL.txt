@@ -1,8 +1,15 @@
+============ COMMON URLS =========
+Vue cli - http://localhost:8081
+GraphQL ui - http://localhost:8080/graphql
+Vue UI - http://localhost:8082
+
+
+
 ============ MUST BE INSTALLED ============
     Python 3
     Git
     NVM
-
+    python -m venv .venv
 
 ============ GIT ================
 Install:
@@ -18,11 +25,12 @@ Comit and push:
 Install:
     sudo pip3 install --upgrade setuptools
     sudo pip3 install -t py_libs -r requirements.txt
+    sudo pip install -r requirements.txt
+    set FLASK_APP=run.py
+    flask  run
 Delete py_libs:
     cd py_libs
     sudo rm -r *
-
-
 
 ============ FRONTEND ==============
 First:
@@ -31,6 +39,11 @@ First:
     nvm use 11.3
     npm install -g @vue/cli
     vue ui --port 8081 --host 0.0.0.0
+IDE:
+    frontend/vue.config.json -> set 'target' to url of Flask running
+    frontend/package.json -> set 'serve' to ip on what you want your cli to run. Open it in brawser to develop.
+    pip install pylint-flask
+    "python.linting.pylintArgs": ["--load-plugins", "pylint_flask"]
 Install:
     npm install
     npm run build
@@ -49,9 +62,6 @@ https://github.com/vuejs/awesome-vue
 === LINT =================================
 http://google.github.io/styleguide/pyguide.html
 
-
-
-package-lock.json
 
 
 
@@ -83,10 +93,3 @@ ax-field-string-cell
 ax-field-string-cell-inline
 ax-field-string-cell-options
 
-    
-===============================================
-
-
-862910a2-e05d-4231-a42f-e826e51538c5
-97d9ea6d-5985-4b0c-9099-40e920f30438
-f9f80b67-8de8-4936-8199-05c53dbdc1b6

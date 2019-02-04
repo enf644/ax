@@ -20,9 +20,10 @@
 
         },
         created: function() {
+            console.log("running ajax");
             axios.get('/api/hello', {
                     params: {
-                        object_id: 12345
+                        object_id: 12349
                     }
                 })
                 .then(function(response) {

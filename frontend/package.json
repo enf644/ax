@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --host 0.0.0.0 --port 8081 --public axy-20-enf644.c9users.io:8081",
+    "serve_temp": "vue-cli-service serve --host 0.0.0.0 --port 8081 --public axy-20-enf644.c9users.io:8081",
+    "serve": "vue-cli-service serve --host 127.0.0.1 --port 8081 --public http://127.0.0.1:8081",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e"

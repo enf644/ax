@@ -1,0 +1,194 @@
+
+
+
+
+
+
+======================================================================================================================================
+
+В пользователях нужно учесть группу - суперпользователи. 
+	Они могут создавать и редактировать только свои объекты.
+	Таблица с распределением супер-пользователей по объектам
+	Какие группы имеют доступ к редактированию объекта
+	Как вариант - Админ дает доступ пользователю или группе на Папку в списке объектов.
+		Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные
+
+
+
+Инсталятор - спрашивает БД, схему для данных, схему для хранения пользователей
+	Должно быть задисейблено - Auth0, Cognito, Active Directory и т.д.
+
+
+Что нужно для Рекрера - 
+	Единая БД пользователей
+	Каждый клуб в отдельной таблице БД, чтобы можно было их разносить по серверам
+
+===================================================================================================
+
+
+Marketing - 1$
+	Make several copies of popular Apps
+	Make a separete webpage for big field of applications, like CRM or Invoice or Helpdesk
+	Make article like 1$ CRM, 1$ HelpDesk
+	
+
+Lead source -
+	Integrations:
+		Jira
+		Slack
+		Zappier
+
+
+Marketing news themes 
+	1$ implementation - CRM, HelpDesk, Invoices ect
+	New integration - new Ax-Field
+	Usage story - robot automation, interesting use-cases
+	
+
+Global Plan
+	Release Open Source
+	Set payment system
+	Meke good documentation
+	Blog post once per week
+		Product Hunt, Angel.co,
+		Year post calendar with recuranting types - 
+			once per year - statistics
+			once per month - top 5 use-cases
+			
+
+Money -
+	4 users - FREE
+	5+ users- 1$ per user
+	100+ users: 1$ per user + ag-grid, active directory, google auth
+
+
+https://github.com/gollum/gollum#markups
+
+
+
+==============================================================================================================================
+
+
+Kissflow, Google App Maker, Zoho creator, Nintex, RunMyProcess. 
+On-premise competitors - PEGA , Apian , Microsoft SharePoint, IBM Lotus Notes, 
+Jira, https://airtable.com
+SAML-based single sign-on (SSO)
+
+
+==============================================================================================================================
+
+module_name, package_name, ClassName, method_name, ExceptionName, function_name,
+GLOBAL_CONSTANT_NAME, global_var_name, instance_var_name, 
+function_parameter_name, local_var_name.
+
+==============================================================================================================================
+
+BaseException
+ +-- SystemExit
+ +-- KeyboardInterrupt
+ +-- GeneratorExit
+ +-- Exception
+      +-- StopIteration
+      +-- StopAsyncIteration
+      +-- ArithmeticError
+      |    +-- FloatingPointError
+      |    +-- OverflowError
+      |    +-- ZeroDivisionError
+      +-- AssertionError
+      +-- AttributeError
+      +-- BufferError
+      +-- EOFError
+      +-- ImportError
+      |    +-- ModuleNotFoundError
+      +-- LookupError
+      |    +-- IndexError
+      |    +-- KeyError
+      +-- MemoryError
+      +-- NameError
+      |    +-- UnboundLocalError
+      +-- OSError
+      |    +-- BlockingIOError
+      |    +-- ChildProcessError
+      |    +-- ConnectionError
+      |    |    +-- BrokenPipeError
+      |    |    +-- ConnectionAbortedError
+      |    |    +-- ConnectionRefusedError
+      |    |    +-- ConnectionResetError
+      |    +-- FileExistsError
+      |    +-- FileNotFoundError
+      |    +-- InterruptedError
+      |    +-- IsADirectoryError
+      |    +-- NotADirectoryError
+      |    +-- PermissionError
+      |    +-- ProcessLookupError
+      |    +-- TimeoutError
+      +-- ReferenceError
+      +-- RuntimeError
+      |    +-- NotImplementedError
+      |    +-- RecursionError
+      +-- SyntaxError
+      |    +-- IndentationError
+      |         +-- TabError
+      +-- SystemError
+      +-- TypeError
+      +-- ValueError
+      |    +-- UnicodeError
+      |         +-- UnicodeDecodeError
+      |         +-- UnicodeEncodeError
+      |         +-- UnicodeTranslateError
+      +-- Warning
+           +-- DeprecationWarning
+           +-- PendingDeprecationWarning
+           +-- RuntimeWarning
+           +-- SyntaxWarning
+           +-- UserWarning
+           +-- FutureWarning
+           +-- ImportWarning
+           +-- UnicodeWarning
+           +-- BytesWarning
+           +-- ResourceWarning
+
+==============================================================================================================================
+
+
+АРХИТЕКТУРА
+	Части архитектуры
+		Организация программы
+		Основные классы	
+		Организация данных	
+		Бизнес-правила	
+		Пользовательский интерфейс
+		Управление ресурсами
+		Безопасность
+		Производительность
+		Масштабируемость	
+		Взаимодействие с другими системами
+		Интернационализация/локализация
+		Ввод-вывод
+		Обработка ошибок
+		Отказоустойчивость
+		Стратегия изменений
+	Желаемые характеристики проекта
+		Минимальная сложность
+		Простота сопровождения
+		Слабое сопряжение 
+		Расширяемость
+		Возможность повторного использования 
+		Высокий коэффициент объединения по входу
+		Низкий или средний коэффициент разветвления по выходу 
+		Портируемость 
+		Минимальная, но полная функциональность 
+		Стратификация 
+		Соответствие стандартным методикам
+	Области разработки
+		Отказоустойчивость
+		Безопасность
+		Интернационализация/локализация
+		Стратегия изменений
+		Производительность и Масштабируемость
+
+
+
+
+
+
