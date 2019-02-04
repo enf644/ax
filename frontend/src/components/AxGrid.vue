@@ -10,7 +10,8 @@
             name: null
         },
         created() {
-            // console.log('demo-basic created()');
+            let debug_msg = "Debug this Vue"
+            console.log(debug_msg);
         }
     };
 </script>

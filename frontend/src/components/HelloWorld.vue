@@ -13,6 +13,11 @@
 <script>
     export default {
         name: "hello-world",
+        data() {
+            return {
+                message: "Hello world"
+            }
+        },
         props: {
             msg: String
         }

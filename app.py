@@ -43,8 +43,6 @@ def show_users():
     """Test function"""
     object_id = flask.request.args.get('object_id')
     ret_str = 'Ajax object_id=' + object_id
-
-    print(os.environ['AXY_VERSION'])
     return ret_str
 
 
@@ -57,8 +55,13 @@ def install():
 
 if __name__ == "__main__":
     main()
+    print('Hello')
+    debug = False
+    if 'AXY_MODE' in os.environ and os.environ['AXY_MODE'] == 'BROWSER_DEBUG':
+        debug = True
+
     app.run(
         host='127.0.0.1',
         port=8080,
-        debug=True
+        debug=debug
     )

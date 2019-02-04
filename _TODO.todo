@@ -45,9 +45,9 @@ REFACTORING ROUND ONE:
 				✔ ++++ Сделать пробный компонет ax-grid (https://github.com/vuejs/vue-web-component-wrapper, https://github.com/karol-f/vue-custom-element) @done(19-02-04 10:29)
 			✔ GraphQL @done(19-02-04 14:44)
 				✔ Сделать тестовую модель SQLAlchemy - https://github.com/Getmrahul/Flask-Graphene-SQLAlchemy @done(19-02-04 14:44)
-			☐ Debug
-				☐ Python debugging
-				☐ Vue debuggins
+			✔ Debug @done(19-02-04 19:30)
+				✔ Python debugging @done(19-02-04 16:34)
+				✔ Vue debugging @done(19-02-04 19:30)
 			☐ Vuex / Redux
 			☐ Webpack
 				☐ Lazy loading
