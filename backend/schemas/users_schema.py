@@ -5,8 +5,8 @@ from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from sqlalchemy_utils import UUIDType
-from backend.axy_misc import convert_column_to_string
-from backend.axy_model import db_session, AxUser
+from backend.misc import convert_column_to_string
+from backend.model import db_session, AxUser
 
 
 convert_sqlalchemy_type.register(UUIDType)(convert_column_to_string)

@@ -6,9 +6,9 @@ import os
 import flask
 from flask_cors import CORS
 from flask_graphql import GraphQLView
-import backend.axy_model as axy_model
-import backend.axy_graphql as axy_graphql
-import backend.axy_misc as axy_misc
+import backend.model as axy_model
+import backend.schema as axy_schema
+import backend.misc as axy_misc
 
 
 app = flask.Flask(__name__, static_folder="./dist/static",
@@ -19,11 +19,10 @@ def main():
     """Main function"""
     CORS(app, resources={r"/api/*": {"origins": "*"}}
          )  # Apply CORS to enable cross-domain requests
-    # Load configuration from app.yaml Horrible mistake
-    axy_misc.load_configuration(app.root_path)
+    axy_misc.load_configuration(app.root_path)  # Load config from app.yaml
     view_func = GraphQLView.as_view(
         'graphql',
-        schema=axy_graphql.schema,
+        schema=axy_schema.schema,
         graphiql=True,
         context={'session': axy_model.db_session}
     )
@@ -55,10 +54,12 @@ def install():
 
 if __name__ == "__main__":
     main()
-    print('Hello')
     debug = False
-    if 'AXY_MODE' in os.environ and os.environ['AXY_MODE'] == 'BROWSER_DEBUG':
-        debug = True
+    if 'AXY_MODE' in os.environ:
+        if os.environ['AXY_MODE'] == 'BROWSER_DEBUG':
+            debug = True
+        if os.environ['AXY_MODE'] == 'VSCODE':
+            debug = False
 
     app.run(
         host='127.0.0.1',
