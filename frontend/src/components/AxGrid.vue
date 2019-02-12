@@ -5,13 +5,13 @@
 </template>
 
 <script>
-    export default {
-        props: {
-            name: null
-        },
-        created() {
-            let debug_msg = "Debug this Vue"
-            console.log(debug_msg);
-        }
-    };
+export default {
+  props: {
+    name: null
+  },
+  created() {
+    let debug_msg = 'Debug this Vue';
+    console.log(debug_msg);
+  }
+};
 </script>

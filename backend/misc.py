@@ -7,7 +7,7 @@ import graphene
 import graphene_sqlalchemy
 
 def load_configuration(app_yaml_location: str) -> bool:
-    """Function that loads axy application configuration from app.yaml
+    """Function that loads ax application configuration from app.yaml
 
     If application is running on Google App Engine, all params from
     env_variables section of app.yaml will be loaded as enviroment variables.
@@ -20,7 +20,7 @@ def load_configuration(app_yaml_location: str) -> bool:
     Returns:
         bool: The return value. True for success.
     Examples:
-        Access configuration variables like os.environ['AXY_VERSION']
+        Access configuration variables like os.environ['AX_VERSION']
 
     Raises:
         FileNotFoundError: Cant find app.yaml

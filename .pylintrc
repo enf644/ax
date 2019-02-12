@@ -5,7 +5,7 @@
 
 # Python code to execute, usually for sys.path manipulation such as
 # pygtk.require().
-# init-hook="sys.path.insert(0, 'C:\Users\enf64_000\Desktop\Axy\AxyCode\axy\backend\graphql')"
+# init-hook="sys.path.insert(0, 'C:\Users\enf64_000\Desktop\Ax\AxCode\ax\backend\graphql')"
 
 # Profiled execution.
 profile=no

@@ -1,31 +1,39 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "serve_temp": "vue-cli-service serve --host 0.0.0.0 --port 8081 --public axy-20-enf644.c9users.io:8081",
-    "serve": "vue-cli-service serve --host 127.0.0.1 --port 8081 --public http://127.0.0.1:8081",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "test:e2e": "vue-cli-service test:e2e"
-  },
-  "dependencies": {
-    "axios": "^0.18.0",
-    "document-register-element": "^1.13.1",
-    "vue": "^2.5.17",
-    "vue-custom-element": "^3.2.6",
-    "vue-router": "^3.0.1",
-    "vuex": "^3.1.0"
-  },
-  "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.2.0",
-    "@vue/cli-plugin-e2e-cypress": "^3.2.0",
-    "@vue/cli-plugin-eslint": "^3.2.0",
-    "@vue/cli-service": "^3.2.0",
-    "@vue/eslint-config-prettier": "^4.0.0",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.8.0",
-    "eslint-plugin-vue": "^5.0.0-0",
-    "vue-template-compiler": "^2.5.17"
-  }
+    "name": "frontend",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "serve_temp": "vue-cli-service serve --host 0.0.0.0 --port 8081 --public axy-20-enf644.c9users.io:8081",
+        "serve": "vue-cli-service serve --host 127.0.0.1 --port 8081 --public http://127.0.0.1:8081",
+        "build": "vue-cli-service build",
+        "lint": "vue-cli-service lint",
+        "test:e2e": "vue-cli-service test:e2e"
+    },
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^5.7.1",
+        "animate.css": "^3.7.0",
+        "axios": "^0.18.0",
+        "document-register-element": "^1.13.1",
+        "splitpanes": "^1.11.1",
+        "typeface-roboto": "0.0.54",
+        "vue": "^2.6.6",
+        "vue-custom-element": "^3.2.6",
+        "vue-jstree": "^2.1.6",
+        "vue-resize": "^0.4.5",
+        "vue-router": "^3.0.1",
+        "vuetify": "^1.5.0",
+        "vuex": "^3.1.0"
+    },
+    "devDependencies": {
+        "@vue/cli-plugin-babel": "^3.2.0",
+        "@vue/cli-plugin-e2e-cypress": "^3.2.0",
+        "@vue/cli-plugin-eslint": "^3.2.0",
+        "@vue/cli-service": "^3.2.0",
+        "@vue/eslint-config-prettier": "^4.0.0",
+        "babel-eslint": "^10.0.1",
+        "eslint": "^5.8.0",
+        "eslint-plugin-vue": "^5.0.0-0",
+        "vue-dummy": "^1.1.3",
+        "vue-template-compiler": "^2.6.6"
+    }
 }

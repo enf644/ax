@@ -1,5 +1,5 @@
-"""Axy GraphQL schema
-Combines all Axy GraphQL schemas to one
+"""Ax GraphQL schema
+Combines all Ax GraphQL schemas to one
 """
 
 import graphene

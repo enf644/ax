@@ -1,7 +1,9 @@
 
 CODE STYLE
 	https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
-
+	https://github.com/pablohpsilva/vuejs-component-style-guide#module-based-development
+	https://vuejs.org/v2/style-guide/#Order-of-words-in-component-names-strongly-recommended
+	
 
 AUTH
 	https://auth0.com/pricing
@@ -12,8 +14,38 @@ AUTH
 	http://www.passportjs.org/
 	
 	
+Split panels
+    https://antoniandre.github.io/splitpanes/ - choise
+    https://github.com/yansern/vue-multipane
+    https://github.com/bajaniyarohit/vue-split-panel
+    https://github.com/PanJiaChen/vue-split-pane
+    https://split.js.org/
 	
-	
+
+TREE
+    https://github.com/phphe/vue-draggable-nested-tree - choise
+    https://github.com/epistemonikos/tree-component
+    https://dhtmlx.com/docs/products/dhtmlxTree/
+    https://amsik.github.io/liquor-tree/#Drag-amp-Drop - nice, but limited
+
+
+Tree checklist
+    Drag before or after
+    Clone
+    prevent drag, prevent drop
+    Auto open folder on drag
+
+
+Query builder
+    https://dabernathy89.github.io/vue-query-builder
+    https://github.com/kongwang/vue-query-builder-plus
+    https://querybuilder.js.org/index.html
+
+
+1toM and MtoM
+    https://vue-treeselect.js.org/
+
+
 GRAPHQL
 	https://github.com/Getmrahul/Flask-Graphene-SQLAlchemy
 	https://github.com/Akryum/vue-cli-plugin-apollo

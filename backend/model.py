@@ -1,5 +1,5 @@
 """Axy Class Model
-Contains class structure of Axy storage.
+Contains class structure of Ax storage.
 """
 
 import uuid
