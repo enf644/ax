@@ -3,6 +3,7 @@ CODE STYLE
 	https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
 	https://github.com/pablohpsilva/vuejs-component-style-guide#module-based-development
 	https://vuejs.org/v2/style-guide/#Order-of-words-in-component-names-strongly-recommended
+    https://github.com/airbnb/javascript#types
 	
 
 AUTH
@@ -27,6 +28,17 @@ TREE
     https://github.com/epistemonikos/tree-component
     https://dhtmlx.com/docs/products/dhtmlxTree/
     https://amsik.github.io/liquor-tree/#Drag-amp-Drop - nice, but limited
+
+
+LOGGER
+    https://sentry.io/welcome/  
+    https://logrocket.com/
+    https://rollbar.com/blog/error-tracking-vue-js/ - nice
+    https://www.sitepoint.com/logging-errors-client-side-apps/ - info
+    https://github.com/caiogondim/logdown.js
+    https://medium.com/@nalegaveshardul40/signale-py-logger-for-python-cli-apps-333321924874 - python
+    https://github.com/Schoolmouv-team/vue-log-worker
+
 
 
 Tree checklist

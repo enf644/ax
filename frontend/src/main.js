@@ -29,8 +29,17 @@ Vue.use(vueCustomElement);
 Vue.use(VueResize);
 Vue.use(VueDummy);
 Vue.config.productionTip = false;
-
 Vue.customElement('ax-grid', AxGrid);
+
+// Logging functionality
+function backendLogTransport() {} // { msg, level, args, state }
+
+const logdown = require('logdown');
+
+logdown.transports = [backendLogTransport];
+const logger = logdown('ax');
+logger.state.isEnabled = true;
+Vue.prototype.$log = logger;
 
 new Vue({
   router,

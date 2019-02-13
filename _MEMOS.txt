@@ -1,9 +1,4 @@
 
-FEATURES
-    Use simple grid (no need for 700kb ag-grid)
-    Remember the width of constructor drawers in cookies
-    Allow one level of subfolders for AxForm - https://vuetifyjs.com/en/components/lists#expansion-lists
-
 THINK ABOUT
     Подумать над Segoi UI
 

@@ -1,21 +1,21 @@
 <template>
   <div>
-    <v-layout class='form-container' align-space-between justify-start row>
+    <v-layout align-space-between class='form-container' justify-start row>
       <div
-        class='drawer'
-        v-bind:class='{ 
-            "drawer-floating": drawerIsFloating, 
+        :class='{
+            "drawer-floating": drawerIsFloating,
             "drawer-hidden": drawerIsHidden
           }'
+        class='drawer'
       >
         <v-list class='drawer-folder-list'>
           <v-list-tile
-            ripple
-            class='drawer-folder-list-tile'
-            v-for='folder in folders'
             :key='folder.title'
             @click='openFolder(folder.title)'
+            class='drawer-folder-list-tile'
+            ripple
             v-bind:class='{ "drawer-folder-active": folder.isActive }'
+            v-for='folder in folders'
           >
             <v-list-tile-content class='drawer-folder-item'>
               <v-list-tile-title>{{ folder.title }}</v-list-tile-title>
@@ -24,13 +24,13 @@
         </v-list>
       </div>
       <div class='form'>
-        <div class='overlay' @click='hideDrawer' v-bind:class='{ "hidden": overlayIsHidden }'></div>
+        <div @click='hideDrawer' class='overlay' v-bind:class='{ "hidden": overlayIsHidden }'></div>
         <div class='header'>
           <v-btn
-            fab
-            small
             @click='toggleDrawer'
             class='drawer-toggle'
+            fab
+            small
             v-bind:class='{ "hidden": !drawerIsFloating }'
           >
             <i class='fas fa-bars'></i>
@@ -40,7 +40,7 @@
         </div>
         <div class='content'>
           <v-container fluid grid-list-xl>
-            <v-layout wrap align-center justify-center row fill-height>
+            <v-layout align-center fill-height justify-center row wrap>
               <v-flex>
                 <div class='ax-field'>
                   <v-text-field label='First Name'></v-text-field>
@@ -87,7 +87,7 @@ export default {
     };
   },
   created() {
-    console.log('AxForm created');
+    this.$log.info('Lorem *ipsum* dolor sit _amet_ foo bar');
   },
   mounted() {
     this.$nextTick(() => {
@@ -96,19 +96,19 @@ export default {
   },
   methods: {
     openFolder(_id) {
-      console.log('Open folder - ' + _id);
+      this.$log.info(`Open folder - ${_id}`);
     },
     handleResize() {
-      let currentWidth = this.$el.clientWidth;
-      let breakingPoint = 800;
+      const currentWidth = this.$el.clientWidth;
+      const breakingPoint = 800;
 
-      if (this.drawerIsFloating == false && currentWidth < breakingPoint) {
+      if (this.drawerIsFloating === false && currentWidth < breakingPoint) {
         this.drawerIsFloating = true;
         this.drawerIsHidden = true;
         this.overlayIsHidden = true;
       }
 
-      if (this.drawerIsFloating == true && currentWidth > breakingPoint) {
+      if (this.drawerIsFloating === true && currentWidth > breakingPoint) {
         this.drawerIsFloating = false;
         this.drawerIsHidden = false;
         this.overlayIsHidden = true;
@@ -118,13 +118,13 @@ export default {
       if (this.drawerIsFloating && this.drawerIsHidden) {
         this.drawerIsHidden = false;
         this.overlayIsHidden = false;
-      } else if (this.drawerIsFloating && this.drawerIsHidden == false) {
+      } else if (this.drawerIsFloating && this.drawerIsHidden === false) {
         this.drawerIsHidden = true;
         this.overlayIsHidden = true;
       }
     },
     hideDrawer() {
-      if (this.drawerIsFloating == true && this.drawerIsHidden == false) {
+      if (this.drawerIsFloating === true && this.drawerIsHidden === false) {
         this.drawerIsHidden = true;
         this.overlayIsHidden = true;
       }
@@ -156,16 +156,15 @@ export default {
 }
 .drawer-hidden {
   margin-left: -255px;
-  animation: slideOut 200ms ease forwards;
+  animation: slideOut 300ms ease forwards;
 }
 @keyframes slideOut {
   0% {
     margin-left: 0px;
-    opacity: 1;
   }
   99% {
     margin-left: -254px;
-    opacity: 0.8;
+    left: auto;
   }
   100% {
     margin-left: -255px;

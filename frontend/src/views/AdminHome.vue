@@ -15,10 +15,8 @@
           Bank RFC
           <i class='fas fa-cog breadcrumbs-action'></i>
         </span>
-        
         <i class='fas fa-angle-right breadcrumb-devider'></i>
         <a>Grid constructor</a>
-        
         <span class='fas fa-angle-right breadcrumb-devider'></span>
         <div class='grid-select'>
           Default grid
@@ -44,11 +42,17 @@
       <splitpanes class='splits'>
         <div splitpanes-default='20' splitpanes-min='20' class='drawer-first'>
           <p v-dummy='5'></p>
+          <v-dialog v-model='dialog' scrollable max-width='80%'>
+            <v-btn slot='activator' color='primary' dark>Open Dialog</v-btn>
+            <v-card>
+              <AxForm></AxForm>
+            </v-card>
+          </v-dialog>
         </div>
         <div splitpanes-default='20' splitpanes-min='20' class='drawer-second'>
           <p v-dummy='350'></p>
         </div>
-        <div splitpanes-default='60' class='content-pane'>
+        <div splitpanes-default='60' splitpanes-min='30' class='content-pane'>
           <v-sheet light class='form-container' elevation='5'>
             <AxForm></AxForm>
           </v-sheet>
@@ -73,30 +77,28 @@ export default {
     Splitpanes
   },
   data: () => ({
-    drawer: null,
-    dialog2: false,
-    dialog3: false,
+    dialog: false,
     constructor_grid_items: ['Default', 'Foo', 'Bar', 'Fizz', 'Buzz']
   }),
   props: {
     source: String
   },
   methods: {},
-  created: function() {
-    console.log('running ajax');
+  created() {
+    this.$log.info('running ajax');
     axios
       .get('/api/hello', {
         params: {
           object_id: 12349
         }
       })
-      .then(function(response) {
-        console.log(response);
+      .then((response) => {
+        this.$log.info(response);
       })
-      .catch(function(error) {
-        console.log(error);
+      .catch((error) => {
+        this.$log.error(error);
       })
-      .then(function() {
+      .then(() => {
         // always executed
       });
   }
@@ -177,6 +179,8 @@ export default {
   overflow: auto;
 }
 .content-pane {
+  height: 100%;
+  overflow: auto;
 }
 
 .form-container {
@@ -185,5 +189,6 @@ export default {
 .splits {
   height: 100%;
   position: absolute;
+  overflow: auto;
 }
 </style>
