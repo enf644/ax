@@ -13,8 +13,9 @@ module.exports = {
     "comma-dangle": ["error", "never"],
     'import/no-unresolved': "off",
     'import/extensions': "off",
-    'import/order':  "off",
-    "import/no-extraneous-dependencies": "off"
+    'import/order': "off",
+    "import/no-extraneous-dependencies": "off",
+    "arrow-parens": ["error", "as-needed"]
   },
   "parserOptions": {
     "parser": "babel-eslint"

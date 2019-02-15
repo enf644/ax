@@ -64,14 +64,15 @@ REFACTORING ROUND ONE:
                         ✔ Check in modal @done(19-02-13 09:50)
             ✔ Moved to airbnb style from prettier @done(19-02-13 19:09)
             ✔ Instralled logdown logger for logs @done(19-02-13 19:09)
-            ☐ Vue Router
-                ☐ Home
-                ☐ FormConstructor(form_id)
-                ☐ WorkflowConstructor(form_id)
-                ☐ GridConstructor(form_id, grid_id)
-                ☐ ManageUsers
-                ☐ ManageGroup
-                ☐ Marketplace
+            ✔ Vue Router @done(19-02-15 14:50)
+                ✔ Home @done(19-02-14 19:11)
+                ✔ FormConstructor(form_id) @done(19-02-14 19:11)
+                ✔ WorkflowConstructor(form_id) @done(19-02-15 11:03)
+                ✔ GridConstructor(form_id, grid_id) @done(19-02-15 11:19)
+                ✔ ManageUsers @done(19-02-15 14:30)
+                ✔ ManageGroup(group_id) @done(19-02-15 14:30)
+                ✔ Marketplace @done(19-02-15 14:50)
+                ✔ Deck designer @done(19-02-15 14:50)
 			☐ Vuex
 				☐ Store contains list of forms, two components display this list
 				☐ Call mutation on forms list

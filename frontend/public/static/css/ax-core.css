@@ -41,14 +41,7 @@ a {
     background: #7d7d7d;
 }
 
-.tree-hovered {
-    background: none !important;
-}
-
-.tree-wholerow-clicked {
-    background: none !important;
-    border-bottom: 1px solid #337ab7;
-}
+/************ Splits styles { ***************/
 
 .splitpanes {
     background-color: #f8f8f8;
@@ -96,3 +89,30 @@ a {
     bottom: -10px;
     width: 100%;
 }
+
+.ax-admin-drawer-first {
+    background: #ffffff;
+    height: 100%;
+    padding: 25px;
+    overflow: auto;
+}
+
+.ax-admin-drawer-second {
+    background: #ffffff;
+    height: 100%;
+    padding: 25px;
+    overflow: auto;
+}
+
+.ax-admin-content-pane {
+    height: 100%;
+    overflow: auto;
+}
+
+.ax-admin-splits {
+    height: 100%;
+    position: absolute;
+    overflow: auto;
+}
+
+/************ Splits styles } ***************/
