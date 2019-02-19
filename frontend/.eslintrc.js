@@ -15,7 +15,24 @@ module.exports = {
     'import/extensions': "off",
     'import/order': "off",
     "import/no-extraneous-dependencies": "off",
-    "arrow-parens": ["error", "as-needed"]
+    "arrow-parens": ["error", "as-needed"],
+    "no-param-reassign": [
+      "error",
+      {
+        "props": true,
+        "ignorePropertyModificationsFor": [
+          "state",
+          "acc",
+          "e",
+          "ctx",
+          "req",
+          "request",
+          "res",
+          "response",
+          "$scope"
+        ]
+      }
+    ],
   },
   "parserOptions": {
     "parser": "babel-eslint"

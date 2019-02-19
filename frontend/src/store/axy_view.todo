@@ -1,0 +1,92 @@
+
+
+
+☐ Home
+    ☐ all forms
+    ☐ filter forms
+☐ Form constructor
+    ☐ get forms db_names
+    ☐ create form
+    ☐ update form
+    ☐ delete form
+    ☐ update folder
+    ☐ delete folder
+    ☐ get field types
+    ☐ get fields tree
+    ☐ add tab
+    ☐ add field
+    ☐ update field
+    ☐ delete field
+    ☐ get field settings
+    ☐ update field settings
+☐ Workflow constructor
+    ☐ get roles list
+    ☐ add role
+    ☐ update role
+    ☐ delete role
+    ☐ role to users list
+    ☐ add users to role
+    ☐ remove users from role
+    ☐ add state
+    ☐ update state
+    ☐ delete state
+    ☐ add action
+    ☐ update action
+    ☐ delete action
+    ☐ add role to state
+    ☐ load action to roles
+    ☐ load states to roles
+    ☐ get state permissions
+    ☐ set state permissions
+    ☐ get action settings
+    ☐ get snippets
+    ☐ get snippet code
+☐ Grid constructor
+    ☐ get grids
+    ☐ add grid
+    ☐ delete grid
+    ☐ add column
+    ☐ update column
+    ☐ delete column
+    ☐ get column tree
+    ☐ get grid options
+    ☐ update grid options
+    ☐ rename grid
+    ☐ set default view
+☐ Deck designer
+    ☐ get dashboard tree
+    ☐ get dashboard item
+    ☐ get dashboard object items
+    ☐ add dashboard item
+    ☐ update dashboard item
+    ☐ delete dashboard item
+☐ AxFields
+    ☐ toM
+    ☐ 1m
+    ☐ files upload
+    ☐ crop image upload
+    ☐ crop image delete
+    ☐ crop image crop
+☐ Users manager
+    ☐ get groups
+    ☐ get users
+    ☐ add user
+    ☐ update user
+    ☐ delete user
+    ☐ create group
+    ☐ update group
+    ☐ delete group
+    ☐ group users list
+    ☐ add user to group
+    ☐ remove user from group
+☐ Core
+    ☐ get form
+    ☐ get actions
+    ☐ get grid data
+    ☐ update
+    ☐ update field value
+☐ Misc
+    ☐ get app dump
+    ☐ install app
+    ☐ install marketplace app
+    

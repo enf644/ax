@@ -32,7 +32,7 @@ Vue.config.productionTip = false;
 Vue.customElement('ax-grid', AxGrid);
 
 // Logging functionality
-function backendLogTransport() {} // { msg, level, args, state }
+function backendLogTransport() { } // { msg, level, args, state }
 
 const logdown = require('logdown');
 

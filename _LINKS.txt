@@ -41,6 +41,14 @@ LOGGER
     https://github.com/Schoolmouv-team/vue-log-worker
 
 
+SANIC
+    https://www.youtube.com/watch?v=S8pgBCoEgX0
+    https://github.com/davidyapdy/sanic-graphql-example
+    https://github.com/seanpar203/sanic-starter
+    https://github.com/PierBover/vuex-apollo-example-project
+    https://github.com/alajfit/vuex-apollo
+
+
 
 Tree checklist
     Drag before or after

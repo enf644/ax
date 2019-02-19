@@ -18,7 +18,6 @@ How to use Ax:
 
 
 
-
 ======================================================================================================================================
 
 В пользователях нужно учесть группу - суперпользователи. 
@@ -203,7 +202,32 @@ BaseException
 		Производительность и Масштабируемость
 
 
+===========================================================================
 
 
 
-
+home.js
+    forms
+    fieldTypes
+    actionSnippets
+form.js
+    formSettings
+    fields
+    tabs
+workflow.js
+    roles -> states, actions
+    roleUsers
+    states
+    actions
+    actionSettings
+    permissions
+grids.js
+    grids
+    columns
+    gridSettings
+deck.js
+    deckItems
+users.js
+    users
+    groups
+test.js

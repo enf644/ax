@@ -101,7 +101,7 @@ REFACTORING ROUND ONE:
 			☐ Делаем инструкцию по настройке рабочего места
 		Новые технологии:
 			☐ https://swagger.io/
-			☐ SqlAlchemy vesioning
+			☐ SqlAlchemy versioning
 				☐ https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script
 				☐ alembic revision --autogenerate -m "description of changes"
 				☐ https://sqlalchemy-migrate.readthedocs.io/en/latest/
@@ -164,7 +164,7 @@ REFACTORING ROUND ONE:
             
 AX 20:
 	☐ ADMIN INDEX
-		☐ Полная структура навигации с всеми компонентами
+		✔ Полная структура навигации с всеми компонентами @done(19-02-15 14:53)
 		☐ from-constructor-drawer
 		☐ form-constructor-create
 	☐ FORM CONSTRUCTOR

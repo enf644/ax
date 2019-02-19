@@ -1,9 +1,11 @@
 <template>
   <splitpanes class='ax-admin-splits' watch-slots>
     <div class='ax-admin-drawer-first' splitpanes-default='20' splitpanes-min='20'>
-      <TheHomeDrawer></TheHomeDrawer>
+      <TheHomeDrawer />
     </div>
-    <div class='ax-admin-content-pane' splitpanes-default='80' splitpanes-min='30'></div>
+    <div class='ax-admin-content-pane' splitpanes-default='80' splitpanes-min='30'>
+      <TheHomeContent />
+    </div>
   </splitpanes>
 </template>
 
@@ -13,12 +15,14 @@ import axios from 'axios';
 import Splitpanes from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 import TheHomeDrawer from '@/components/AdminHome/TheHomeDrawer.vue';
+import TheHomeContent from '@/components/AdminHome/TheHomeContent.vue';
 
 export default {
   name: 'AdminHome',
   components: {
     Splitpanes,
-    TheHomeDrawer
+    TheHomeDrawer,
+    TheHomeContent
   },
   data: () => ({}),
   props: {
