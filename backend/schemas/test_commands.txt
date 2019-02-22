@@ -10,6 +10,7 @@ mutation {
     ok
   }
 }
+
 Getting All Users List
 {
   allUsers {
@@ -22,6 +23,7 @@ Getting All Users List
     }
   }
 }
+
 Finding a User with Username
 {
   findUser(username: "rahulmfg") {
@@ -30,6 +32,7 @@ Finding a User with Username
     email
   }
 }
+
 Updating Username With Email ID
 mutation {
   changeUsername(email: "abc@abc.com", username:"newabc") {

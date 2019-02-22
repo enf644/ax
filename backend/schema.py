@@ -4,10 +4,11 @@ Combines all Ax GraphQL schemas to one
 
 import graphene
 from graphene import relay
-from backend.schemas.users_schema import UsersQuery, UsersMutations, Users
+from backend.schemas.users_schema import UsersQuery, UsersMutations, UsersSubscription, Users
+from backend.schemas.home_schema import HomeQuery
 
 
-class Query(UsersQuery, graphene.ObjectType):
+class Query(UsersQuery, HomeQuery, graphene.ObjectType):
     """Combines all schemas queryes"""
     node = relay.Node.Field()
     hello = graphene.String(argument=graphene.String(default_value="stranger"))
@@ -18,8 +19,17 @@ class Query(UsersQuery, graphene.ObjectType):
         return 'Hello ' + argument
 
 
-class MyMutations(UsersMutations, graphene.ObjectType):
+class Mutations(UsersMutations, graphene.ObjectType):
     """Combines all schemas mutations"""
 
 
-schema = graphene.Schema(query=Query, mutation=MyMutations, types=[Users])
+class Subscription(UsersSubscription, graphene.ObjectType):
+    """Combines all schemas subscription"""
+
+
+schema = graphene.Schema(
+    query=Query,
+    mutation=Mutations,
+    types=[Users],
+    subscription=Subscription
+)

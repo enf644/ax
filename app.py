@@ -1,25 +1,40 @@
+import gevent.monkey
+gevent.monkey.patch_all()
+
+from geventwebsocket.handler import WebSocketHandler
+from gevent import pywsgi
+import werkzeug.serving
+import backend.misc as ax_misc
+import backend.schema as ax_schema
+import backend.model as ax_model
+from graphql_ws.gevent import GeventSubscriptionServer
+from flask_sockets import Sockets
+from flask_graphql import GraphQLView
+from flask_cors import CORS
+import flask
+import sys
+import os
+
+
 """Main flask application script
 Contains GraphQL imports and main views
 """
 
-import os
-import flask
-from flask_cors import CORS
-from flask_graphql import GraphQLView
-import backend.model as ax_model
-import backend.schema as ax_schema
-import backend.misc as ax_misc
-
-
 app = flask.Flask(__name__, static_folder="./dist/static",
                   template_folder="./dist")
+sockets = Sockets(app)
+subscription_server = GeventSubscriptionServer(ax_schema.schema)
+app.app_protocol = lambda environ_path_info: 'graphql-ws'
 
 
 def main():
     """Main function"""
+
     CORS(app, resources={r"/api/*": {"origins": "*"}}
          )  # Apply CORS to enable cross-domain requests
+
     ax_misc.load_configuration(app.root_path)  # Load config from app.yaml
+
     view_func = GraphQLView.as_view(
         'graphql',
         schema=ax_schema.schema,
@@ -27,6 +42,19 @@ def main():
         context={'session': ax_model.db_session}
     )
     app.add_url_rule('/graphql', view_func=view_func)  # Initiate GraphQL View
+
+
+@sockets.route('/api/subscriptions')
+def gql_socket(ws):
+    subscription_server.handle(ws)
+    return []
+
+
+@sockets.route('/api/echo')
+def echo_socket(ws):
+    while True:
+        message = ws.receive()
+        ws.send(message[::-1])
 
 
 @app.route('/', defaults={'path': ''})
@@ -41,7 +69,7 @@ def catch_all(path):
 def show_users():
     """Test function"""
     object_id = flask.request.args.get('object_id')
-    ret_str = 'Ajax object_id=' + object_id
+    ret_str = 'Ajax object_id = ' + object_id
     return ret_str
 
 
@@ -52,17 +80,20 @@ def install():
     return 'Done'
 
 
+# @werkzeug.serving.run_with_reloader
+def runServer():
+    app.debug = False
+    server = pywsgi.WSGIServer(
+        ('127.0.0.1', 8080), app, handler_class=WebSocketHandler)
+    server.serve_forever()
+
+
 if __name__ == "__main__":
     main()
-    debug = True
-    if 'AX_MODE' in os.environ:
-        if os.environ['AX_MODE'] == 'BROWSER_DEBUG':
-            debug = True
-        if os.environ['AX_MODE'] == 'VSCODE':
-            debug = False
+    runServer()
 
-    app.run(
-        host='127.0.0.1',
-        port=8080,
-        debug=debug
-    )
+    # app.run(
+    #     host='127.0.0.1',
+    #     port=8080,
+    #     debug=True
+    # )

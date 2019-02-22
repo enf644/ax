@@ -63,7 +63,7 @@ REFACTORING ROUND ONE:
                         ✔ Create sample drawer menu @done(19-02-12 15:07)
                         ✔ Check in modal @done(19-02-13 09:50)
             ✔ Moved to airbnb style from prettier @done(19-02-13 19:09)
-            ✔ Instralled logdown logger for logs @done(19-02-13 19:09)
+            ✔ Installed logdown logger for logs @done(19-02-13 19:09)
             ✔ Vue Router @done(19-02-15 14:50)
                 ✔ Home @done(19-02-14 19:11)
                 ✔ FormConstructor(form_id) @done(19-02-14 19:11)
@@ -74,13 +74,25 @@ REFACTORING ROUND ONE:
                 ✔ Marketplace @done(19-02-15 14:50)
                 ✔ Deck designer @done(19-02-15 14:50)
 			☐ Vuex
-				☐ Store contains list of forms, two components display this list
-				☐ Call mutation on forms list
+				✔ Store contains list of forms, two components display this list @done(19-02-19 10:29)
+                ✔ Call mutation on forms list @done(19-02-19 10:29)
+                ☐ Call graphql from vuex action
+            ☐ GraphQL subscription
+                ✔ Run flask on gevent @done(19-02-20 15:53)
+                ✔ Test subscription @done(19-02-20 15:54)
+                ✔ Detect when User is added in graphiql @done(19-02-20 19:57)
+                ☐ Detect when User is added in js
+                ☐ Detect when User is added in vuex
+            ☐ Move from Flask to Sanic
+                ☐ Install Sanic via requirements.txt
+                ☐ Simple index page
+                ☐ SqlAlchemy
+                ☐ GraphQl
 			☐ Webpack
 				☐ Lazy loading
 				☐ Частичная загрузка - отдельно форму, отдельно поля, отдельно грид, отдельно админку
 			☐ SqlAlchemy
-				☐ Sqllite DB
+				✔ Sqllite DB @done(19-02-19 11:46)
 				☐ Dogpile Caching + Redis
 			☐ Подключить https://www.codacy.com
 			☐ UI Автотест - Cypress сделать пробный скрипт
@@ -118,7 +130,8 @@ REFACTORING ROUND ONE:
 				☐ https://github.com/paver/paver
 				☐ https://www.fabfile.org/
 		Открытые вопросы:
-			☐ Подключение дополнительных полей - как?
+            ☐ Подключение дополнительных полей - как?
+                ☐ Unpackage?
 			☐ Обновлеие версии - как?	Можно ли онлайн?
 			☐ Продумать систему плагинов
 
@@ -137,6 +150,8 @@ REFACTORING ROUND ONE:
     ☐ Должен работать автодеплой внутри app-engine
     ☐ Должны быть сформулированы behave сценарии тестирования
     ☐ Работает механизм обновления модуля - pip upgrade обновляет модуль, npm собирает заново приложение, БД конфигуриться при первом запуске через SqlAlchemy patch
+        ☐ Alembic
+        ☐ pip upgrade
     ☐ Работает механизм подключения плагинов
     ☐ Должны быть развернуты версии для тестирования - 
         ☐ Версия в appengine
@@ -146,6 +161,7 @@ REFACTORING ROUND ONE:
     ☐ Быстрая настройка рабочего места
         ☐ Инструкция по конфигурированию рабочего места
         ☐ Из гита тянем сорс, запускаем автоконфиг - тянутся все зависимости для рабочего места и все модули javascript
+    ☐ WebSockets обновление грида, дека
 ☐ `Для каждого веб-елемента`
     ☐ Документирование 
     ☐ Для каждого ajax - on-error="..."

@@ -49,6 +49,14 @@ SANIC
     https://github.com/alajfit/vuex-apollo
 
 
+GRAPHQL
+    https://habr.com/ru/post/332850/
+
+
+PUBLISHING TO PYPI
+    https://realpython.com/pypi-publish-python-package/
+    
+
 
 Tree checklist
     Drag before or after
