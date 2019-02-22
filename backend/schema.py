@@ -27,7 +27,7 @@ class Subscription(UsersSubscription, graphene.ObjectType):
     """Combines all schemas subscription"""
 
 
-schema = graphene.Schema(
+ax_schema = graphene.Schema(
     query=Query,
     mutation=Mutations,
     types=[Users],

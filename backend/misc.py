@@ -6,7 +6,8 @@ import yaml
 import graphene
 import graphene_sqlalchemy
 
-def load_configuration(app_yaml_location: str) -> bool:
+
+def load_configuration() -> bool:
     """Function that loads ax application configuration from app.yaml
 
     If application is running on Google App Engine, all params from
@@ -27,8 +28,8 @@ def load_configuration(app_yaml_location: str) -> bool:
         ValueError: Cant parse app.yaml
         LookupError: No env_variables section in app.yaml
     """
-    app_yaml = os.path.join(app_yaml_location, '', 'app.yaml')
-    if not os.path.isfile(app_yaml):
+    app_yaml = './app.yaml'
+    if not os.path.isfile('./app.yaml'):
         raise FileNotFoundError('Configuration failed, app.yaml not found')
     if not os.getenv("SERVER_SOFTWARE", "").startswith("Google App Engine"):
         with open(app_yaml, 'r') as stream:

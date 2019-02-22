@@ -25,7 +25,14 @@ LIMITS
     No ActiveDirectory
     Only English, Russian, Chineese, Indian
 
+NEW DOMAINS
+    workflow.ax
+    draw.ax
+    make.ax
+    put.ax
+    apps.ax
 
+have an axe to grind
 
 
 Pricing

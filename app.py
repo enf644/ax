@@ -1,99 +1,86 @@
-import gevent.monkey
-gevent.monkey.patch_all()
 
-from geventwebsocket.handler import WebSocketHandler
-from gevent import pywsgi
-import werkzeug.serving
+from sanic_graphql import GraphQLView
+from sanic import Sanic, response
+from sanic.response import json
+
 import backend.misc as ax_misc
-import backend.schema as ax_schema
-import backend.model as ax_model
-from graphql_ws.gevent import GeventSubscriptionServer
-from flask_sockets import Sockets
-from flask_graphql import GraphQLView
-from flask_cors import CORS
-import flask
+from backend.schema import ax_schema
+# import backend.model as ax_model
+
+from graphql_ws.websockets_lib import WsLibSubscriptionServer
+from graphql.execution.executors.asyncio import AsyncioExecutor
+
 import sys
 import os
-
 
 """Main flask application script
 Contains GraphQL imports and main views
 """
 
-app = flask.Flask(__name__, static_folder="./dist/static",
-                  template_folder="./dist")
-sockets = Sockets(app)
-subscription_server = GeventSubscriptionServer(ax_schema.schema)
-app.app_protocol = lambda environ_path_info: 'graphql-ws'
+app = Sanic()
+app.static('/static', './dist/static')
+app.static('/', './dist/index.html')
 
 
-def main():
-    """Main function"""
+@app.listener('before_server_start')
+def init_graphql(app, loop):
+    app.add_route(GraphQLView.as_view(schema=ax_schema,
+                                      graphiql=True,
+                                      executor=AsyncioExecutor(loop=loop)),
+                  '/graphql')
 
-    CORS(app, resources={r"/api/*": {"origins": "*"}}
-         )  # Apply CORS to enable cross-domain requests
-
-    ax_misc.load_configuration(app.root_path)  # Load config from app.yaml
-
-    view_func = GraphQLView.as_view(
-        'graphql',
-        schema=ax_schema.schema,
-        graphiql=True,
-        context={'session': ax_model.db_session}
-    )
-    app.add_url_rule('/graphql', view_func=view_func)  # Initiate GraphQL View
+# app.add_route(GraphQLView.as_view(schema=ax_schema, graphiql=True), '/graphql')
 
 
-@sockets.route('/api/subscriptions')
-def gql_socket(ws):
-    subscription_server.handle(ws)
-    return []
+subscription_server = WsLibSubscriptionServer(ax_schema)
 
 
-@sockets.route('/api/echo')
-def echo_socket(ws):
-    while True:
-        message = ws.receive()
-        ws.send(message[::-1])
+@app.websocket('/api/subscriptions', subprotocols=['graphql-ws'])
+async def subscriptions(request, ws):
+    await subscription_server.handle(ws)
+    return ws
 
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def catch_all(path):
-    """Main view - index.html"""
-    print(path)
-    return flask.render_template("index.html")
+# @sockets.route('/api/subscriptions')
+# def gql_socket(ws):
+#     subscription_server.handle(ws)
+#     return []
+
+
+# @sockets.route('/api/echo')
+# def echo_socket(ws):
+#     while True:
+#         message = ws.receive()
+#         ws.send(message[::-1])
+
+
+# @app.route('/', defaults={'path': ''})
+# @app.route('/<path:path>')
+# def catch_all(path):
+#     """Main view - index.html"""
+#     print(path)
+#     return flask.render_template("index.html")
+
+
+# @app.route('/install')
+# def install():
+#     """Initial install view"""
+#     ax_model.Base.metadata.create_all(ax_model.engine)
+#     return 'Done'
+
+@app.route("/hello")
+async def test(request):
+    return json({"hello": "world 22"})
 
 
 @app.route('/api/hello')
-def show_users():
+async def hello(request):
     """Test function"""
-    object_id = flask.request.args.get('object_id')
+    object_id = request.raw_args['object_id']
     ret_str = 'Ajax object_id = ' + object_id
-    return ret_str
-
-
-@app.route('/install')
-def install():
-    """Initial install view"""
-    ax_model.Base.metadata.create_all(ax_model.engine)
-    return 'Done'
-
-
-# @werkzeug.serving.run_with_reloader
-def runServer():
-    app.debug = False
-    server = pywsgi.WSGIServer(
-        ('127.0.0.1', 8080), app, handler_class=WebSocketHandler)
-    server.serve_forever()
+    return response.text(ret_str)
 
 
 if __name__ == "__main__":
-    main()
-    runServer()
-
-    # app.run(
-    #     host='127.0.0.1',
-    #     port=8080,
-    #     debug=True
-    # )
+    ax_misc.load_configuration()  # Load config from app.yaml
+    app.run(host="127.0.0.1", port=8080, debug=True)

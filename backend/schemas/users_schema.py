@@ -7,60 +7,41 @@ from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from sqlalchemy_utils import UUIDType
 from backend.misc import convert_column_to_string
 from backend.model import db_session, AxUser
-from rx import Observable
-import gevent
-from rx.subjects import Subject
-from rx import config
+import asyncio
+# from rx import Observable
 
 
-class SubjectObserversWrapper(object):
-    def __init__(self, pubsub, channel):
-        self.pubsub = pubsub
-        self.channel = channel
-        self.observers = []
-
-        self.lock = config["concurrency"].RLock()
-
-    def __getitem__(self, key):
-        return self.observers[key]
-
-    def __getattr__(self, attr):
-        return getattr(self.observers, attr)
-
-    def remove(self, observer):
-        with self.lock:
-            self.observers.remove(observer)
-            if not self.observers:
-                self.pubsub.unsubscribe(self.channel)
+convert_sqlalchemy_type.register(UUIDType)(convert_column_to_string)
 
 
-class GeventRxPubsub(object):
+class AsyncioPubsub:
 
     def __init__(self):
         self.subscriptions = {}
+        self.sub_id = 0
 
-    def publish(self, channel, payload):
+    async def publish(self, channel, payload):
         if channel in self.subscriptions:
-            self.subscriptions[channel].on_next(payload)
+            for q in self.subscriptions[channel].values():
+                await q.put(payload)
 
     def subscribe_to_channel(self, channel):
+        self.sub_id += 1
+        q = asyncio.Queue()
         if channel in self.subscriptions:
-            return self.subscriptions[channel]
+            self.subscriptions[channel][self.sub_id] = q
         else:
-            subject = Subject()
-            # monkeypatch Subject to unsubscribe pubsub on observable
-            # subscription.dispose()
-            subject.observers = SubjectObserversWrapper(self, channel)
-            self.subscriptions[channel] = subject
-            return subject
+            self.subscriptions[channel] = {self.sub_id: q}
+        return self.sub_id, q
 
-    def unsubscribe(self, channel):
-        if channel in self.subscriptions:
+    def unsubscribe(self, channel, sub_id):
+        if sub_id in self.subscriptions.get(channel, {}):
+            del self.subscriptions[channel][sub_id]
+        if not self.subscriptions[channel]:
             del self.subscriptions[channel]
 
 
-pubsub = GeventRxPubsub()
-convert_sqlalchemy_type.register(UUIDType)(convert_column_to_string)
+pubsub = AsyncioPubsub()
 
 
 class Users(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
@@ -80,7 +61,7 @@ class CreateUser(graphene.Mutation):
     ok = graphene.Boolean()
     user = graphene.Field(Users)
 
-    def mutate(self, info, **args):  # pylint: disable=missing-docstring
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         del info
         new_user = AxUser(
             name=args.get('name'),
@@ -90,8 +71,20 @@ class CreateUser(graphene.Mutation):
         db_session.add(new_user)
         db_session.commit()
         ok = True
-        pubsub.publish('BASE', 'pubsub message')
+        await pubsub.publish('BASE', input_text)
         return CreateUser(user=new_user, ok=ok)
+
+
+class MutationExample(graphene.Mutation):
+    class Arguments:
+        input_text = graphene.String()
+
+    output_text = graphene.String()
+
+    async def mutate(self, info, input_text):
+        # publish to the pubsub object before returning mutation
+        await pubsub.publish('BASE', input_text)
+        return MutationExample(output_text=input_text)
 
 
 # Used to Change Username with Email
@@ -135,21 +128,32 @@ class UsersQuery(graphene.ObjectType):
 
 
 class UsersSubscription(graphene.ObjectType):
-    seconds = graphene.Int(up_to=graphene.Int())
+    count_seconds = graphene.Float(up_to=graphene.Int())
 
-    def resolve_seconds(root, info, up_to=5):
-        return Observable.interval(1000)\
-                         .map(lambda i: "{0}".format(i))\
-                         .take_while(lambda i: int(i) <= up_to)
+    async def resolve_count_seconds(root, info, up_to):
+        for i in range(up_to):
+            yield i
+            await asyncio.sleep(1.)
+        yield up_to
 
     mutation_example = graphene.String()
 
-    def resolve_mutation_example(root, info):
-        return pubsub.subscribe_to_channel('BASE')\
-            .map(lambda i: "{0}".format(i))
+    async def resolve_mutation_example(root, info):
+        try:
+            # pubsub subscribe_to_channel method returns
+            # subscription id and an asyncio.Queue
+            sub_id, q = pubsub.subscribe_to_channel('BASE')
+            while True:
+                payload = await q.get()
+                yield payload
+        except asyncio.CancelledError:
+            # unsubscribe subscription id from channel
+            # when coroutine is cancelled
+            pubsub.unsubscribe('BASE', sub_id)
 
 
 class UsersMutations(graphene.ObjectType):
     """Contains all AxUser mutations"""
     create_user = CreateUser.Field()
     change_username = ChangeUsername.Field()
+    mutation_example = MutationExample.Field()
