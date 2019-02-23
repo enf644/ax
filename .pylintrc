@@ -227,7 +227,7 @@ ext-import-graph=
 int-import-graph=
 
 # Ignored modules
-ignored-modules=flask_sqlalchemy, sqlalchemy
+ignored-modules=sanic_graphql, sanic, graphql
 
 
 [CLASSES]

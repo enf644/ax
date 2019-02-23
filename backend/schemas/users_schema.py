@@ -1,5 +1,6 @@
 """Defines Users Scheme and all mutations"""
 
+import asyncio
 import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
@@ -7,7 +8,6 @@ from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from sqlalchemy_utils import UUIDType
 from backend.misc import convert_column_to_string
 from backend.model import db_session, AxUser
-import asyncio
 # from rx import Observable
 
 
@@ -15,26 +15,30 @@ convert_sqlalchemy_type.register(UUIDType)(convert_column_to_string)
 
 
 class AsyncioPubsub:
+    """Test pubsub implimentation"""
 
     def __init__(self):
         self.subscriptions = {}
         self.sub_id = 0
 
     async def publish(self, channel, payload):
+        """Publish"""
         if channel in self.subscriptions:
-            for q in self.subscriptions[channel].values():
-                await q.put(payload)
+            for que in self.subscriptions[channel].values():
+                await que.put(payload)
 
     def subscribe_to_channel(self, channel):
+        """Subscribe"""
         self.sub_id += 1
-        q = asyncio.Queue()
+        que = asyncio.Queue()
         if channel in self.subscriptions:
-            self.subscriptions[channel][self.sub_id] = q
+            self.subscriptions[channel][self.sub_id] = que
         else:
-            self.subscriptions[channel] = {self.sub_id: q}
-        return self.sub_id, q
+            self.subscriptions[channel] = {self.sub_id: que}
+        return self.sub_id, que
 
     def unsubscribe(self, channel, sub_id):
+        """Unsubscribe"""
         if sub_id in self.subscriptions.get(channel, {}):
             del self.subscriptions[channel][sub_id]
         if not self.subscriptions[channel]:
@@ -71,18 +75,20 @@ class CreateUser(graphene.Mutation):
         db_session.add(new_user)
         db_session.commit()
         ok = True
-        await pubsub.publish('BASE', input_text)
+        await pubsub.publish('BASE', 'New users')
         return CreateUser(user=new_user, ok=ok)
 
 
 class MutationExample(graphene.Mutation):
-    class Arguments:
+    """Mutation example"""
+    class Arguments:  # pylint: disable=missing-docstring
         input_text = graphene.String()
 
     output_text = graphene.String()
 
-    async def mutate(self, info, input_text):
+    async def mutate(self, info, input_text):  # pylint: disable=missing-docstring
         # publish to the pubsub object before returning mutation
+        del info
         await pubsub.publish('BASE', input_text)
         return MutationExample(output_text=input_text)
 
@@ -128,9 +134,13 @@ class UsersQuery(graphene.ObjectType):
 
 
 class UsersSubscription(graphene.ObjectType):
+    """GraphQL subscriptions"""
     count_seconds = graphene.Float(up_to=graphene.Int())
 
-    async def resolve_count_seconds(root, info, up_to):
+    async def resolve_count_seconds(self, info, up_to):
+        """Test graphql subscription"""
+        del info
+
         for i in range(up_to):
             yield i
             await asyncio.sleep(1.)
@@ -138,17 +148,15 @@ class UsersSubscription(graphene.ObjectType):
 
     mutation_example = graphene.String()
 
-    async def resolve_mutation_example(root, info):
+    async def resolve_mutation_example(self, info):
+        """Subscribe to adding new user"""
+        del info
         try:
-            # pubsub subscribe_to_channel method returns
-            # subscription id and an asyncio.Queue
-            sub_id, q = pubsub.subscribe_to_channel('BASE')
+            sub_id, que = pubsub.subscribe_to_channel('BASE')
             while True:
-                payload = await q.get()
+                payload = await que.get()
                 yield payload
         except asyncio.CancelledError:
-            # unsubscribe subscription id from channel
-            # when coroutine is cancelled
             pubsub.unsubscribe('BASE', sub_id)
 
 

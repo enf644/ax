@@ -4,7 +4,8 @@ Combines all Ax GraphQL schemas to one
 
 import graphene
 from graphene import relay
-from backend.schemas.users_schema import UsersQuery, UsersMutations, UsersSubscription, Users
+from backend.schemas.users_schema import Users, UsersQuery
+from backend.schemas.users_schema import UsersMutations, UsersSubscription
 from backend.schemas.home_schema import HomeQuery
 
 

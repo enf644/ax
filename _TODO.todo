@@ -83,14 +83,14 @@ REFACTORING ROUND ONE:
                 ✔ Detect when User is added in graphiql @done(19-02-20 19:57)
                 ☐ Detect when User is added in js
                 ☐ Detect when User is added in vuex
-            ☐ Move from Flask to Sanic
+            ✔ Move from Flask to Sanic @done(19-02-23 18:45)
                 ✔ Uninstall requirements.txt @done(19-02-22 17:39)
                 ✔ Install Sanic via requirements.txt @done(19-02-22 17:39)
                 ✔ Hello world @done(19-02-22 17:39)
                 ✔ Simple index page @done(19-02-22 18:50)
                 ✔ SqlAlchemy @done(19-02-22 22:52)
                 ✔ GraphQl @done(19-02-22 22:52)
-                ☐ Beutify python code
+                ✔ Beutify python code @done(19-02-23 18:45)
 			☐ Webpack
 				☐ Lazy loading
 				☐ Частичная загрузка - отдельно форму, отдельно поля, отдельно грид, отдельно админку

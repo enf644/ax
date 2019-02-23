@@ -1,21 +1,15 @@
+"""Runneble script"""
 
 from sanic_graphql import GraphQLView
 from sanic import Sanic, response
 from sanic.response import json
 
-import backend.misc as ax_misc
-from backend.schema import ax_schema
-# import backend.model as ax_model
-
 from graphql_ws.websockets_lib import WsLibSubscriptionServer
 from graphql.execution.executors.asyncio import AsyncioExecutor
 
-import sys
-import os
-
-"""Main flask application script
-Contains GraphQL imports and main views
-"""
+import backend.misc as ax_misc
+from backend.schema import ax_schema
+import backend.model as ax_model
 
 app = Sanic()
 app.static('/static', './dist/static')
@@ -23,54 +17,32 @@ app.static('/', './dist/index.html')
 
 
 @app.listener('before_server_start')
-def init_graphql(app, loop):
-    app.add_route(GraphQLView.as_view(schema=ax_schema,
-                                      graphiql=True,
-                                      executor=AsyncioExecutor(loop=loop)),
-                  '/graphql')
+def init_graphql(_app, loop):
+    """Initiate graphql"""
 
-# app.add_route(GraphQLView.as_view(schema=ax_schema, graphiql=True), '/graphql')
+    graphql_view = GraphQLView.as_view(schema=ax_schema,
+                                       graphiql=True,
+                                       executor=AsyncioExecutor(loop=loop))
+    _app.add_route(graphql_view, '/graphql')
 
 
 subscription_server = WsLibSubscriptionServer(ax_schema)
 
 
 @app.websocket('/api/subscriptions', subprotocols=['graphql-ws'])
-async def subscriptions(request, ws):
-    await subscription_server.handle(ws)
-    return ws
+async def subscriptions(request, web_socket):
+    """Web socket route for graphql subscriptions"""
+    del request
+    await subscription_server.handle(web_socket)
+    return web_socket
 
 
-# @sockets.route('/api/subscriptions')
-# def gql_socket(ws):
-#     subscription_server.handle(ws)
-#     return []
-
-
-# @sockets.route('/api/echo')
-# def echo_socket(ws):
-#     while True:
-#         message = ws.receive()
-#         ws.send(message[::-1])
-
-
-# @app.route('/', defaults={'path': ''})
-# @app.route('/<path:path>')
-# def catch_all(path):
-#     """Main view - index.html"""
-#     print(path)
-#     return flask.render_template("index.html")
-
-
-# @app.route('/install')
-# def install():
-#     """Initial install view"""
-#     ax_model.Base.metadata.create_all(ax_model.engine)
-#     return 'Done'
-
-@app.route("/hello")
-async def test(request):
-    return json({"hello": "world 22"})
+@app.route("/install")
+async def install(request):
+    """Initial install view"""
+    del request
+    ax_model.Base.metadata.create_all(ax_model.engine)
+    return json({"status": "Install Done"})
 
 
 @app.route('/api/hello')
