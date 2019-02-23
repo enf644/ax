@@ -10,8 +10,8 @@ export default {
     name: null
   },
   created() {
-    let debug_msg = 'Debug this Vue';
-    console.log(debug_msg);
+    const debugMsg = 'Debug this Vue';
+    this.$log.info(debugMsg);
   }
 };
 </script>

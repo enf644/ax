@@ -73,10 +73,10 @@ REFACTORING ROUND ONE:
                 ✔ ManageGroup(group_id) @done(19-02-15 14:30)
                 ✔ Marketplace @done(19-02-15 14:50)
                 ✔ Deck designer @done(19-02-15 14:50)
-			☐ Vuex
+			✔ Vuex @done(19-02-24 00:46)
 				✔ Store contains list of forms, two components display this list @done(19-02-19 10:29)
                 ✔ Call mutation on forms list @done(19-02-19 10:29)
-                ☐ Call graphql from vuex action
+                ✔ Call graphql from vuex action @done(19-02-24 00:46)
             ☐ GraphQL subscription
                 ✔ Run flask on gevent @done(19-02-20 15:53)
                 ✔ Test subscription @done(19-02-20 15:54)

@@ -1,9 +1,26 @@
+import apolloClient from '../apollo';
+import gql from 'graphql-tag';
+
 const getters = {};
 
 const actions = {
   getAllUsers({ commit }) {
-    const users = ['Vasya', 'Perya', 'Ira'];
-    commit('setProducts', users);
+    apolloClient.query({
+      query: gql`
+        query {
+          allUsers {
+            name,
+            email,
+            username
+          }
+        }
+      `
+    })
+      .then(data => {
+        console.log(data);
+        commit('setUsers', data.data.allUsers);
+      })
+      .catch(error => console.error(error));
   }
 };
 

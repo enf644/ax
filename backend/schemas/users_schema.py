@@ -121,7 +121,11 @@ class UsersQuery(graphene.ObjectType):
     """AxUser queryes"""
     user = SQLAlchemyConnectionField(Users)
     find_user = graphene.Field(lambda: Users, username=graphene.String())
-    all_users = SQLAlchemyConnectionField(Users)
+    all_users = graphene.List(Users)
+
+    def resolve_all_users(self, info):
+        query = Users.get_query(info)  # SQLAlchemy query
+        return query.all()
 
     def resolve_find_user(self, args, context, info):
         """default find method"""

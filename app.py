@@ -3,6 +3,7 @@
 from sanic_graphql import GraphQLView
 from sanic import Sanic, response
 from sanic.response import json
+from sanic_cors import CORS, cross_origin
 
 from graphql_ws.websockets_lib import WsLibSubscriptionServer
 from graphql.execution.executors.asyncio import AsyncioExecutor
@@ -12,6 +13,8 @@ from backend.schema import ax_schema
 import backend.model as ax_model
 
 app = Sanic()
+# cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app, automatic_options=True)
 app.static('/static', './dist/static')
 app.static('/', './dist/index.html')
 
@@ -21,9 +24,9 @@ def init_graphql(_app, loop):
     """Initiate graphql"""
 
     graphql_view = GraphQLView.as_view(schema=ax_schema,
-                                       graphiql=True,
+                                       graphiql=False,
                                        executor=AsyncioExecutor(loop=loop))
-    _app.add_route(graphql_view, '/graphql')
+    _app.add_route(graphql_view, '/api/graphql')
 
 
 subscription_server = WsLibSubscriptionServer(ax_schema)

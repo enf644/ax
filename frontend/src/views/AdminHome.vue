@@ -30,17 +30,17 @@ export default {
   },
   methods: {},
   created() {
-    const ws = new WebSocket('ws://127.0.0.1:8080/api/echo');
-    ws.onopen = function sendOpenSignal() {
-      this.$log.info('sent open signal');
-      ws.send('socket open');
-    }.bind(this);
-    ws.onclose = function sendCloseSignal(evt) {
-      this.$log.info(`socket closed = ${evt.data}`);
-    }.bind(this);
-    ws.onmessage = function onMessage(evt) {
-      this.$log.info(evt.data);
-    }.bind(this);
+    // const ws = new WebSocket('ws://127.0.0.1:8080/api/echo');
+    // ws.onopen = function sendOpenSignal() {
+    //   this.$log.info('sent open signal');
+    //   ws.send('socket open');
+    // }.bind(this);
+    // ws.onclose = function sendCloseSignal(evt) {
+    //   this.$log.info(`socket closed = ${evt.data}`);
+    // }.bind(this);
+    // ws.onmessage = function onMessage(evt) {
+    //   this.$log.info(evt.data);
+    // }.bind(this);
 
     this.$log.info('running ajax');
     axios
