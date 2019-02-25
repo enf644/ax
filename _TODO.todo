@@ -81,8 +81,10 @@ REFACTORING ROUND ONE:
                 ✔ Run flask on gevent @done(19-02-20 15:53)
                 ✔ Test subscription @done(19-02-20 15:54)
                 ✔ Detect when User is added in graphiql @done(19-02-20 19:57)
-                ☐ Detect when User is added in js
-                ☐ Detect when User is added in vuex
+                ✔ Detect when User is added in js @done(19-02-24 16:27)
+                ✔ Detect when User is added in vuex @done(19-02-24 16:27)
+                ☐ Create user on button click
+                ☐ Update user list via subscription
             ✔ Move from Flask to Sanic @done(19-02-23 18:45)
                 ✔ Uninstall requirements.txt @done(19-02-22 17:39)
                 ✔ Install Sanic via requirements.txt @done(19-02-22 17:39)

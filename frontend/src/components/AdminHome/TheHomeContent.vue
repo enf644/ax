@@ -7,8 +7,14 @@
     <hr>
 
     <ul id='example-1'>
-      <li v-for='user in users'>{{ user.name }} -> {{ user.email }}</li>
+      <li :key='user.guid' v-for='user in users'>{{ user.name }} -> {{ user.email }}</li>
     </ul>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <v-btn @click='createNewUser' color='success'>Add new user</v-btn>
   </div>
 </template>
 
@@ -16,7 +22,7 @@
 export default {
   created() {
     this.$store.dispatch('users/getAllUsers');
-    console.log(`users == ${this.$store.state.users.all}`);
+    this.$store.dispatch('users/subscribeToUsers');
   },
   computed: {
     count() {
@@ -32,6 +38,9 @@ export default {
     },
     decrement() {
       this.$store.commit('test/decrement');
+    },
+    createNewUser() {
+      this.$store.dispatch('users/createNewUser');
     }
   }
 };

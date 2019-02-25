@@ -48,13 +48,14 @@ class AsyncioPubsub:
 pubsub = AsyncioPubsub()
 
 
-class Users(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
+class User(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
     class Meta:  # pylint: disable=missing-docstring
         model = AxUser
         interfaces = (relay.Node, )
 
-
 # Used to Create New User
+
+
 class CreateUser(graphene.Mutation):
     """ Creates AxUser """
     class Arguments:  # pylint: disable=missing-docstring
@@ -63,7 +64,7 @@ class CreateUser(graphene.Mutation):
         username = graphene.String()
 
     ok = graphene.Boolean()
-    user = graphene.Field(Users)
+    user = graphene.Field(User)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         del info
@@ -75,7 +76,7 @@ class CreateUser(graphene.Mutation):
         db_session.add(new_user)
         db_session.commit()
         ok = True
-        await pubsub.publish('BASE', 'New users')
+        await pubsub.publish('BASE', new_user)
         return CreateUser(user=new_user, ok=ok)
 
 
@@ -101,12 +102,12 @@ class ChangeUsername(graphene.Mutation):
         email = graphene.String()
 
     ok = graphene.Boolean()
-    user = graphene.Field(Users)
+    user = graphene.Field(User)
 
     @classmethod
     def mutate(cls, _, args, context, info):   # pylint: disable=missing-docstring
         del info
-        query = Users.get_query(context)
+        query = User.get_query(context)
         email = args.get('email')
         username = args.get('username')
         user = query.filter(AxUser.email == email).first()
@@ -119,18 +120,19 @@ class ChangeUsername(graphene.Mutation):
 
 class UsersQuery(graphene.ObjectType):
     """AxUser queryes"""
-    user = SQLAlchemyConnectionField(Users)
-    find_user = graphene.Field(lambda: Users, username=graphene.String())
-    all_users = graphene.List(Users)
+    user = SQLAlchemyConnectionField(User)
+    find_user = graphene.Field(lambda: User, username=graphene.String())
+    all_users = graphene.List(User)
 
     def resolve_all_users(self, info):
-        query = Users.get_query(info)  # SQLAlchemy query
+        """Get all users"""
+        query = User.get_query(info)  # SQLAlchemy query
         return query.all()
 
     def resolve_find_user(self, args, context, info):
         """default find method"""
         del info
-        query = Users.get_query(context)
+        query = User.get_query(context)
         username = args.get('username')
         # you can also use and_ with filter()
         # eg: filter(and_(param1, param2)).first()
@@ -150,7 +152,7 @@ class UsersSubscription(graphene.ObjectType):
             await asyncio.sleep(1.)
         yield up_to
 
-    mutation_example = graphene.String()
+    mutation_example = graphene.Field(User)
 
     async def resolve_mutation_example(self, info):
         """Subscribe to adding new user"""

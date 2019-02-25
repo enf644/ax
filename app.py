@@ -3,7 +3,7 @@
 from sanic_graphql import GraphQLView
 from sanic import Sanic, response
 from sanic.response import json
-from sanic_cors import CORS, cross_origin
+from sanic_cors import CORS
 
 from graphql_ws.websockets_lib import WsLibSubscriptionServer
 from graphql.execution.executors.asyncio import AsyncioExecutor

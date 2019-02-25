@@ -13,6 +13,7 @@
         "@fortawesome/fontawesome-free": "^5.7.2",
         "animate.css": "^3.7.0",
         "apollo-boost": "^0.1.28",
+        "apollo-link-ws": "^1.0.14",
         "axios": "^0.18.0",
         "document-register-element": "^1.13.1",
         "graphql": "^14.1.1",

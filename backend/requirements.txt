@@ -13,3 +13,4 @@ sqlalchemy-utils==0.33.9
 
 pyyaml==3.13
 typing==3.6.6
+ujson==1.35

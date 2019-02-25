@@ -27,3 +27,9 @@ class AxUser(Base):
     name = Column(Text)
     email = Column(Text)
     username = Column(String(255))
+
+    def serialize(self):
+        """Serialize"""
+        return {
+            'uuid': self.uuid, 'name': self.name, 'db_name': self.db_name
+        }

@@ -31,7 +31,7 @@ TREE
     https://amsik.github.io/liquor-tree/#Drag-amp-Drop - nice, but limited
 
 
-LOGGER
+JS LOGGER
     https://sentry.io/welcome/  
     https://logrocket.com/
     https://rollbar.com/blog/error-tracking-vue-js/ - nice
@@ -57,7 +57,8 @@ PUBLISHING TO PYPI
     https://realpython.com/pypi-publish-python-package/
     
 
-
+ERROR HANDLING
+    https://blog.apollographql.com/full-stack-error-handling-with-graphql-apollo-5c12da407210
 
 
 
