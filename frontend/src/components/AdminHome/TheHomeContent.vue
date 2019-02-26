@@ -6,7 +6,7 @@
 
     <hr>
 
-    <ul id='example-1'>
+    <ul data-cy='user-list'>
       <li :key='user.guid' v-for='user in users'>{{ user.name }} -> {{ user.email }}</li>
     </ul>
 
@@ -14,7 +14,11 @@
     <br>
     <br>
     <br>
-    <v-btn @click='createNewUser' color='success'>{{$t("users.add-new-user")}}</v-btn>
+    <v-btn
+      @click='createNewUser'
+      color='success'
+      data-cy='add-new-user'
+    >{{$t("users.add-new-user")}}</v-btn>
 
     <br>
     {{ $t("hello")}}
