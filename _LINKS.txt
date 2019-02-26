@@ -24,6 +24,28 @@ Split panels
     https://split.js.org/
 	
 
+INTERNALIZATION
+    Vue components
+        https://github.com/Polyconseil/vue-gettext  -> CHOISE
+        https://www.i18next.com
+            https://panter.github.io/vue-i18next/
+            https://github.com/pixari/vue-i18n-extract
+        https://github.com/dkfbasel/vuex-i18n
+    Localisation platforms
+        https://www.oneskyapp.com/pricing/ -> Per word! 0,04$
+        https://poeditor.com/features/  -> free plan 1000 words
+        https://lokalise.co/ - > free plan 500 words
+        https://weblate.org
+    info
+        Numbers, Units, Dates and Times
+
+SERVICES TO DISCOVER
+    https://translationexchange.com/connectors/
+
+
+LANDING PAGE INSPIRATION
+    https://lokalise.co/
+
 TREE
     https://github.com/phphe/vue-draggable-nested-tree - choise
     https://github.com/epistemonikos/tree-component

@@ -14,13 +14,19 @@
     <br>
     <br>
     <br>
-    <v-btn @click='createNewUser' color='success'>Add new user</v-btn>
+    <v-btn @click='createNewUser' color='success'>{{$t("users.add-new-user")}}</v-btn>
+
+    <br>
+    {{ $t("hello")}}
+    <br>
   </div>
 </template>
 
 <script>
 export default {
   created() {
+    // this.$log.info(this.$language.available);
+
     this.$store.dispatch('users/getAllUsers');
     this.$store.dispatch('users/subscribeToUsers');
   },

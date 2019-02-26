@@ -77,14 +77,14 @@ REFACTORING ROUND ONE:
 				✔ Store contains list of forms, two components display this list @done(19-02-19 10:29)
                 ✔ Call mutation on forms list @done(19-02-19 10:29)
                 ✔ Call graphql from vuex action @done(19-02-24 00:46)
-            ☐ GraphQL subscription
+            ✔ GraphQL subscription @done(19-02-25 09:53)
                 ✔ Run flask on gevent @done(19-02-20 15:53)
                 ✔ Test subscription @done(19-02-20 15:54)
                 ✔ Detect when User is added in graphiql @done(19-02-20 19:57)
                 ✔ Detect when User is added in js @done(19-02-24 16:27)
                 ✔ Detect when User is added in vuex @done(19-02-24 16:27)
-                ☐ Create user on button click
-                ☐ Update user list via subscription
+                ✔ Create user on button click @done(19-02-25 09:53)
+                ✔ Update user list via subscription @done(19-02-25 09:53)
             ✔ Move from Flask to Sanic @done(19-02-23 18:45)
                 ✔ Uninstall requirements.txt @done(19-02-22 17:39)
                 ✔ Install Sanic via requirements.txt @done(19-02-22 17:39)
@@ -93,50 +93,41 @@ REFACTORING ROUND ONE:
                 ✔ SqlAlchemy @done(19-02-22 22:52)
                 ✔ GraphQl @done(19-02-22 22:52)
                 ✔ Beutify python code @done(19-02-23 18:45)
-			☐ Webpack
+            ✔ Register at https://www.codacy.com @done(19-02-25 10:02)
+            ✔ Internalisation @done(19-02-26 16:17)
+                ✔ Delete everything gettext-vue @done(19-02-26 15:04)
+                ✔ Install i18n-vue @done(19-02-26 16:17)
+			☐ UI Автотест - Cypress сделать пробный скрипт
+			☐ Python unit-test - сделать и прогнать
+            ☐ Webpack
 				☐ Lazy loading
 				☐ Частичная загрузка - отдельно форму, отдельно поля, отдельно грид, отдельно админку
 			☐ SqlAlchemy
 				✔ Sqllite DB @done(19-02-19 11:46)
-				☐ Dogpile Caching + Redis
-			☐ Подключить https://www.codacy.com
-			☐ UI Автотест - Cypress сделать пробный скрипт
-			☐ Python unit-test - сделать и прогнать
-			☐ Автодокументирование python кода
-				☐ http://nevir.github.io/groc/index.html
-				☐ https://gist.github.com/GLMeece/222624fc495caf6f3c010a8e26577d31
-			☐ Автодокументирование vue.js кода
-			☐ Общая документация
-				☐ https://www.gitbook.com/?t=1
-			☐ Интернационализация - выбор
+                ☐ Dogpile Caching + Redis
+            ☐ SqlAlchemy versioning
+				☐ https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script
+				☐ alembic revision --autogenerate -m "description of changes"
+				☐ https://sqlalchemy-migrate.readthedocs.io/en/latest/                
 		Авто-Деплой:
 			☐ Сборка pip модуля, деплой в pypy
 				☐ Как указывать куда ставить и по какому порту работать?
             ☐ Деплой в Google App Engine
-                Create google ax account
-                Deploy hello world
-                Deploy AX
+                ☐ Create google ax account
+                ☐ Deploy hello world
+                ☐ Deploy AX
 			☐ Деплой в App Engine через Market
 			☐ Сборка docker image и деплой куда-то
 			☐ Делаем инструкцию по настройке рабочего места
 		Новые технологии:
 			☐ https://swagger.io/
-			☐ SqlAlchemy versioning
-				☐ https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script
-				☐ alembic revision --autogenerate -m "description of changes"
-				☐ https://sqlalchemy-migrate.readthedocs.io/en/latest/
 			☐ Очередь для выполнения импорта, действий процесса
 				☐ https://www.fullstackpython.com/task-queues.html
 				☐ Redis
 			☐ Стухание сессии - блокировка экрана, предложение продолжить
-			☐ Sockets.io
 			☐ Oath - Авторизация
 				☐ https://developer.okta.com/pricing/
 			☐ Active directory - python
-			☐ Markupsafe
-			☐ Python Jenkins
-				☐ https://github.com/paver/paver
-				☐ https://www.fabfile.org/
 		Открытые вопросы:
             ☐ Подключение дополнительных полей - как?
                 ☐ Unpackage?
@@ -255,6 +246,16 @@ AX 20:
 
 =============================================================================================
 
+BEFORE LAUNCH:
+    ☐ Landing page
+    ☐ Documentation
+        ☐ Sphninx in repo -> https://gist.github.com/GLMeece/222624fc495caf6f3c010a8e26577d31
+        ☐ Gitbook -> https://www.gitbook.com/?t=1                
+        ☐ Ax Deck !!!
+
+
+=============================================================================================
+
 NEW FROG TODOS:
     ✔ Discover why ripple effects are not working in chrome @done(19-02-13 07:24)
     ☐ Disable maximise on double click on split-panes
@@ -266,7 +267,10 @@ NEW FEATURES:
     ☐ Allow one level of subfolders for AxForm - https://vuetifyjs.com/en/components/lists#expansion-lists
     ☐ AxForm - make dynamic form header. If wide form - it is in drawer. If it is slim - it is in form.
         
-        
+MAYBE LATER:
+    ☐ python autodoc
+    ☐ Автодокументирование vue.js кода
+
 
 
 ============================================================================================

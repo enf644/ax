@@ -12,11 +12,17 @@ import 'vue-resize/dist/vue-resize.css';
 import 'typeface-roboto'; // font
 import VueDummy from 'vue-dummy'; // create lorum ipsum
 import 'animate.css/animate.min.css';
+import VueI18n from 'vue-i18n';
 
 import '../public/static/css/ax-core.css';
 import AxGrid from '@/components/AxGrid.vue';
 import logger from './logger';
 
+import { languages, defaultLocale } from './locale/index.js';
+
+const messages = Object.assign(languages);
+
+Vue.use(VueI18n);
 Vue.use(Vuetify, {
   iconfont: 'fa',
   theme: {
@@ -32,18 +38,18 @@ Vue.use(VueDummy);
 Vue.config.productionTip = false;
 Vue.customElement('ax-grid', AxGrid);
 
-// Logging functionality
-// function backendLogTransport() { } // { msg, level, args, state }
 
-// const logdown = require('logdown');
+const i18n = new VueI18n({
+  locale: defaultLocale,
+  fallbackLocale: 'en',
+  messages
+});
 
-// logdown.transports = [backendLogTransport];
-// const logger = logdown('ax');
-// logger.state.isEnabled = true;
-Vue.prototype.$log = logger;
+Vue.prototype.$log = logger; // Custom logger
 
 new Vue({
   router,
   store,
+  i18n,
   render: h => h(App)
 }).$mount('#app');
