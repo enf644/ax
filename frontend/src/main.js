@@ -19,7 +19,7 @@ import 'vuetify/dist/vuetify.min.css';
 
 import VueDummy from 'vue-dummy'; // create lorum ipsum
 
-import '../public/static/css/ax-core.css';
+import './assets/ax-core.css';
 import AxGrid from '@/components/AxGrid.vue';
 
 const messages = Object.assign(languages);
@@ -54,4 +54,4 @@ new Vue({
   store,
   i18n,
   render: h => h(App)
-}).$mount('#app');
+}).$mount('#ax-app');

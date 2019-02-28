@@ -1,6 +1,9 @@
 module.exports = {
   outputDir: './../dist',
   assetsDir: 'static',
+  css: {
+    extract: false
+  },
   devServer: {
     disableHostCheck: true,
     proxy: {
@@ -12,12 +15,15 @@ module.exports = {
     }
   },
   chainWebpack: config => {
-    config.optimization.delete('splitChunks');
+    // config.optimization.delete('splitChunks');
   },
   configureWebpack: {
     devtool: 'source-map',
     output: {
       filename: 'static/js/ax-bundle.js'
+    },
+    optimization: {
+      splitChunks: false
     },
     module: {
 
