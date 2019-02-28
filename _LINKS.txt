@@ -25,7 +25,10 @@ Split panels
 
 WEBPACK LAZY LOADING
     https://medium.com/walkme-engineering/how-and-when-not-to-use-webpack-for-lazy-loading-bef9d37c42c1
+    https://cli.vuejs.org/guide/build-targets.html#async-web-component
 
+
+    
 
 INTERNALIZATION
     Vue components
@@ -41,6 +44,11 @@ INTERNALIZATION
         https://weblate.org
     info
         Numbers, Units, Dates and Times
+
+
+DOCKER
+    https://cli.vuejs.org/guide/deployment.html#docker-nginx
+
 
 SERVICES TO DISCOVER
     https://translationexchange.com/connectors/

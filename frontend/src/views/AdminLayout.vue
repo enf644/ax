@@ -14,9 +14,7 @@ import TheToolbar from '@/components/AdminHome/TheToolbar.vue';
 
 export default {
   name: 'admin-layout',
-  components: {
-    TheToolbar
-  }
+  components: { TheToolbar }
 };
 </script>
 

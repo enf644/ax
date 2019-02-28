@@ -15,7 +15,9 @@ import backend.model as ax_model
 app = Sanic()
 # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 CORS(app, automatic_options=True)
+
 app.static('/static', './dist/static')
+app.static('/stats', './dist/stats.html')
 
 
 @app.listener('before_server_start')

@@ -14,8 +14,10 @@ import store from './store';
 import VueResize from 'vue-resize'; // detect element resize
 import 'vue-resize/dist/vue-resize.css';
 
-import Vuetify from 'vuetify'; // material ui components
-import 'vuetify/dist/vuetify.min.css';
+// import Vuetify from 'vuetify'; // material ui components
+import Vuetify from 'vuetify/lib';
+import 'vuetify/src/stylus/app.styl';
+// import 'vuetify/dist/vuetify.min.css';
 
 import VueDummy from 'vue-dummy'; // create lorum ipsum
 
@@ -26,6 +28,7 @@ const messages = Object.assign(languages);
 
 Vue.use(VueI18n);
 Vue.use(Vuetify, {
+  components: {},
   iconfont: 'fa',
   theme: {
     primary: '#3f51b5',

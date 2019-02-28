@@ -42,7 +42,10 @@
 </template>
 
 <script>
-export default {};
+export default {
+  name: 'admin-toolbar',
+  components: {}
+};
 </script>
 
 <style scoped>

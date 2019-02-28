@@ -1,3 +1,6 @@
+const Visualizer = require('webpack-visualizer-plugin');
+const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin');
+
 module.exports = {
   outputDir: './../dist',
   assetsDir: 'static',
@@ -14,21 +17,32 @@ module.exports = {
       }
     }
   },
-  chainWebpack: config => {
-    // config.optimization.delete('splitChunks');
+  chainWebpack: () => {
+    // config
   },
-  configureWebpack: {
-    devtool: 'source-map',
-    output: {
-      filename: 'static/js/ax-bundle.js'
-    },
-    optimization: {
-      splitChunks: false
-    },
-    module: {
+  configureWebpack: () => {
+    const conf = {
+      devtool: 'source-map',
+      output: {
+        filename: 'static/js/ax-bundle.js'
+      },
+      optimization: {
+        splitChunks: false,
+        minimize: true
+      },
+      module: {
+        rules: []
+      },
+      plugins: [new Visualizer(), new VuetifyLoaderPlugin()]
+    };
 
-      rules: [
-      ]
+    if (process.env.NODE_ENV === 'production') {
+      // mutate config for production...
+    } else {
+      delete conf.optimization.splitChunks;
+      conf.optimization.minimize = false;
     }
+
+    return conf;
   }
 };

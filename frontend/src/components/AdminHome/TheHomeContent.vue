@@ -29,6 +29,7 @@
 
 <script>
 export default {
+  name: 'admin-toolbar',
   created() {
     // this.$log.info(this.$language.available);
 
