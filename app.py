@@ -16,7 +16,6 @@ app = Sanic()
 # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 CORS(app, automatic_options=True)
 app.static('/static', './dist/static')
-app.static('/', './dist/index.html')
 
 
 @app.listener('before_server_start')
@@ -38,6 +37,11 @@ async def subscriptions(request, web_socket):
     del request
     await subscription_server.handle(web_socket)
     return web_socket
+
+
+@app.route('/<path:path>')
+def index(request, path):
+    return response.html(open('./dist/index.html').read())
 
 
 @app.route("/install")

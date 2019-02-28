@@ -97,15 +97,27 @@ REFACTORING ROUND ONE:
             ✔ Internalisation @done(19-02-26 16:17)
                 ✔ Delete everything gettext-vue @done(19-02-26 15:04)
                 ✔ Install i18n-vue @done(19-02-26 16:17)
-			✔ UI Автотест - Cypress сделать пробный скрипт @done(19-02-26 18:27)
-			☐ Python unit-test - сделать и прогнать
-            ☐ Webpack
-				☐ Lazy loading
-				☐ Частичная загрузка - отдельно форму, отдельно поля, отдельно грид, отдельно админку
-			☐ SqlAlchemy
-				✔ Sqllite DB @done(19-02-19 11:46)
-                ☐ Dogpile Caching + Redis
-            ☐ SqlAlchemy versioning
+			✔ UI Автотест - Cypress сделать пробный скрипт @done(19-02-26 18:27)			
+            ☐ Webpack - Lazyloading
+                ✔ Compile project. @done(19-02-28 17:19)
+                ☐ Configure webpack to produce one file
+                ☐ Try to include <ax-form> web-component in external page.
+                ☐ Create separate bundles - ax-form, ax-grid, admin
+                ☐ ax-form - make separate web-component. 
+                    ☐ Make component
+                    ☐ Vuetify app - is working without admin and with admin
+                    ☐ insert in non-vue page
+                ☐ ax-grid
+                    ☐ Make component
+                    ☐ Add ag-grid
+                    ☐ Show ax-form in modal
+                    ☐ Lazy-load ax-form
+                    ☐ insert in non-vue page
+			☐ SqlAlchemy - Caching
+                ☐ Dogpile Caching + redislite
+            ☐ Очередь для выполнения импорта, действий процесса - redislite
+				☐ https://www.fullstackpython.com/task-queues.html                
+            ☐ Alembic - BD versioning
 				☐ https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script
 				☐ alembic revision --autogenerate -m "description of changes"
 				☐ https://sqlalchemy-migrate.readthedocs.io/en/latest/                
@@ -119,20 +131,8 @@ REFACTORING ROUND ONE:
 			☐ Деплой в App Engine через Market
 			☐ Сборка docker image и деплой куда-то
 			☐ Делаем инструкцию по настройке рабочего места
-		Новые технологии:
-			☐ https://swagger.io/
-			☐ Очередь для выполнения импорта, действий процесса
-				☐ https://www.fullstackpython.com/task-queues.html
-				☐ Redis
-			☐ Стухание сессии - блокировка экрана, предложение продолжить
-			☐ Oath - Авторизация
-				☐ https://developer.okta.com/pricing/
-			☐ Active directory - python
-		Открытые вопросы:
-            ☐ Подключение дополнительных полей - как?
-                ☐ Unpackage?
-			☐ Обновлеие версии - как?	Можно ли онлайн?
-			☐ Продумать систему плагинов
+            ☐ Делаем пробное обновлеие версии
+                ☐ pip - upgrade + alembic
 
 ==============================================================================================
 
@@ -144,7 +144,7 @@ REFACTORING ROUND ONE:
     ✘ Должна быть сгенерирована авто-документация по компонентам Vue @cancelled(19-02-26 16:22)
     ☐ Должна собираться и запускаться из pip или apk-get
         ☐ Должна тянуть все зависимости через pip и npm - requirements.txt
-        ☐ Должна разворачиваться SQL Lite
+        ✔ Должна разворачиваться SQL Lite @done(19-02-26 23:39)
     ☐ Должна деплоится и работать на app-engine
     ☐ Должен работать автодеплой внутри app-engine
     ☐ Должны быть сформулированы behave сценарии тестирования
@@ -162,21 +162,52 @@ REFACTORING ROUND ONE:
         ☐ Из гита тянем сорс, запускаем автоконфиг - тянутся все зависимости для рабочего места и все модули javascript
     ✔ WebSockets обновление грида, дека @done(19-02-26 16:23)
     ☐ Check all elements - https://github.com/harshanarayana/cookiecutter-sanic
-☐ `Для каждого веб-елемента`
+
+Для каждого веб-елемента:
     ☐ Документирование 
     ☐ Для каждого ajax - on-error="..."
     ☐ Интернационализация/локализация
     ☐ Все комментарии на английском
     ☐ Покрыть UI авто-тестом
-☐ `Для каждого метода в app.py`
+
+Для каждого метода в app.py:
     ☐ Заполнить самодокументирование
     ☐ Везде где есть входные переменные - проверять их наличие и значение
     ☐ Покрыть код try-catch-finaly
     ☐ Покрыть код with вместо open, close
     ☐ Все SQL запросы беруться из справочника - проверяем на SQLLite и MySQL
-    ☐ Сделать unit-test
-            
-                                
+    ✘ Сделать unit-test @cancelled(19-02-26 23:40)
+
+Every commit checklist:
+    ☐ No errors or warnings in pylint or eslint
+    ☐ Developed feature is covered by cypress test
+    ☐ App engine deployed successfully
+    ☐ Automated test process pass:
+        ☐ All cypress tests passed localy
+        ☐ All cypress tests passed on app engine
+
+Every new version checklist:
+    ☐ Locale is updated. All translations are done
+    ☐ Pypi package is updated
+    ☐ App engine file storage is updated
+    ☐ App engine application is created from market
+    ☐ Docker image is updated
+    ☐ Kubernates image is updated
+    ☐ e2e tests are passed on all platforms
+        ☐ windows - standalone
+        ☐ linux - standalone
+        ☐ linux - wsgi
+        ☐ app engine
+        ☐ docker
+        ☐ kubernate
+    ☐ Version upgrade is tested
+    ☐ Version rollback is tested
+    ☐ New documentation is released
+    ☐ After everything - atomatic version incriment and Github pull request to master
+
+
+
+=========================================================================================================                                
             
 AX 20:
 	☐ ADMIN INDEX
@@ -244,7 +275,11 @@ AX 20:
 		☐ Dump application to yaml
 		☐ Install application from yaml
 
+
+
 =============================================================================================
+
+
 
 BEFORE LAUNCH:
     ☐ Landing page
@@ -256,21 +291,28 @@ BEFORE LAUNCH:
 
 =============================================================================================
 
+
+
 NEW FROG TODOS:
     ✔ Discover why ripple effects are not working in chrome @done(19-02-13 07:24)
     ☐ Disable maximise on double click on split-panes
     ☐ Discover minimum window size for ax admin. Output warning if window is less then minimum
+    ☐ Python unit-test - сделать и прогнать
+    ☐ `[IMPORTANT]` Vuetify - include only components that are used
+    ☐ `[IMPORTANT]` Font-awesome - include only used font. Exclude bold, csv etc
+    ☐ `[IMPORTANT]` Robo - leave only one font
 
 NEW FEATURES:
     ☐ Use simple grid (no need for 700kb ag-grid)
     ☐ Remember the width of constructor drawers in cookies
     ☐ Allow one level of subfolders for AxForm - https://vuetifyjs.com/en/components/lists#expansion-lists
     ☐ AxForm - make dynamic form header. If wide form - it is in drawer. If it is slim - it is in form.
-        
+    ☐ `[IMPORTANT]` Подключение дополнительных полей и плагинов
+        ☐ Подключается поле через lazy-loading - unpkg.com
+    
 MAYBE LATER:
     ☐ python autodoc
     ☐ Автодокументирование vue.js кода
-
 
 
 ============================================================================================

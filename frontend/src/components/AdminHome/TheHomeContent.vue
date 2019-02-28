@@ -3,7 +3,8 @@
     <h1>{{ count }}</h1>
     <v-btn @click='increment'>+</v-btn>
     <v-btn @click='decrement'>-</v-btn>
-
+    <hr>
+    <ax-grid name='Hello web component'></ax-grid>
     <hr>
 
     <ul data-cy='user-list'>

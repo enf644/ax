@@ -1,6 +1,11 @@
 
 THINK ABOUT
     Подумать над шрифтом Segoi UI
+    ☐ https://swagger.io/
+    ☐ Стухание сессии - блокировка экрана, предложение продолжить
+    ☐ Oath - Авторизация
+        ☐ https://developer.okta.com/pricing/
+    ☐ Active directory - python
 
 
 
@@ -33,6 +38,35 @@ NEW DOMAINS
     apps.ax
 
 have an axe to grind
+
+
+
+LAZY LOADING
+    CORE
+        apollo client
+        settings
+
+    AX-FORM
+        ax-fields
+        vuetify
+        grid-lite
+
+        AX-GRID
+            ag-grid
+            ax-field-cells
+            ax-field-inline
+
+            ADMIN
+                store
+                router
+                ax-field-options
+                ax-field-cells-options
+
+
+
+    vue spa loading always
+        everything is lazy-loaded
+
 
 
 Pricing

@@ -1,24 +1,26 @@
 import Vue from 'vue';
+import vueCustomElement from 'vue-custom-element'; // create web component from vue component
+import 'document-register-element'; // polyfill for vue-custom-element
+import '@fortawesome/fontawesome-free/css/all.css'; // font icons
+import 'typeface-roboto'; // font
+import 'animate.css/animate.min.css';
+import VueI18n from 'vue-i18n';
+import { languages, defaultLocale } from './locale/index.js';
+import logger from './logger';
+
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import vueCustomElement from 'vue-custom-element'; // create web component from vue component
-import 'document-register-element'; // polyfill for vue-custom-element
-import Vuetify from 'vuetify'; // material ui components
-import 'vuetify/dist/vuetify.min.css';
-import '@fortawesome/fontawesome-free/css/all.css'; // font icons
 import VueResize from 'vue-resize'; // detect element resize
 import 'vue-resize/dist/vue-resize.css';
-import 'typeface-roboto'; // font
+
+import Vuetify from 'vuetify'; // material ui components
+import 'vuetify/dist/vuetify.min.css';
+
 import VueDummy from 'vue-dummy'; // create lorum ipsum
-import 'animate.css/animate.min.css';
-import VueI18n from 'vue-i18n';
 
 import '../public/static/css/ax-core.css';
 import AxGrid from '@/components/AxGrid.vue';
-import logger from './logger';
-
-import { languages, defaultLocale } from './locale/index.js';
 
 const messages = Object.assign(languages);
 

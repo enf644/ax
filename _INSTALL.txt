@@ -50,6 +50,7 @@ Install:
     npm run serve
 Usefull:
     npm install axios --save
+    npm run test:e2e
     
 === DOCUMENTATION =========================
 https://axy.gitbook.io/project/

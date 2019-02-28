@@ -22,7 +22,10 @@ Split panels
     https://github.com/bajaniyarohit/vue-split-panel
     https://github.com/PanJiaChen/vue-split-pane
     https://split.js.org/
-	
+
+WEBPACK LAZY LOADING
+    https://medium.com/walkme-engineering/how-and-when-not-to-use-webpack-for-lazy-loading-bef9d37c42c1
+
 
 INTERNALIZATION
     Vue components

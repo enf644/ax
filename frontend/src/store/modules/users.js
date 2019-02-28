@@ -1,4 +1,4 @@
-import apolloClient from '../apollo';
+import apolloClient from '../../apollo';
 import gql from 'graphql-tag';
 import logger from '../../logger';
 

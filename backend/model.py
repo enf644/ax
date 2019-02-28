@@ -9,7 +9,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import Column, Text, String    # DateTime, ForeignKey, Integer
 from sqlalchemy_utils import UUIDType
 
-engine = create_engine('sqlite:///axy_sqllite.db', convert_unicode=True)
+engine = create_engine('sqlite:///ax_sqllite.db', convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
