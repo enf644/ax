@@ -14,15 +14,13 @@ import store from './store';
 import VueResize from 'vue-resize'; // detect element resize
 import 'vue-resize/dist/vue-resize.css';
 
-// import Vuetify from 'vuetify'; // material ui components
 import Vuetify from 'vuetify/lib';
 import 'vuetify/src/stylus/app.styl';
-// import 'vuetify/dist/vuetify.min.css';
 
 import VueDummy from 'vue-dummy'; // create lorum ipsum
 
 import './assets/ax-core.css';
-import AxGrid from '@/components/AxGrid.vue';
+import AxGrid from './components/AxGrid.vue';
 
 const messages = Object.assign(languages);
 

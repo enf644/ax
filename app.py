@@ -18,6 +18,7 @@ CORS(app, automatic_options=True)
 
 app.static('/static', './dist/static')
 app.static('/stats', './dist/stats.html')
+app.static('/test_comp', './dist/test.html')
 
 
 @app.listener('before_server_start')
@@ -43,6 +44,7 @@ async def subscriptions(request, web_socket):
 
 @app.route('/<path:path>')
 def index(request, path):
+    """Catch all requests"""
     return response.html(open('./dist/index.html').read())
 
 

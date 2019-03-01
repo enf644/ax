@@ -43,8 +43,7 @@
 
 <script>
 export default {
-  name: 'admin-toolbar',
-  components: {}
+  name: 'admin-toolbar'
 };
 </script>
 

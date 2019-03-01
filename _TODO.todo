@@ -100,8 +100,8 @@ REFACTORING ROUND ONE:
 			✔ UI Автотест - Cypress сделать пробный скрипт @done(19-02-26 18:27)			
             ☐ Webpack - Lazyloading
                 ✔ Compile project. @done(19-02-28 17:19)
-                ☐ Configure webpack to produce one file
-                ☐ Try to include <ax-form> web-component in external page.
+                ✔ Configure webpack to produce one file @done(19-03-01 02:00)
+                ✔ Try to include <ax-form> web-component in external page. @done(19-03-01 11:46)
                 ☐ Create separate bundles - ax-form, ax-grid, admin
                 ☐ ax-form - make separate web-component. 
                     ☐ Make component
@@ -113,6 +113,10 @@ REFACTORING ROUND ONE:
                     ☐ Show ax-form in modal
                     ☐ Lazy-load ax-form
                     ☐ insert in non-vue page
+            ☐ Webpack - additional minification
+                ☐ Roboto - load only one, include in js
+                ☐ Font-awesome - only regular, include in js
+                ☐ Include images in js
 			☐ SqlAlchemy - Caching
                 ☐ Dogpile Caching + redislite
             ☐ Очередь для выполнения импорта, действий процесса - redislite
@@ -298,9 +302,10 @@ NEW FROG TODOS:
     ☐ Disable maximise on double click on split-panes
     ☐ Discover minimum window size for ax admin. Output warning if window is less then minimum
     ☐ Python unit-test - сделать и прогнать
-    ☐ `[IMPORTANT]` Vuetify - include only components that are used
+    ✔ Vuetify - include only components that are used @done(19-03-01 02:00)
     ☐ `[IMPORTANT]` Font-awesome - include only used font. Exclude bold, csv etc
     ☐ `[IMPORTANT]` Robo - leave only one font
+    ☐ `[SUPER]` Minification not working with vue-custom-element. https://github.com/karol-f/vue-custom-element/issues/159
 
 NEW FEATURES:
     ☐ Use simple grid (no need for 700kb ag-grid)
