@@ -34,6 +34,15 @@ def init_graphql(_app, loop):
 subscription_server = WsLibSubscriptionServer(ax_schema)
 
 
+@app.route('/draw_ax')
+async def draw_ax(request):
+    """Outputs bundle.js with right headers"""
+    return await response.file(
+        './dist/static/js/ax-bundle.js',
+        headers={'Content-Type': 'application/javascript; charset=utf-8'}
+    )
+
+
 @app.websocket('/api/subscriptions', subprotocols=['graphql-ws'])
 async def subscriptions(request, web_socket):
     """Web socket route for graphql subscriptions"""

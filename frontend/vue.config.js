@@ -28,7 +28,7 @@ module.exports = {
       },
       optimization: {
         splitChunks: false,
-        minimize: false
+        minimize: true
       },
       module: {
         rules: []
