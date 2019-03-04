@@ -1,33 +1,40 @@
+// Core dependencies
 import Vue from 'vue';
 import vueCustomElement from 'vue-custom-element'; // create web component from vue component
 import 'document-register-element'; // polyfill for vue-custom-element
-import '@fortawesome/fontawesome-free/css/all.css'; // font icons
-import 'typeface-roboto'; // font
+import 'roboto-fontface-woff/css/roboto-condensed/roboto-condensed-fontface.css';
 import 'animate.css/animate.min.css';
 import VueI18n from 'vue-i18n';
 import { languages, defaultLocale } from './locale/index.js';
 import logger from './logger';
+import './assets/ax-core.css';
+import VModal from 'vue-js-modal';
 
+// Admin dependencies
 import App from './App.vue';
 import router from './router';
 import store from './store';
 import VueResize from 'vue-resize'; // detect element resize
 import 'vue-resize/dist/vue-resize.css';
-
 import Vuetify from 'vuetify/lib';
 import 'vuetify/src/stylus/app.styl';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { fas } from '@fortawesome/free-solid-svg-icons';
 
+// Dev dependencies
 import VueDummy from 'vue-dummy'; // create lorum ipsum
-
-import './assets/ax-core.css';
-import AxGrid from './components/AxGrid.vue';
 
 const messages = Object.assign(languages);
 
+Vue.component('font-awesome-icon', FontAwesomeIcon);
+library.add(fas);
+
+Vue.use(VModal, { dynamic: true, injectModalsContainer: true });
 Vue.use(VueI18n);
 Vue.use(Vuetify, {
   components: {},
-  iconfont: 'fa',
+  iconfont: 'faSvg',
   theme: {
     primary: '#3f51b5',
     secondary: '#b0bec5',
@@ -39,8 +46,12 @@ Vue.use(vueCustomElement);
 Vue.use(VueResize);
 Vue.use(VueDummy);
 Vue.config.productionTip = false;
-Vue.customElement('ax-grid', AxGrid);
 
+const gridPromise = () => import(/* webpackChunkName: "ax-grid" */ './components/AxGrid.vue').then(m => m.default);
+Vue.customElement('ax-grid', gridPromise, { props: ['name'] });
+
+const formPromise = () => import(/* webpackChunkName: "ax-form" */ './components/AxForm.vue').then(m => m.default);
+Vue.customElement('ax-form', formPromise, {});
 
 const i18n = new VueI18n({
   locale: defaultLocale,

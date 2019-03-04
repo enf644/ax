@@ -1,23 +1,14 @@
 <template>
   <div>
-    <v-sheet class='form-container' elevation='5' light>
-      <AxForm></AxForm>
-    </v-sheet>
+    <ax-form></ax-form>
   </div>
 </template>
 
 <script>
-import AxForm from '@/components/AxForm.vue';
-
 export default {
-  components: {
-    AxForm
-  }
+  components: {}
 };
 </script>
 
 <style scoped>
-.form-container {
-  margin: 20px;
-}
 </style>

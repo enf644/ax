@@ -17,6 +17,7 @@ module.exports = {
       }
     }
   },
+  runtimeCompiler: false,
   chainWebpack: () => {
     // config
   },

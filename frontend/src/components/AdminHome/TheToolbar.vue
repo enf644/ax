@@ -1,29 +1,29 @@
 <template>
-  <v-toolbar app clipped-left fixed height='40'>
+  <v-toolbar app class='top-toolbar' clipped-left fixed height='40'>
     <v-toolbar-title align-center>
       <router-link to='/admin/home'>
-        <i class='fab fa-fantasy-flight-games logo'></i>
+        <!-- <i class='fab fa-fantasy-flight-games logo'></i> -->
+        <font-awesome-icon class='logo' icon='hammer'/>
       </router-link>
     </v-toolbar-title>
 
     <v-layout align-center class='breadcrumbs' fill-height justify-start>
       <div>Ax</div>
 
-      <span class='fas fa-angle-right breadcrumb-devider'></span>
+      <font-awesome-icon class='breadcrumb-devider' icon='angle-right'/>
       <span href='#'>
-        <i class='fas fa-brain breadcrumbs-ico'></i>
-        Bank RFC
-        <i class='fas fa-cog breadcrumbs-action'></i>
+        <font-awesome-icon class='breadcrumbs-ico' icon='brain'/>Bank RFC
+        <font-awesome-icon class='breadcrumbs-action' icon='cog'/>
       </span>
-      <i class='fas fa-angle-right breadcrumb-devider'></i>
+      <font-awesome-icon class='breadcrumb-devider' icon='angle-right'/>
       <a>Grid constructor</a>
-      <span class='fas fa-angle-right breadcrumb-devider'></span>
+      <font-awesome-icon class='breadcrumb-devider' icon='angle-right'/>
       <div class='grid-select'>
         Default grid
         <span class='very-small'>total: 4</span>
         <i class='fas fa-caret-down'></i>
       </div>
-      <i class='fas fa-cog breadcrumbs-action'></i>
+      <font-awesome-icon class='breadcrumbs-action' icon='cog'/>
     </v-layout>
     <v-spacer></v-spacer>
     <transition enter-active-class='animated fadeIn faster' name='fade'>
@@ -49,7 +49,7 @@ export default {
 
 <style scoped>
 .logo {
-  font-size: 1.3em;
+  height: 20px;
 }
 .breadcrumbs {
   margin-left: 20px;
@@ -96,5 +96,8 @@ export default {
 .very-small {
   font-size: 0.7em;
   margin-left: 5px;
+}
+.top-toolbar {
+  z-index: 100;
 }
 </style>

@@ -98,25 +98,22 @@ REFACTORING ROUND ONE:
                 ✔ Delete everything gettext-vue @done(19-02-26 15:04)
                 ✔ Install i18n-vue @done(19-02-26 16:17)
 			✔ UI Автотест - Cypress сделать пробный скрипт @done(19-02-26 18:27)			
-            ☐ Webpack - Lazyloading
+            ✔ Webpack - Lazyloading @done(19-03-04 17:51)
                 ✔ Compile project. @done(19-02-28 17:19)
                 ✔ Configure webpack to produce one file @done(19-03-01 02:00)
                 ✔ Try to include <ax-form> web-component in external page. @done(19-03-01 11:46)
-                ☐ Create separate bundles - ax-form, ax-grid, admin
-                ☐ ax-form - make separate web-component. 
-                    ☐ Make component
-                    ☐ Vuetify app - is working without admin and with admin
-                    ☐ insert in non-vue page
-                ☐ ax-grid
-                    ☐ Make component
-                    ☐ Add ag-grid
-                    ☐ Show ax-form in modal
-                    ☐ Lazy-load ax-form
-                    ☐ insert in non-vue page
-            ☐ Webpack - additional minification
-                ☐ Roboto - load only one, include in js
-                ☐ Font-awesome - only regular, include in js
-                ☐ Include images in js
+                ✔ Create separate bundles - ax-form, ax-grid @done(19-03-02 16:20)
+                ✔ ax-form - make separate web-component. @done(19-03-04 08:27)
+                    ✔ Make component @done(19-03-02 16:20)
+                    ✔ Vuetify `app` - is working without admin @done(19-03-04 08:27)
+                    ✔ insert in non-vue page @done(19-03-04 08:27)
+                ✔ ax-grid @done(19-03-04 10:02)
+                    ✔ Make component @done(19-03-04 08:28)
+                    ✔ Add ag-grid @done(19-03-04 09:23)
+                    ✔ Show ax-form in modal @done(19-03-04 09:46)
+                    ✔ insert in non-vue page @done(19-03-04 10:02)
+                ✔ modal in modal in modal @done(19-03-04 14:20)
+                ✔ Change modal component - make like in bootstrap @done(19-03-04 17:51)
 			☐ SqlAlchemy - Caching
                 ☐ Dogpile Caching + redislite
             ☐ Очередь для выполнения импорта, действий процесса - redislite
@@ -299,13 +296,18 @@ BEFORE LAUNCH:
 
 NEW FROG TODOS:
     ✔ Discover why ripple effects are not working in chrome @done(19-02-13 07:24)
+    ✔ Minification not working with vue-custom-element. https://github.com/karol-f/vue-custom-element/issues/159 @done(19-03-01 19:34)
+    ✔ Vuetify - include only components that are used @done(19-03-01 02:00)
     ☐ Disable maximise on double click on split-panes
     ☐ Discover minimum window size for ax admin. Output warning if window is less then minimum
     ☐ Python unit-test - сделать и прогнать
-    ✔ Vuetify - include only components that are used @done(19-03-01 02:00)
-    ☐ `[IMPORTANT]` Font-awesome - include only used font. Exclude bold, csv etc
-    ☐ `[IMPORTANT]` Robo - leave only one font
-    ☐ `[SUPER]` Minification not working with vue-custom-element. https://github.com/karol-f/vue-custom-element/issues/159
+    ☐ `[IMPORTANT]` Webpack - additional minification
+        ☐ Roboto - load only one, include in js
+        ☐ Font-awesome - only regular, include in js
+            ☐ https://github.com/FortAwesome/vue-fontawesome
+            ☐ https://codepen.io/Goji/pen/mLKMVR
+        ☐ Include images in js
+    ☐ Margins in ax-form and ax-grid must be responsive. 0% on mobile
 
 NEW FEATURES:
     ☐ Use simple grid (no need for 700kb ag-grid)

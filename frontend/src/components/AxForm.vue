@@ -1,81 +1,118 @@
 <template>
-  <div>
-    <v-layout align-space-between class='form-container' justify-start row>
-      <div
-        :class='{
+  <v-app class='ax-form-app' id='ax-form'>
+    <v-sheet
+      :class='no_margin ? "form-container-no-margin" : "form-container"'
+      elevation='5'
+      light
+      ref='sheet'
+    >
+      <v-layout align-space-between class='form-layout' justify-start row>
+        <div
+          :class='{
             "drawer-floating": drawerIsFloating,
             "drawer-hidden": drawerIsHidden
           }'
-        class='drawer'
-      >
-        <v-list class='drawer-folder-list'>
-          <v-list-tile
-            :key='folder.title'
-            @click='openFolder(folder.title)'
-            class='drawer-folder-list-tile'
-            ripple
-            v-bind:class='{ "drawer-folder-active": folder.isActive }'
-            v-for='folder in folders'
-          >
-            <v-list-tile-content class='drawer-folder-item'>
-              <v-list-tile-title>{{ folder.title }}</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list>
-      </div>
-      <div class='form'>
-        <div @click='hideDrawer' class='overlay' v-bind:class='{ "hidden": overlayIsHidden }'></div>
-        <div class='header'>
-          <v-btn
-            @click='toggleDrawer'
-            class='drawer-toggle'
-            fab
-            small
-            v-bind:class='{ "hidden": !drawerIsFloating }'
-          >
-            <i class='fas fa-bars'></i>
-          </v-btn>
-          <i class='fas fa-brain'></i> &nbsp; Bank RFC
-          <resize-observer @notify='handleResize'/>
+          class='drawer'
+        >
+          <v-list class='drawer-folder-list'>
+            <v-list-tile
+              :key='folder.title'
+              @click='openFolder(folder.title)'
+              class='drawer-folder-list-tile'
+              ripple
+              v-bind:class='{ "drawer-folder-active": folder.isActive }'
+              v-for='folder in folders'
+            >
+              <v-list-tile-content class='drawer-folder-item'>
+                <v-list-tile-title>{{ folder.title }}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
         </div>
-        <div class='content'>
-          <v-container fluid grid-list-xl>
-            <v-layout align-center fill-height justify-center row wrap>
-              <v-flex>
-                <div class='ax-field'>
-                  <v-text-field label='First Name'></v-text-field>
-                </div>
-              </v-flex>
-              <v-flex>
-                <div class='ax-field'>
-                  <v-text-field label='Last Name'></v-text-field>
-                </div>
-              </v-flex>
-              <v-flex>
-                <div class='ax-field'>
-                  <v-text-field label='E-mail'></v-text-field>
-                </div>
-              </v-flex>
-              <v-flex>
-                <div class='ax-field'>
-                  <v-text-field label='Address'></v-text-field>
-                </div>
-              </v-flex>
-            </v-layout>
-          </v-container>
+        <div class='form'>
+          <div
+            @click='hideDrawer'
+            class='overlay'
+            id='overlay'
+            v-bind:class='{ "hidden": overlayIsHidden }'
+          ></div>
+          <div class='header'>
+            <v-btn
+              @click='toggleDrawer'
+              class='drawer-toggle'
+              fab
+              small
+              v-bind:class='{ "hidden": !drawerIsFloating }'
+            >
+              <font-awesome-icon icon='bars'/>
+            </v-btn>
+            <i class='fas fa-brain'></i> &nbsp; Bank RFC
+            <resize-observer @notify='handleResize'/>
+          </div>
+          <div class='content'>
+            <v-container fluid grid-list-xl>
+              <v-layout align-center justify-center row wrap>
+                <v-flex>
+                  <div class='ax-field'>
+                    <v-text-field label='First Name'></v-text-field>
+                  </div>
+                </v-flex>
+                <v-flex>
+                  <div class='ax-field'>
+                    <v-text-field label='Last Name'></v-text-field>
+                  </div>
+                </v-flex>
+                <v-flex>
+                  <div class='ax-field'>
+                    <v-text-field label='E-mail'></v-text-field>
+                  </div>
+                </v-flex>
+                <v-flex>
+                  <div class='ax-field'>
+                    <v-text-field label='Address'></v-text-field>
+                  </div>
+                </v-flex>
+                <v-btn @click='openForm()' color='primary' outline>text</v-btn>
+              </v-layout>
+            </v-container>
+
+            <p v-dummy='1500'></p>
+          </div>
         </div>
-      </div>
-    </v-layout>
-  </div>
+      </v-layout>
+    </v-sheet>
+
+    <!-- <v-dialog class='dialog' lazy max-width='70%' scrollable v-model='dialogIsOpen'>
+      <v-card>
+        <AxForm no_margin></AxForm>
+      </v-card>
+    </v-dialog>-->
+    <modal :pivotX='0.52' adaptive height='auto' name='sub-form' scrollable width='70%'>
+      <v-card>
+        <AxForm no_margin></AxForm>
+      </v-card>
+    </modal>
+  </v-app>
 </template>
 
 <script>
+// import AxGrid from './AxGrid.vue';
+
 export default {
+  name: 'AxForm',
+  components: {},
+  props: {
+    no_margin: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       drawerIsFloating: false,
       drawerIsHidden: false,
       overlayIsHidden: true,
+      dialogIsOpen: false,
       folders: [
         { title: 'Home1', isActive: true },
         { title: 'About' },
@@ -87,7 +124,7 @@ export default {
     };
   },
   created() {
-    this.$log.info('Lorem *ipsum* dolor sit _amet_ foo bar');
+    this.$log.info(this.no_margin);
   },
   mounted() {
     this.$nextTick(() => {
@@ -95,6 +132,16 @@ export default {
     });
   },
   methods: {
+    openForm() {
+      this.$log.info(' OPEN FORM');
+      this.$modal.show('sub-form');
+
+      // this.dialogIsOpen = true;
+      // this.$modal.show(AxForm);
+      // this.$modal.show({
+      //   template: '<AxForm no_margin />'
+      // });
+    },
     openFolder(_id) {
       this.$log.info(`Open folder - ${_id}`);
     },
@@ -196,7 +243,7 @@ export default {
 .hidden {
   display: none;
 }
-.form-container {
+.form-layout {
   min-height: 300px;
 }
 .header {
@@ -211,6 +258,12 @@ export default {
   padding: 10px 25px 25px 25px;
 }
 .ax-field {
-  min-width: 200px;
+  min-width: 240px;
+}
+.form-container {
+  margin: 20px;
+}
+.form-container-no-margin {
+  margin: 0px;
 }
 </style>

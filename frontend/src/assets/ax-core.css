@@ -116,3 +116,16 @@ a {
 }
 
 /************ Splits styles } ***************/
+
+.ax-form-app .application--wrap {
+    min-height: 300px;
+}
+
+.ax-grid-app .application--wrap {
+    min-height: 300px;
+}
+
+.v--modal-overlay.scrollable .v--modal-box {
+    margin-top: 15px;
+    margin-bottom: 15px !important;
+}

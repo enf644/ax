@@ -28,6 +28,17 @@ WEBPACK LAZY LOADING
     https://cli.vuejs.org/guide/build-targets.html#async-web-component
 
 
+DIALOGS
+    https://wovue.github.io/dialog/#!/examples/real-world
+    https://github.com/JounQin/vue-async-modal
+    https://github.com/leodd/vue-modal-wizard - bad
+    https://github.com/vuNemesis/vue-universal-modal
+    https://github.com/javisperez/vuedals
+    https://github.com/Egorvah/vudal
+
+
+NOTIFICATIONS
+    https://github.com/yariksav/vuetify-dialog
     
 
 INTERNALIZATION
