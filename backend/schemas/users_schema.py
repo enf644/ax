@@ -8,14 +8,14 @@ from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from sqlalchemy_utils import UUIDType
 from backend.misc import convert_column_to_string
 from backend.model import db_session, AxUser
-# from rx import Observable
-
+from backend.cache import cache
 
 convert_sqlalchemy_type.register(UUIDType)(convert_column_to_string)
 
 
 class AsyncioPubsub:
     """Test pubsub implimentation"""
+    # TODO replace with enother proved implementation
 
     def __init__(self):
         self.subscriptions = {}
@@ -124,10 +124,12 @@ class UsersQuery(graphene.ObjectType):
     find_user = graphene.Field(lambda: User, username=graphene.String())
     all_users = graphene.List(User)
 
-    def resolve_all_users(self, info):
+    async def resolve_all_users(self, info):
         """Get all users"""
         query = User.get_query(info)  # SQLAlchemy query
-        return query.all()
+        user_list = query.all()
+        await cache.set('user_list', user_list)
+        return user_list
 
     def resolve_find_user(self, args, context, info):
         """default find method"""

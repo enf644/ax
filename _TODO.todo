@@ -114,10 +114,16 @@ REFACTORING ROUND ONE:
                     ✔ insert in non-vue page @done(19-03-04 10:02)
                 ✔ modal in modal in modal @done(19-03-04 14:20)
                 ✔ Change modal component - make like in bootstrap @done(19-03-04 17:51)
-			☐ SqlAlchemy - Caching
-                ☐ Dogpile Caching + redislite
-            ☐ Очередь для выполнения импорта, действий процесса - redislite
-				☐ https://www.fullstackpython.com/task-queues.html                
+            ☐ SqlAlchemy - Caching
+                ✔ Install aiocache @done(19-03-06 15:22)
+                ✔ Store users list in aiocache @done(19-03-06 15:22)
+                ✔ Move aiocache to separate module @done(19-03-06 17:16)
+                ☐ Get aiocache setting from app.yaml
+            ☐ Implement pubsub
+                ☐ Move schema to schemas
+                ☐ Create pubsub module
+                ☐ Test pubsub with user gql subscribe
+            ☐ Очередь для выполнения импорта, действий процесса
             ☐ Alembic - BD versioning
 				☐ https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script
 				☐ alembic revision --autogenerate -m "description of changes"
@@ -308,6 +314,9 @@ NEW FROG TODOS:
             ☐ https://codepen.io/Goji/pen/mLKMVR
         ☐ Include images in js
     ☐ Margins in ax-form and ax-grid must be responsive. 0% on mobile
+    ☐ Do Lazy loading with webpack - load grid first, then form.
+    ☐ `[IMPORTANT]` Change AsyncioPubsub to production pubsub implementation
+
 
 NEW FEATURES:
     ☐ Use simple grid (no need for 700kb ag-grid)
@@ -316,6 +325,7 @@ NEW FEATURES:
     ☐ AxForm - make dynamic form header. If wide form - it is in drawer. If it is slim - it is in form.
     ☐ `[IMPORTANT]` Подключение дополнительных полей и плагинов
         ☐ Подключается поле через lazy-loading - unpkg.com
+    ☐ `[IMPORTANT]` Billing for Sass services that run ontop of AX
     
 MAYBE LATER:
     ☐ python autodoc

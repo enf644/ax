@@ -22,7 +22,6 @@ How to use Ax:
     Docker container
 
 
-
 LIMITS
     SQLite and Postgress
     Only X fields
@@ -37,51 +36,6 @@ NEW DOMAINS
     put.ax
     apps.ax
 
-have an axe to grind
-
-
-
-LAZY LOADING
-    CORE
-        apollo client
-        settings
-
-    AX-FORM
-        ax-fields
-        vuetify
-        grid-lite
-
-        AX-GRID
-            ag-grid
-            ax-field-cells
-            ax-field-inline
-
-            ADMIN
-                store
-                router
-                ax-field-options
-                ax-field-cells-options
-
-
-
-    vue spa loading always
-        everything is lazy-loaded
-
-
-
-Pricing
-    Free
-        Up to 4 users
-    Standard - 1$ per user
-    Enterprise - 5$ per user
-        Ag-grid enterprice
-        Redis queing
-        Active directory / Google groups
-
-Enviroments
-    Free or Enterprise
-        On local computer or VPN - runs on single sanic instance
-
 
 ======================================================================================================================================
 
@@ -93,7 +47,6 @@ Enviroments
 		Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные
 
 
-
 Инсталятор - спрашивает БД, схему для данных, схему для хранения пользователей
 	Должно быть задисейблено - Auth0, Cognito, Active Directory и т.д.
 
@@ -102,27 +55,72 @@ Enviroments
 	Единая БД пользователей
 	Каждый клуб в отдельной таблице БД, чтобы можно было их разносить по серверам
 
-===================================================================================================
+========= Lead sources  ==========================================================================================
+
+Lead sources
+    INTEGRATIONS
+        Jira
+        Slack
+        Zappier
+        Gmail
+        Stripe
+        GraphQL
+        Docker marketplace
+        App engine marketplace
+        Windows store??
+    DIRECT MARKETING (until 2000 users)
+        Offer consulting services to one client each week. 
+            Each hacker-news article is followed by invite to participate in free consulting session.
+            Week auction? Clients compete with each other. (How to filter expensive apps?)
+    MEDIA ARTICLES
+        List of media:
+            Hacker news
+            Reddit
+            Medium
+            Facebook
+            Vk.com
+            Twitter
+            Google+
+        Media maybe
+            https://dzone.com/
+            https://blog.feedspot.com/software_development_blogs/ -> LIST
+            YC news            
+            Yandex Zen
+        Marketing news themes 
+            Introducing Ax. Installing Ax and Creating workflow application in 5 minutes.
+            Unique features
+                GraphQL
+                Scheduler feature
+                Creating Ax-Fields
+                Python tasks
+                Wokflow based on d3.js
+            Deck as standalone tool
+            Building Sass business ontop of Ax
+                Billing users inside Ax!!!
+            Overview of ax-fields
+            Ax technology stack
+            Ax benchmark - speed, size            
+            1$ implementation - CRM, HelpDesk, Invoices ect
+            New integration
+            New Ax-Field
+            Usage story - robot automation, interesting use-cases
+            Year post calendar with recuranting types -
+                once per year - statistics
+                once per month - top 5 iteresting use-cases
+                once per month - 
+    ADS
+        Popular service copy. 
+            Creating good Ax-marketplace applicaiton. 
+            Creating beutiful landing page.
+            Create and publish Article to all media
+            Ads for "<service-name> aliternative", "<service-name> free"
+        1$ Sass service - Like 1$ CRM, 1$ bugtracker, 1$ survey
+            Creating good Ax-marketplace applicaiton. 
+            Creating beutiful landing page.
+            Create and publish Article to all media
+            Start Ad compaing with relative queries "crm, helpdesk" ect
 
 
-Marketing - 1$
-	Make several copies of popular Apps
-	Make a separete webpage for big field of applications, like CRM or Invoice or Helpdesk
-	Make article like 1$ CRM, 1$ HelpDesk
-	
-
-Lead source -
-	Integrations:
-		Jira
-		Slack
-		Zappier
-
-
-Marketing news themes 
-	1$ implementation - CRM, HelpDesk, Invoices ect
-	New integration - new Ax-Field
-	Usage story - robot automation, interesting use-cases
-	
 
 Global Plan
 	Release Open Source
@@ -135,14 +133,41 @@ Global Plan
 			once per month - top 5 use-cases
 			
 
-Money -
-	4 users - FREE
-	5+ users- 1$ per user
-	100+ users: 1$ per user + ag-grid, active directory, google auth
+Pricing
+    Free
+        Up to 4 users
+    Standard - 1$ per user
+    Enterprise - 5$ per user
+        Ag-grid enterprice
+        Redis queing
+        Active directory / Google groups
 
 
-https://github.com/gollum/gollum#markups
+Growing points
+    Scale 
+        Scale with integrations - insert Ax into something
+        Scale with 1$ apps - create apps, run ads
+        Scale with Sass services build ontop of Ax
+    Marketing team    
+        Offer to hosting providers
+    Support team
+        Team is the same that develops apps.
+        Team members talks with clients over phone.
+    Developer team
+        Python guru
+        Vue guru
+        Designer (outsource)
 
+
+
+Every year devepment is becoming easier and easier.
+Today one man can make application that 5 years ago took a 10 people team.
+Ax is next step in this process. 
+Your grand mother can create sass application with Ax.
+Ax have multiple use-cases
+    bussiness
+    entrepreneurs
+    developers
 
 
 ==============================================================================================================================

@@ -5,7 +5,31 @@ CODE STYLE
 	https://vuejs.org/v2/style-guide/#Order-of-words-in-component-names-strongly-recommended
     https://github.com/airbnb/javascript#types
     https://rscss.io/
+    https://github.com/google/styleguide/blob/gh-pages/pyguide.md
 	
+
+REDIS
+    Dogpile Caching + redislite
+    https://pypi.org/project/redislite/
+    https://github.com/yahoo/redislite <-- GOOD but windows problems
+    https://github.com/argaen/aiocache  <-- CHOISE
+    https://github.com/cr0hn/aiohttp-cache
+
+TASK QUEUE
+    https://www.fullstackpython.com/task-queues.html         
+    Celery (redis)
+    https://worq.readthedocs.io/en/latest/
+    https://apscheduler.readthedocs.io/en/latest/   <------ CHOISE
+        https://github.com/huge-success/sanic/issues/445#issuecomment-319886173
+
+
+PUB SUB
+    https://github.com/qntln/aiopubsub <--------- CHOISE
+
+
+MONITORING
+    https://github.com/dkruchinin/sanic-prometheus
+
 
 AUTH
 	https://auth0.com/pricing
@@ -29,6 +53,7 @@ WEBPACK LAZY LOADING
 
 
 DIALOGS
+    https://www.npmjs.com/package/vue-js-modal  --> CHOISE
     https://wovue.github.io/dialog/#!/examples/real-world
     https://github.com/JounQin/vue-async-modal
     https://github.com/leodd/vue-modal-wizard - bad
@@ -85,6 +110,10 @@ JS LOGGER
     https://github.com/Schoolmouv-team/vue-log-worker
 
 
+PYTHON LOGGER
+    https://github.com/qntln/logwood
+
+
 SANIC
     https://www.youtube.com/watch?v=S8pgBCoEgX0
     https://github.com/davidyapdy/sanic-graphql-example
@@ -103,6 +132,11 @@ PUBLISHING TO PYPI
 
 ERROR HANDLING
     https://blog.apollographql.com/full-stack-error-handling-with-graphql-apollo-5c12da407210
+
+
+
+DECK INSPIRATIONS
+    https://github.com/gollum/gollum#markups
 
 
 

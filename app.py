@@ -1,4 +1,5 @@
 """Runneble script"""
+import os
 
 from sanic_graphql import GraphQLView
 from sanic import Sanic, response
@@ -8,9 +9,22 @@ from sanic_cors import CORS
 from graphql_ws.websockets_lib import WsLibSubscriptionServer
 from graphql.execution.executors.asyncio import AsyncioExecutor
 
+# from aiocache import caches, SimpleMemoryCache, RedisCache
+# from aiocache.serializers import JsonSerializer
+
 import backend.misc as ax_misc
+ax_misc.load_configuration()  # Load config from app.yaml
+
+
+from backend.cache import cache, init_cache
+# init_cache()
+
 from backend.schema import ax_schema
 import backend.model as ax_model
+
+
+# init_schema()
+
 
 app = Sanic()
 # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -18,7 +32,7 @@ CORS(app, automatic_options=True)
 
 app.static('/static', './dist/static')
 app.static('/stats', './dist/stats.html')
-app.static('/test_comp', './dist/test.html')
+app.static('/test_webpack', './dist/test.html')
 
 
 @app.listener('before_server_start')
@@ -73,6 +87,23 @@ async def hello(request):
     return response.text(ret_str)
 
 
+@app.route('/api/set')
+async def cache_set(request):
+    """Test function"""
+    obj = ['one', 'two', 'three']
+    await cache.set('user_list', obj)
+    return response.text('Cache SET' + str(obj))
+
+
+@app.route('/api/get')
+async def cache_get(request):
+    """Test function"""
+    del request
+    obj = await cache.get('user_list')
+    ret_str = 'READ cache == ' + \
+        str(obj[0].username + ' - ' + os.environ['AX_VERSION'])
+    return response.text(ret_str)
+
+
 if __name__ == "__main__":
-    ax_misc.load_configuration()  # Load config from app.yaml
     app.run(host="127.0.0.1", port=8080, debug=True)
