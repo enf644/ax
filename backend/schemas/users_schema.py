@@ -8,7 +8,7 @@ from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from sqlalchemy_utils import UUIDType
 from backend.misc import convert_column_to_string
 from backend.model import db_session, AxUser
-from backend.cache import cache
+import backend.cache as ax_cache
 
 convert_sqlalchemy_type.register(UUIDType)(convert_column_to_string)
 
@@ -128,7 +128,7 @@ class UsersQuery(graphene.ObjectType):
         """Get all users"""
         query = User.get_query(info)  # SQLAlchemy query
         user_list = query.all()
-        await cache.set('user_list', user_list)
+        await ax_cache.cache.set('user_list', user_list)
         return user_list
 
     def resolve_find_user(self, args, context, info):

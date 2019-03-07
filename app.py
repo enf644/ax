@@ -9,26 +9,23 @@ from sanic_cors import CORS
 from graphql_ws.websockets_lib import WsLibSubscriptionServer
 from graphql.execution.executors.asyncio import AsyncioExecutor
 
-# from aiocache import caches, SimpleMemoryCache, RedisCache
-# from aiocache.serializers import JsonSerializer
-
 import backend.misc as ax_misc
-ax_misc.load_configuration()  # Load config from app.yaml
-
-
-from backend.cache import cache, init_cache
-# init_cache()
-
-from backend.schema import ax_schema
+import backend.cache as ax_cache
+import backend.schema as ax_schema
 import backend.model as ax_model
 
-
-# init_schema()
-
+ax_misc.load_configuration()  # Load settings from app.yaml to os.environ
+ax_cache.init_cache(
+    mode=os.environ.get('CACHE_MODE') or 'default',
+    redis_endpoint=os.environ.get('REDIS_ENDPOINT') or None,
+    redis_port=os.environ.get('REDIS_ENDPOINT') or None,
+    redis_timeout=os.environ.get('REDIS_ENDPOINT') or None,
+)  # Initiate aiocache
+ax_schema.init_schema()  # Initiate gql schema
 
 app = Sanic()
 # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
-CORS(app, automatic_options=True)
+CORS(app, automatic_options=True)  # TODO limit CORS to api folder
 
 app.static('/static', './dist/static')
 app.static('/stats', './dist/stats.html')
@@ -39,18 +36,19 @@ app.static('/test_webpack', './dist/test.html')
 def init_graphql(_app, loop):
     """Initiate graphql"""
 
-    graphql_view = GraphQLView.as_view(schema=ax_schema,
+    graphql_view = GraphQLView.as_view(schema=ax_schema.schema,
                                        graphiql=False,
                                        executor=AsyncioExecutor(loop=loop))
     _app.add_route(graphql_view, '/api/graphql')
 
 
-subscription_server = WsLibSubscriptionServer(ax_schema)
+subscription_server = WsLibSubscriptionServer(ax_schema.schema)
 
 
 @app.route('/draw_ax')
 async def draw_ax(request):
     """Outputs bundle.js with right headers"""
+    del request
     return await response.file(
         './dist/static/js/ax-bundle.js',
         headers={'Content-Type': 'application/javascript; charset=utf-8'}
@@ -68,6 +66,7 @@ async def subscriptions(request, web_socket):
 @app.route('/<path:path>')
 def index(request, path):
     """Catch all requests"""
+    del request, path
     return response.html(open('./dist/index.html').read())
 
 
@@ -90,8 +89,9 @@ async def hello(request):
 @app.route('/api/set')
 async def cache_set(request):
     """Test function"""
+    del request
     obj = ['one', 'two', 'three']
-    await cache.set('user_list', obj)
+    await ax_cache.cache.set('user_list', obj)
     return response.text('Cache SET' + str(obj))
 
 
@@ -99,7 +99,7 @@ async def cache_set(request):
 async def cache_get(request):
     """Test function"""
     del request
-    obj = await cache.get('user_list')
+    obj = await ax_cache.cache.get('user_list')
     ret_str = 'READ cache == ' + \
         str(obj[0].username + ' - ' + os.environ['AX_VERSION'])
     return response.text(ret_str)

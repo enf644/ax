@@ -114,13 +114,12 @@ REFACTORING ROUND ONE:
                     ✔ insert in non-vue page @done(19-03-04 10:02)
                 ✔ modal in modal in modal @done(19-03-04 14:20)
                 ✔ Change modal component - make like in bootstrap @done(19-03-04 17:51)
-            ☐ SqlAlchemy - Caching
+            ✔ SqlAlchemy - Caching @done(19-03-07 21:43)
                 ✔ Install aiocache @done(19-03-06 15:22)
                 ✔ Store users list in aiocache @done(19-03-06 15:22)
                 ✔ Move aiocache to separate module @done(19-03-06 17:16)
-                ☐ Get aiocache setting from app.yaml
+                ✔ Get aiocache setting from app.yaml @done(19-03-07 21:43)
             ☐ Implement pubsub
-                ☐ Move schema to schemas
                 ☐ Create pubsub module
                 ☐ Test pubsub with user gql subscribe
             ☐ Очередь для выполнения импорта, действий процесса
@@ -146,7 +145,7 @@ REFACTORING ROUND ONE:
 
 Критерии работы экосистемы:
     ✔ Файловая структура - Модель, Контроллер @done(19-02-26 16:22)
-    ☐ Система билда - минификация, условная загрузка
+    ✔ Система билда - минификация, условная загрузка @done(19-03-07 21:44)
     ✘ Должна быть сгенерирована авто-документация по методам python @cancelled(19-02-26 16:22)
     ✘ Должна быть сгенерирована авто-документация по компонентам Vue @cancelled(19-02-26 16:22)
     ☐ Должна собираться и запускаться из pip или apk-get

@@ -1,10 +1,11 @@
-import os
+"""Module with aiocache instance. Works inMemory or with redis
+"""
+
 import sys
-from aiocache import caches, SimpleMemoryCache, RedisCache
-from aiocache.serializers import JsonSerializer
+from aiocache import caches
 
 this = sys.modules[__name__]
-this.cache = None
+cache = None
 
 
 def init_cache(
@@ -12,6 +13,18 @@ def init_cache(
         redis_endpoint: str = '127.0.0.1',
         redis_port: int = 6379,
         redis_timeout: int = 1) -> bool:
+    """Initiate aiocache cache.
+
+    Args:
+        mode (str, optional): Defaults to 'default'. Set 'redis' for Redis.
+        redis_endpoint (str, optional): Defaults to '127.0.0.1'. IP of Redis.
+        redis_port (int, optional): Defaults to 6379. Port of Redies server.
+        redis_timeout (int, optional): Defaults to 1. Redis timeout.
+
+    Returns:
+        bool: True if succesuful
+    """
+
     if mode.lower == 'redis':
         redis_config = {
             'redis': {
@@ -28,9 +41,13 @@ def init_cache(
                 ]
             }
         }
+        # TODO check if Redis is up and running with given settings
 
-        caches.set_config(redis_config)
-        this.cache = caches.get('redis')
+        try:
+            caches.set_config(redis_config)
+            this.cache = caches.get('redis')
+        except Exception as exc:
+            raise Exception('Error initiating aiocache with Redis. ' + exc)
     else:
         ram_config = {
             'default': {
@@ -41,7 +58,11 @@ def init_cache(
             }
         }
 
-        caches.set_config(ram_config)
-        this.cache = caches.get('default')
+        try:
+            caches.set_config(ram_config)
+            this.cache = caches.get('default')
+        except Exception as exc:
+            raise Exception(
+                'Error initiating aiocache with SimpleMemoryCache. ' + exc)
 
     return True
