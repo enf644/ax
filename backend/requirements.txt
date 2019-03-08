@@ -11,6 +11,7 @@ graphql_ws==0.3.0
 SQLAlchemy==1.2.12
 sqlalchemy-utils==0.33.9
 aiocache[redis]==0.10.1
+aiopubsub==2.1.5
 
 pyyaml==3.13
 typing==3.6.6

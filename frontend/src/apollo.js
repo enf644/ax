@@ -7,6 +7,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 
 const httpLink = new HttpLink({
   uri: 'http://127.0.0.1:8080/api/graphql'
+  // TODO get IP from settings
 });
 const wsLink = new WebSocketLink({
   uri: 'ws://127.0.0.1:8080/api/subscriptions',

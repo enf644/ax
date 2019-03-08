@@ -119,9 +119,9 @@ REFACTORING ROUND ONE:
                 ✔ Store users list in aiocache @done(19-03-06 15:22)
                 ✔ Move aiocache to separate module @done(19-03-06 17:16)
                 ✔ Get aiocache setting from app.yaml @done(19-03-07 21:43)
-            ☐ Implement pubsub
-                ☐ Create pubsub module
-                ☐ Test pubsub with user gql subscribe
+            ✔ Implement pubsub @done(19-03-08 14:49)
+                ✔ Create pubsub module @done(19-03-08 14:49)
+                ✔ Test pubsub with user gql subscribe @done(19-03-08 14:49)
             ☐ Очередь для выполнения импорта, действий процесса
             ☐ Alembic - BD versioning
 				☐ https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script

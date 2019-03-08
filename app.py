@@ -13,6 +13,7 @@ import backend.misc as ax_misc
 import backend.cache as ax_cache
 import backend.schema as ax_schema
 import backend.model as ax_model
+import backend.pubsub as ax_pubsub
 
 ax_misc.load_configuration()  # Load settings from app.yaml to os.environ
 ax_cache.init_cache(
@@ -21,7 +22,8 @@ ax_cache.init_cache(
     redis_port=os.environ.get('REDIS_ENDPOINT') or None,
     redis_timeout=os.environ.get('REDIS_ENDPOINT') or None,
 )  # Initiate aiocache
-ax_schema.init_schema()  # Initiate gql schema
+ax_pubsub.init_pubsub()  # Initiate pubsub.
+ax_schema.init_schema()  # Initiate gql schema.  Depends on cache and pubsub
 
 app = Sanic()
 # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
