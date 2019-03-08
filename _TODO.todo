@@ -123,6 +123,10 @@ REFACTORING ROUND ONE:
                 ✔ Create pubsub module @done(19-03-08 14:49)
                 ✔ Test pubsub with user gql subscribe @done(19-03-08 14:49)
             ☐ Очередь для выполнения импорта, действий процесса
+                ✔ Install apscheduler @done(19-03-08 18:37)
+                ✔ Run interval print job @done(19-03-08 18:37)
+                ☐ Add sql store
+                ☐ Add cron job
             ☐ Alembic - BD versioning
 				☐ https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script
 				☐ alembic revision --autogenerate -m "description of changes"

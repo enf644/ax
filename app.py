@@ -14,6 +14,9 @@ import backend.cache as ax_cache
 import backend.schema as ax_schema
 import backend.model as ax_model
 import backend.pubsub as ax_pubsub
+import backend.scheduler as ax_scheduler
+
+# from apscheduler.schedulers.background import BackgroundScheduler
 
 ax_misc.load_configuration()  # Load settings from app.yaml to os.environ
 ax_cache.init_cache(
@@ -32,6 +35,12 @@ CORS(app, automatic_options=True)  # TODO limit CORS to api folder
 app.static('/static', './dist/static')
 app.static('/stats', './dist/stats.html')
 app.static('/test_webpack', './dist/test.html')
+
+
+@app.listener('before_server_start')
+async def initialize_scheduler(_app, _loop):
+    """Initiate scheduler"""
+    ax_scheduler.init_scheduler()
 
 
 @app.listener('before_server_start')
