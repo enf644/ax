@@ -6,6 +6,7 @@ THINK ABOUT
     ☐ Oath - Авторизация
         ☐ https://developer.okta.com/pricing/
     ☐ Active directory - python
+    ☐ Make app to autoupgrade DB with alembic according to latest upgrade script
 
 
 
@@ -73,6 +74,8 @@ Lead sources
             Each hacker-news article is followed by invite to participate in free consulting session.
             Week auction? Clients compete with each other. (How to filter expensive apps?)
     MEDIA ARTICLES
+        Articles are translated to 4 languages. 
+        Media contains popular us, china, india, russia sites
         List of media:
             Hacker news
             Reddit
@@ -90,10 +93,13 @@ Lead sources
             Introducing Ax. Installing Ax and Creating workflow application in 5 minutes.
             Unique features
                 GraphQL
-                Scheduler feature
-                Creating Ax-Fields
                 Python tasks
                 Wokflow based on d3.js
+                New features after launch:
+                    Scheduler feature
+                    Creating Ax-Fields
+                    Caching ax-forms in redis
+                    Upgrading procedure                    
             Deck as standalone tool
             Building Sass business ontop of Ax
                 Billing users inside Ax!!!

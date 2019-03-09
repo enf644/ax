@@ -5,15 +5,17 @@ import pytz
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.executors.asyncio import AsyncIOExecutor
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+import backend.model as ax_model
 
 this = sys.modules[__name__]
 scheduler = None
 
 jobstores = {
-    'default': SQLAlchemyJobStore(url='sqlite:///ax_sqllite.db')
+    'default': SQLAlchemyJobStore(
+        engine=ax_model.engine,
+        tablename='_ax_scheduler_jobs'
+    )
 }
-# TODO make different stores for differents databases
-# SQLAlchemyJobStore('mysql://root@localhost/mygola?charset=utf8&use_unicode=0')
 
 executors = {
     'default': AsyncIOExecutor()
@@ -43,7 +45,7 @@ def init_scheduler():
     # this.scheduler.add_job(tick_job, 'interval', seconds=3, id='tick_job')
     this.scheduler.start()
     this.scheduler.remove_all_jobs()
-    # moscow_dt = pytz.timezone(
-    # 'Europe/Moscow').localize(datetime(2019, 3, 8, 23, 34, 0), is_dst=None)
-    # this.scheduler.add_job(prn_job, 'date', run_date=moscow_dt, args=[
-    #                        'text'], id='prn_job')
+    moscow_dt = pytz.timezone(
+        'Europe/Moscow').localize(datetime(2019, 3, 9, 16, 10, 0), is_dst=None)
+    this.scheduler.add_job(prn_job, 'date', run_date=moscow_dt, args=[
+                           'SCHEDULER WORKS'], id='prn_job')

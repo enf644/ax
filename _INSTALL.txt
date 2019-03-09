@@ -51,7 +51,14 @@ Install:
 Usefull:
     npm install axios --save
     npm run test:e2e
-    
+
+=== Alembic ===============================
+alembic revision -m "baseline" 
+alembic stamp head
+alembic revision --autogenerate -m "added field_types"
+alembic upgrade head
+
+
 === DOCUMENTATION =========================
 https://axy.gitbook.io/project/
 

@@ -5,15 +5,15 @@ import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
-from sqlalchemy_utils import UUIDType
+# from sqlalchemy_utils import UUIDType
 import aiopubsub
 
 from backend.misc import convert_column_to_string
-from backend.model import db_session, AxUser
+from backend.model import db_session, AxUser, GUID
 import backend.cache as ax_cache
 import backend.pubsub as ax_pubsub
 
-convert_sqlalchemy_type.register(UUIDType)(convert_column_to_string)
+convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
 
 
 class User(SQLAlchemyObjectType):  # pylint: disable=missing-docstring

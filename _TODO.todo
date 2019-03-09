@@ -128,9 +128,14 @@ REFACTORING ROUND ONE:
                 ✔ Add sql store @done(19-03-08 23:35)
                 ✔ Add cron job @done(19-03-08 23:35)
             ☐ Alembic - BD versioning
-				☐ https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script
-				☐ alembic revision --autogenerate -m "description of changes"
-				☐ https://sqlalchemy-migrate.readthedocs.io/en/latest/                
+                ✔ Install Alembic @done(19-03-09 11:50)
+                ✔ Create first upgrade script @done(19-03-09 11:50)
+                ✔ Move from sqlalchemy_utils UUID to custom GUID @done(19-03-09 16:40)
+                ✔ Updgrade database from upgrade script @done(19-03-09 16:40)
+                ✔ Make baseline together with create_all @done(19-03-09 17:06)                
+            ☐ Think of logger
+                ☐ Logwood? How to publish to service
+                ☐ Check python for try-except
 		Авто-Деплой:
 			☐ Сборка pip модуля, деплой в pypy
 				☐ Как указывать куда ставить и по какому порту работать?
@@ -319,6 +324,13 @@ NEW FROG TODOS:
     ☐ Margins in ax-form and ax-grid must be responsive. 0% on mobile
     ☐ Do Lazy loading with webpack - load grid first, then form.
     ☐ `[IMPORTANT]` Change AsyncioPubsub to production pubsub implementation
+    ☐ Setup must set data in many files:
+        ☐ apollo.js - ip, port
+        ☐ alembic - database
+        ☐ cache - redis settings (take from app.yaml)
+        ☐ scheduler - UTC zone from app.yaml
+        ☐ model - database constring, set binary=False if DB have uuid type
+        ☐ package.json
 
 
 NEW FEATURES:

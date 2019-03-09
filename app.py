@@ -3,7 +3,7 @@ import os
 
 from sanic_graphql import GraphQLView
 from sanic import Sanic, response
-from sanic.response import json
+# from sanic.response import json
 from sanic_cors import CORS
 
 from graphql_ws.websockets_lib import WsLibSubscriptionServer
@@ -12,9 +12,10 @@ from graphql.execution.executors.asyncio import AsyncioExecutor
 import backend.misc as ax_misc
 import backend.cache as ax_cache
 import backend.schema as ax_schema
-import backend.model as ax_model
+# import backend.model as ax_model
 import backend.pubsub as ax_pubsub
 import backend.scheduler as ax_scheduler
+import backend.migration as ax_migration
 
 # from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -27,6 +28,7 @@ ax_cache.init_cache(
 )  # Initiate aiocache
 ax_pubsub.init_pubsub()  # Initiate pubsub.
 ax_schema.init_schema()  # Initiate gql schema.  Depends on cache and pubsub
+ax_migration.init_migration()  # Check if database schema needs update
 
 app = Sanic()
 # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -85,8 +87,6 @@ def index(request, path):
 async def install(request):
     """Initial install view"""
     del request
-    ax_model.Base.metadata.create_all(ax_model.engine)
-    return json({"status": "Install Done"})
 
 
 @app.route('/api/hello')

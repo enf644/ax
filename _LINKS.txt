@@ -135,6 +135,13 @@ ERROR HANDLING
     https://blog.apollographql.com/full-stack-error-handling-with-graphql-apollo-5c12da407210
 
 
+ALEMBIC
+    ☐ https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script
+    ☐ alembic revision --autogenerate -m "description of changes"
+    ☐ https://sqlalchemy-migrate.readthedocs.io/en/latest/                
+    
+
+
 
 DECK INSPIRATIONS
     https://github.com/gollum/gollum#markups
