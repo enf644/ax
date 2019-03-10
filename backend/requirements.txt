@@ -19,3 +19,4 @@ APScheduler==3.5.3
 pyyaml==3.13
 typing==3.6.6
 ujson==1.35
+loguru==0.2.5

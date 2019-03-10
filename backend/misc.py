@@ -5,6 +5,7 @@ import os
 import yaml
 import graphene
 import graphene_sqlalchemy
+from loguru import logger
 
 
 def load_configuration() -> bool:
@@ -36,13 +37,15 @@ def load_configuration() -> bool:
             try:
                 yaml_vars = yaml.safe_load(stream)
                 if 'env_variables' not in yaml_vars:
-                    raise LookupError('Configuration failed, no env_variables '
-                                      'in app.yaml')
+                    err = 'Configuration failed, no env_variables in app.yaml'
+                    logger.error(err)
+                    raise LookupError(err)
                 for key, value in yaml_vars['env_variables'].items():
                     os.environ[key] = value
             except yaml.YAMLError as exc:
-                raise ValueError('Configuration failed, '
-                                 'cant parse yaml - ' + exc)
+                err = 'Configuration failed, cant parse yaml - ' + exc
+                logger.error(err)
+                raise ValueError(err)
     return True
 
 

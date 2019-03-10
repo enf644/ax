@@ -10,6 +10,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import Text, String, CHAR, LargeBinary, Float, Unicode
 from sqlalchemy import TypeDecorator, Column
 from sqlalchemy.dialects.postgresql import UUID
+# from loguru import logger
 
 engine = create_engine('sqlite:///ax_sqllite.db', convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,

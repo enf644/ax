@@ -2,6 +2,7 @@
 
 import sys
 import aiopubsub
+from loguru import logger
 
 this = sys.modules[__name__]
 hub = None
@@ -10,6 +11,10 @@ publisher = None
 
 def init_pubsub():
     """Initiate pubsub module, create default publisher"""
-    this.hub = aiopubsub.Hub()
-    this.publisher = aiopubsub.Publisher(
-        this.hub, prefix=aiopubsub.Key())
+    try:
+        this.hub = aiopubsub.Hub()
+        this.publisher = aiopubsub.Publisher(
+            this.hub, prefix=aiopubsub.Key())
+    except Exception:
+        logger.exception('Error initiationg pubsub module')
+        raise

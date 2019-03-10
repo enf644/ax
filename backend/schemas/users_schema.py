@@ -5,8 +5,8 @@ import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
-# from sqlalchemy_utils import UUIDType
 import aiopubsub
+from loguru import logger
 
 from backend.misc import convert_column_to_string
 from backend.model import db_session, AxUser, GUID
@@ -33,18 +33,21 @@ class CreateUser(graphene.Mutation):
     user = graphene.Field(User)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
-        del info
-        new_user = AxUser(
-            name=args.get('name'),
-            email=args.get('email'),
-            username=args.get('username')
-        )
-        db_session.add(new_user)
-        db_session.commit()
-        ok = True
-        # await simple_bupsub.publish('BASE', new_user)
-        ax_pubsub.publisher.publish(aiopubsub.Key('new_user'), new_user)
-        return CreateUser(user=new_user, ok=ok)
+        try:
+            del info
+            new_user = AxUser(
+                name=args.get('name'),
+                email=args.get('email'),
+                username=args.get('username')
+            )
+            db_session.add(new_user)
+            db_session.commit()
+            ok = True
+            ax_pubsub.publisher.publish(aiopubsub.Key('new_user'), new_user)
+            return CreateUser(user=new_user, ok=ok)
+        except Exception:
+            logger.exception('Error in gql mutation - CreateUser.')
+            raise
 
 
 class MutationExample(graphene.Mutation):
@@ -71,16 +74,19 @@ class ChangeUsername(graphene.Mutation):
 
     @classmethod
     def mutate(cls, _, args, context, info):   # pylint: disable=missing-docstring
-        del info
-        query = User.get_query(context)
-        email = args.get('email')
-        username = args.get('username')
-        user = query.filter(AxUser.email == email).first()
-        user.username = username
-        db_session.commit()
-        ok = True
-
-        return ChangeUsername(user=user, ok=ok)
+        try:
+            del info
+            query = User.get_query(context)
+            email = args.get('email')
+            username = args.get('username')
+            user = query.filter(AxUser.email == email).first()
+            user.username = username
+            db_session.commit()
+            ok = True
+            return ChangeUsername(user=user, ok=ok)
+        except Exception:
+            logger.exception('Error in gql mutation - ChangeUsername.')
+            raise
 
 
 class UsersQuery(graphene.ObjectType):
@@ -91,19 +97,27 @@ class UsersQuery(graphene.ObjectType):
 
     async def resolve_all_users(self, info):
         """Get all users"""
-        query = User.get_query(info)  # SQLAlchemy query
-        user_list = query.all()
-        await ax_cache.cache.set('user_list', user_list)
-        return user_list
+        try:
+            query = User.get_query(info)  # SQLAlchemy query
+            user_list = query.all()
+            await ax_cache.cache.set('user_list', user_list)
+            return user_list
+        except Exception:
+            logger.exception('Error in GQL query - all_users.')
+            raise
 
     def resolve_find_user(self, args, context, info):
         """default find method"""
-        del info
-        query = User.get_query(context)
-        username = args.get('username')
-        # you can also use and_ with filter()
-        # eg: filter(and_(param1, param2)).first()
-        return query.filter(AxUser.username == username).first()
+        try:
+            del info
+            query = User.get_query(context)
+            username = args.get('username')
+            # you can also use and_ with filter()
+            # eg: filter(and_(param1, param2)).first()
+            return query.filter(AxUser.username == username).first()
+        except Exception:
+            logger.exception('Error in GQL query - find_user.')
+            raise
 
 
 class UsersSubscription(graphene.ObjectType):

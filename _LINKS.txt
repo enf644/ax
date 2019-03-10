@@ -106,9 +106,36 @@ JS LOGGER
     https://logrocket.com/
     https://rollbar.com/blog/error-tracking-vue-js/ - nice
     https://www.sitepoint.com/logging-errors-client-side-apps/ - info
-    https://github.com/caiogondim/logdown.js
+    https://github.com/caiogondim/logdown.js  <--- CHOISE
     https://medium.com/@nalegaveshardul40/signale-py-logger-for-python-cli-apps-333321924874 - python
     https://github.com/Schoolmouv-team/vue-log-worker
+
+
+PYTHON LOGGER
+    https://docs.sentry.io/platforms/python/sanic/
+    https://eliot.readthedocs.io/en/stable/quickstart.html
+    https://logzero.readthedocs.io/en/latest/
+    https://github.com/reubano/pygogo
+    https://www.structlog.org/en/stable/why.html
+    https://github.com/getlogbook/logbook
+    https://github.com/Delgan/loguru   <--- CHOISE
+    https://github.com/B2W-BIT/aiologger
+
+LOG VISIALISER
+    https://github.com/adamhadani/logtools
+    http://lnav.org/
+    https://grafana.com/
+
+
+SYSTEM MONITORING
+    https://hynek.me/talks/beyond-grep/ <- TONS OF INFO
+
+
+CLOUD LOGGER
+    https://timber.io
+    https://sentry.io
+    https://www.graylog.org/
+
 
 
 PYTHON LOGGER

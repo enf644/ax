@@ -3,6 +3,7 @@
 
 import sys
 from aiocache import caches
+from loguru import logger
 
 this = sys.modules[__name__]
 cache = None
@@ -46,8 +47,9 @@ def init_cache(
         try:
             caches.set_config(redis_config)
             this.cache = caches.get('redis')
-        except Exception as exc:
-            raise Exception('Error initiating aiocache with Redis. ' + exc)
+        except Exception:
+            logger.exception('Error initiating aiocache with Redis.')
+            raise
     else:
         ram_config = {
             'default': {
@@ -61,8 +63,9 @@ def init_cache(
         try:
             caches.set_config(ram_config)
             this.cache = caches.get('default')
-        except Exception as exc:
-            raise Exception(
-                'Error initiating aiocache with SimpleMemoryCache. ' + exc)
+        except Exception:
+            logger.exception(
+                'Error initiating aiocache with SimpleMemoryCache. ')
+            raise
 
     return True

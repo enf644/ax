@@ -99,7 +99,17 @@ Lead sources
                     Scheduler feature
                     Creating Ax-Fields
                     Caching ax-forms in redis
-                    Upgrading procedure                    
+                    Upgrading procedure
+                    Add sentry logging
+                    System monitoring
+                    Event collecting - Graphite 
+                    Logging visualisation
+                    Integration of two ax instances. Shared workflow. 
+            Instructions for running in diferent enviroments:
+                App engine detailed instruction
+                AWS
+                Heroku
+                Docker
             Deck as standalone tool
             Building Sass business ontop of Ax
                 Billing users inside Ax!!!
@@ -110,10 +120,11 @@ Lead sources
             New integration
             New Ax-Field
             Usage story - robot automation, interesting use-cases
-            Year post calendar with recuranting types -
+            Recuring posts - Yearly post calendar with recuring types -
                 once per year - statistics
                 once per month - top 5 iteresting use-cases
                 once per month - 
+            Online- school teaching how to use AX - additional business
     ADS
         Popular service copy. 
             Creating good Ax-marketplace applicaiton. 
@@ -132,11 +143,10 @@ Global Plan
 	Release Open Source
 	Set payment system
 	Meke good documentation
+    Make landing
 	Blog post once per week
-		Product Hunt, Angel.co,
-		Year post calendar with recuranting types - 
-			once per year - statistics
-			once per month - top 5 use-cases
+    Run Sass - no free trail. Minimum 10 users.
+
 			
 
 Pricing

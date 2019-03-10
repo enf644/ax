@@ -127,15 +127,16 @@ REFACTORING ROUND ONE:
                 ✔ Run interval print job @done(19-03-08 18:37)
                 ✔ Add sql store @done(19-03-08 23:35)
                 ✔ Add cron job @done(19-03-08 23:35)
-            ☐ Alembic - BD versioning
+            ✔ Alembic - BD versioning @done(19-03-09 22:34)
                 ✔ Install Alembic @done(19-03-09 11:50)
                 ✔ Create first upgrade script @done(19-03-09 11:50)
                 ✔ Move from sqlalchemy_utils UUID to custom GUID @done(19-03-09 16:40)
                 ✔ Updgrade database from upgrade script @done(19-03-09 16:40)
                 ✔ Make baseline together with create_all @done(19-03-09 17:06)                
-            ☐ Think of logger
-                ☐ Logwood? How to publish to service
-                ☐ Check python for try-except
+            ✔ Add logger @done(19-03-10 19:48)
+                ✔ Choose logger @done(19-03-10 19:48)
+                ✔ Install logger @done(19-03-10 19:48)
+                ✔ Inspect all python code and add logger (Check for try-except) @done(19-03-10 19:48)
 		Авто-Деплой:
 			☐ Сборка pip модуля, деплой в pypy
 				☐ Как указывать куда ставить и по какому порту работать?
@@ -289,7 +290,7 @@ AX 20:
 	☐ MARKETPLACE
 		☐ Dump application to yaml
 		☐ Install application from yaml
-
+    ☐ Add clould logger for python and vue
 
 
 =============================================================================================
@@ -302,7 +303,6 @@ BEFORE LAUNCH:
         ☐ Sphninx in repo -> https://gist.github.com/GLMeece/222624fc495caf6f3c010a8e26577d31
         ☐ Gitbook -> https://www.gitbook.com/?t=1                
         ☐ Ax Deck !!!
-
 
 =============================================================================================
 
@@ -341,6 +341,7 @@ NEW FEATURES:
     ☐ `[IMPORTANT]` Подключение дополнительных полей и плагинов
         ☐ Подключается поле через lazy-loading - unpkg.com
     ☐ `[IMPORTANT]` Billing for Sass services that run ontop of AX
+    ☐ Custom error pages for admin
     
 MAYBE LATER:
     ☐ python autodoc

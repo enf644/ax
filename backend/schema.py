@@ -4,6 +4,7 @@ Combines all Ax GraphQL schemas to one
 import sys
 import graphene
 from graphene import relay
+from loguru import logger
 from backend.schemas.users_schema import User, UsersQuery
 from backend.schemas.users_schema import UsersMutations, UsersSubscription
 from backend.schemas.home_schema import HomeQuery
@@ -33,9 +34,13 @@ class Subscription(UsersSubscription, graphene.ObjectType):
 
 def init_schema():
     """Initiate GQL schema"""
-    this.schema = graphene.Schema(
-        query=Query,
-        mutation=Mutations,
-        types=[User],
-        subscription=Subscription
-    )
+    try:
+        this.schema = graphene.Schema(
+            query=Query,
+            mutation=Mutations,
+            types=[User],
+            subscription=Subscription
+        )
+    except Exception:
+        logger.exception('Error initiating GraphQL shcema. ')
+        raise
