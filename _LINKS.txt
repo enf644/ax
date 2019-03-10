@@ -156,6 +156,7 @@ GRAPHQL
 
 PUBLISHING TO PYPI
     https://realpython.com/pypi-publish-python-package/
+    https://github.com/cfhamlet/os-sanic/blob/master/setup.py
     
 
 ERROR HANDLING
