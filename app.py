@@ -2,17 +2,14 @@
 import os
 from sanic_graphql import GraphQLView
 from sanic import Sanic
-# from sanic.response import json
 from sanic_cors import CORS
 from loguru import logger
-
 from graphql.execution.executors.asyncio import AsyncioExecutor
 
 import backend.logger as ax_logger
 import backend.misc as ax_misc
 import backend.cache as ax_cache
 import backend.schema as ax_schema
-# import backend.model as ax_model
 import backend.pubsub as ax_pubsub
 import backend.scheduler as ax_scheduler
 import backend.migration as ax_migration

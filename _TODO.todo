@@ -347,6 +347,7 @@ NEW FEATURES:
 MAYBE LATER:
     ☐ python autodoc
     ☐ Автодокументирование vue.js кода
+    ☐ Automatic version from Git - https://pypi.org/project/setuptools-git-version/
 
 
 ============================================================================================

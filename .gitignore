@@ -6,6 +6,8 @@
 /backend/py_libs
 /frontend/node_modules
 __pycache__
-.db
+/*.egg-info
 package-lock.json
-ax_sqllite.db
+*.db
+*.pyc
+*.log

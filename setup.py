@@ -49,7 +49,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            'ax = app:main',
+            'run = app:main',
         ]
     },
 )
