@@ -1,9 +1,0 @@
-env_variables:
-  LOCAL_DB: "c34"
-  AX_VERSION: "0.0.1"
-  CACHE_MODE: "default" # default or redis
-  REDIS_ENDPOINT: "127.0.0.1"
-  REDIS_PORT: "6379"
-  REDIS_TIMEOUT: "1"
-
-  TIMEZONE: "+3"

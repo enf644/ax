@@ -1,0 +1,131 @@
+h1 {
+    font-size: 24px;
+    color: black;
+}
+
+h3 {
+    font-size: 16px;
+    font-weight: 400;
+    margin: 5px 0px 5px 0px;
+}
+
+a {
+    font-weight: 300;
+    color: #337ab7;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+::-webkit-scrollbar-button {
+    width: 5px;
+    height: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: #eee;
+    border: thin solid lightgray;
+    box-shadow: 0px 0px 3px #dfdfdf inset;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #999;
+    border: thin solid gray;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #7d7d7d;
+}
+
+/************ Splits styles { ***************/
+
+.splitpanes {
+    background-color: #f8f8f8;
+}
+
+.splitpanes__splitter {
+    background-color: #ccc;
+    position: relative;
+}
+
+.splitpanes__splitter:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: opacity 0.4s;
+    background-color: #DDDDDD;
+    opacity: 0;
+    z-index: 100;
+}
+
+.splitpanes__splitter:after {
+    content: '';
+    height: 25px;
+    left: 4px;
+    position: absolute;
+    top: 50%;
+    border-left: 2px solid #CCC;
+    border-right: 2px solid #CCC;
+    width: 6px;
+    z-index: 100;
+}
+
+.splitpanes__splitter:hover:before {
+    opacity: 1;
+}
+
+.splitpanes--vertical>.splitpanes__splitter:before {
+    right: -9px;
+    height: 100%;
+}
+
+.splitpanes--horizontal>.splitpanes__splitter:before {
+    top: -10px;
+    bottom: -10px;
+    width: 100%;
+}
+
+.ax-admin-drawer-first {
+    background: #ffffff;
+    height: 100%;
+    padding: 25px;
+    overflow: auto;
+}
+
+.ax-admin-drawer-second {
+    background: #ffffff;
+    height: 100%;
+    padding: 25px;
+    overflow: auto;
+}
+
+.ax-admin-content-pane {
+    height: 100%;
+    overflow: auto;
+}
+
+.ax-admin-splits {
+    height: 100%;
+    position: absolute;
+    overflow: auto;
+}
+
+/************ Splits styles } ***************/
+
+.ax-form-app .application--wrap {
+    min-height: 300px;
+}
+
+.ax-grid-app .application--wrap {
+    min-height: 300px;
+}
+
+.v--modal-overlay.scrollable .v--modal-box {
+    margin-top: 15px;
+    margin-bottom: 15px !important;
+}

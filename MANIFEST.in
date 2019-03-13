@@ -1,1 +1,13 @@
-include /frontend
+include LICENSE.md
+include README.md
+include ax/__ init __.py
+include ax/alembic.ini
+include ax/app.py
+include ax/app.yaml
+recursive-include ax/backend *
+recursive-include ax/dist *
+
+exclude ax/frontend *
+exclude ax/backend/__pycache__ *
+exclude ax/backend/logs *
+exclude ax/backend/py_libs *

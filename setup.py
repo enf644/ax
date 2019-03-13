@@ -12,7 +12,7 @@ readme = (here / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="ax",
-    version="0.0.1",
+    version="0.0.5",
     description="Ax workflow apps builder",
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -21,11 +21,14 @@ setup(
     author_email="enf644@gmail.com",
     license="COMMERCIAL",
     classifiers=[
-        "License :: Commercial",
+        "License :: Other/Proprietary License",
+        "Topic :: Office/Business :: Groupware",
+        "Topic :: Software Development",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
+        "Development Status :: 1 - Planning"
     ],
-    packages=find_packages(),
+    packages=['ax'],
+    zip_safe=False,
     include_package_data=True,
     install_requires=[
         'sanic>=18.12.0',
@@ -46,10 +49,11 @@ setup(
         'typing>=3.6.6',
         'ujson>=1.35',
         'loguru>=0.2.5',
-    ],
+        'docopt>=0.6.2'
+    ],  # WARNING: synchronise with 'ax/backend/requirements.txt'  manualy!
     entry_points={
         "console_scripts": [
-            'run = app:main',
+            'ax = ax.app:main',
         ]
     },
 )

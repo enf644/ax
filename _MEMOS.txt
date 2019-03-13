@@ -60,8 +60,8 @@ NEW DOMAINS
 
 Lead sources
     INTEGRATIONS
-        Jira
         Slack
+        Jira
         Zappier
         Gmail
         Stripe
@@ -84,6 +84,7 @@ Lead sources
             Vk.com
             Twitter
             Google+
+            Habr
         Media maybe
             https://dzone.com/
             https://blog.feedspot.com/software_development_blogs/ -> LIST
@@ -104,12 +105,22 @@ Lead sources
                     System monitoring
                     Event collecting - Graphite 
                     Logging visualisation
-                    Integration of two ax instances. Shared workflow. 
+                    Integration of two ax instances. Shared workflow.
+                    Backup mechanism
+            Comparision with other software and services:
+                Sass -> Kissflow, Google App Maker, Zoho creator, Nintex, RunMyProcess, Airtable
+                On-premise -> Jira, PEGA , Apian , Microsoft SharePoint, IBM Lotus Notes
             Instructions for running in diferent enviroments:
                 App engine detailed instruction
                 AWS
                 Heroku
                 Docker
+            Include in all posible listings
+                sanic users
+                vue users
+                wikipedia -> workflow
+                alternative listing sites
+                everything with 'workflow' keywoard
             Deck as standalone tool
             Building Sass business ontop of Ax
                 Billing users inside Ax!!!
@@ -125,6 +136,9 @@ Lead sources
                 once per month - top 5 iteresting use-cases
                 once per month - 
             Online- school teaching how to use AX - additional business
+            Personal uses:
+                Wedding
+                Event registration
     ADS
         Popular service copy. 
             Creating good Ax-marketplace applicaiton. 
@@ -146,6 +160,11 @@ Global Plan
     Make landing
 	Blog post once per week
     Run Sass - no free trail. Minimum 10 users.
+
+
+Landing ideas
+    Not describing software, but how it help customer
+    Gifs on how to use
 
 			
 
@@ -188,11 +207,19 @@ Ax have multiple use-cases
 
 ==============================================================================================================================
 
+Releasing new version of Ax
 
-Kissflow, Google App Maker, Zoho creator, Nintex, RunMyProcess. 
-On-premise competitors - PEGA , Apian , Microsoft SharePoint, IBM Lotus Notes, 
-Jira, https://airtable.com
-SAML-based single sign-on (SSO)
+
+Updading Ax
+    pip update - (db schema changed) (new migration .py added)
+    on start-up alembic checks schema
+    alembic changes database with migration scripts
+
+
+
+
+
+
 
 
 ==============================================================================================================================

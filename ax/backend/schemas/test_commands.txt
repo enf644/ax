@@ -1,0 +1,45 @@
+Adding a New User
+mutation {
+  createUser(name: "abc", email: "hello@abc.com", username: "abc") {
+    user {
+      id,
+      name,
+      email,
+      username
+    }
+    ok
+  }
+}
+
+Getting All Users List
+{
+  allUsers {
+    edges {
+      node {
+        name,
+        email,
+        username
+      }
+    }
+  }
+}
+
+Finding a User with Username
+{
+  findUser(username: "rahulmfg") {
+    id,
+    name,
+    email
+  }
+}
+
+Updating Username With Email ID
+mutation {
+  changeUsername(email: "abc@abc.com", username:"newabc") {
+    user {
+      name,
+      email,
+      username
+    }
+  }
+}

@@ -52,11 +52,25 @@ Usefull:
     npm install axios --save
     npm run test:e2e
 
-=== Alembic ===============================
+============= ALEMBIC ===============
+[working directory = '/ax/' , where 'alembic.ini' is located]
 alembic revision -m "baseline" 
 alembic stamp head
 alembic revision --autogenerate -m "added field_types"
 alembic upgrade head
+
+alembic upgrade --sql head > migration.sql
+alembic.command.upgrade(dfg, 'head')
+diffs = alembic.autogenerate.compare_metadata(...) <- check on startup
+
+============ PIPY ==================
+pip install .
+python -m pip install --upgrade setuptools wheel
+python -m pip install --upgrade twine
+python setup.py sdist bdist_wheel
+python -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+python -m twine upload dist/*
+twine upload dist/*
 
 
 === DOCUMENTATION =========================

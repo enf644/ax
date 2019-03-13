@@ -3,11 +3,13 @@
 /.venv
 /.vscode
 /dist
+/build
 /backend/py_libs
 /frontend/node_modules
 __pycache__
 /*.egg-info
 package-lock.json
 *.db
+*.db-journal
 *.pyc
 *.log

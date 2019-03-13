@@ -1,0 +1,23 @@
+env_variables:
+  AX_VERSION: "0.0.1"
+  # AX_HOST: "127.0.0.1" #  default = 127.0.0.1
+  # AX_PORT: "8085" #  default = 8080
+  AX_SANIC_DEBUG: "true" #  default=false
+  # AX_SANIC_ACCESS_LOG:  #  default=false
+  # AX_CACHE_MODE: "" # ' default='default'. Set 'redis' for redis
+  # AX_REDIS_ENDPOINT:  #  default='127.0.0.1'
+  # AX_REDIS_PORT:  #  default='6379'
+  # AX_REDIS_TIMEOUT:  #  default='1'
+  AX_TIMEZONE: "Europe/Moscow" #  default=UTC
+  AX_LOGS_LEVEL: "INFO" # ERROR, WARNING, INFO, DEBUG. default = ERROR
+  AX_LOGS_FILENAME: "ax_logs.log" #  If not set, logs only output to stdio
+  # AX_LOGS_ABSOLUTE_PATH: 'D:\Projects\' #  default =
+  # AX_DB_DIALECT:
+  # AX_DB_HOST:
+  # AX_DB_PORT:
+  # AX_DB_LOGIN:
+  # AX_DB_PASSWORD:
+  # AX_DB_DATABASE:
+  # AX_DB_SQLITE_FILENAME: "my_ax.db" #  default='ax_sqlite.db
+  # AX_DB_SQLITE_ABSOLUTE_PATH: 'D:\Projects\' #  default=None
+  AX_LOCALE: "ru" # default=en

@@ -138,8 +138,35 @@ REFACTORING ROUND ONE:
                 ✔ Install logger @done(19-03-10 19:48)
                 ✔ Inspect all python code and add logger (Check for try-except) @done(19-03-10 19:48)
 		Авто-Деплой:
-			☐ Сборка pip модуля, деплой в pypy
-				☐ Как указывать куда ставить и по какому порту работать?
+			☐ Deploy to pipy
+                ✔ Reogranize files. Make ax package. @done(19-03-11 14:03)
+                    ✔ Check sanic works @done(19-03-11 13:31)
+                    ✔ Check alembic @done(19-03-11 13:31)
+                ✔ Create setup.py + manifest @done(19-03-11 14:03)
+                ✔ Create wheel/egg @done(19-03-11 14:05)
+                ✔ Check if ax works localy @done(19-03-11 14:05)
+                ✔ Make relative path system @done(19-03-11 15:50)
+                ✔ Make app.yaml settings work @done(19-03-11 22:13)
+                    ✔ sanic ip and port @done(19-03-11 15:50)
+                    ✔ time-zone, store in misc @done(19-03-11 19:08)
+                    ✔ sqlite file @done(19-03-11 21:27)
+                    ✔ log file @done(19-03-11 22:13)
+                ✔ Make cli interface @done(19-03-12 10:33)
+                    ✔ ax run --ip=127.0.0.1 --port=8082 @done(19-03-12 10:33)
+                ✔ Detect server url in vue by reading src of included script @done(19-03-12 11:15)
+                ✔ Publish to pipy @done(19-03-12 15:55)
+                ✔ Download from pipy and run in localy @done(19-03-12 15:55)
+            ☐ Rethink build, publish and upgrade process
+                ☐ Release build script
+                    ☐ Automatic bump version
+                    ☐ Create db migration script
+                    ☐ Store db_version in python code
+                    ☐ Set db_version for script that creates new Database 
+                    ☐ Updates Manifest.in
+                    ☐ Checks if setup.py install_requires and requirements.txt in sync
+                    ☐ Delete pipy dist
+                    ☐ Create new pipy package
+                    ☐ Publish pipy package
             ☐ Деплой в Google App Engine
                 ☐ Create google ax account
                 ☐ Deploy hello world
@@ -147,8 +174,6 @@ REFACTORING ROUND ONE:
 			☐ Деплой в App Engine через Market
 			☐ Сборка docker image и деплой куда-то
 			☐ Делаем инструкцию по настройке рабочего места
-            ☐ Делаем пробное обновлеие версии
-                ☐ pip - upgrade + alembic
 
 ==============================================================================================
 
@@ -158,8 +183,8 @@ REFACTORING ROUND ONE:
     ✔ Система билда - минификация, условная загрузка @done(19-03-07 21:44)
     ✘ Должна быть сгенерирована авто-документация по методам python @cancelled(19-02-26 16:22)
     ✘ Должна быть сгенерирована авто-документация по компонентам Vue @cancelled(19-02-26 16:22)
-    ☐ Должна собираться и запускаться из pip или apk-get
-        ☐ Должна тянуть все зависимости через pip и npm - requirements.txt
+    ✔ Должна собираться и запускаться из pip @done(19-03-12 16:14)
+        ✔ Должна тянуть все зависимости через pip и npm - requirements.txt @done(19-03-12 16:14)
         ✔ Должна разворачиваться SQL Lite @done(19-02-26 23:39)
     ☐ Должна деплоится и работать на app-engine
     ☐ Должен работать автодеплой внутри app-engine
@@ -327,9 +352,9 @@ NEW FROG TODOS:
     ☐ `[IMPORTANT]` Change AsyncioPubsub to production pubsub implementation
     ☐ Setup must set data in many files:
         ☐ apollo.js - ip, port
-        ☐ alembic - database
-        ☐ cache - redis settings (take from app.yaml)
-        ☐ scheduler - UTC zone from app.yaml
+        ✔ alembic - database @done(19-03-12 09:25)
+        ✔ cache - redis settings (take from app.yaml) @done(19-03-12 09:25)
+        ✔ scheduler - UTC zone from app.yaml @done(19-03-12 09:25)
         ☐ model - database constring, set binary=False if DB have uuid type
         ☐ package.json
 
@@ -343,6 +368,8 @@ NEW FEATURES:
         ☐ Подключается поле через lazy-loading - unpkg.com
     ☐ `[IMPORTANT]` Billing for Sass services that run ontop of AX
     ☐ Custom error pages for admin
+    ☐ Detect unsuported browsers and print error
+    ☐ Backup mechanism
     
 MAYBE LATER:
     ☐ python autodoc
