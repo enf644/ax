@@ -168,6 +168,8 @@ ALEMBIC
     ☐ alembic revision --autogenerate -m "description of changes"
     ☐ https://sqlalchemy-migrate.readthedocs.io/en/latest/                
     
+CI INSPIRATIONS
+    https://blog.kylegalbraith.com/2018/08/14/how-to-run-browser-tests-via-cypress-in-your-cicd-pipeline-with-aws-codebuild/
 
 
 

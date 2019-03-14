@@ -1,4 +1,5 @@
 """Module for database migration using Alembic"""
+import os
 import sys
 from loguru import logger
 from alembic.config import Config
@@ -43,9 +44,14 @@ def tables_exist() -> bool:
 def create_tables() -> None:
     """Create database and create baseline version in Alembic"""
     try:
+        if os.environ.get('AX_DB_REVISION') is None:
+            msg = 'Cant find AX_DB_REVISION in enviroment variables or app.yaml'
+            logger.error(msg)
+            raise Exception(msg)
+
         ax_model.Base.metadata.create_all(ax_model.engine)
         first_version = AxAlembicVersion()
-        first_version.version_num = '166f2b7658b4'
+        first_version.version_num = os.environ.get('AX_DB_REVISION')
         ax_model.db_session.add(first_version)
         ax_model.db_session.commit()
 

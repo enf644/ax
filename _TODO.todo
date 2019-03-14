@@ -156,17 +156,18 @@ REFACTORING ROUND ONE:
                 ✔ Detect server url in vue by reading src of included script @done(19-03-12 11:15)
                 ✔ Publish to pipy @done(19-03-12 15:55)
                 ✔ Download from pipy and run in localy @done(19-03-12 15:55)
-            ☐ Rethink build, publish and upgrade process
-                ☐ Release build script
-                    ☐ Automatic bump version
-                    ☐ Create db migration script
-                    ☐ Store db_version in python code
-                    ☐ Set db_version for script that creates new Database 
-                    ☐ Updates Manifest.in
-                    ☐ Checks if setup.py install_requires and requirements.txt in sync
-                    ☐ Delete pipy dist
-                    ☐ Create new pipy package
-                    ☐ Publish pipy package
+            ✔ Rethink build, publish and upgrade process @done(19-03-14 17:37)
+                ✔ Release build script @done(19-03-14 17:22)
+                    ✔ Automatic bump version @done(19-03-14 17:22)
+                    ✔ Tag git commit @done(19-03-14 17:37)
+                    ✔ Create db migration script @done(19-03-14 17:24)
+                    ✔ Store db_version in python code @done(19-03-14 17:24)
+                    ✔ Set db_version for script that creates new Database @done(19-03-14 17:24)
+                    ✔ Updates Manifest.in @done(19-03-14 17:24)
+                    ✔ Checks if setup.py install_requires and requirements.txt in sync @done(19-03-14 17:24)
+                    ✔ Delete pipy dist @done(19-03-14 17:24)
+                    ✔ Create new pipy package @done(19-03-14 17:24)
+                    ✔ Publish pipy package @done(19-03-14 17:24)
             ☐ Деплой в Google App Engine
                 ☐ Create google ax account
                 ☐ Deploy hello world
@@ -244,7 +245,7 @@ Every new version checklist:
     ☐ Version upgrade is tested
     ☐ Version rollback is tested
     ☐ New documentation is released
-    ☐ After everything - atomatic version incriment and Github pull request to master
+    ☐ After everything - automatic version incriment and Github pull request to master
 
 
 
@@ -375,6 +376,7 @@ MAYBE LATER:
     ☐ python autodoc
     ☐ Автодокументирование vue.js кода
     ☐ Automatic version from Git - https://pypi.org/project/setuptools-git-version/
+    ☐ PBR - automatic versioning based on Git - https://docs.openstack.org/pbr/latest/user/features.html
 
 
 ============================================================================================

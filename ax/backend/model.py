@@ -129,34 +129,34 @@ class AxUser(Base):
         }
 
 
-class AxFieldType(Base):
-    """List of avalible ax field types"""
-    __tablename__ = '_ax_field_types'
-    uuid = Column(GUID(), primary_key=True,
-                  default=uuid.uuid4, unique=True, nullable=False)
-    name = Column(String(255))
-    default_name = Column(String(255))
-    default_db_name = Column(String(255))
-    order = Column(Integer())
-    value_type = Column(String(255))
-    web_element = Column(String(255))
-    comparator = Column(String(255))
-    is_group = Column(Boolean, unique=False, default=False)
-    field_group_name = Column(String(255))
-    icon = Column(String(255))
-    is_inline_editable = Column(Boolean, unique=False, default=False)
-    is_backend_available = Column(Boolean, unique=False, default=False)
-    is_updated_always = Column(Boolean, unique=False, default=False)
-    is_always_whole_row = Column(Boolean, unique=False, default=False)
+# class AxFieldType(Base):
+#     """List of avalible ax field types"""
+#     __tablename__ = '_ax_field_types'
+#     uuid = Column(GUID(), primary_key=True,
+#                   default=uuid.uuid4, unique=True, nullable=False)
+#     name = Column(String(255))
+#     default_name = Column(String(255))
+#     default_db_name = Column(String(255))
+#     order = Column(Integer())
+#     value_type = Column(String(255))
+#     web_element = Column(String(255))
+#     comparator = Column(String(255))
+#     is_group = Column(Boolean, unique=False, default=False)
+#     field_group_name = Column(String(255))
+#     icon = Column(String(255))
+#     is_inline_editable = Column(Boolean, unique=False, default=False)
+#     is_backend_available = Column(Boolean, unique=False, default=False)
+#     is_updated_always = Column(Boolean, unique=False, default=False)
+#     is_always_whole_row = Column(Boolean, unique=False, default=False)
 
-    def serialize(self):
-        """Serialize"""
-        return {
-            'id': self.id,
-            'name': self.name,
-            'order': self.order,
-            'web_element': self.web_element,
-            'group': self.group,
-            'is_inline_editable': self.is_inline_editable,
-            'is_always_whole_row': self.is_always_whole_row
-        }
+#     def serialize(self):
+#         """Serialize"""
+#         return {
+#             'id': self.id,
+#             'name': self.name,
+#             'order': self.order,
+#             'web_element': self.web_element,
+#             'group': self.group,
+#             'is_inline_editable': self.is_inline_editable,
+#             'is_always_whole_row': self.is_always_whole_row
+#         }

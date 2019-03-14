@@ -17,9 +17,6 @@ import app as ax_app
 print('----------------------------------------------------')
 
 alembic_folder = ax_misc.path("backend/alembic")
-logger.debug('alembic folder = ')
-logger.debug(alembic_folder)
-
 config = context.config
 config.set_main_option('script_location', str(alembic_folder))
 

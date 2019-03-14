@@ -13,6 +13,8 @@ Options:
 
 """
 import os
+import sys
+from pathlib import Path
 from sanic_graphql import GraphQLView
 from sanic import Sanic
 from sanic_cors import CORS
@@ -20,6 +22,12 @@ from loguru import logger
 from docopt import docopt
 from graphql.execution.executors.asyncio import AsyncioExecutor
 
+# Add folder with app.py to sys.path.
+root_path = Path(__file__).parent.resolve()
+if root_path not in sys.path:
+    sys.path.insert(0, str(root_path))
+
+# pylint: disable=wrong-import-position
 import backend.logger as ax_logger
 import backend.misc as ax_misc
 import backend.cache as ax_cache
@@ -29,6 +37,7 @@ import backend.pubsub as ax_pubsub
 import backend.scheduler as ax_scheduler
 import backend.migration as ax_migration
 import backend.routes as ax_routes
+# pylint: enable=wrong-import-position
 
 
 def init_model():
@@ -98,7 +107,7 @@ def init_ax():
 
 def main():
     """Main function"""
-    arguments = docopt(__doc__, version='Ax v0.0.1')
+    arguments = docopt(__doc__)
 
     if arguments['run']:
         sanic_app = init_ax()

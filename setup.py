@@ -1,7 +1,8 @@
 """Setup Ax for pip"""
 
 import pathlib
-from setuptools import setup, find_packages
+import yaml
+from setuptools import setup
 
 # The directory containing this file
 here = pathlib.Path(__file__).parent
@@ -9,10 +10,31 @@ here = pathlib.Path(__file__).parent
 # The text of the README file
 readme = (here / "README.md").read_text()
 
+
+def get_version():
+    """Get ax version from app.yaml"""
+    with open(str(here / 'ax' / 'app.yaml')) as yaml_file:
+        app_yaml = yaml.load(yaml_file)
+        return app_yaml['env_variables']['AX_VERSION']
+
+
+def get_requirements():
+    """Create list of required packages from requirements.txt. No versions ."""
+    requires = []
+    with open('requirements.txt') as file:
+        lines = file.read().splitlines()
+        for line in lines:
+            if not line.startswith('#') and line.strip() != '':
+                package_name, version = line.split('==')
+                del version
+                requires.append(package_name)
+    return requires
+
+
 # This call to setup() does all the work
 setup(
     name="ax",
-    version="0.0.5",
+    version=get_version(),
     description="Ax workflow apps builder",
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -30,27 +52,7 @@ setup(
     packages=['ax'],
     zip_safe=False,
     include_package_data=True,
-    install_requires=[
-        'sanic>=18.12.0',
-        'Sanic-GraphQl>=1.0.2',
-        'Sanic-Cors>=0.9.7',
-        'SQLAlchemy>=1.2.12',
-        'sqlalchemy-utils>=0.33.9',
-        'alembic>=1.0.8',
-        'graphene>=2.1.3',
-        'graphene-sqlalchemy>=2.1.0',
-        'graphql-core>=2.1',
-        'graphql-relay>=0.4.5',
-        'graphql_ws>=0.3.0',
-        'aiocache[redis]>=0.10.1',
-        'aiopubsub>=2.1.5',
-        'APScheduler>=3.5.3',
-        'pyyaml>=3.13',
-        'typing>=3.6.6',
-        'ujson>=1.35',
-        'loguru>=0.2.5',
-        'docopt>=0.6.2'
-    ],  # WARNING: synchronise with 'ax/backend/requirements.txt'  manualy!
+    install_requires=get_requirements(),
     entry_points={
         "console_scripts": [
             'ax = ax.app:main',

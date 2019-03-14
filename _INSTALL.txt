@@ -25,7 +25,7 @@ Comit and push:
 Install:
     sudo pip3 install --upgrade setuptools
     sudo pip install -t ./backend/py_libs -r ./backend/requirements.txt
-    sudo pip install -r ./backend/requirements.txt
+    sudo pip install -r requirements.txt
     set FLASK_APP=run.py
     flask  run
 Delete py_libs:

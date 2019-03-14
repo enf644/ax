@@ -3,13 +3,13 @@
 
 import os
 import sys
-import yaml
+from pathlib import Path
+from datetime import datetime
 import graphene
 import graphene_sqlalchemy
 import pytz
+import yaml
 from loguru import logger
-from pathlib import Path
-from datetime import datetime
 
 this = sys.modules[__name__]
 root_path = None
@@ -21,12 +21,13 @@ def init_misc(timezone_name: str) -> None:
     if timezone_name not in pytz.common_timezones:
         logger.error(
             'Timezone {tz} not valid. Falling back to UTC.', tz=timezone_name)
-        timezone = 'UTC'
+        this.timezone = 'UTC'
 
     this.timezone = pytz.timezone(timezone_name)
 
 
 def date(_date: datetime = datetime.now()) -> datetime:
+    """Localise python datetime"""
     localized_date = this.timezone.localize(_date, is_dst=None)
     return localized_date
 
@@ -40,7 +41,7 @@ def path(_path: str = '') -> str:
     Returns:
         str: Absolute path to specified file or directory
     Examples:
-        Access module files like path('backend/schemas/user_schema.py')        
+        Access module files like path('backend/schemas/user_schema.py')
     """
     if this.root_path is None:
         this.root_path = Path(__file__).resolve().parent.parent
@@ -82,7 +83,8 @@ def load_configuration() -> None:
                     logger.error(err)
                     raise LookupError(err)
                 for key, value in yaml_vars['env_variables'].items():
-                    os.environ[key] = value
+                    if value:
+                        os.environ[key] = value
             except yaml.YAMLError as exc:
                 err = 'Configuration failed, cant parse yaml - ' + exc
                 logger.error(err)
