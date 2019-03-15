@@ -21,7 +21,7 @@ def get_version():
 def get_requirements():
     """Create list of required packages from requirements.txt. No versions ."""
     requires = []
-    with open('requirements.txt') as file:
+    with open('ax/requirements.txt') as file:
         lines = file.read().splitlines()
         for line in lines:
             if not line.startswith('#') and line.strip() != '':
@@ -55,7 +55,7 @@ setup(
     install_requires=get_requirements(),
     entry_points={
         "console_scripts": [
-            'ax = ax.app:main',
+            'ax = ax.main:main',
         ]
     },
 )

@@ -12,7 +12,7 @@ sys.path.insert(0, str(root_path))
 
 import backend.misc as ax_misc
 import backend.model as ax_model
-import app as ax_app
+import main as ax_app
 
 print('----------------------------------------------------')
 

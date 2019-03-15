@@ -22,3 +22,5 @@ typing==3.6.6
 ujson==1.35
 loguru==0.2.5
 docopt==0.6.2
+
+gunicorn==19.7.1

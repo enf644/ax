@@ -25,20 +25,24 @@ def init_logger(
         "extra": {"user": "someone"}
     }
 
-    if logs_filename is not None:
-        log_path = ax_misc.path('backend/logs/' + logs_filename)
-        if logs_absolute_path is not None:
-            log_path = str(Path(logs_absolute_path) / logs_filename)
+    try:
+        if logs_filename is not None:
+            log_path = ax_misc.path('backend/logs/' + logs_filename)
+            if logs_absolute_path is not None:
+                log_path = str(Path(logs_absolute_path) / logs_filename)
 
-        # TODO add rotation and retention, compression from app.yaml
-        file_handler = {
-            'sink': log_path,
-            'serialize': 'True',
-            'rotation': '100 MB',
-            'enqueue': 'True',
-            'backtrace': 'True',
-            'level': logs_level
-        }
-        config['handlers'].append(file_handler)
+            # TODO add rotation and retention, compression from app.yaml
+            file_handler = {
+                'sink': log_path,
+                'serialize': 'True',
+                'rotation': '100 MB',
+                'enqueue': 'True',
+                'backtrace': 'True',
+                'level': logs_level
+            }
+            config['handlers'].append(file_handler)
 
-    logger.configure(**config)
+        logger.configure(**config)
+    except Exception:
+        logger.exception('Error initiating logger.')
+        raise

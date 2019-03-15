@@ -7,7 +7,7 @@ THINK ABOUT
         ☐ https://developer.okta.com/pricing/
     ☐ Active directory - python
     ☐ Make app to autoupgrade DB with alembic according to latest upgrade script
-
+    dev_appserver.py
 
 
 How to use Ax:
@@ -36,6 +36,10 @@ NEW DOMAINS
     make.ax
     put.ax
     apps.ax
+    ax.parts
+    ax.mx
+    getax.today
+    ax-workflow.com
 
 
 ======================================================================================================================================

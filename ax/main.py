@@ -1,9 +1,8 @@
 """Ax workflow apps builder.
 
 Usage:
-  ax run [--host=<host>] [--port=<port>]
+  ax [--host=<host>] [--port=<port>]
   ax --version
-  ax (-h | --help)
 
 Options:
   -h --help       Show this screen.
@@ -22,7 +21,7 @@ from loguru import logger
 from docopt import docopt
 from graphql.execution.executors.asyncio import AsyncioExecutor
 
-# Add folder with app.py to sys.path.
+# Add folder with main.py to sys.path.
 root_path = Path(__file__).parent.resolve()
 if root_path not in sys.path:
     sys.path.insert(0, str(root_path))
@@ -78,8 +77,6 @@ def init_ax():
     ax_schema.init_schema()  # Initiate gql schema.  Depends on cache and pubsub
     ax_migration.init_migration()  # Check if database schema needs update
 
-    app = Sanic()
-
     # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
     CORS(app, automatic_options=True)  # TODO limit CORS to api folder
 
@@ -102,31 +99,28 @@ def init_ax():
 
     ax_routes.init_routes(app)
 
-    return app
-
 
 def main():
     """Main function"""
     arguments = docopt(__doc__)
 
-    if arguments['run']:
-        sanic_app = init_ax()
+    host = str(os.environ.get('AX_HOST') or '127.0.0.1')
+    port = int(os.environ.get('AX_PORT') or 8080)
+    debug = bool(os.environ.get('AX_SANIC_DEBUG') or False)
+    access_log = bool(os.environ.get('AX_SANIC_ACCESS_LOG') or False)
 
-        host = str(os.environ.get('AX_HOST') or '127.0.0.1')
-        port = int(os.environ.get('AX_PORT') or 8080)
-        debug = bool(os.environ.get('AX_SANIC_DEBUG') or False)
-        access_log = bool(os.environ.get('AX_SANIC_ACCESS_LOG') or False)
+    if arguments['--host']:
+        host = arguments['--host']
 
-        if arguments['--host']:
-            host = arguments['--host']
+    if arguments['--port']:
+        port = int(arguments['--port'])
 
-        if arguments['--port']:
-            port = int(arguments['--port'])
+    logger.info('Running Ax on {host}:{port}', host=host, port=port)
+    app.run(host=host, port=port, debug=debug, access_log=access_log)
 
-        logger.debug(ax_model.engine.table_names())
-        logger.info('Running Ax on {host}:{port}', host=host, port=port)
-        sanic_app.run(host=host, port=port, debug=debug, access_log=access_log)
 
+app = Sanic()
+init_ax()
 
 if __name__ == "__main__":
     main()

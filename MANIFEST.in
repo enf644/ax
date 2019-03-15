@@ -4,7 +4,7 @@ include requirements.txt
 
 include ax/__ init __.py
 include ax/alembic.ini
-include ax/app.py
+include ax/main.py
 include ax/app.yaml
 
 recursive-include ax/backend *

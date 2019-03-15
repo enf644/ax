@@ -29,7 +29,7 @@ sys.path.insert(0, str(ax_path))
 import ax.backend.misc as ax_misc
 import ax.backend.model as ax_model
 import ax.backend.migration as ax_migration
-import ax.app as ax_app
+import ax.main as ax_app
 from backend.model import AxAlembicVersion
 # pylint: enable=wrong-import-position
 
@@ -171,7 +171,8 @@ def upload_to_pypi() -> None:
 def tag_git() -> None:
     """Tags current git commit"""
     try:
-        cmd = 'git tag ' + this.final_version + ' -a'
+        cmd = 'git tag ' + this.final_version + \
+            ' -a -m \'Release ' + this.final_version + '\''
         subprocess.check_call(cmd, shell=True, cwd=str(this.setup_path))
     except Exception:
         logger.exception('Failed git tag')

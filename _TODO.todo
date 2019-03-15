@@ -138,7 +138,7 @@ REFACTORING ROUND ONE:
                 ✔ Install logger @done(19-03-10 19:48)
                 ✔ Inspect all python code and add logger (Check for try-except) @done(19-03-10 19:48)
 		Авто-Деплой:
-			☐ Deploy to pipy
+			✔ Deploy to pipy @done(19-03-12 15:55)
                 ✔ Reogranize files. Make ax package. @done(19-03-11 14:03)
                     ✔ Check sanic works @done(19-03-11 13:31)
                     ✔ Check alembic @done(19-03-11 13:31)
@@ -168,93 +168,16 @@ REFACTORING ROUND ONE:
                     ✔ Delete pipy dist @done(19-03-14 17:24)
                     ✔ Create new pipy package @done(19-03-14 17:24)
                     ✔ Publish pipy package @done(19-03-14 17:24)
-            ☐ Деплой в Google App Engine
-                ☐ Create google ax account
-                ☐ Deploy hello world
-                ☐ Deploy AX
-			☐ Деплой в App Engine через Market
-			☐ Сборка docker image и деплой куда-то
-			☐ Делаем инструкцию по настройке рабочего места
-
-==============================================================================================
-
-
-Критерии работы экосистемы:
-    ✔ Файловая структура - Модель, Контроллер @done(19-02-26 16:22)
-    ✔ Система билда - минификация, условная загрузка @done(19-03-07 21:44)
-    ✘ Должна быть сгенерирована авто-документация по методам python @cancelled(19-02-26 16:22)
-    ✘ Должна быть сгенерирована авто-документация по компонентам Vue @cancelled(19-02-26 16:22)
-    ✔ Должна собираться и запускаться из pip @done(19-03-12 16:14)
-        ✔ Должна тянуть все зависимости через pip и npm - requirements.txt @done(19-03-12 16:14)
-        ✔ Должна разворачиваться SQL Lite @done(19-02-26 23:39)
-    ☐ Должна деплоится и работать на app-engine
-    ☐ Должен работать автодеплой внутри app-engine
-    ☐ Должны быть сформулированы behave сценарии тестирования
-    ☐ Работает механизм обновления модуля - pip upgrade обновляет модуль, npm собирает заново приложение, БД конфигуриться при первом запуске через SqlAlchemy patch
-        ☐ Alembic
-        ☐ pip upgrade
-    ☐ Работает механизм подключения плагинов
-    ☐ Должны быть развернуты версии для тестирования - 
-        ☐ Версия в appengine
-        ☐ Версия которая собирается через pip - SQLLite
-        ☐ Версия Docker с MySQL - ??
-    ☐ Должны прогоняться ui тесты согласно behave сценариям по всем развернутым версиям
-    ☐ Быстрая настройка рабочего места
-        ☐ Инструкция по конфигурированию рабочего места
-        ☐ Из гита тянем сорс, запускаем автоконфиг - тянутся все зависимости для рабочего места и все модули javascript
-    ✔ WebSockets обновление грида, дека @done(19-02-26 16:23)
-    ☐ Check all elements - https://github.com/harshanarayana/cookiecutter-sanic
-
-Для каждого веб-елемента:
-    ☐ Документирование 
-    ☐ Для каждого ajax - on-error="..."
-    ☐ Интернационализация/локализация
-    ☐ Все комментарии на английском
-    ☐ Покрыть UI авто-тестом
-
-Для каждого метода в app.py:
-    ☐ Заполнить самодокументирование
-    ☐ Везде где есть входные переменные - проверять их наличие и значение
-    ☐ Покрыть код try-catch-finaly
-    ☐ Покрыть код with вместо open, close
-    ☐ Все SQL запросы беруться из справочника - проверяем на SQLLite и MySQL
-    ✘ Сделать unit-test @cancelled(19-02-26 23:40)
-
-Every commit checklist:
-    ☐ No errors or warnings in pylint or eslint
-    ☐ Developed feature is covered by cypress test
-    ☐ App engine deployed successfully
-    ☐ Automated test process pass:
-        ☐ All cypress tests passed localy
-        ☐ All cypress tests passed on app engine
-
-Every new version checklist:
-    ☐ Locale is updated. All translations are done
-    ☐ Pypi package is updated
-    ☐ App engine file storage is updated
-    ☐ App engine application is created from market
-    ☐ Docker image is updated
-    ☐ Kubernates image is updated
-    ☐ e2e tests are passed on all platforms
-        ☐ windows - standalone
-        ☐ linux - standalone
-        ☐ linux - wsgi
-        ☐ app engine
-        ☐ docker
-        ☐ kubernate
-    ☐ Version upgrade is tested
-    ☐ Version rollback is tested
-    ☐ New documentation is released
-    ☐ After everything - automatic version incriment and Github pull request to master
-
-
+            ✔ Деплой в Google App Engine @done(19-03-15 16:43)
+                ✔ Create google ax account @done(19-03-15 09:25)
+                ✔ Deploy AX @done(19-03-15 16:43)
 
 =========================================================================================================                                
             
 AX 20:
 	☐ ADMIN INDEX
 		✔ Полная структура навигации с всеми компонентами @done(19-02-15 14:53)
-		☐ from-constructor-drawer
+		✔ from-constructor-drawer
 		☐ form-constructor-create
 	☐ FORM CONSTRUCTOR
 		☐ form-constructor
@@ -318,6 +241,12 @@ AX 20:
 		☐ Install application from yaml
     ☐ Add clould logger for python and vue
 
+Additional versions:
+    ☐ Sass
+        ☐ Деплой в App Engine через Market
+    ☐ Сборка docker image и деплой куда-то
+    ☐ Kubernates
+
 
 =============================================================================================
 
@@ -358,6 +287,7 @@ NEW FROG TODOS:
         ✔ scheduler - UTC zone from app.yaml @done(19-03-12 09:25)
         ☐ model - database constring, set binary=False if DB have uuid type
         ☐ package.json
+    ☐ `[IMPORTANT]` Websockets not working in App Engine Standard! https://issuetracker.google.com/issues/35886348
 
 
 NEW FEATURES:
@@ -377,6 +307,149 @@ MAYBE LATER:
     ☐ Автодокументирование vue.js кода
     ☐ Automatic version from Git - https://pypi.org/project/setuptools-git-version/
     ☐ PBR - automatic versioning based on Git - https://docs.openstack.org/pbr/latest/user/features.html
+    ☐ Делаем инструкцию по настройке рабочего места
+
+
+==============================================================================================
+
+
+Критерии работы экосистемы:
+    ✔ Файловая структура - Модель, Контроллер @done(19-02-26 16:22)
+    ✔ Система билда - минификация, условная загрузка @done(19-03-07 21:44)
+    ✘ Должна быть сгенерирована авто-документация по методам python @cancelled(19-02-26 16:22)
+    ✘ Должна быть сгенерирована авто-документация по компонентам Vue @cancelled(19-02-26 16:22)
+    ✔ Должна собираться и запускаться из pip @done(19-03-12 16:14)
+        ✔ Должна тянуть все зависимости через pip и npm - requirements.txt @done(19-03-12 16:14)
+        ✔ Должна разворачиваться SQL Lite @done(19-02-26 23:39)
+    ✔ Должна деплоится и работать на app-engine @done(19-03-15 16:45)
+    ☐ Должен работать автодеплой внутри app-engine
+    ☐ Должны быть сформулированы behave сценарии тестирования
+    ☐ Работает механизм обновления модуля - pip upgrade обновляет модуль, БД конфигуриться при первом запуске через SqlAlchemy patch
+        ☐ Alembic
+        ☐ pip upgrade
+    ☐ Работает механизм подключения плагинов
+    ☐ Должны быть развернуты версии для тестирования - 
+        ☐ Версия в appengine
+        ☐ Версия которая собирается через pip - SQLLite
+        ☐ Версия Docker с MySQL - ??
+    ☐ Должны прогоняться ui тесты согласно behave сценариям по всем развернутым версиям
+    ☐ Быстрая настройка рабочего места
+        ☐ Инструкция по конфигурированию рабочего места
+        ☐ Из гита тянем сорс, запускаем автоконфиг - тянутся все зависимости для рабочего места и все модули javascript
+    ✔ WebSockets обновление грида, дека @done(19-02-26 16:23)
+    ☐ Check all elements - https://github.com/harshanarayana/cookiecutter-sanic
+
+Для каждого веб-елемента:
+    ☐ Документирование 
+    ☐ Для каждого ajax - on-error="..."
+    ☐ Интернационализация/локализация
+    ☐ Все комментарии на английском
+    ☐ Покрыть UI авто-тестом
+
+Для каждого метода в main.py:
+    ☐ Заполнить самодокументирование
+    ☐ Везде где есть входные переменные - проверять их наличие и значение
+    ☐ Покрыть код try-catch-finaly
+    ☐ Покрыть код with вместо open, close
+    ☐ Все SQL запросы беруться из справочника - проверяем на SQLLite и MySQL
+    ✘ Сделать unit-test @cancelled(19-02-26 23:40)
+
+Every commit checklist:
+    ☐ No errors or warnings in pylint or eslint
+    ☐ Developed feature is covered by cypress test
+    ☐ App engine deployed successfully
+    ☐ Automated test process pass:
+        ☐ All cypress tests passed localy
+        ☐ All cypress tests passed on app engine
+
+Every new version checklist:
+    ☐ Locale is updated. All translations are done
+    ☐ Pypi package is updated
+    ☐ App engine file storage is updated
+    ☐ App engine application is created from market
+    ☐ Docker image is updated
+    ☐ Kubernates image is updated
+    ☐ e2e tests are passed on all platforms
+        ☐ windows - standalone
+        ☐ linux - standalone
+        ☐ linux - wsgi
+        ☐ app engine
+        ☐ docker
+        ☐ kubernate
+    ☐ Version upgrade is tested
+    ☐ Version rollback is tested
+    ☐ New documentation is released
+    ☐ After everything - automatic version incriment and Github pull request to master
+
+==============================================================================================
+
+Критерии работы экосистемы:
+    ✔ Файловая структура - Модель, Контроллер @done(19-02-26 16:22)
+    ✔ Система билда - минификация, условная загрузка @done(19-03-07 21:44)
+    ✘ Должна быть сгенерирована авто-документация по методам python @cancelled(19-02-26 16:22)
+    ✘ Должна быть сгенерирована авто-документация по компонентам Vue @cancelled(19-02-26 16:22)
+    ✔ Должна собираться и запускаться из pip @done(19-03-12 16:14)
+        ✔ Должна тянуть все зависимости через pip и npm - requirements.txt @done(19-03-12 16:14)
+        ✔ Должна разворачиваться SQL Lite @done(19-02-26 23:39)
+    ✔ Должна деплоится и работать на app-engine @done(19-03-15 16:45)
+    ☐ Должен работать автодеплой внутри app-engine
+    ☐ Должны быть сформулированы behave сценарии тестирования
+    ☐ Работает механизм обновления модуля - pip upgrade обновляет модуль, БД конфигуриться при первом запуске через SqlAlchemy patch
+        ☐ Alembic
+        ☐ pip upgrade
+    ☐ Работает механизм подключения плагинов
+    ☐ Должны быть развернуты версии для тестирования - 
+        ☐ Версия в appengine
+        ☐ Версия которая собирается через pip - SQLLite
+        ☐ Версия Docker с MySQL - ??
+    ☐ Должны прогоняться ui тесты согласно behave сценариям по всем развернутым версиям
+    ☐ Быстрая настройка рабочего места
+        ☐ Инструкция по конфигурированию рабочего места
+        ☐ Из гита тянем сорс, запускаем автоконфиг - тянутся все зависимости для рабочего места и все модули javascript
+    ✔ WebSockets обновление грида, дека @done(19-02-26 16:23)
+    ☐ Check all elements - https://github.com/harshanarayana/cookiecutter-sanic
+
+Для каждого веб-елемента:
+    ☐ Документирование 
+    ☐ Для каждого ajax - on-error="..."
+    ☐ Интернационализация/локализация
+    ☐ Все комментарии на английском
+    ☐ Покрыть UI авто-тестом
+
+Для каждого метода в main.py:
+    ☐ Заполнить самодокументирование
+    ☐ Везде где есть входные переменные - проверять их наличие и значение
+    ☐ Покрыть код try-catch-finaly
+    ☐ Покрыть код with вместо open, close
+    ☐ Все SQL запросы беруться из справочника - проверяем на SQLLite и MySQL
+    ✘ Сделать unit-test @cancelled(19-02-26 23:40)
+
+Every commit checklist:
+    ☐ No errors or warnings in pylint or eslint
+    ☐ Developed feature is covered by cypress test
+    ☐ App engine deployed successfully
+    ☐ Automated test process pass:
+        ☐ All cypress tests passed localy
+        ☐ All cypress tests passed on app engine
+
+Every new version checklist:
+    ☐ Locale is updated. All translations are done
+    ☐ Pypi package is updated
+    ☐ App engine file storage is updated
+    ☐ App engine application is created from market
+    ☐ Docker image is updated
+    ☐ Kubernates image is updated
+    ☐ e2e tests are passed on all platforms
+        ☐ windows - standalone
+        ☐ linux - standalone
+        ☐ linux - wsgi
+        ☐ app engine
+        ☐ docker
+        ☐ kubernate
+    ☐ Version upgrade is tested
+    ☐ Version rollback is tested
+    ☐ New documentation is released
+    ☐ After everything - automatic version incriment and Github pull request to master
 
 
 ============================================================================================

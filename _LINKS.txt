@@ -154,13 +154,16 @@ GRAPHQL
     https://habr.com/ru/post/332850/
 
 
+
 PUBLISHING TO PYPI
     https://realpython.com/pypi-publish-python-package/
     https://github.com/cfhamlet/os-sanic/blob/master/setup.py
-    
+
+
 
 ERROR HANDLING
     https://blog.apollographql.com/full-stack-error-handling-with-graphql-apollo-5c12da407210
+
 
 
 ALEMBIC
@@ -168,13 +171,16 @@ ALEMBIC
     ☐ alembic revision --autogenerate -m "description of changes"
     ☐ https://sqlalchemy-migrate.readthedocs.io/en/latest/                
     
+
 CI INSPIRATIONS
     https://blog.kylegalbraith.com/2018/08/14/how-to-run-browser-tests-via-cypress-in-your-cicd-pipeline-with-aws-codebuild/
-
+    https://aws.amazon.com/ru/codepipeline/
+    https://cloud.google.com/cloud-build/?ref=stackshare
 
 
 DECK INSPIRATIONS
     https://github.com/gollum/gollum#markups
+    https://tray.io/
 
 
 
