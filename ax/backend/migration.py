@@ -92,5 +92,6 @@ def init_migration():
     if tables_exist() is False:
         create_tables()
     else:
-        if database_fits_metadata() is False:
-            upgrade_database()
+        pass
+        # if database_fits_metadata() is False:
+        #     upgrade_database()

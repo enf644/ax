@@ -16,20 +16,18 @@ const GET_ALL_USERS_QUERY = gql`
     query {
       allUsers {
         name,
-        email,
-        username
+        email
       }
     }
 `;
 
 const CREATE_NEW_USER_QUERY = gql`
-  mutation ($name: String!, $email: String!, $username: String!) {
-    createUser(name: $name, email: $email, username: $username) {
+  mutation ($name: String!, $email: String!) {
+    createUser(name: $name, email: $email) {
       user {
-        uuid,
+        guid,
         name,
-        email,
-        username
+        email
       }
       ok
     }
@@ -57,7 +55,7 @@ const actions = {
   createNewUser() {
     apolloClient.mutate({
       mutation: CREATE_NEW_USER_QUERY,
-      variables: { name: 'Jhony', email: 'jhony@dot.ru', username: 'ddha' }
+      variables: { name: 'Jhony', email: 'jhony@dot.ru' }
     })
       .then(data => {
         logger.info(data);

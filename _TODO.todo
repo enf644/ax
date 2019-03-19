@@ -178,7 +178,13 @@ AX 20:
 	☐ ADMIN INDEX
 		✔ Полная структура навигации с всеми компонентами @done(19-02-15 14:53)
 		✔ from-constructor-drawer
-		☐ form-constructor-create
+        ☐ Form tree
+            ☐ Create all tables from model
+            ☐ jstree or alternative
+            ☐ GraphQL schema in py - select, update
+            ☐ GraphQL query in vue
+            ☐ jstree on real data
+		☐ form-constructor-createp
 	☐ FORM CONSTRUCTOR
 		☐ form-constructor
 			☐ form-constructor-tab

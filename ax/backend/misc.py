@@ -84,7 +84,7 @@ def load_configuration() -> None:
                     raise LookupError(err)
                 for key, value in yaml_vars['env_variables'].items():
                     if value:
-                        os.environ[key] = value
+                        os.environ[key] = str(value)
             except yaml.YAMLError as exc:
                 err = 'Configuration failed, cant parse yaml - ' + exc
                 logger.error(err)

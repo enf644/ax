@@ -28,7 +28,6 @@ class CreateUser(graphene.Mutation):
     class Arguments:  # pylint: disable=missing-docstring
         name = graphene.String()
         email = graphene.String()
-        username = graphene.String()
 
     ok = graphene.Boolean()
     user = graphene.Field(User)
@@ -39,7 +38,6 @@ class CreateUser(graphene.Mutation):
             new_user = AxUser(
                 name=args.get('name'),
                 email=args.get('email'),
-                username=args.get('username')
             )
             ax_model.db_session.add(new_user)
             ax_model.db_session.commit()
@@ -64,10 +62,10 @@ class MutationExample(graphene.Mutation):
 
 
 # Used to Change Username with Email
-class ChangeUsername(graphene.Mutation):
+class ChangeUserName(graphene.Mutation):
     """Update AxUser"""
     class Arguments:  # pylint: disable=missing-docstring
-        username = graphene.String()
+        name = graphene.String()
         email = graphene.String()
 
     ok = graphene.Boolean()
@@ -79,21 +77,21 @@ class ChangeUsername(graphene.Mutation):
             del info
             query = User.get_query(context)
             email = args.get('email')
-            username = args.get('username')
+            name = args.get('name')
             user = query.filter(AxUser.email == email).first()
-            user.username = username
+            user.name = name
             ax_model.db_session.commit()
             ok = True
-            return ChangeUsername(user=user, ok=ok)
+            return ChangeUserName(user=user, ok=ok)
         except Exception:
-            logger.exception('Error in gql mutation - ChangeUsername.')
+            logger.exception('Error in gql mutation - ChangeUserName.')
             raise
 
 
 class UsersQuery(graphene.ObjectType):
     """AxUser queryes"""
     user = SQLAlchemyConnectionField(User)
-    find_user = graphene.Field(lambda: User, username=graphene.String())
+    find_user = graphene.Field(lambda: User, email=graphene.String())
     all_users = graphene.List(User)
 
     async def resolve_all_users(self, info):
@@ -112,10 +110,10 @@ class UsersQuery(graphene.ObjectType):
         try:
             del info
             query = User.get_query(context)
-            username = args.get('username')
+            email = args.get('email')
             # you can also use and_ with filter()
             # eg: filter(and_(param1, param2)).first()
-            return query.filter(AxUser.username == username).first()
+            return query.filter(AxUser.email == email).first()
         except Exception:
             logger.exception('Error in GQL query - find_user.')
             raise
@@ -154,5 +152,5 @@ class UsersSubscription(graphene.ObjectType):
 class UsersMutations(graphene.ObjectType):
     """Contains all AxUser mutations"""
     create_user = CreateUser.Field()
-    change_username = ChangeUsername.Field()
+    change_username = ChangeUserName.Field()
     mutation_example = MutationExample.Field()
