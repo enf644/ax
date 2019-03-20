@@ -28,7 +28,7 @@ env_variables:
   # AX_REDIS_TIMEOUT:  #  default='1'
   AX_TIMEZONE: Europe/Moscow #  default=UTC
   AX_LOGS_LEVEL: DEBUG # ERROR, WARNING, INFO, DEBUG. default = ERROR
-  AX_LOGS_FILENAME: ax_logs.log #  If not set, logs only output to stdio
+  # AX_LOGS_FILENAME: ax_logs.log #  If not set, logs only output to stdio
   # AX_LOGS_ABSOLUTE_PATH: 'D:\Projects\' #  default =
   AX_DB_REVISION: v0.0.11_2b12003a3b8
   # AX_DB_DIALECT:

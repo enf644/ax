@@ -7,13 +7,14 @@ from graphene import relay
 from loguru import logger
 from backend.schemas.users_schema import User, UsersQuery
 from backend.schemas.users_schema import UsersMutations, UsersSubscription
+from backend.schemas.forms_schemas import Form, FormsQuery, FormMutations
 from backend.schemas.home_schema import HomeQuery
 
 this = sys.modules[__name__]
 schema = None
 
 
-class Query(UsersQuery, HomeQuery, graphene.ObjectType):
+class Query(FormsQuery, UsersQuery, HomeQuery, graphene.ObjectType):
     """Combines all schemas queryes"""
     node = relay.Node.Field()
     hello = graphene.String(argument=graphene.String(default_value="stranger"))
@@ -24,7 +25,7 @@ class Query(UsersQuery, HomeQuery, graphene.ObjectType):
         return 'Hello ' + argument
 
 
-class Mutations(UsersMutations, graphene.ObjectType):
+class Mutations(FormMutations, UsersMutations, graphene.ObjectType):
     """Combines all schemas mutations"""
 
 
@@ -38,7 +39,7 @@ def init_schema():
         this.schema = graphene.Schema(
             query=Query,
             mutation=Mutations,
-            types=[User],
+            types=[User, Form],
             subscription=Subscription
         )
     except Exception:

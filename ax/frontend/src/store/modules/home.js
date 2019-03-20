@@ -1,3 +1,7 @@
+// import apolloClient from '../../apollo';
+// import gql from 'graphql-tag';
+// import logger from '../../logger';
+
 const mutations = {
   increment(state) {
     state.count += 1;
@@ -6,9 +10,13 @@ const mutations = {
 };
 
 const getters = {};
-const actions = {};
+const actions = {
 
-const state = {};
+};
+
+const state = {
+
+};
 
 export default {
   namespaced: true,

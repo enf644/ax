@@ -34,7 +34,10 @@ module.exports = {
       module: {
         rules: []
       },
-      plugins: [new Visualizer(), new VuetifyLoaderPlugin()]
+      plugins: [
+        new Visualizer(),
+        new VuetifyLoaderPlugin()
+      ]
     };
 
     if (process.env.NODE_ENV === 'production') {

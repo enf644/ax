@@ -179,12 +179,24 @@ AX 20:
 		✔ Полная структура навигации с всеми компонентами @done(19-02-15 14:53)
 		✔ from-constructor-drawer
         ☐ Form tree
-            ☐ Create all tables from model
-            ☐ jstree or alternative
-            ☐ GraphQL schema in py - select, update
-            ☐ GraphQL query in vue
-            ☐ jstree on real data
-		☐ form-constructor-createp
+            ✔ Create all tables from model @done(19-03-19 11:33)
+            ✔ jstree or alternative @done(19-03-19 13:17)
+            ✔ GraphQL schema in py - select, update @done(19-03-19 14:52)
+            ✔ Create AxForm @done(19-03-20 11:49)
+                ✔ Popup with form @done(19-03-19 15:54)
+                ✔ Unique db_names. @done(19-03-19 17:08)
+                ✔ Call gql mutation from form @done(19-03-19 17:58)
+                ✔ Validate if table already exists @done(19-03-19 20:41)
+                ✔ Close modal and erase data @done(19-03-19 20:41)
+                ✔ If db_name is changed - validation must pass @done(19-03-20 10:58)
+                ✔ Cancel button and Click outside popup @done(19-03-20 11:34)
+                ✔ Regular expression for db_name @done(19-03-20 11:49)
+            ☐ jstree on real data using vuex state
+            ☐ Create folder
+            ☐ Move to folder, change order
+            ☐ Popup messages
+            ☐ Internalisation
+            ☐ Create cy test
 	☐ FORM CONSTRUCTOR
 		☐ form-constructor
 			☐ form-constructor-tab

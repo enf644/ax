@@ -140,6 +140,21 @@ class AxForm(Base):
     from_state_object = None
 
 
+class AxFormData():
+    """Dummy for each AxForm instance"""
+    guid = Column(GUID(), primary_key=True,
+                  default=uuid.uuid4, unique=True, nullable=False)
+    ax_num = Column(Integer())
+    ax_state = Column(String(255))
+
+
+def get_form_data_table(_db_name):
+    """Returns dummy for new AxForm db table"""
+    classname = "AxForm_" + _db_name
+    result_table = type(classname, (Base, AxFormData), {'__tablename__' : _db_name})
+    return result_table
+
+
 class AxFieldType(Base):
     """List of avalible ax field types"""
     __tablename__ = '_ax_field_types'

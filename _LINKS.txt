@@ -101,6 +101,15 @@ TREE
     https://amsik.github.io/liquor-tree/#Drag-amp-Drop - nice, but limited
 
 
+
+Tree checklist
+    Drag before or after
+    Clone
+    prevent drag, prevent drop
+    Auto open folder on drag
+
+
+
 JS LOGGER
     https://sentry.io/welcome/  
     https://logrocket.com/
@@ -182,13 +191,6 @@ DECK INSPIRATIONS
     https://github.com/gollum/gollum#markups
     https://tray.io/
 
-
-
-Tree checklist
-    Drag before or after
-    Clone
-    prevent drag, prevent drop
-    Auto open folder on drag
 
 
 Query builder
