@@ -1,96 +1,166 @@
 <template>
   <div>
+    <h3>Ax Forms:</h3>
     <div ref='tree'></div>
     <br>
-    <br>
-    <v-btn @click='openModal'>
-      <font-awesome-icon class='breadcrumbs-action' icon='plus'/>&nbsp; Add new form
+    <v-btn @click='openFormModal' small>
+      <font-awesome-icon icon='plus'/>&nbsp; Create form
+    </v-btn>
+
+    <v-btn @click='openFolderModal' small>
+      <font-awesome-icon icon='folder'/>&nbsp; Create folder
     </v-btn>
 
     <!--  transition='animated flipInX faster' -->
     <modal adaptive height='auto' name='new-form'>
-      <TheNewForm @created='closeModal'/>
+      <TheNewForm @created='closeFormModal'/>
     </modal>
-    <br>
-    <br>
-    <br>
 
-    <ul>
-      <li :key='form.dbName' v-for='form in forms'>{{ form.dbName }}</li>
-    </ul>
+    <modal adaptive height='auto' name='new-folder'>
+      <TheNewFolder @created='closeFolderModal'/>
+    </modal>
 
     <br>
     <br>
-    <br>
-    <li>
-      <router-link to='/admin/alfa_obj/form'>Alfa</router-link>
-    </li>
-    <li>
-      <router-link to='/admin/beta_obj/form'>Beta</router-link>
-    </li>
-    <li>
-      <router-link to='/admin/gamma_obj/form'>Gamma</router-link>
-    </li>
 
-    <hr>
-    <li>
-      <router-link to='/admin/users'>Users</router-link>
-    </li>
-    <li>
-      <router-link to='/admin/marketplace'>Marketplace</router-link>
-    </li>
-    <li>
-      <router-link to='/admin/deck'>Deck designer</router-link>
-    </li>
+    <h3>Settings:</h3>
+    <br>
+    <v-btn small to='/admin/users'>
+      <font-awesome-icon icon='user'/>&nbsp; Users
+    </v-btn>
+
+    <v-btn small to='/admin/marketplace'>
+      <font-awesome-icon icon='store'/>&nbsp; Marketplace
+    </v-btn>
+
+    <v-btn small to='/admin/deck'>
+      <font-awesome-icon icon='money-check-alt'/>&nbsp; Deck designer
+    </v-btn>
   </div>
 </template>
 
 <script>
+/* eslint-disable no-unused-vars */
+
 import $ from 'jquery';
 import 'jstree/dist/jstree.js';
 import 'jstree/dist/themes/default/style.css';
 import TheNewForm from '@/components/AdminHome/TheNewForm.vue';
+import TheNewFolder from '@/components/AdminHome/TheNewFolder.vue';
 
 export default {
   name: 'home-drawer',
   components: {
-    TheNewForm
+    TheNewForm,
+    TheNewFolder
   },
   data() {
     return {};
   },
   computed: {
     forms() {
-      return this.$store.state.form.forms;
+      return this.$store.state.home.forms;
+    }
+  },
+  watch: {
+    forms() {
+      if (this.$store.state.home.positionChangedFlag) {
+        // If state change is started by changing node order -> then no need for refresh
+        this.$store.commit('home/setPositionChangedFlag', false);
+      } else {
+        const tree = $(this.$refs.tree).jstree(true);
+        tree.settings.core.data = this.$store.getters['home/jsTreeData'];
+        tree.refresh();
+      }
     }
   },
   created() {
-    this.$store.dispatch('form/getAllForms');
+    if (!this.$store.state.home.isFormsLoaded) {
+      this.$store.dispatch('home/getAllForms');
+    }
   },
   mounted() {
-    // this.$log.info();
     window.jQuery = $;
     window.$ = $;
-    $(this.$refs.tree).jstree({
-      core: {
-        data: [
-          {
-            text: 'Root node',
-            children: [{ text: 'Child node 1' }, { text: 'Child node 2' }]
-          }
-        ]
-      }
-    });
+    this.initJstree(this.$store.getters['home/jsTreeData']);
   },
   methods: {
-    openModal() {
+    openFormModal() {
       this.$modal.show('new-form');
     },
-    closeModal() {
+    closeFormModal() {
       this.$modal.hide('new-form');
     },
-    creteNewForm() {
-      this.$log.info('Create form');
+    openFolderModal() {
+      this.$modal.show('new-folder');
+    },
+    closeFolderModal() {
+      this.$modal.hide('new-folder');
+    },
+    getPositionList() {
+      const orderList = [];
+      const tree = $(this.$refs.tree).jstree(true);
+      const jsonNodes = tree.get_json('#', { flat: true });
+      $.each(jsonNodes, (i, node) => {
+        const parentNode = tree.get_node(node.parent);
+        const newPosition = $.inArray(node.id, parentNode.children);
+        const nodeInfo = {
+          guid: node.id,
+          position: newPosition,
+          parent: node.parent
+        };
+        orderList.push(nodeInfo);
+
+        const nodeObject = tree.get_node(node.id);
+        nodeObject.data.position = newPosition;
+      });
+      return orderList;
+    },
+    initJstree(jsTreeData) {
+      // const tree = $(this.$refs.tree).jstree(true);
+      $(this.$refs.tree)
+        .on('move_node.jstree', (e, data) => {
+          const positionData = this.getPositionList();
+          this.$store.dispatch('home/changeFormsPositions', {
+            positions: positionData
+          });
+        })
+        .on('select_node.jstree', (e, data) => {
+          if (data.node.type === 'folder') {
+            this.$log.log('Open folder modal');
+          } else {
+            this.$router.push({
+              path: `/admin/${data.node.data.dbName}/form`
+            });
+          }
+        })
+        .jstree({
+          core: {
+            data: jsTreeData,
+            // eslint-disable-next-line camelcase
+            check_callback(operation, node, node_parent, node_position, more) {
+              return true;
+            }
+          },
+          plugins: ['types', 'dnd', 'sort'],
+          types: {
+            default: {
+              icon: false,
+              valid_children: ['default']
+            },
+            folder: {
+              icon: false,
+              valid_children: ['default', 'folder'],
+              a_attr: { class: 'tree-folder' }
+            }
+          },
+          sort(a, b) {
+            return this.get_node(a).data.position
+              > this.get_node(b).data.position
+              ? 1
+              : -1;
+          }
+        });
     }
   }
 };

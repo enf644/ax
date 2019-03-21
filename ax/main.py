@@ -21,6 +21,9 @@ from loguru import logger
 from docopt import docopt
 from graphql.execution.executors.asyncio import AsyncioExecutor
 
+from typing import Dict, Any
+from graphql import GraphQLError
+
 # Add folder with main.py to sys.path.
 root_path = Path(__file__).parent.resolve()
 if root_path not in sys.path:
@@ -53,6 +56,13 @@ def init_model():
         sqlite_absolute_path=os.environ.get(
             'AX_DB_SQLITE_ABSOLUTE_PATH') or None
     )
+
+
+class AxGraphQLView(GraphQLView):
+    @staticmethod
+    def format_error(error):
+        logger.error(error)
+        return GraphQLView.format_error(error)
 
 
 def init_ax():
@@ -92,12 +102,32 @@ def init_ax():
     @app.listener('before_server_start')
     def init_graphql(_app, _loop):  # pylint: disable=unused-variable
         """Initiate graphql"""
-        graphql_view = GraphQLView.as_view(schema=ax_schema.schema,
-                                           graphiql=False,
-                                           executor=AsyncioExecutor(loop=_loop))
+        graphql_view = AxGraphQLView.as_view(schema=ax_schema.schema,
+                                             graphiql=False,
+                                             executor=AsyncioExecutor(loop=_loop))
         _app.add_route(graphql_view, '/api/graphql')
 
     ax_routes.init_routes(app)
+
+
+ax_logo = """
+                                                           
+                                           .               
+                                          .(               
+       ..                                 /(#              
+       ...           --- AX ---          ,/((////.         
+       ...,,                             ***(/////,        
+     ****,,,*/                          (****((///*        
+      ****///////                   ./(((#***/((/*,,,.     
+      ,/**////////((((/,      ,(((((((((/((**,.,..         
+        ####(///((((((((((((#((((((((((////* ..            
+          ##(((((((((((((##((((((((((((///,                
+             .#(((((((  ##(((((((((((((///                 
+                       ###(###/      /(///                 
+                      #####           (//,                 
+                      ##(#            (//                  
+                                                           
+"""
 
 
 def main():
@@ -115,6 +145,7 @@ def main():
     if arguments['--port']:
         port = int(arguments['--port'])
 
+    print(ax_logo)
     logger.info('Running Ax on {host}:{port}', host=host, port=port)
     app.run(host=host, port=port, debug=debug, access_log=access_log)
 

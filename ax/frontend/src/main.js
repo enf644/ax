@@ -1,8 +1,10 @@
 // Core dependencies
+
+// import 'typeface-roboto';
+// import 'roboto-npm-webfont';
 import Vue from 'vue';
 import vueCustomElement from 'vue-custom-element'; // create web component from vue component
 import 'document-register-element'; // polyfill for vue-custom-element
-import 'roboto-fontface-woff/css/roboto-condensed/roboto-condensed-fontface.css';
 import 'animate.css/animate.min.css';
 import VueI18n from 'vue-i18n';
 import { languages, defaultLocale } from './locale/index.js';

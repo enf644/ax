@@ -1,28 +1,23 @@
 <template>
   <div>
-    <h1>{{ count }}</h1>
-    <v-btn @click='increment'>+</v-btn>
-    <v-btn @click='decrement'>-</v-btn>
+    <v-sheet class='test-container' elevation='5' light ref='sheet'>
+      <ul data-cy='user-list'>
+        <li :key='user.guid' v-for='user in users'>{{ user.name }} -> {{ user.email }}</li>
+      </ul>
 
-    <hr>
+      <br>
 
-    <ul data-cy='user-list'>
-      <li :key='user.guid' v-for='user in users'>{{ user.name }} -> {{ user.email }}</li>
-    </ul>
+      <v-btn
+        @click='createNewUser'
+        color='success'
+        data-cy='add-new-user'
+      >{{$t("users.add-new-user")}}</v-btn>
 
-    <br>
-    <br>
-    <br>
-    <br>
-    <v-btn
-      @click='createNewUser'
-      color='success'
-      data-cy='add-new-user'
-    >{{$t("users.add-new-user")}}</v-btn>
-
-    <br>
-    {{ $t("hello")}}
-    <br>
+      <br>
+      <br>
+      <h1>{{ $t("hello")}}</h1>
+      <br>
+    </v-sheet>
   </div>
 </template>
 
@@ -31,9 +26,10 @@ export default {
   name: 'admin-toolbar',
   created() {
     // this.$log.info(this.$language.available);
-
-    this.$store.dispatch('users/getAllUsers');
-    this.$store.dispatch('users/subscribeToUsers');
+    if (!this.$store.state.users.isUsersLoaded) {
+      this.$store.dispatch('users/getAllUsers');
+      this.$store.dispatch('users/subscribeToUsers');
+    }
   },
   computed: {
     count() {
@@ -58,4 +54,8 @@ export default {
 </script>
 
 <style scoped>
+.test-container {
+  margin: 20px;
+  padding: 20px;
+}
 </style>

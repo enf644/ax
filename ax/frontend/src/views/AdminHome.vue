@@ -41,23 +41,21 @@ export default {
     // ws.onmessage = function onMessage(evt) {
     //   this.$log.info(evt.data);
     // }.bind(this);
-
-    this.$log.info('running ajax');
-    axios
-      .get('/api/hello', {
-        params: {
-          object_id: 12349
-        }
-      })
-      .then(response => {
-        this.$log.info(response);
-      })
-      .catch(error => {
-        this.$log.error(error);
-      })
-      .then(() => {
-        // always executed
-      });
+    // axios
+    //   .get('/api/hello', {
+    //     params: {
+    //       object_id: 12349
+    //     }
+    //   })
+    //   .then(response => {
+    //     this.$log.info(response);
+    //   })
+    //   .catch(error => {
+    //     this.$log.error(error);
+    //   })
+    //   .then(() => {
+    //     // always executed
+    //   });
   }
 };
 </script>

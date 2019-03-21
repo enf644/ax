@@ -122,7 +122,7 @@ class AxForm(Base):
                   default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String(255))
     db_name = Column(String(255))
-    parent = Column(Integer())
+    parent = Column(GUID())
     position = Column(Integer())
     fields = relationship(
         "AxField", order_by="AxField.position", cascade="all, delete-orphan")
@@ -151,7 +151,8 @@ class AxFormData():
 def get_form_data_table(_db_name):
     """Returns dummy for new AxForm db table"""
     classname = "AxForm_" + _db_name
-    result_table = type(classname, (Base, AxFormData), {'__tablename__' : _db_name})
+    result_table = type(classname, (Base, AxFormData),
+                        {'__tablename__': _db_name})
     return result_table
 
 
@@ -161,7 +162,7 @@ class AxFieldType(Base):
     guid = Column(GUID(), primary_key=True,
                   default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String(255))
-    parent = Column(Integer())
+    parent = Column(GUID())
     position = Column(Integer())
     default_name = Column(String(255))
     default_db_name = Column(String(255))
@@ -193,7 +194,7 @@ class AxField(Base):
     is_folder = Column(Boolean, unique=False, default=False)
     is_required = Column(Boolean, unique=False, default=False)
     is_whole_row = Column(Boolean, unique=False, default=False)
-    parent = Column(Integer)
+    parent = Column(GUID())
     value = None
     is_readonly = False
     needs_sql_update = False
@@ -259,7 +260,7 @@ class AxUser(Base):
     is_group = Column(Boolean, unique=False, default=False)
     is_virtual = Column(Boolean, unique=False, default=False)
     is_admin = False
-    parent = Column(Integer)
+    parent = Column(GUID())
     position = Column(Integer)
     users = relationship(
         "AxUser",

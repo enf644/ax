@@ -44,7 +44,6 @@ const actions = {
       variables: {}
     })
       .then(data => {
-        logger.info(data);
         commit('setUsers', data.data.allUsers);
       })
       .catch(error => {
@@ -88,6 +87,7 @@ const actions = {
 const mutations = {
   setUsers(state, users) {
     state.all = users;
+    state.isUsersLoaded = true;
   },
   addUser(state, userData) {
     const newUser = {
@@ -100,7 +100,8 @@ const mutations = {
 
 
 const state = {
-  all: []
+  all: [],
+  isUsersLoaded: false
 };
 
 export default {

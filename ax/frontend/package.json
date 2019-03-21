@@ -23,7 +23,6 @@
         "jquery": "^3.3.1",
         "jstree": "^3.3.7",
         "logdown": "^3.2.7",
-        "roboto-fontface-woff": "^0.8.0",
         "splitpanes": "^1.11.1",
         "subscriptions-transport-ws": "^0.9.15",
         "vue": "^2.6.6",

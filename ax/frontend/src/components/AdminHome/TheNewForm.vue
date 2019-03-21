@@ -17,7 +17,7 @@
     </v-form>
     <br>
     <v-btn @click='createNewForm' small>
-      <font-awesome-icon class='breadcrumbs-action' icon='plus'/>&nbsp; Create ax form
+      <font-awesome-icon icon='plus'/>&nbsp; Create ax form
     </v-btn>
   </div>
 </template>
@@ -46,18 +46,17 @@ export default {
   },
   computed: {
     dbNameIsAvalible() {
-      return this.$store.state.form.dbNameIsAvalible;
+      return this.$store.state.home.dbNameIsAvalible;
     },
-    newFormCreated() {
-      return this.$store.state.form.newFormCreated;
+    modalMustClose() {
+      return this.$store.state.home.modalMustClose;
     }
   },
   watch: {
     dbNameIsAvalible() {
       this.$refs.form.validate();
     },
-    newFormCreated(newValue) {
-      this.$log.info('FORM CREATED WATCH');
+    modalMustClose(newValue) {
       if (newValue === true) {
         this.closeModal();
       }
@@ -69,7 +68,7 @@ export default {
   methods: {
     createNewForm() {
       if (this.$refs.form.validate()) {
-        this.$store.dispatch('form/createForm', {
+        this.$store.dispatch('home/createForm', {
           name: this.name,
           dbName: this.dbName
         });
@@ -79,14 +78,14 @@ export default {
     },
     resetDbNameValid() {
       if (this.dbNameIsAvalible === false) {
-        this.$store.commit('form/setDbNameIsAvalible', true);
+        this.$store.commit('home/setDbNameIsAvalible', true);
         this.$refs.form.validate();
       }
     },
     closeModal() {
       this.$emit('created');
-      this.$store.commit('form/setDbNameIsAvalible', true);
-      this.$store.commit('form/setNewFormCreated', false);
+      this.$store.commit('home/setDbNameIsAvalible', true);
+      this.$store.commit('home/setModalMustClose', false);
     }
   }
 };

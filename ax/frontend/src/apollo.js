@@ -29,6 +29,4 @@ const link = split(
 const cache = new InMemoryCache();
 const apolloClient = new ApolloClient({ link, cache });
 
-logger.info(`Ax -> GraphQL is looking at ${axHost}`);
-
 export default apolloClient;

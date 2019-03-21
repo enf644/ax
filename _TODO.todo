@@ -191,10 +191,15 @@ AX 20:
                 ✔ If db_name is changed - validation must pass @done(19-03-20 10:58)
                 ✔ Cancel button and Click outside popup @done(19-03-20 11:34)
                 ✔ Regular expression for db_name @done(19-03-20 11:49)
-            ☐ jstree on real data using vuex state
-            ☐ Create folder
-            ☐ Move to folder, change order
+            ✔ jstree on real data using vuex state @done(19-03-20 18:07)
+            ✔ Move to form, change order @done(19-03-21 17:08)
+            ✔ Update jstree on vuex state change @done(19-03-21 18:57)
+            ✔ Goto on node click @done(19-03-21 20:48)
+            ✔ Create folder @done(19-03-21 21:56)
+            ☐ Edit folder
             ☐ Popup messages
+            ☐ Frogs
+                ☐ small letters in db_name
             ☐ Internalisation
             ☐ Create cy test
 	☐ FORM CONSTRUCTOR
@@ -306,6 +311,8 @@ NEW FROG TODOS:
         ☐ model - database constring, set binary=False if DB have uuid type
         ☐ package.json
     ☐ `[IMPORTANT]` Websockets not working in App Engine Standard! https://issuetracker.google.com/issues/35886348
+    ☐ `[IMPORTANT]` Roboto font not working with webpack. Replace CDN dependency
+    ☐ `[IMPORTANT]` Replace CDN dependency for wont-awesome
 
 
 NEW FEATURES:
