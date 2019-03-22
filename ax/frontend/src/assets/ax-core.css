@@ -139,3 +139,7 @@ a {
 .tree-folder {
     font-weight: bold !important;
 }
+
+.v--modal-overlay {
+    z-index: 200 !important;
+}

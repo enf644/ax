@@ -2,5 +2,43 @@
     "hello": "Hello 44",
     "users": {
         "add-new-user": "Add new user"
+    },
+    "common": {
+        "lenght-error": "Must be less than {num} characters",
+        "confirm-yes": "Yes",
+        "confirm-no": "Cancel"
+    },
+    "home": {
+        "ax-forms": "Ax Forms",
+        "create-form-btn": "Create form",
+        "create-folder-btn": "Create folder",
+        "settings": "Settings",
+        "users-btn": "Users",
+        "marketplace-btn": "Marketplace",
+        "pages-designer-btn": "Pages designer",
+        "new-form": {
+            "header": "Creating new Ax Form",
+            "form-name": "Form name",
+            "form-database-name": "Database table name",
+            "create-btn": "Create new form",
+            "name-required": "Form name is required",
+            "db-name-required": "Database table name is required",
+            "db-name-not-avalible": "Database name is not avalible. Please choose enother.",
+            "db-name-valid-letters": "Use only latin letters, numbers and _ symbol",
+            "toast-form-created": "Form created"
+        },
+        "new-folder": {
+            "folder-name": "Folder name",
+            "name-required": "Folder name is required",
+            "create-btn": "Create folder",
+            "create-title": "Creating new folder",
+            "create-toast": "Folder created",
+            "update-title": "Updating folder",
+            "update-toast": " Folder updated",
+            "update-btn": "Update folder",
+            "delete-btn": "Delete folder",
+            "delete-toast": "Folder deleted",
+            "delete-confirm": "Do you realy want to delete this folder?"
+        }
     }
 }

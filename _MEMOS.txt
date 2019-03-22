@@ -28,7 +28,10 @@ LIMITS
     Only X fields
     No Redis
     No ActiveDirectory
-    Only English, Russian, Chineese, Indian
+    Only English (Later - Russian, Chineese, Indian, Spanish. Media process?)
+    No inline-edit
+    No Caching
+    
 
 NEW DOMAINS
     workflow.ax

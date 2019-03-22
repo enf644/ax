@@ -11,11 +11,24 @@ import { languages, defaultLocale } from './locale/index.js';
 import logger from './logger';
 import './assets/ax-core.css';
 import VModal from 'vue-js-modal';
+import VuetifyDialog from 'vuetify-dialog';
 
 // Admin dependencies
 import VueResize from 'vue-resize'; // detect element resize
 import 'vue-resize/dist/vue-resize.css';
-import Vuetify from 'vuetify/lib';
+import Vuetify, {
+  VSnackbar,
+  VDialog,
+  VCard,
+  VToolbar,
+  VIcon,
+  VToolbarTitle,
+  VCardText,
+  VCardTitle,
+  VCardActions,
+  VSpacer,
+  VBtn
+} from 'vuetify/lib';
 import 'vuetify/src/stylus/app.styl';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -36,10 +49,23 @@ const messages = Object.assign(languages);
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 library.add(fas);
 
+
 Vue.use(VModal, { dynamic: true, injectModalsContainer: true });
 Vue.use(VueI18n);
 Vue.use(Vuetify, {
-  components: {},
+  components: {
+    VSnackbar,
+    VDialog,
+    VCard,
+    VCardTitle,
+    VToolbar,
+    VIcon,
+    VToolbarTitle,
+    VCardText,
+    VCardActions,
+    VSpacer,
+    VBtn
+  },
   iconfont: 'faSvg',
   theme: {
     primary: '#3f51b5',
@@ -63,6 +89,10 @@ const i18n = new VueI18n({
   locale: defaultLocale,
   fallbackLocale: 'en',
   messages
+});
+
+Vue.use(VuetifyDialog, {
+  toast: { position: 'bottom-right' }
 });
 
 Vue.prototype.$log = logger; // Custom logger

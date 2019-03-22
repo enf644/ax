@@ -197,11 +197,14 @@ AX 20:
             ✔ Goto on node click @done(19-03-21 20:48)
             ✔ Create folder @done(19-03-21 21:56)
             ✔ Edit folder @done(19-03-22 10:32)
-            ✔ Delete folder @done(19-03-22 10:32)
-            ☐ Popup messages
-            ☐ Frogs
-                ☐ small letters in db_name
-            ☐ Internalisation
+            ✔ Popup messages @done(19-03-22 11:37)
+            ✔ Delete folder @done(19-03-22 13:18)
+            ✔ Frogs @done(19-03-22 13:57)
+                ✔ small letters in db_name @done(19-03-22 13:47)
+                ✔ Enter couses page reload @done(19-03-22 13:56)
+            ✔ Internalisation @done(19-03-22 17:21)
+                ✔ Take eveything from locale @done(19-03-22 16:53)
+                ✔ Make ru locale, test @done(19-03-22 17:21)
             ☐ Create cy test
 	☐ FORM CONSTRUCTOR
 		☐ form-constructor
@@ -314,6 +317,7 @@ NEW FROG TODOS:
     ☐ `[IMPORTANT]` Websockets not working in App Engine Standard! https://issuetracker.google.com/issues/35886348
     ☐ `[IMPORTANT]` Roboto font not working with webpack. Replace CDN dependency
     ☐ `[IMPORTANT]` Replace CDN dependency for wont-awesome
+    ☐ Remember opened nodes is JsTree
 
 
 NEW FEATURES:

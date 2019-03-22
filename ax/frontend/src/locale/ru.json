@@ -1,1 +1,44 @@
-{}
+{
+    "hello": "Привет 44",
+    "users": {
+        "add-new-user": "Создать пользователя"
+    },
+    "common": {
+        "lenght-error": "Должно быть менее {num} символов",
+        "confirm-yes": "Да",
+        "confirm-no": "Отмена"
+    },
+    "home": {
+        "ax-forms": "Ax формы",
+        "create-form-btn": "Создать форму",
+        "create-folder-btn": "Создать папку",
+        "settings": "Настройки",
+        "users-btn": "Пользователи",
+        "marketplace-btn": "Магазин приложений",
+        "pages-designer-btn": "Дизайнер страниц",
+        "new-form": {
+            "header": "Создание новой формы",
+            "form-name": "Название формы",
+            "form-database-name": "Название таблицы в базе данных",
+            "create-btn": "Создать форму",
+            "name-required": "Название обязательно",
+            "db-name-required": "Название таблицы базы данных обязательно",
+            "db-name-not-avalible": "Данное название таблицы недоступно. Пожалуйста, введите друго.",
+            "db-name-valid-letters": "Доступны только буквы, цыфры и символ _",
+            "toast-form-created": "Форма создана"
+        },
+        "new-folder": {
+            "folder-name": "Название папки",
+            "name-required": "Название папки обязательно",
+            "create-btn": "Создать папку",
+            "create-title": "Создание новой папки",
+            "create-toast": "Папка создана",
+            "update-title": "Обновление папки",
+            "update-toast": " Папка обновлена",
+            "update-btn": "Обновить папку",
+            "delete-btn": "Удалить папку",
+            "delete-toast": "Папка удалена",
+            "delete-confirm": "Вы действительно хотите удалить эту папку?"
+        }
+    }
+}

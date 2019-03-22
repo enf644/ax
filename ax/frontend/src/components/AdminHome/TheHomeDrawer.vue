@@ -1,14 +1,16 @@
 <template>
   <div>
-    <h3>Ax Forms:</h3>
+    <h3>{{$t("home.ax-forms")}}:</h3>
     <div ref='tree'></div>
     <br>
     <v-btn @click='openFormModal' small>
-      <font-awesome-icon icon='plus'/>&nbsp; Create form
+      <i class='fas fa-plus'></i>
+      &nbsp; {{$t("home.create-form-btn")}}
     </v-btn>
 
-    <v-btn @click='openFolderModal' small>
-      <font-awesome-icon icon='folder'/>&nbsp; Create folder
+    <v-btn @click='openFolderModal()' small>
+      <i class='far fa-folder'></i>
+      &nbsp; {{$t("home.create-folder-btn")}}
     </v-btn>
 
     <!--  transition='animated flipInX faster' -->
@@ -23,18 +25,21 @@
     <br>
     <br>
 
-    <h3>Settings:</h3>
+    <h3>{{$t("home.settings")}}:</h3>
     <br>
     <v-btn small to='/admin/users'>
-      <font-awesome-icon icon='user'/>&nbsp; Users
+      <i class='far fa-user'></i>
+      &nbsp; {{$t("home.users-btn")}}
     </v-btn>
 
     <v-btn small to='/admin/marketplace'>
-      <font-awesome-icon icon='store'/>&nbsp; Marketplace
+      <i class='fas fa-store'></i>
+      &nbsp; {{$t("home.marketplace-btn")}}
     </v-btn>
 
-    <v-btn small to='/admin/deck'>
-      <font-awesome-icon icon='money-check-alt'/>&nbsp; Deck designer
+    <v-btn small to='/admin/pages'>
+      <i class='fas fa-desktop'></i>
+      &nbsp; {{$t("home.pages-designer-btn")}}
     </v-btn>
   </div>
 </template>

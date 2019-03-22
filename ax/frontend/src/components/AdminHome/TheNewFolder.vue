@@ -2,16 +2,26 @@
   <div class='new-form-card'>
     <h1>{{formTitle}}</h1>
     <v-btn @click='closeModal' class='close' color='black' flat icon>
-      <font-awesome-icon class='close-ico' icon='times'/>
+      <i class='fas fa-times close-ico'></i>
     </v-btn>
     <br>
-    <v-form ref='form' v-model='valid'>
-      <v-text-field :rules='nameRules' label='Form name' ref='nameField' required v-model='name'/>
+    <v-form @submit='doSomething' ref='form' v-model='valid'>
+      <v-text-field
+        :label='$t("home.new-folder.folder-name")'
+        :rules='nameRules'
+        ref='nameField'
+        required
+        v-model='name'
+      />
     </v-form>
     <br>
     <v-btn @click='doSomething' small>
-      <font-awesome-icon icon='folder'/>
+      <i class='far fa-folder'></i>
       &nbsp; {{buttonLabel}}
+    </v-btn>
+    <v-btn @click='deleteFolder' small v-if='guid'>
+      <i class='far fa-trash-alt'></i>
+      &nbsp; {{$t("home.new-folder.delete-btn")}}
     </v-btn>
   </div>
 </template>
@@ -30,11 +40,15 @@ export default {
       valid: false,
       name: '',
       nameRules: [
-        v => !!v || 'Name is required',
-        v => v.length <= 255 || 'Must be less than 255 characters'
+        v => !!v || this.$t('home.new-folder.name-required'),
+        v => v.length <= 255 || this.$t('common.lenght-error', { num: 255 })
       ],
-      buttonLabel: 'Create folder',
-      formTitle: 'Creating new folder'
+      buttonLabel: this.$t('home.new-folder.create-btn'),
+      formTitle: this.$t('home.new-folder.create-title'),
+      toastMessage: `<i class="fas fa-check"></i> &nbsp ${this.$t(
+        'home.new-folder.create-toast'
+      )}`,
+      isDeleteAction: false
     };
   },
   computed: {
@@ -45,6 +59,14 @@ export default {
   watch: {
     modalMustClose(newValue) {
       if (newValue === true) {
+        if (this.isDeleteAction) {
+          this.isDeleteAction = false;
+          this.$dialog.message.success(
+            `<i class="fas fa-trash-alt"></i> &nbsp ${this.$t(
+              'home.new-folder.delete-toast'
+            )}`
+          );
+        } else this.$dialog.message.success(this.toastMessage);
         this.closeModal();
       }
     }
@@ -56,13 +78,17 @@ export default {
       );
       if (folder) this.name = folder.name;
       else this.$log.error('Could not find folder in store');
-      this.buttonLabel = 'Update folder';
-      this.formTitle = 'Updating folder';
+      this.buttonLabel = this.$t('home.new-folder.update-btn');
+      this.formTitle = this.$t('home.new-folder.update-title');
+      this.toastMessage = `<i class="fas fa-check"></i> &nbsp ${this.$t(
+        'home.new-folder.update-toast'
+      )}`;
     }
     this.$refs.nameField.focus();
   },
   methods: {
-    doSomething() {
+    doSomething(e) {
+      e.preventDefault();
       if (this.guid) this.updateFolder();
       else this.createNewFolder();
     },
@@ -78,6 +104,25 @@ export default {
         this.$store.dispatch('home/updateFolder', {
           guid: this.guid,
           name: this.name
+        });
+      }
+    },
+    async deleteFolder() {
+      const res = await this.$dialog.confirm({
+        text: this.$t('home.new-folder.delete-confirm'),
+        actions: {
+          false: this.$t('common.confirm-no'),
+          true: {
+            text: this.$t('common.confirm-yes'),
+            color: 'red'
+          }
+        }
+      });
+
+      if (res) {
+        this.isDeleteAction = true;
+        this.$store.dispatch('home/deleteFolder', {
+          guid: this.guid
         });
       }
     },

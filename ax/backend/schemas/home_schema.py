@@ -161,7 +161,6 @@ class DeleteFolder(graphene.Mutation):
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         try:
-            del info
             guid = args.get('guid')
 
             ax_folder = ax_model.db_session.query(AxForm).filter(
@@ -182,7 +181,7 @@ class DeleteFolder(graphene.Mutation):
             query = Form.get_query(info)  # SQLAlchemy query
             form_list = query.all()
             ok = True
-            return CreateFolder(forms=form_list, ok=ok)
+            return DeleteFolder(forms=form_list, ok=ok)
         except Exception:
             logger.exception('Error in gql mutation - UpdateFolder.')
             raise
@@ -207,7 +206,6 @@ class ChangeFormsPositions(graphene.Mutation):
         try:
             positions = args.get('positions')
             for position in positions:
-                logger.info(position.guid)
                 db_form = ax_model.db_session.query(AxForm).filter(
                     AxForm.guid == uuid.UUID(position.guid)
                 ).one()

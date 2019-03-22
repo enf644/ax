@@ -72,7 +72,7 @@ const UPDATE_FOLDER = gql`
 
 const DELETE_FOLDER = gql`
   mutation ($guid: String!) {
-    updateFolder(guid: $guid) {
+    deleteFolder(guid: $guid) {
       forms {
         guid,
         name,

@@ -1,23 +1,30 @@
 <template>
   <div class='new-form-card'>
-    <h1>Creating new Ax Form</h1>
+    <h1>{{$t("home.new-form.header")}}</h1>
     <v-btn @click='closeModal' class='close' color='black' flat icon>
-      <font-awesome-icon class='close-ico' icon='times'/>
+      <i class='fas fa-times close-ico'></i>
     </v-btn>
     <br>
-    <v-form ref='form' v-model='valid'>
-      <v-text-field :rules='nameRules' label='Form name' ref='nameField' required v-model='name'/>
+    <v-form @submit='createNewForm' ref='form' v-model='valid'>
       <v-text-field
+        :label='$t("home.new-form.form-name")'
+        :rules='nameRules'
+        ref='nameField'
+        required
+        v-model='name'
+      />
+      <v-text-field
+        :label='$t("home.new-form.form-database-name")'
         :rules='dbNameRules'
         @input='resetDbNameValid'
-        label='Database table name'
         required
         v-model='dbName'
       ></v-text-field>
     </v-form>
     <br>
     <v-btn @click='createNewForm' small>
-      <font-awesome-icon icon='plus'/>&nbsp; Create ax form
+      <i class='fas fa-plus'></i>
+      &nbsp; {{$t("home.new-form.create-btn")}}
     </v-btn>
   </div>
 </template>
@@ -30,17 +37,17 @@ export default {
       valid: false,
       name: '',
       nameRules: [
-        v => !!v || 'Name is required',
-        v => v.length <= 255 || 'Must be less than 255 characters'
+        v => !!v || this.$t('home.new-form.name-required'),
+        v => v.length <= 255 || this.$t('common.lenght-error', { num: 255 })
       ],
       dbName: '',
       dbNameRules: [
-        v => !!v || 'Database name is required',
-        v => v.length <= 255 || 'Must be less than 255 characters',
+        v => !!v || this.$t('home.new-form.db-name-required'),
+        v => v.length <= 127 || this.$t('common.lenght-error', { num: 127 }),
         v => (v && this.dbNameIsAvalible)
-          || 'Database name is not avalible. Please choose enother.',
-        v => /[a-zA-Z\d][\w]{0,127}$/.test(v)
-          || 'Use only latin letters, numbers and _ symbol'
+          || this.$t('home.new-form.db-name-not-avalible'),
+        v => /^[a-zA-Z\d][\w]{0,127}$/.test(v)
+          || this.$t('home.new-form.db-name-valid-letters')
       ]
     };
   },
@@ -58,6 +65,11 @@ export default {
     },
     modalMustClose(newValue) {
       if (newValue === true) {
+        this.$dialog.message.success(
+          `<i class="fas fa-check"></i> &nbsp ${this.$t(
+            'home.new-form.toast-form-created'
+          )}`
+        );
         this.closeModal();
       }
     }
@@ -66,17 +78,17 @@ export default {
     this.$refs.nameField.focus();
   },
   methods: {
-    createNewForm() {
+    createNewForm(e) {
+      e.preventDefault();
       if (this.$refs.form.validate()) {
         this.$store.dispatch('home/createForm', {
           name: this.name,
           dbName: this.dbName
         });
-      } else {
-        this.$log.info('NOT VALID');
       }
     },
     resetDbNameValid() {
+      this.dbName = this.dbName.toLowerCase();
       if (this.dbNameIsAvalible === false) {
         this.$store.commit('home/setDbNameIsAvalible', true);
         this.$refs.form.validate();

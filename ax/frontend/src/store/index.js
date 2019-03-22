@@ -2,7 +2,7 @@
 
 import Vue from 'vue';
 import Vuex from 'vuex';
-import deck from './modules/deck';
+import pages from './modules/pages';
 import form from './modules/form';
 import grids from './modules/grids';
 import home from './modules/home';
@@ -17,7 +17,7 @@ const debug = process.env.NODE_ENV !== 'production';
 
 const store = new Vuex.Store({
   modules: {
-    deck,
+    pages,
     form,
     grids,
     home,
@@ -31,7 +31,7 @@ const store = new Vuex.Store({
 
 if (module.hot) {
   module.hot.accept([
-    './modules/deck',
+    './modules/pages',
     './modules/form',
     './modules/grids',
     './modules/home',
@@ -39,7 +39,7 @@ if (module.hot) {
     './modules/test',
     './modules/workflow'
   ], () => {
-    const newDeck = require('./modules/deck').default;
+    const newPages = require('./modules/pages').default;
     const newForm = require('./modules/form').default;
     const newGrids = require('./modules/grids').default;
     const newHome = require('./modules/home').default;
@@ -48,7 +48,7 @@ if (module.hot) {
     const newWorkflow = require('./modules/workflow').default;
     store.hotUpdate({
       modules: {
-        deck: newDeck,
+        pages: newPages,
         form: newForm,
         grids: newGrids,
         home: newHome,
