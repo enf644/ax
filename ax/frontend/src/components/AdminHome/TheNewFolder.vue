@@ -1,6 +1,6 @@
 <template>
   <div class='new-form-card'>
-    <h1>Creating new folder</h1>
+    <h1>{{formTitle}}</h1>
     <v-btn @click='closeModal' class='close' color='black' flat icon>
       <font-awesome-icon class='close-ico' icon='times'/>
     </v-btn>
@@ -9,8 +9,9 @@
       <v-text-field :rules='nameRules' label='Form name' ref='nameField' required v-model='name'/>
     </v-form>
     <br>
-    <v-btn @click='createNewFolder' small>
-      <font-awesome-icon icon='folder'/>&nbsp; Create folder
+    <v-btn @click='doSomething' small>
+      <font-awesome-icon icon='folder'/>
+      &nbsp; {{buttonLabel}}
     </v-btn>
   </div>
 </template>
@@ -18,6 +19,12 @@
 <script>
 export default {
   name: 'the-new-folder',
+  props: {
+    guid: {
+      type: String,
+      default: null
+    }
+  },
   data() {
     return {
       valid: false,
@@ -25,7 +32,9 @@ export default {
       nameRules: [
         v => !!v || 'Name is required',
         v => v.length <= 255 || 'Must be less than 255 characters'
-      ]
+      ],
+      buttonLabel: 'Create folder',
+      formTitle: 'Creating new folder'
     };
   },
   computed: {
@@ -41,16 +50,35 @@ export default {
     }
   },
   mounted() {
+    if (this.guid) {
+      const folder = this.$store.state.home.forms.find(
+        x => x.guid === this.guid
+      );
+      if (folder) this.name = folder.name;
+      else this.$log.error('Could not find folder in store');
+      this.buttonLabel = 'Update folder';
+      this.formTitle = 'Updating folder';
+    }
     this.$refs.nameField.focus();
   },
   methods: {
+    doSomething() {
+      if (this.guid) this.updateFolder();
+      else this.createNewFolder();
+    },
     createNewFolder() {
       if (this.$refs.form.validate()) {
         this.$store.dispatch('home/createFolder', {
           name: this.name
         });
-      } else {
-        this.$log.info('NOT VALID');
+      }
+    },
+    updateFolder() {
+      if (this.$refs.form.validate()) {
+        this.$store.dispatch('home/updateFolder', {
+          guid: this.guid,
+          name: this.name
+        });
       }
     },
     closeModal() {

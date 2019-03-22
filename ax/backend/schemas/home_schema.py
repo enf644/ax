@@ -27,7 +27,7 @@ def is_db_name_avalible(_db_name) -> bool:
         raise
 
 
-def create_table(_db_name: str) -> None:
+def create_db_table(_db_name: str) -> None:
     """Create database table"""
     try:
         ax_model.get_form_data_table(
@@ -38,7 +38,7 @@ def create_table(_db_name: str) -> None:
         raise
 
 
-def create_form(_name: str, _db_name: str) -> object:
+def create_ax_form(_name: str, _db_name: str) -> object:
     """Creates AxForm object"""
     try:
         ax_form = AxForm()
@@ -79,8 +79,8 @@ class CreateForm(graphene.Mutation):
             if is_db_name_avalible(_db_name=db_name) is False:
                 return CreateForm(form=None, avalible=False, ok=True)
 
-            create_table(_db_name=db_name)
-            new_form = create_form(_name=name, _db_name=db_name)
+            create_db_table(_db_name=db_name)
+            new_form = create_ax_form(_name=name, _db_name=db_name)
 
             # Create default process
             # Add Admins role to object
@@ -120,6 +120,71 @@ class CreateFolder(graphene.Mutation):
             return CreateFolder(form=ax_form, ok=ok)
         except Exception:
             logger.exception('Error in gql mutation - CreateFolder.')
+            raise
+
+
+class UpdateFolder(graphene.Mutation):
+    """ Update AxForm wich is folder """
+    class Arguments:  # pylint: disable=missing-docstring
+        guid = graphene.String()
+        name = graphene.String()
+
+    ok = graphene.Boolean()
+    form = graphene.Field(Form)
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        try:
+            del info
+            guid = args.get('guid')
+            name = args.get('name')
+
+            ax_form = ax_model.db_session.query(AxForm).filter(
+                AxForm.guid == uuid.UUID(guid)
+            ).first()
+            ax_form.name = name
+            ax_model.db_session.commit()
+
+            ok = True
+            return CreateFolder(form=ax_form, ok=ok)
+        except Exception:
+            logger.exception('Error in gql mutation - UpdateFolder.')
+            raise
+
+
+class DeleteFolder(graphene.Mutation):
+    """ Delete AxForm wich is folder """
+    class Arguments:  # pylint: disable=missing-docstring
+        guid = graphene.String()
+
+    forms = graphene.List(Form)
+    ok = graphene.Boolean()
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        try:
+            del info
+            guid = args.get('guid')
+
+            ax_folder = ax_model.db_session.query(AxForm).filter(
+                AxForm.guid == uuid.UUID(guid)
+            ).first()
+
+            sub_objects = ax_model.db_session.query(AxForm).filter(
+                AxForm.parent == ax_folder.guid
+            ).all()
+
+            for sub in sub_objects:
+                sub.parent = None
+                sub.position = 1000
+
+            ax_model.db_session.delete(ax_folder)
+            ax_model.db_session.commit()
+
+            query = Form.get_query(info)  # SQLAlchemy query
+            form_list = query.all()
+            ok = True
+            return CreateFolder(forms=form_list, ok=ok)
+        except Exception:
+            logger.exception('Error in gql mutation - UpdateFolder.')
             raise
 
 
@@ -184,4 +249,6 @@ class HomeMutations(graphene.ObjectType):
     """Contains all AxForm mutations"""
     create_form = CreateForm.Field()
     create_folder = CreateFolder.Field()
+    update_folder = UpdateFolder.Field()
+    delete_folder = DeleteFolder.Field()
     change_forms_positions = ChangeFormsPositions.Field()

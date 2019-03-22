@@ -52,6 +52,41 @@ const CREATE_FOLDER = gql`
   }
 `;
 
+
+const UPDATE_FOLDER = gql`
+  mutation ($guid: String!, $name: String!) {
+    updateFolder(guid: $guid, name: $name) {
+      form {
+        guid,
+        name,
+        dbName,
+        isFolder,
+        parent,
+        position,
+        icon
+      }
+      ok    
+    }
+  }
+`;
+
+const DELETE_FOLDER = gql`
+  mutation ($guid: String!) {
+    updateFolder(guid: $guid) {
+      forms {
+        guid,
+        name,
+        dbName,
+        isFolder,
+        parent,
+        position,
+        icon
+      },
+      ok    
+    }
+  }
+`;
+
 const CHANGE_FROMS_POSITIONS = gql`
     mutation ($positions: [PositionInput]) {
         changeFormsPositions(positions: $positions) {
@@ -74,6 +109,15 @@ const mutations = {
   },
   addForm(state, form) {
     state.forms.push(form);
+  },
+  updateForm(state, form) {
+    state.forms = [
+      ...state.forms.filter(element => element.guid !== form.guid),
+      form
+    ];
+  },
+  deleteForm(state, guid) {
+    state.forms = [...state.forms.filter(element => element.guid === guid)];
   },
   setDbNameIsAvalible(state, avalible) {
     state.dbNameIsAvalible = avalible;
@@ -175,6 +219,40 @@ const actions = {
       })
       .catch(error => {
         logger.error(`Error in createFolder apollo client => ${error}`);
+        logger.error(error);
+      });
+  },
+  updateFolder(context, payload) {
+    apolloClient.mutate({
+      mutation: UPDATE_FOLDER,
+      variables: {
+        guid: payload.guid,
+        name: payload.name
+      }
+    })
+      .then(data => {
+        const updatedForm = data.data.updateFolder.form;
+        context.commit('updateForm', updatedForm);
+        context.commit('setModalMustClose', true);
+      })
+      .catch(error => {
+        logger.error(`Error in updateFolder apollo client => ${error}`);
+        logger.error(error);
+      });
+  },
+  deleteFolder(context, payload) {
+    apolloClient.mutate({
+      mutation: DELETE_FOLDER,
+      variables: {
+        guid: payload.guid
+      }
+    })
+      .then(data => {
+        context.commit('setForms', data.data.deleteFolder.forms);
+        context.commit('setModalMustClose', true);
+      })
+      .catch(error => {
+        logger.error(`Error in deleteFolder apollo client => ${error}`);
         logger.error(error);
       });
   },

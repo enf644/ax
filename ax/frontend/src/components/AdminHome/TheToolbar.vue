@@ -3,7 +3,7 @@
     <v-toolbar-title align-center>
       <router-link to='/admin/home'>
         <!-- <i class='fab fa-fantasy-flight-games logo'></i> -->
-        <font-awesome-icon class='logo' icon='hammer'/>
+        <font-awesome-icon class='logo' icon='tools'/>
       </router-link>
     </v-toolbar-title>
 
@@ -50,6 +50,7 @@ export default {
 <style scoped>
 .logo {
   height: 20px;
+  color: #333333;
 }
 .breadcrumbs {
   margin-left: 20px;

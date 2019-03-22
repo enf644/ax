@@ -17,7 +17,7 @@
     </modal>
 
     <modal adaptive height='auto' name='new-folder'>
-      <TheNewFolder @created='closeFolderModal'/>
+      <TheNewFolder :guid='currentFolderGuid' @created='closeFolderModal'/>
     </modal>
 
     <br>
@@ -55,7 +55,9 @@ export default {
     TheNewFolder
   },
   data() {
-    return {};
+    return {
+      currentFolderGuid: null
+    };
   },
   computed: {
     forms() {
@@ -91,7 +93,8 @@ export default {
     closeFormModal() {
       this.$modal.hide('new-form');
     },
-    openFolderModal() {
+    openFolderModal(guid = null) {
+      this.currentFolderGuid = guid;
       this.$modal.show('new-folder');
     },
     closeFolderModal() {
@@ -117,7 +120,6 @@ export default {
       return orderList;
     },
     initJstree(jsTreeData) {
-      // const tree = $(this.$refs.tree).jstree(true);
       $(this.$refs.tree)
         .on('move_node.jstree', (e, data) => {
           const positionData = this.getPositionList();
@@ -125,9 +127,9 @@ export default {
             positions: positionData
           });
         })
-        .on('select_node.jstree', (e, data) => {
+        .on('activate_node.jstree', (e, data) => {
           if (data.node.type === 'folder') {
-            this.$log.log('Open folder modal');
+            this.openFolderModal(data.node.id);
           } else {
             this.$router.push({
               path: `/admin/${data.node.data.dbName}/form`

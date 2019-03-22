@@ -123,9 +123,7 @@ export default {
       ]
     };
   },
-  created() {
-    this.$log.info(this.no_margin);
-  },
+  created() {},
   mounted() {
     this.$nextTick(() => {
       this.handleResize();

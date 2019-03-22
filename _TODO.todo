@@ -196,7 +196,8 @@ AX 20:
             ✔ Update jstree on vuex state change @done(19-03-21 18:57)
             ✔ Goto on node click @done(19-03-21 20:48)
             ✔ Create folder @done(19-03-21 21:56)
-            ☐ Edit folder
+            ✔ Edit folder @done(19-03-22 10:32)
+            ✔ Delete folder @done(19-03-22 10:32)
             ☐ Popup messages
             ☐ Frogs
                 ☐ small letters in db_name
