@@ -56,6 +56,25 @@ const UPDATE_FORM = gql`
   }
 `;
 
+
+const DELETE_FORM = gql`
+  mutation ($guid: String!) {
+    deleteForm(guid: $guid) {
+      forms {
+        guid,
+        name,
+        dbName,
+        isFolder,
+        parent,
+        position,
+        icon,
+        tomLabel
+      },
+      ok    
+    }
+  }
+`;
+
 const CREATE_FOLDER = gql`
   mutation ($name: String!) {
     createFolder(name: $name) {
@@ -261,6 +280,21 @@ const actions = {
       })
       .catch(error => {
         logger.error(`Error in updateForm apollo client => ${error}`);
+      });
+  },
+  deleteForm(context, payload) {
+    apolloClient.mutate({
+      mutation: DELETE_FORM,
+      variables: {
+        guid: payload.guid
+      }
+    })
+      .then(data => {
+        context.commit('setForms', data.data.deleteForm.forms);
+        context.commit('setModalMustClose', true);
+      })
+      .catch(error => {
+        logger.error(`Error in deleteForm apollo client => ${error}`);
       });
   },
   createFolder(context, payload) {

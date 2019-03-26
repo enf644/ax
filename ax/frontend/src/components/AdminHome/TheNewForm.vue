@@ -68,10 +68,27 @@
       <i class='fas fa-plus'></i>
       &nbsp; {{$t("home.new-form.create-btn")}}
     </v-btn>
-    <v-btn @click='updateForm' data-cy='new-form-btn' small v-if='this.$route.params.db_name'>
+    <v-btn @click='updateForm' data-cy='update-form-btn' small v-if='this.$route.params.db_name'>
       <i class='fas fa-pencil-alt'></i>
       &nbsp; {{$t("home.new-form.update-btn")}}
     </v-btn>
+
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <div class='delete-div'>
+      <b>{{$t("home.new-form.delete-warning")}}</b>
+      <br>
+      {{$t("home.new-form.delete-warning-text", { name: this.name } )}}
+      <br>
+      <br>
+      <v-btn @click='deleteForm' data-cy='delete-form-btn' small v-if='this.$route.params.db_name'>
+        <i class='fas fa-trash-alt'></i>
+        &nbsp; {{$t("home.new-form.delete-btn")}}
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -105,7 +122,8 @@ export default {
           || this.$t('home.new-form.db-name-valid-letters')
       ],
       tomLabel: null,
-      icon: null
+      icon: null,
+      isDeleteAction: false
     };
   },
   computed: {
@@ -127,21 +145,33 @@ export default {
         : this.$t('home.new-form.update-header');
     },
     okToast() {
-      if (this.guid) return this.$t('home.new-form.toast-form-updated');
-      return this.$t('home.new-form.toast-form-created');
+      let toastMessage = null;
+      let toastIcon = null;
+
+      if (this.guid) {
+        toastMessage = this.$t('home.new-form.toast-form-updated');
+        toastIcon = 'check';
+      } else if (this.isDeleteAction) {
+        toastMessage = this.$t('home.new-form.toast-form-deleted');
+        toastIcon = 'trash-alt';
+      } else {
+        toastMessage = this.$t('home.new-form.toast-form-created');
+        toastIcon = 'trash-alt';
+      }
+      return `<i class="fas fa-${toastIcon}"></i> &nbsp ${toastMessage}`;
     }
   },
   watch: {
     dbNameIsAvalible() {
       this.$refs.form.validate();
     },
-    modalMustClose(newValue) {
-      if (newValue === true) {
-        this.$dialog.message.success(
-          `<i class="fas fa-check"></i> &nbsp ${this.okToast}`
-        );
-        this.closeModal();
+    modalMustClose() {
+      this.$dialog.message.success(this.okToast);
+      if (this.isDeleteAction) {
+        this.$router.push({ path: '/admin/home' });
+        this.isDeleteAction = false;
       }
+      this.closeModal();
     },
     dbNameChanged(newValue) {
       if (newValue) {
@@ -183,6 +213,26 @@ export default {
         tomLabel: this.tomLabel
       });
     },
+    async deleteForm(e) {
+      e.preventDefault();
+      const res = await this.$dialog.confirm({
+        text: this.$t('home.new-form.delete-confirm', { name: this.name }),
+        actions: {
+          false: this.$t('common.confirm-no'),
+          true: {
+            text: this.$t('common.confirm-yes'),
+            color: 'red'
+          }
+        }
+      });
+
+      if (res) {
+        this.isDeleteAction = true;
+        this.$store.dispatch('home/deleteForm', {
+          guid: this.guid
+        });
+      }
+    },
     resetDbNameValid() {
       this.dbName = this.dbName.toLowerCase();
       if (this.dbNameIsAvalible === false) {
@@ -221,5 +271,10 @@ export default {
 }
 .chip-preview {
   text-align: center;
+}
+.delete-div {
+  border: 2px solid #db4437;
+  padding: 30px;
+  color: #db4437;
 }
 </style>

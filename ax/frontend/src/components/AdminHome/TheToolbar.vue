@@ -26,7 +26,7 @@
         </v-btn>
       </span>
 
-      <modal adaptive height='440px' name='update-form' scrollable>
+      <modal adaptive height='auto' name='update-form' scrollable>
         <TheNewForm :guid='currentFromGuid' @created='closeFormModal'/>
       </modal>
 

@@ -14,6 +14,10 @@ class SqliteDialect(object):
         """Rename table"""
         return f'ALTER TABLE {old} RENAME TO {new};'
 
+    def drop_table(self, db_name: str) -> str:
+        """Drop table"""
+        return f'DROP TABLE {db_name};'
+
 
 class PorstgreDialect(object):
     """SQL query for Postgre SQL database"""
@@ -22,6 +26,10 @@ class PorstgreDialect(object):
         """Rename table"""
         return f'ALTER TABLE {old} RENAME TO {new};'
 
+    def drop_table(self, db_name: str) -> str:
+        """Drop table"""
+        return f'DROP TABLE {db_name};'
+
 
 class MysqlDialect(object):
     """SQL query for Mysql database"""
@@ -29,6 +37,10 @@ class MysqlDialect(object):
     def rename_table(self, old: str, new: str) -> str:
         """Rename table"""
         return f'RENAME TABLE `{old}` TO `{new}`'
+
+    def drop_table(self, db_name: str) -> str:
+        """Drop table"""
+        return f'DROP TABLE {db_name};'
 
 
 def init_dialects(_dialect_name: str) -> None:

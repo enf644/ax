@@ -156,6 +156,61 @@ class UpdateForm(graphene.Mutation):
             raise
 
 
+class DeleteForm(graphene.Mutation):
+    """-"""
+    class Arguments:  # pylint: disable=missing-docstring
+        guid = graphene.String()
+
+    ok = graphene.Boolean()
+    forms = graphene.List(Form)
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        try:
+            guid = args.get('guid')
+
+            ax_form = ax_model.db_session.query(AxForm).filter(
+                AxForm.guid == uuid.UUID(guid)
+            ).first()
+
+            # ax_model.db_session.execute("SET FOREIGN_KEY_CHECKS=0;")
+
+            # Delete all AxFields, AxColumns, drop columns + field permissions
+            # for f in ax_object.fields:
+            #     ax_object.delete_field(f)
+
+            # for a in ax_object.actions:
+            #     s.delete(a)
+
+            # for st in ax_object.states:
+            #     s.delete(st)
+
+            # for r in ax_object.roles:
+            #     s.delete(r)
+
+            # for v in ax_object.grids:
+            #     s.delete(v)
+
+            try:
+                query = ax_dialects.dialect.drop_table(db_name=ax_form.db_name)
+                ax_model.db_session.execute(query)
+            except Exception:
+                logger.exception('Error executing sql - drop_table.')
+                raise
+
+            ax_model.db_session.delete(ax_form)
+            ax_model.db_session.commit()
+
+            # ax_model.db_session.execute("SET FOREIGN_KEY_CHECKS=1;")
+
+            query = Form.get_query(info)  # SQLAlchemy query
+            form_list = query.all()
+            ok = True
+            return DeleteForm(forms=form_list, ok=ok)
+        except Exception:
+            logger.exception('Error in gql mutation - DeleteForm.')
+            raise
+
+
 class CreateFolder(graphene.Mutation):
     """ Creates AxForm wich is folder """
     class Arguments:  # pylint: disable=missing-docstring
@@ -306,6 +361,7 @@ class HomeMutations(graphene.ObjectType):
     """Contains all AxForm mutations"""
     create_form = CreateForm.Field()
     update_form = UpdateForm.Field()
+    delete_form = DeleteForm.Field()
     create_folder = CreateFolder.Field()
     update_folder = UpdateFolder.Field()
     delete_folder = DeleteFolder.Field()

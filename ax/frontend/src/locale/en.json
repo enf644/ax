@@ -29,12 +29,17 @@
             "db-name-valid-letters": "Use only latin letters, numbers and _ symbol",
             "toast-form-created": "Form created",
             "toast-form-updated": "Form updated",
+            "toast-form-deleted": "Form deleted",
             "change-icon": "Change icon",
             "tom-label": "1toM view label",
             "icon-modal-header": "Change form icon",
             "pick-icon": "Select icon",
             "chip-preview": "Chip preview",
-            "tom-label-hint": "Use database name of any forms field. Like {{ax_num}} or {{ax_guid}}. Use {{ax_form_name}} and {{ax_db_name}} for form name"
+            "tom-label-hint": "Use database name of any forms field. Like {{ax_num}} or {{ax_guid}}. Use {{ax_form_name}} and {{ax_db_name}} for form name",
+            "delete-btn": "Delete form",
+            "delete-warning": "WARNING! DANGER ZONE!",
+            "delete-warning-text": "This action will delete [{name}] form and all of its fields, grids, workflow.",
+            "delete-confirm": "Are you sure you want to delete [{name}] form and all of its fields, grids, workflow?"
         },
         "new-folder": {
             "folder-name": "Folder name",
