@@ -31,7 +31,7 @@ env_variables:
   # AX_LOGS_FILENAME: ax_logs.log #  If not set, logs only output to stdio
   # AX_LOGS_ABSOLUTE_PATH: 'D:\Projects\' #  default =
   AX_DB_REVISION: v0.0.11_2b12003a3b8
-  # AX_DB_DIALECT:
+  # AX_DB_DIALECT: # sqlite, postgre, mysql. Default is sqlite
   # AX_DB_HOST:
   # AX_DB_PORT:
   # AX_DB_LOGIN:

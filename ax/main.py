@@ -39,6 +39,8 @@ import backend.pubsub as ax_pubsub
 import backend.scheduler as ax_scheduler
 import backend.migration as ax_migration
 import backend.routes as ax_routes
+import backend.dialects as ax_dialects
+
 # pylint: enable=wrong-import-position
 
 
@@ -108,6 +110,7 @@ def init_ax():
         _app.add_route(graphql_view, '/api/graphql')
 
     ax_routes.init_routes(app)
+    ax_dialects.init_dialects(os.environ.get('AX_DB_DIALECT') or 'sqlite')
 
 
 ax_logo = """

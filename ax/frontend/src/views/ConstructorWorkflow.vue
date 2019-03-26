@@ -13,6 +13,7 @@
 import TheConstructorWorkflowContent from '@/components/ConstructorWorkflow/TheConstructorWorkflowContent.vue';
 import TheConstructorWorkflowDrawer from '@/components/ConstructorWorkflow/TheConstructorWorkflowDrawer.vue';
 import Splitpanes from 'splitpanes';
+import 'splitpanes/dist/splitpanes.css';
 
 export default {
   name: 'constructor-workflow',

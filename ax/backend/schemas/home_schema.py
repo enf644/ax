@@ -11,6 +11,7 @@ from backend.misc import convert_column_to_string
 from backend.model import AxForm, GUID
 import backend.model as ax_model
 import backend.cache as ax_cache
+import backend.dialects as ax_dialects
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
 
@@ -44,8 +45,8 @@ def create_ax_form(_name: str, _db_name: str) -> object:
         ax_form = AxForm()
         ax_form.name = _name
         ax_form.db_name = _db_name
-        ax_form.tom_view = "{{form_name}} - {{id}}"
-        ax_form.icon = "clone"
+        ax_form.tom_label = "{{ax_form_name}} - {{ax_num}}"
+        ax_form.icon = "dice-d6"
         ax_model.db_session.add(ax_form)
         ax_model.db_session.commit()
         return ax_form
@@ -94,6 +95,64 @@ class CreateForm(graphene.Mutation):
             return CreateForm(form=new_form, avalible=True, ok=ok)
         except Exception:
             logger.exception('Error in gql mutation - CreateForm.')
+            raise
+
+
+class UpdateForm(graphene.Mutation):
+    """ Update AxForm """
+    class Arguments:  # pylint: disable=missing-docstring
+        guid = graphene.String()
+        name = graphene.String()
+        db_name = graphene.String()
+        icon = graphene.String()
+        tom_label = graphene.String()
+
+    ok = graphene.Boolean()
+    avalible = graphene.Boolean()
+    db_name_changed = graphene.String()
+    form = graphene.Field(Form)
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        try:
+            del info
+            ax_form = ax_model.db_session.query(AxForm).filter(
+                AxForm.guid == uuid.UUID(args.get('guid'))
+            ).first()
+            db_name_changed = None
+            if str(args.get('db_name')) != str(ax_form.db_name):
+                db_name_changed = args.get('db_name')
+                if is_db_name_avalible(_db_name=args.get('db_name')) is False:
+                    return UpdateForm(
+                        form=None,
+                        avalible=False,
+                        db_name_changed=None,
+                        ok=True
+                    )
+                try:
+                    query = ax_dialects.dialect.rename_table(
+                        old=ax_form.db_name,
+                        new=args.get('db_name')
+                    )
+                    ax_model.db_session.execute(query)
+                except Exception:
+                    logger.exception('Error executing sql - rename_table.')
+                    raise
+
+            ax_form.name = args.get('name')
+            ax_form.db_name = args.get('db_name')
+            ax_form.icon = args.get('icon')
+            ax_form.tom_label = args.get('tom_label')
+            ax_model.db_session.commit()
+
+            ok = True
+            return UpdateForm(
+                form=ax_form,
+                avalible=True,
+                db_name_changed=db_name_changed,
+                ok=ok
+            )
+        except Exception:
+            logger.exception('Error in gql mutation - UpdateForm.')
             raise
 
 
@@ -246,6 +305,7 @@ class HomeQuery(graphene.ObjectType):
 class HomeMutations(graphene.ObjectType):
     """Contains all AxForm mutations"""
     create_form = CreateForm.Field()
+    update_form = UpdateForm.Field()
     create_folder = CreateFolder.Field()
     update_folder = UpdateFolder.Field()
     delete_folder = DeleteFolder.Field()

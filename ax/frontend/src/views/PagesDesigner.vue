@@ -13,6 +13,7 @@
 import ThePagesDesignerContent from '@/components/PagesDesigner/ThePagesDesignerContent.vue';
 import ThePagesDesignerDrawer from '@/components/PagesDesigner/ThePagesDesignerDrawer.vue';
 import Splitpanes from 'splitpanes';
+import 'splitpanes/dist/splitpanes.css';
 
 export default {
   name: 'deck-designer',

@@ -13,6 +13,7 @@
 import TheMarketplaceHomeContent from '@/components/Marketplace/TheMarketplaceHomeContent.vue';
 import TheMarketplaceHomeDrawer from '@/components/Marketplace/TheMarketplaceHomeDrawer.vue';
 import Splitpanes from 'splitpanes';
+import 'splitpanes/dist/splitpanes.css';
 
 export default {
   name: 'marketplace-home',

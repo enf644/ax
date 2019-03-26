@@ -17,6 +17,7 @@ import TheConstructorFormContent from '@/components/ConstructorForm/TheConstruct
 import TheConstructorFormDrawerFirst from '@/components/ConstructorForm/TheConstructorFormDrawerFirst.vue';
 import TheConstructorFormDrawerSecond from '@/components/ConstructorForm/TheConstructorFormDrawerSecond.vue';
 import Splitpanes from 'splitpanes';
+import 'splitpanes/dist/splitpanes.css';
 
 export default {
   name: 'constructor-form',

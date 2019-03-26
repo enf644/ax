@@ -8,7 +8,14 @@ const mutations = {
 const getters = {};
 const actions = {};
 
-const state = {};
+const state = {
+  guid: null,
+  name: null,
+  dbName: null,
+  icon: null,
+  tomLabel: null,
+  fields: []
+};
 
 export default {
   namespaced: true,

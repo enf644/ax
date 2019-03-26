@@ -23,6 +23,13 @@ How to use Ax:
     Docker container
 
 
+Who use Ax:
+    Personal productivity
+    Makers, hackers, developers
+    Corporate worker
+    Executive
+
+
 LIMITS
     SQLite and Postgress
     Only X fields
@@ -52,6 +59,22 @@ main.js -> gql Query
 main.js -> actiom
 main.js -> mutation
 
+
+======================================================================================================================================
+
+Idea on apps:
+    Copy of personal Sass productivity services for corporate:
+        Workflowy clone with addons:
+            Web sockets update and multiuser work
+            Edit history recording. Scroll timeline to see who did what. (maybe use git?)
+            Alt+start to start working on line
+            tags with colors
+            icons and emoji
+            permissions on every level
+            Inline ax forms as tags
+            Dynamo 
+        Trello
+    
 
 ======================================================================================================================================
 

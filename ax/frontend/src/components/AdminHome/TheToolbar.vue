@@ -3,27 +3,43 @@
     <v-toolbar-title align-center>
       <router-link to='/admin/home'>
         <!-- <i class='fab fa-fantasy-flight-games logo'></i> -->
-        <font-awesome-icon class='logo' icon='tools'/>
+        <i class='fas fa-tools logo'></i>
       </router-link>
     </v-toolbar-title>
 
     <v-layout align-center class='breadcrumbs' fill-height justify-start>
       <div>Ax</div>
 
-      <font-awesome-icon class='breadcrumb-devider' icon='angle-right'/>
-      <span href='#'>
-        <font-awesome-icon class='breadcrumbs-ico' icon='brain'/>Bank RFC
-        <font-awesome-icon class='breadcrumbs-action' icon='cog'/>
+      <span href='#' v-show='currentFormDbName'>
+        <i class='fas fa-angle-right breadcrumb-devider'></i>
+        <i :class='[currentFormIconClass]'></i>
+        {{currentFormName}}
+        <v-btn
+          @click='openFormModal'
+          class='breadcrumbs-action'
+          color='black'
+          cy-data='update-form-btn'
+          flat
+          icon
+        >
+          <i class='fas fa-cog breadcrumbs-action-i'></i>
+        </v-btn>
       </span>
-      <font-awesome-icon class='breadcrumb-devider' icon='angle-right'/>
+
+      <modal adaptive height='440px' name='update-form' scrollable>
+        <TheNewForm :guid='currentFromGuid' @created='closeFormModal'/>
+      </modal>
+
+      <!--
+      <i class='fas fa-angle-right breadcrumb-devider'></i>
       <a>Grid constructor</a>
-      <font-awesome-icon class='breadcrumb-devider' icon='angle-right'/>
+      <i class='fas fa-angle-right breadcrumb-devider'></i>
       <div class='grid-select'>
         Default grid
         <span class='very-small'>total: 4</span>
         <i class='fas fa-caret-down'></i>
       </div>
-      <font-awesome-icon class='breadcrumbs-action' icon='cog'/>
+      <i class='fas fa-cog breadcrumbs-action'></i>-->
     </v-layout>
     <v-spacer></v-spacer>
     <transition enter-active-class='animated fadeIn faster' name='fade'>
@@ -42,8 +58,63 @@
 </template>
 
 <script>
+import TheNewForm from '@/components/AdminHome/TheNewForm.vue';
+
 export default {
-  name: 'admin-toolbar'
+  name: 'admin-toolbar',
+  components: {
+    TheNewForm
+  },
+  data() {
+    return {
+      // currentFormGuid: null,
+      // currentFormName: null,
+      // currentFormIcon: null,
+      // currentFormIconClass: null
+    };
+  },
+  computed: {
+    currentFormDbName() {
+      return this.$route.params.db_name;
+    },
+    isFormsLoaded() {
+      return this.$store.state.home.isFormsLoaded;
+    },
+    currentFrom() {
+      return this.$store.state.home.forms.find(
+        x => x.dbName === this.$route.params.db_name
+      );
+    },
+    currentFormIconClass() {
+      if (this.currentFrom) {
+        return `breadcrumbs-ico fas fa-${this.currentFrom.icon}`;
+      }
+      return null;
+    },
+    currentFromGuid() {
+      if (this.currentFrom) return this.currentFrom.guid;
+      return null;
+    },
+    currentFormName() {
+      if (this.currentFrom) return this.currentFrom.name;
+      return null;
+    }
+  },
+  watch: {},
+  created() {
+    if (!this.$store.state.home.isFormsLoaded) {
+      this.$store.dispatch('home/getAllForms');
+    }
+  },
+  mounted() {},
+  methods: {
+    openFormModal() {
+      this.$modal.show('update-form');
+    },
+    closeFormModal() {
+      this.$modal.hide('update-form');
+    }
+  }
 };
 </script>
 
@@ -66,10 +137,15 @@ export default {
   margin-right: 5px;
 }
 .breadcrumbs-action {
-  margin-left: 5px;
-  color: #c0c0c0;
-  cursor: pointer;
+  margin: 0;
+  width: 25px;
+  height: 25px;
 }
+
+.breadcrumbs-action-i {
+  color: #c0c0c0;
+}
+
 .breadcrumbs a {
   text-decoration: none;
   cursor: pointer;

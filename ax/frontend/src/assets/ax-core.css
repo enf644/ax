@@ -1,5 +1,6 @@
 @import url('http://fonts.googleapis.com/css?family=Roboto');
-@import url('https://use.fontawesome.com/releases/v5.8.0/css/all.css');
+/* @import url('https://use.fontawesome.com/releases/v5.8.0/css/all.css'); */
+
 body {
     font-family: 'Roboto', sans-serif !important;
 }
@@ -18,6 +19,10 @@ h3 {
 a {
     font-weight: 300;
     color: #337ab7;
+}
+
+.ax-chip-icon {
+    color: white;
 }
 
 ::-webkit-scrollbar {
@@ -66,7 +71,7 @@ a {
     transition: opacity 0.4s;
     background-color: #DDDDDD;
     opacity: 0;
-    z-index: 100;
+    z-index: 90;
 }
 
 .splitpanes__splitter:after {
@@ -78,7 +83,7 @@ a {
     border-left: 2px solid #CCC;
     border-right: 2px solid #CCC;
     width: 6px;
-    z-index: 100;
+    z-index: 90;
 }
 
 .splitpanes__splitter:hover:before {

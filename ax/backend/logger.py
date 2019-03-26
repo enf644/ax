@@ -1,10 +1,8 @@
 """Initiate loguru"""
 import sys
-from loguru import logger
 from pathlib import Path
+from loguru import logger
 import backend.misc as ax_misc
-
-# TODO Get settings from app.yaml. Get path to log files.
 
 
 def init_logger(

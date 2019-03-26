@@ -13,6 +13,7 @@
 import TheUsersManagerDrawer from '@/components/UsersManager/TheUsersManagerDrawer.vue';
 import TheUsersGroupContent from '@/components/UsersManager/TheUsersGroupContent.vue';
 import Splitpanes from 'splitpanes';
+import 'splitpanes/dist/splitpanes.css';
 
 export default {
   name: 'users-manager',

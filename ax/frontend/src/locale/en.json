@@ -18,14 +18,23 @@
         "pages-designer-btn": "Pages designer",
         "new-form": {
             "header": "Creating new Ax Form",
+            "update-header": "Updating form",
             "form-name": "Form name",
             "form-database-name": "Database table name",
             "create-btn": "Create new form",
+            "update-btn": "Update form",
             "name-required": "Form name is required",
             "db-name-required": "Database table name is required",
             "db-name-not-avalible": "Database name is not avalible. Please choose enother.",
             "db-name-valid-letters": "Use only latin letters, numbers and _ symbol",
-            "toast-form-created": "Form created"
+            "toast-form-created": "Form created",
+            "toast-form-updated": "Form updated",
+            "change-icon": "Change icon",
+            "tom-label": "1toM view label",
+            "icon-modal-header": "Change form icon",
+            "pick-icon": "Select icon",
+            "chip-preview": "Chip preview",
+            "tom-label-hint": "Use database name of any forms field. Like {{ax_num}} or {{ax_guid}}. Use {{ax_form_name}} and {{ax_db_name}} for form name"
         },
         "new-folder": {
             "folder-name": "Folder name",

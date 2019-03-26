@@ -17,6 +17,7 @@ import TheConstructorGridsContent from '@/components/ConstructorGrids/TheConstru
 import TheConstructorGridsDrawerFirst from '@/components/ConstructorGrids/TheConstructorGridsDrawerFirst.vue';
 import TheConstructorGridsDrawerSecond from '@/components/ConstructorGrids/TheConstructorGridsDrawerSecond.vue';
 import Splitpanes from 'splitpanes';
+import 'splitpanes/dist/splitpanes.css';
 
 export default {
   name: 'constructor-grids',

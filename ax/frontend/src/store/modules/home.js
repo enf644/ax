@@ -11,7 +11,8 @@ const GET_ALL_FORMS = gql`
         isFolder,
         parent,
         position,
-        icon
+        icon,
+        tomLabel
       }
     }
 `;
@@ -19,7 +20,6 @@ const GET_ALL_FORMS = gql`
 const CREATE_FORM = gql`
   mutation ($name: String!, $dbName: String!) {
     createForm(name: $name, dbName: $dbName) {
-      avalible,
       form {
         guid,
         name,
@@ -27,13 +27,34 @@ const CREATE_FORM = gql`
         isFolder,
         parent,
         position,
-        icon
-      }
+        icon,
+        tomLabel        
+      },
+      avalible,
       ok    
     }
   }
 `;
 
+const UPDATE_FORM = gql`
+  mutation ($guid: String!, $name: String!, $dbName: String!, $icon: String!, $tomLabel: String!) {
+    updateForm(guid: $guid, name: $name, dbName: $dbName, icon: $icon, tomLabel: $tomLabel) {
+      form {
+        guid,
+        name,
+        dbName,
+        isFolder,
+        parent,
+        position,
+        icon,
+        tomLabel
+      }
+      avalible,
+      dbNameChanged,
+      ok    
+    }
+  }
+`;
 
 const CREATE_FOLDER = gql`
   mutation ($name: String!) {
@@ -45,7 +66,8 @@ const CREATE_FOLDER = gql`
         isFolder,
         parent,
         position,
-        icon
+        icon,
+        tomLabel
       }
       ok    
     }
@@ -63,7 +85,8 @@ const UPDATE_FOLDER = gql`
         isFolder,
         parent,
         position,
-        icon
+        icon,
+        tomLabel
       }
       ok    
     }
@@ -80,14 +103,15 @@ const DELETE_FOLDER = gql`
         isFolder,
         parent,
         position,
-        icon
+        icon,
+        tomLabel
       },
       ok    
     }
   }
 `;
 
-const CHANGE_FROMS_POSITIONS = gql`
+const CHANGE_FORMS_POSITIONS = gql`
     mutation ($positions: [PositionInput]) {
         changeFormsPositions(positions: $positions) {
           forms {
@@ -97,7 +121,8 @@ const CHANGE_FROMS_POSITIONS = gql`
             isFolder,
             parent,
             position,
-            icon
+            icon,
+            tomLabel
           }
         }
     }`;
@@ -127,6 +152,9 @@ const mutations = {
   },
   setPositionChangedFlag(state, changed) {
     state.positionChangedFlag = changed;
+  },
+  setDbNameChanged(state, changed) {
+    state.dbNameChanged = changed;
   }
 };
 
@@ -154,7 +182,7 @@ const getters = {
         const node = {
           id: form.guid,
           parent,
-          text: `<i class="far fa-${form.icon}"></i> ${form.name}`,
+          text: `<i class="fas fa-${form.icon}"></i> ${form.name}`,
           type: 'default',
           data: {
             position: form.position,
@@ -205,6 +233,36 @@ const actions = {
         logger.error(error);
       });
   },
+  updateForm(context, payload) {
+    apolloClient.mutate({
+      mutation: UPDATE_FORM,
+      variables: {
+        guid: payload.guid,
+        name: payload.name,
+        dbName: payload.dbName,
+        icon: payload.icon,
+        tomLabel: payload.tomLabel
+      }
+    })
+      .then(data => {
+        const isDbNameAvalible = data.data.updateForm.avalible;
+        const changed = data.data.updateForm.dbNameChanged;
+        const newForm = data.data.updateForm.form;
+
+        if (changed) {
+          context.commit('updateForm', newForm);
+          context.commit('setDbNameChanged', changed);
+        } else if (isDbNameAvalible) {
+          context.commit('updateForm', newForm);
+          context.commit('setModalMustClose', true);
+        } else {
+          context.commit('setDbNameIsAvalible', false);
+        }
+      })
+      .catch(error => {
+        logger.error(`Error in updateForm apollo client => ${error}`);
+      });
+  },
   createFolder(context, payload) {
     apolloClient.mutate({
       mutation: CREATE_FOLDER,
@@ -219,7 +277,6 @@ const actions = {
       })
       .catch(error => {
         logger.error(`Error in createFolder apollo client => ${error}`);
-        logger.error(error);
       });
   },
   updateFolder(context, payload) {
@@ -237,7 +294,6 @@ const actions = {
       })
       .catch(error => {
         logger.error(`Error in updateFolder apollo client => ${error}`);
-        logger.error(error);
       });
   },
   deleteFolder(context, payload) {
@@ -253,12 +309,11 @@ const actions = {
       })
       .catch(error => {
         logger.error(`Error in deleteFolder apollo client => ${error}`);
-        logger.error(error);
       });
   },
   changeFormsPositions(context, payload) {
     apolloClient.mutate({
-      mutation: CHANGE_FROMS_POSITIONS,
+      mutation: CHANGE_FORMS_POSITIONS,
       variables: {
         positions: payload.positions
       }
@@ -269,7 +324,6 @@ const actions = {
       })
       .catch(error => {
         logger.error(`Error in changeFormsPositions apollo client => ${error}`);
-        logger.error(error);
       });
   }
 };
@@ -279,7 +333,8 @@ const state = {
   isFormsLoaded: false,
   dbNameIsAvalible: true,
   modalMustClose: false,
-  positionChangedFlag: false
+  positionChangedFlag: false,
+  dbNameChanged: false
 };
 
 export default {

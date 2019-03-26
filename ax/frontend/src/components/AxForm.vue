@@ -44,7 +44,7 @@
               small
               v-bind:class='{ "hidden": !drawerIsFloating }'
             >
-              <font-awesome-icon icon='bars'/>
+              <i class='fas fa-bars'></i>
             </v-btn>
             <i class='fas fa-brain'></i> &nbsp; Bank RFC
             <resize-observer @notify='handleResize'/>

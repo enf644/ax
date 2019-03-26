@@ -1,7 +1,7 @@
 <template>
   <div class='new-form-card'>
     <h1>{{formTitle}}</h1>
-    <v-btn @click='closeModal' class='close' color='black' flat icon>
+    <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
       <i class='fas fa-times close-ico'></i>
     </v-btn>
     <br>
@@ -9,17 +9,18 @@
       <v-text-field
         :label='$t("home.new-folder.folder-name")'
         :rules='nameRules'
+        data-cy='new-folder-name'
         ref='nameField'
         required
         v-model='name'
       />
     </v-form>
     <br>
-    <v-btn @click='doSomething' small>
+    <v-btn @click='doSomething' data-cy='new-folder-btn' small>
       <i class='far fa-folder'></i>
       &nbsp; {{buttonLabel}}
     </v-btn>
-    <v-btn @click='deleteFolder' small v-if='guid'>
+    <v-btn @click='deleteFolder' data-cy='new-folder-delete-btn' small v-if='guid'>
       <i class='far fa-trash-alt'></i>
       &nbsp; {{$t("home.new-folder.delete-btn")}}
     </v-btn>
@@ -78,6 +79,7 @@ export default {
       );
       if (folder) this.name = folder.name;
       else this.$log.error('Could not find folder in store');
+
       this.buttonLabel = this.$t('home.new-folder.update-btn');
       this.formTitle = this.$t('home.new-folder.update-title');
       this.toastMessage = `<i class="fas fa-check"></i> &nbsp ${this.$t(

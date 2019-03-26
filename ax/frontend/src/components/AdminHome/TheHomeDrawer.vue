@@ -1,22 +1,22 @@
 <template>
   <div>
     <h3>{{$t("home.ax-forms")}}:</h3>
-    <div ref='tree'></div>
+    <div data-cy='forms-tree' ref='tree'></div>
     <br>
-    <v-btn @click='openFormModal' small>
+    <v-btn @click='openFormModal' data-cy='create-form-btn' small>
       <i class='fas fa-plus'></i>
       &nbsp; {{$t("home.create-form-btn")}}
     </v-btn>
 
-    <v-btn @click='openFolderModal()' small>
+    <!--  transition='animated flipInX faster' -->
+    <modal adaptive height='auto' name='new-form' scrollable>
+      <TheNewForm @created='closeFormModal'/>
+    </modal>
+
+    <v-btn @click='openFolderModal()' data-cy='create-folder-btn' small>
       <i class='far fa-folder'></i>
       &nbsp; {{$t("home.create-folder-btn")}}
     </v-btn>
-
-    <!--  transition='animated flipInX faster' -->
-    <modal adaptive height='auto' name='new-form'>
-      <TheNewForm @created='closeFormModal'/>
-    </modal>
 
     <modal adaptive height='auto' name='new-folder'>
       <TheNewFolder :guid='currentFolderGuid' @created='closeFolderModal'/>

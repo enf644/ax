@@ -15,6 +15,9 @@ import VuetifyDialog from 'vuetify-dialog';
 
 // Admin dependencies
 import VueResize from 'vue-resize'; // detect element resize
+// import '@fortawesome/fontawesome-free/js/all.js';
+import '@fortawesome/fontawesome-free/css/all.css';
+
 import 'vue-resize/dist/vue-resize.css';
 import Vuetify, {
   VSnackbar,
@@ -30,9 +33,6 @@ import Vuetify, {
   VBtn
 } from 'vuetify/lib';
 import 'vuetify/src/stylus/app.styl';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { fas } from '@fortawesome/free-solid-svg-icons';
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -45,9 +45,6 @@ const messages = Object.assign(languages);
 // Getting hostname of server from src of included script
 // no matter how many scripts a page contains,
 // the one currently starting to execute is the last one;
-
-Vue.component('font-awesome-icon', FontAwesomeIcon);
-library.add(fas);
 
 
 Vue.use(VModal, { dynamic: true, injectModalsContainer: true });

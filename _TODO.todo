@@ -206,6 +206,20 @@ AX 20:
                 ✔ Take eveything from locale @done(19-03-22 16:53)
                 ✔ Make ru locale, test @done(19-03-22 17:21)
             ☐ Create cy test
+                ✔ Create folder @done(19-03-23 23:47)
+                ☐ Update folder
+                ✔ Create form @done(19-03-23 23:47)
+                ☐ Drag form to folder
+                ☐ Go to form constructor
+                ☐ Delete form
+                ☐ Go back to home
+                ☐ Delete folder
+            ✔ Form update popup @done(19-03-26 14:51)
+                ✔ Modal with element @done(19-03-26 14:51)
+                ✔ Icon picker @done(19-03-26 14:51)
+                ✔ Update mutation @done(19-03-26 14:51)
+                ✔ Change database dialects query @done(19-03-26 14:51)
+                ✔ Change url on dbName change @done(19-03-26 14:51)
 	☐ FORM CONSTRUCTOR
 		☐ form-constructor
 			☐ form-constructor-tab
@@ -331,6 +345,7 @@ NEW FEATURES:
     ☐ Custom error pages for admin
     ☐ Detect unsuported browsers and print error
     ☐ Backup mechanism
+    ☐ If js exception - show toast with rerort button
     
 MAYBE LATER:
     ☐ python autodoc
