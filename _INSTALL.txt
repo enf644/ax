@@ -48,9 +48,10 @@ Install:
     npm install
     npm run build
     npm run serve
-Usefull:
-    npm install axios --save
-    npm run test:e2e
+
+
+============= CYPRESS ===============
+npm run test:e2e
 
 ============= ALEMBIC ===============
 [working directory = '/ax/' , where 'alembic.ini' is located]

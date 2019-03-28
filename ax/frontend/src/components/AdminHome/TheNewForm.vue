@@ -78,7 +78,7 @@
     <br>
     <br>
 
-    <div class='delete-div'>
+    <div class='delete-div' v-if='this.$route.params.db_name'>
       <b>{{$t("home.new-form.delete-warning")}}</b>
       <br>
       {{$t("home.new-form.delete-warning-text", { name: this.name } )}}

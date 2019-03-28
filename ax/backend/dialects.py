@@ -10,6 +10,15 @@ dialect = None
 class SqliteDialect(object):
     """SQL query for Sqlite database"""
 
+    def create_data_table(self, db_name) -> str:
+        """Create table with system columns"""
+        sql = f"""CREATE TABLE {db_name} (
+            guid VARCHAR PRIMARY KEY,
+            ax_num INTEGER NOT NULL,
+            ax_state VARCHAR NOT NULL
+        );"""
+        return sql;
+
     def rename_table(self, old: str, new: str) -> str:
         """Rename table"""
         return f'ALTER TABLE {old} RENAME TO {new};'

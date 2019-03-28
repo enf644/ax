@@ -178,7 +178,7 @@ AX 20:
 	☐ ADMIN INDEX
 		✔ Полная структура навигации с всеми компонентами @done(19-02-15 14:53)
 		✔ from-constructor-drawer
-        ☐ Form tree
+        ✔ Form tree @done(19-03-28 11:10)
             ✔ Create all tables from model @done(19-03-19 11:33)
             ✔ jstree or alternative @done(19-03-19 13:17)
             ✔ GraphQL schema in py - select, update @done(19-03-19 14:52)
@@ -212,32 +212,38 @@ AX 20:
                 ✔ Change database dialects query @done(19-03-26 14:51)
                 ✔ Change url on dbName change @done(19-03-26 14:51)
             ✔ Delete form and drop table @done(19-03-26 17:42)
-            ☐ Create cy test
+            ✔ Create cy test @done(19-03-28 11:10)
                 ✔ Create folder @done(19-03-23 23:47)
-                ☐ Update folder
+                ✔ Update folder @done(19-03-28 11:09)
                 ✔ Create form @done(19-03-23 23:47)
-                ☐ Drag form to folder
-                ☐ Go to form constructor
-                ☐ Update form name and dbName
-                ☐ Check url changed, name in toolbar changed
-                ☐ Delete form
-                ☐ Delete folder
-	☐ FORM CONSTRUCTOR
-		☐ form-constructor
-			☐ form-constructor-tab
-			☐ form-constructor-folder
-			☐ form-constructor-options
-	☐ AX-FORM
-		☐ Переход на новую версию matrial-design
+                ✔ Go to form constructor @done(19-03-28 11:09)
+                ✔ Update form name and dbName @done(19-03-28 11:09)
+                ✔ Check url changed, name in toolbar changed @done(19-03-28 11:09)
+                ✔ Delete form @done(19-03-28 11:09)
+                ✔ Delete folder @done(19-03-28 11:09)
+    ☐ FORM CONSTRUCTOR
+        ☐ jstree - field types
+        ☐ GQL - get field types, get fields to vuex state
+        ☐ jstree - form fields
+        ☐ Web elements:
+            ☐ tab
+            ☐ field
+        ☐ Hook actions - add, move
+        ☐ Field actions gql
+            ☐ Add field
+            ☐ Change field position
+            ☐ Update field
+            ☐ Delete field
+        ☐ AxForm preview
+        ☐ Field settings popup
+    ☐ AX-FORM
+        ☐ ax-base
 		☐ ax-string
 		☐ ax-text
 		☐ ax-id
 		☐ ax-checkbox
 		☐ ax-choise
 	☐ GRID CONSTRUCTOR
-		☐ Подключить новую версию Ag-grid FREE
-		☐ Popup
-			☐ https://github.com/vuetifyjs/vuetify/issues/1901
 	☐ RELATION FIELDS
 		☐ multiple pop-ups
 		☐ ax-1tom
@@ -334,6 +340,7 @@ NEW FROG TODOS:
     ☐ `[IMPORTANT]` Roboto font not working with webpack. Replace CDN dependency
     ☐ `[IMPORTANT]` Replace CDN dependency for wont-awesome
     ☐ Remember opened nodes is JsTree
+    ☐ `[IMPORTANT]`  Security for all admin actions. Only admin can make gql queries
 
 
 NEW FEATURES:

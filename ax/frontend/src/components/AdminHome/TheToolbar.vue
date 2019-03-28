@@ -10,7 +10,7 @@
     <v-layout align-center class='breadcrumbs' fill-height justify-start>
       <div>Ax</div>
 
-      <span href='#' v-show='currentFormDbName'>
+      <span cy-data='current-form-breadcrumb' href='#' v-show='currentFormDbName'>
         <i class='fas fa-angle-right breadcrumb-devider'></i>
         <i :class='[currentFormIconClass]'></i>
         {{currentFormName}}

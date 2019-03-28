@@ -31,9 +31,8 @@ def is_db_name_avalible(_db_name) -> bool:
 def create_db_table(_db_name: str) -> None:
     """Create database table"""
     try:
-        ax_model.get_form_data_table(
-            _db_name).__table__.create(bind=ax_model.engine)
-
+        query = ax_dialects.dialect.create_data_table(db_name=_db_name)
+        ax_model.db_session.execute(query)
     except Exception:
         logger.exception('Error creating new Form. Cant create db table')
         raise
