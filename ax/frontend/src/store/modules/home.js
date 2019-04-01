@@ -226,7 +226,6 @@ const actions = {
       })
       .catch(error => {
         logger.error('Error in getAllForms apollo client');
-        logger.error(error);
       });
   },
   createForm(context, payload) {
@@ -249,7 +248,6 @@ const actions = {
       })
       .catch(error => {
         logger.error(`Error in createForm apollo client => ${error}`);
-        logger.error(error);
       });
   },
   updateForm(context, payload) {

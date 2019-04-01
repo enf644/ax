@@ -14,7 +14,30 @@ import TheToolbar from '@/components/AdminHome/TheToolbar.vue';
 
 export default {
   name: 'admin-layout',
-  components: { TheToolbar }
+  components: { TheToolbar },
+  computed: {
+    currentFormDbName() {
+      return this.$route.params.db_name;
+    }
+  },
+  watch: {
+    currentFormDbName(newValue) {
+      if (newValue) {
+        this.$store.dispatch('form/getFormData', { dbName: newValue });
+      }
+    }
+  },
+  created() {
+    if (!this.$store.state.home.isFormsLoaded) {
+      this.$store.dispatch('home/getAllForms');
+      this.$store.dispatch('form/getFieldTypes');
+      if (this.$route.params.db_name) {
+        this.$store.dispatch('form/getFormData', {
+          dbName: this.$route.params.db_name
+        });
+      }
+    }
+  }
 };
 </script>
 

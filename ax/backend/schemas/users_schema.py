@@ -13,14 +13,9 @@ from backend.model import AxUser, GUID
 import backend.model as ax_model
 import backend.cache as ax_cache
 import backend.pubsub as ax_pubsub
+from backend.schemas.types import User
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
-
-
-class User(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
-    class Meta:  # pylint: disable=missing-docstring
-        model = AxUser
-        interfaces = (relay.Node, )
 
 
 class CreateUser(graphene.Mutation):

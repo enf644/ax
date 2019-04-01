@@ -6,8 +6,6 @@ import Vue from 'vue';
 import vueCustomElement from 'vue-custom-element'; // create web component from vue component
 import 'document-register-element'; // polyfill for vue-custom-element
 import 'animate.css/animate.min.css';
-import VueI18n from 'vue-i18n';
-import { languages, defaultLocale } from './locale/index.js';
 import logger from './logger';
 import './assets/ax-core.css';
 import VModal from 'vue-js-modal';
@@ -36,19 +34,17 @@ import 'vuetify/src/stylus/app.styl';
 import App from './App.vue';
 import router from './router';
 import store from './store';
+import i18n from './locale.js';
 
 // Dev dependencies
 import VueDummy from 'vue-dummy'; // create lorum ipsum
 
-const messages = Object.assign(languages);
 
 // Getting hostname of server from src of included script
 // no matter how many scripts a page contains,
 // the one currently starting to execute is the last one;
 
-
 Vue.use(VModal, { dynamic: true, injectModalsContainer: true });
-Vue.use(VueI18n);
 Vue.use(Vuetify, {
   components: {
     VSnackbar,
@@ -82,17 +78,13 @@ Vue.customElement('ax-grid', gridPromise, { props: ['name'] });
 const formPromise = () => import(/* webpackChunkName: "ax-form" */ './components/AxForm.vue').then(m => m.default);
 Vue.customElement('ax-form', formPromise, {});
 
-const i18n = new VueI18n({
-  locale: defaultLocale,
-  fallbackLocale: 'en',
-  messages
-});
 
 Vue.use(VuetifyDialog, {
   toast: { position: 'bottom-right' }
 });
 
 Vue.prototype.$log = logger; // Custom logger
+
 
 new Vue({
   router,

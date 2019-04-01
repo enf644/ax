@@ -254,7 +254,38 @@ Updading Ax
     alembic changes database with migration scripts
 
 
+=================================
 
+
+1. English
+1.121 billion total speakers
+
+2. Chinese
+1.107 billion total speakers
+
+3. Hindi
+534.2 million total speakers
+
+4. Spanish
+512.9 million total speakers
+
+5. French
+284.9 million total speakers
+
+6. Arabic
+273.9 million total speakers
+
+7. Russian
+265 million total speakers
+
+8. Bengali
+261.8 million total speakers
+
+9. Portuguese
+236.5 million total speakers
+
+10. Indonesian
+198.4 million total speakers
 
 
 

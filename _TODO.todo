@@ -222,18 +222,19 @@ AX 20:
                 ✔ Delete form @done(19-03-28 11:09)
                 ✔ Delete folder @done(19-03-28 11:09)
     ☐ FORM CONSTRUCTOR
-        ☐ jstree - field types
-        ☐ GQL - get field types, get fields to vuex state
-        ☐ jstree - form fields
-        ☐ Web elements:
-            ☐ tab
-            ☐ field
-        ☐ Hook actions - add, move
-        ☐ Field actions gql
-            ☐ Add field
+        ☐ Field types tree
+        ☐ Fields tree
+            ✔ Add tab @done(19-03-30 10:08)
+            ✔ Add field @done(19-04-01 17:41)
             ☐ Change field position
+            ☐ Update tab
+            ☐ Delete tab
             ☐ Update field
             ☐ Delete field
+        ✔ Avalible fields tree @done(19-04-01 17:45)
+        ✔ Web elements: @done(19-04-01 17:45)
+            ✔ tab @done(19-04-01 17:45)
+            ✔ field @done(19-04-01 17:45)
         ☐ AxForm preview
         ☐ Field settings popup
     ☐ AX-FORM

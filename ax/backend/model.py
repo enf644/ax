@@ -159,15 +159,13 @@ class AxForm(Base):
 class AxFieldType(Base):
     """List of avalible ax field types"""
     __tablename__ = '_ax_field_types'
-    guid = Column(GUID(), primary_key=True,
-                  default=uuid.uuid4, unique=True, nullable=False)
+    tag = Column(String(64), primary_key=True, unique=True)
     name = Column(String(255))
-    parent = Column(GUID())
+    parent = Column(String(64))
     position = Column(Integer())
     default_name = Column(String(255))
     default_db_name = Column(String(255))
     value_type = Column(String(255))
-    tag = Column(String(255))
     comparator = Column(String(255))
     icon = Column(String(255))
     is_group = Column(Boolean, unique=False, default=False)
@@ -175,6 +173,22 @@ class AxFieldType(Base):
     is_backend_available = Column(Boolean, unique=False, default=False)
     is_updated_always = Column(Boolean, unique=False, default=False)
     is_always_whole_row = Column(Boolean, unique=False, default=False)
+
+    def __init__(self, tag, name=None, position=0, default_name=None, default_db_name="", value_type="", parent="", icon="", comparator="", is_inline_editable=False, is_backend_available=False, is_updated_always=False, is_group=False, is_always_whole_row=False):
+        self.tag = tag
+        self.name = name
+        self.position = position
+        self.default_name = default_name
+        self.default_db_name = default_db_name
+        self.value_type = value_type
+        self.parent = parent
+        self.is_group = is_group
+        self.comparator = comparator
+        self.icon = icon
+        self.is_inline_editable = is_inline_editable
+        self.is_backend_available = is_backend_available
+        self.is_updated_always = is_updated_always
+        self.is_always_whole_row = is_always_whole_row
 
 
 class AxField(Base):
@@ -189,9 +203,9 @@ class AxField(Base):
     position = Column(Integer())
     options_json = Column(String(2000))
     value_type = Column(String(255))
-    field_type_guid = Column(GUID(), ForeignKey('_ax_field_types.guid'))
+    field_type_tag = Column(String(64), ForeignKey('_ax_field_types.tag'))
     field_type = relationship("AxFieldType")
-    is_folder = Column(Boolean, unique=False, default=False)
+    is_tab = Column(Boolean, unique=False, default=False)
     is_required = Column(Boolean, unique=False, default=False)
     is_whole_row = Column(Boolean, unique=False, default=False)
     parent = Column(GUID())
@@ -200,7 +214,7 @@ class AxField(Base):
     needs_sql_update = False
 
 
-class AxMtomReference(Base):
+class Ax1tomReference(Base):
     """Stores 1 to M fields relation"""
     __tablename__ = '_ax_mtom_references'
     guid = Column(GUID(), primary_key=True,

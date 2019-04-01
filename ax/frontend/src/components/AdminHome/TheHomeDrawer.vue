@@ -81,11 +81,7 @@ export default {
       }
     }
   },
-  created() {
-    if (!this.$store.state.home.isFormsLoaded) {
-      this.$store.dispatch('home/getAllForms');
-    }
-  },
+  created() {},
   mounted() {
     window.jQuery = $;
     window.$ = $;
@@ -106,7 +102,7 @@ export default {
       this.$modal.hide('new-folder');
     },
     getPositionList() {
-      const orderList = [];
+      const positionList = [];
       const tree = $(this.$refs.tree).jstree(true);
       const jsonNodes = tree.get_json('#', { flat: true });
       $.each(jsonNodes, (i, node) => {
@@ -117,12 +113,12 @@ export default {
           position: newPosition,
           parent: node.parent
         };
-        orderList.push(nodeInfo);
+        positionList.push(nodeInfo);
 
         const nodeObject = tree.get_node(node.id);
         nodeObject.data.position = newPosition;
       });
-      return orderList;
+      return positionList;
     },
     initJstree(jsTreeData) {
       $(this.$refs.tree)

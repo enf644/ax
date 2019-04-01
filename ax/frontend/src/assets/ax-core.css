@@ -25,6 +25,14 @@ a {
     color: white;
 }
 
+.ax-field-node {
+    line-height: 42px !important;
+}
+
+.ax-field-node a {
+    height: 42px !important;
+}
+
 ::-webkit-scrollbar {
     width: 5px;
     height: 5px;

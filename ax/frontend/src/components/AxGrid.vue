@@ -32,7 +32,7 @@ export default {
   },
   mounted() {
     const debugMsg = 'Debug this Vue';
-    this.$log.info(debugMsg);
+    // this.$log.info(debugMsg);
 
     // specify the columns
     const columnDefs = [

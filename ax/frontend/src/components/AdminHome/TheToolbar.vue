@@ -2,7 +2,6 @@
   <v-toolbar app class='top-toolbar' clipped-left fixed height='40'>
     <v-toolbar-title align-center>
       <router-link to='/admin/home'>
-        <!-- <i class='fab fa-fantasy-flight-games logo'></i> -->
         <i class='fas fa-tools logo'></i>
       </router-link>
     </v-toolbar-title>
@@ -13,7 +12,7 @@
       <span cy-data='current-form-breadcrumb' href='#' v-show='currentFormDbName'>
         <i class='fas fa-angle-right breadcrumb-devider'></i>
         <i :class='[currentFormIconClass]'></i>
-        {{currentFormName}}
+        {{this.currentFormName}}
         <v-btn
           @click='openFormModal'
           class='breadcrumbs-action'
@@ -27,7 +26,7 @@
       </span>
 
       <modal adaptive height='auto' name='update-form' scrollable>
-        <TheNewForm :guid='currentFromGuid' @created='closeFormModal'/>
+        <TheNewForm :guid='this.$store.state.form.guid' @created='closeFormModal'/>
       </modal>
 
       <!--
@@ -65,48 +64,26 @@ export default {
   components: {
     TheNewForm
   },
-  data() {
-    return {
-      // currentFormGuid: null,
-      // currentFormName: null,
-      // currentFormIcon: null,
-      // currentFormIconClass: null
-    };
-  },
   computed: {
     currentFormDbName() {
       return this.$route.params.db_name;
     },
-    isFormsLoaded() {
-      return this.$store.state.home.isFormsLoaded;
+    currentFormIconClass() {
+      if (this.currentForm) {
+        return `breadcrumbs-ico fas fa-${this.currentForm.icon}`;
+      }
+      return null;
     },
-    currentFrom() {
+    currentForm() {
       return this.$store.state.home.forms.find(
         x => x.dbName === this.$route.params.db_name
       );
     },
-    currentFormIconClass() {
-      if (this.currentFrom) {
-        return `breadcrumbs-ico fas fa-${this.currentFrom.icon}`;
-      }
-      return null;
-    },
-    currentFromGuid() {
-      if (this.currentFrom) return this.currentFrom.guid;
-      return null;
-    },
     currentFormName() {
-      if (this.currentFrom) return this.currentFrom.name;
+      if (this.currentForm) return this.currentForm.name;
       return null;
     }
   },
-  watch: {},
-  created() {
-    if (!this.$store.state.home.isFormsLoaded) {
-      this.$store.dispatch('home/getAllForms');
-    }
-  },
-  mounted() {},
   methods: {
     openFormModal() {
       this.$modal.show('update-form');

@@ -7,11 +7,12 @@ from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from sqlalchemy import MetaData
 from loguru import logger
 
-from backend.misc import convert_column_to_string
-from backend.model import AxForm, GUID
+from backend.misc import convert_column_to_string  # TODO check if needed
+from backend.model import GUID, AxForm  # TODO: check if needed
 import backend.model as ax_model
 import backend.cache as ax_cache
 import backend.dialects as ax_dialects
+from backend.schemas.types import Form, Field, PositionInput
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
 
@@ -52,12 +53,6 @@ def create_ax_form(_name: str, _db_name: str) -> object:
     except Exception:
         logger.exception('Error creating AxForm object')
         raise
-
-
-class Form(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
-    class Meta:  # pylint: disable=missing-docstring
-        model = AxForm
-        interfaces = (relay.Node, )
 
 
 class CreateForm(graphene.Mutation):
@@ -300,13 +295,6 @@ class DeleteFolder(graphene.Mutation):
             raise
 
 
-class PositionInput(graphene.InputObjectType):
-    """Used to store position data"""
-    guid = graphene.NonNull(graphene.String)
-    position = graphene.NonNull(graphene.Int)
-    parent = graphene.NonNull(graphene.String)
-
-
 class ChangeFormsPositions(graphene.Mutation):
     """Change position and parent fields of multiple forms"""
     class Arguments:  # pylint: disable=missing-docstring
@@ -341,7 +329,6 @@ class ChangeFormsPositions(graphene.Mutation):
 
 class HomeQuery(graphene.ObjectType):
     """AxForm queryes"""
-    form = SQLAlchemyConnectionField(Form)
     all_forms = graphene.List(Form)
 
     async def resolve_all_forms(self, info):
