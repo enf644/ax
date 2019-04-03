@@ -159,6 +159,29 @@ const CREATE_FIELD = gql`
   }
 `;
 
+const CHANGE_FIELDS_POSITIONS = gql`
+  mutation ($formGuid: String!, $positions: [PositionInput]) {
+      changeFieldsPositions(formGuid: $formGuid, positions: $positions) {
+        fields {
+          guid,
+          name,
+          dbName,
+          position,
+          valueType,
+          fieldType {
+            tag,
+            icon,
+            valueType
+          },
+          isTab,
+          isRequired,
+          isWholeRow,
+          parent
+        }
+      }
+  }
+`;
+
 const GET_FIELD_TYPES = gql`
     query {
       fieldTypes {
@@ -393,7 +416,25 @@ const actions = {
       .catch(error => {
         logger.error(`Error in createField apollo client => ${error}`);
       });
+  },
+
+  changeFieldsPositions(context, payload) {
+    apolloClient.mutate({
+      mutation: CHANGE_FIELDS_POSITIONS,
+      variables: {
+        formGuid: context.state.guid,
+        positions: payload.positions
+      }
+    })
+      .then(data => {
+        context.commit('setFields', data.data.changeFieldsPositions.fields);
+      })
+      .catch(error => {
+        logger.error(`Error in changeFieldsPositions apollo client => ${error}`);
+      });
   }
+
+
 };
 
 const state = {

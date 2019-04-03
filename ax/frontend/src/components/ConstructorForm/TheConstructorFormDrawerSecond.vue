@@ -34,7 +34,7 @@ export default {
       if (this.treeInitialized) {
         const tree = $(this.$refs.tree).jstree(true);
         tree.settings.core.data = this.$store.getters['form/fieldTreeData'];
-        tree.refresh();
+        tree.refresh(true, false);
       } else {
         this.initFieldTree(this.$store.getters['form/fieldTreeData']);
       }
@@ -89,22 +89,16 @@ export default {
           );
         });
     },
-    changeFieldsPositions(e, data) {
-      console.log(`CHANGE FIELDS POSITIONS${e} ${data}`);
-      // data.node.data.position = data.position;
-      // const order_list = this.get_order_list();
-      // $(this_ax.$.object_tree).jstree(
-      //   'open_node',
-      //   data.parent,
-      //   (e, data) => {},
-      //   true
-      // );
-      // this_ax.$.reorder_ajax.params = {
-      //   field_id: data.node.id,
-      //   order_list: JSON.stringify(order_list),
-      //   parent: data.parent
-      // };
-      // this_ax.$.reorder_ajax.generateRequest();
+    changeFieldsPositions() {
+      const positions = this.getPositionList();
+      this.$store
+        .dispatch('form/changeFieldsPositions', { positions })
+        .then(() => {
+          const msg = this.$t('common.position-changed');
+          this.$dialog.message.success(
+            `<i class="fas fa-sort-numeric-up"></i> &nbsp ${msg}`
+          );
+        });
     },
     initFieldTree(jsTreeData) {
       $(this.$refs.tree)

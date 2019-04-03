@@ -6,7 +6,8 @@
     "common": {
         "lenght-error": "Must be less than {num} characters",
         "confirm-yes": "Yes",
-        "confirm-no": "Cancel"
+        "confirm-no": "Cancel",
+        "position-changed": "Positions changed"
     },
     "home": {
         "ax-forms": "Ax Forms",

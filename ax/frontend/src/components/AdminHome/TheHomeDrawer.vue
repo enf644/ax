@@ -120,28 +120,36 @@ export default {
       });
       return positionList;
     },
+    changePositions(e, data) {
+      const positionData = this.getPositionList();
+      this.$store
+        .dispatch('home/changeFormsPositions', {
+          positions: positionData
+        })
+        .then(arg => {
+          const msg = this.$t('common.position-changed');
+          this.$dialog.message.success(
+            `<i class="fas fa-sort-numeric-up"></i> &nbsp ${msg}`
+          );
+        });
+    },
+    gotoForm(e, data) {
+      if (data.node.type === 'folder') {
+        this.openFolderModal(data.node.id);
+      } else {
+        this.$router.push({
+          path: `/admin/${data.node.data.dbName}/form`
+        });
+      }
+    },
     initJstree(jsTreeData) {
       $(this.$refs.tree)
-        .on('move_node.jstree', (e, data) => {
-          const positionData = this.getPositionList();
-          this.$store.dispatch('home/changeFormsPositions', {
-            positions: positionData
-          });
-        })
-        .on('activate_node.jstree', (e, data) => {
-          if (data.node.type === 'folder') {
-            this.openFolderModal(data.node.id);
-          } else {
-            this.$router.push({
-              path: `/admin/${data.node.data.dbName}/form`
-            });
-          }
-        })
+        .on('move_node.jstree', (e, data) => this.changePositions(e, data))
+        .on('activate_node.jstree', (e, data) => this.gotoForm(e, data))
         .jstree({
           core: {
             data: jsTreeData,
-            // eslint-disable-next-line camelcase
-            check_callback(operation, node, node_parent, node_position, more) {
+            check_callback() {
               return true;
             }
           },

@@ -136,6 +136,46 @@ class CreateField(graphene.Mutation):
             raise
 
 
+class ChangeFieldsPositions(graphene.Mutation):
+    """Change position and parent of fields"""
+    class Arguments:  # pylint: disable=missing-docstring
+        form_guid = graphene.String()
+        positions = graphene.List(PositionInput)
+
+    ok = graphene.Boolean()
+    fields = graphene.List(Field)
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        try:
+            form_guid = args.get('form_guid')
+            positions = args.get('positions')
+
+            ax_form = ax_model.db_session.query(AxForm).filter(
+                AxForm.guid == uuid.UUID(form_guid)
+            ).one()
+
+            for field in ax_form.fields:
+                for position in positions:
+                    if field.guid == uuid.UUID(position.guid):
+                        current_parent = None
+                        if position.parent != '#':
+                            current_parent = uuid.UUID(position.parent)
+                        field.parent = current_parent
+                        field.position = position.position
+
+            ax_model.db_session.commit()
+            query = Field.get_query(info)
+            field_list = query.filter(
+                AxField.form_guid == uuid.UUID(form_guid)
+            ).all()
+
+            ok = True
+            return ChangeFieldsPositions(fields=field_list, ok=ok)
+        except Exception:
+            logger.exception('Error in gql mutation - ChangeFieldsPositions.')
+            raise
+
+
 class FormQuery(graphene.ObjectType):
     """Query all data of AxForm and related classes"""
     all_fields = graphene.List(Field, form_field=graphene.String())
@@ -166,3 +206,4 @@ class FormMutations(graphene.ObjectType):
     """Combine all mutations"""
     create_tab = CreateTab.Field()
     create_field = CreateField.Field()
+    change_fields_positions = ChangeFieldsPositions.Field()
