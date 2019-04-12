@@ -35,10 +35,10 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 import i18n from './locale.js';
+import AxTest from './components/AxTest.vue';
 
 // Dev dependencies
 import VueDummy from 'vue-dummy'; // create lorum ipsum
-
 
 // Getting hostname of server from src of included script
 // no matter how many scripts a page contains,
@@ -59,7 +59,7 @@ Vue.use(Vuetify, {
     VSpacer,
     VBtn
   },
-  iconfont: 'faSvg',
+  iconfont: 'fa',
   theme: {
     primary: '#3f51b5',
     secondary: '#b0bec5',
@@ -73,10 +73,12 @@ Vue.use(VueDummy);
 Vue.config.productionTip = false;
 
 const gridPromise = () => import(/* webpackChunkName: "ax-grid" */ './components/AxGrid.vue').then(m => m.default);
-Vue.customElement('ax-grid', gridPromise, { props: ['name'] });
+Vue.customElement('ax-grid', gridPromise);
 
 const formPromise = () => import(/* webpackChunkName: "ax-form" */ './components/AxForm.vue').then(m => m.default);
-Vue.customElement('ax-form', formPromise, {});
+Vue.customElement('ax-form', formPromise, { props: ['db_name', 'row_guid', 'update_time'] });
+
+Vue.customElement('ax-test', AxTest);
 
 
 Vue.use(VuetifyDialog, {

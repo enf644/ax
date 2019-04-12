@@ -32,6 +32,7 @@ class Field(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
     class Meta:  # pylint: disable=missing-docstring
         model = AxField
         interfaces = (relay.Node, )
+    value = graphene.String()
 
 
 class Grid(SQLAlchemyObjectType):  # pylint: disable=missing-docstring

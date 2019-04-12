@@ -16,15 +16,14 @@
         >
           <v-list class='drawer-folder-list'>
             <v-list-tile
-              :key='folder.title'
-              @click='openFolder(folder.title)'
-              class='drawer-folder-list-tile'
+              :class='getTabClass(tab.guid)'
+              :key='tab.name'
+              @click='openTab(tab.guid)'
               ripple
-              v-bind:class='{ "drawer-folder-active": folder.isActive }'
-              v-for='folder in folders'
+              v-for='tab in tabs'
             >
               <v-list-tile-content class='drawer-folder-item'>
-                <v-list-tile-title>{{ folder.title }}</v-list-tile-title>
+                <v-list-tile-title>{{ tab.name }}</v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
           </v-list>
@@ -46,47 +45,42 @@
             >
               <i class='fas fa-bars'></i>
             </v-btn>
-            <i class='fas fa-brain'></i> &nbsp; Bank RFC
+            <i :class='iconClass'></i>
+            &nbsp; {{name}}
             <resize-observer @notify='handleResize'/>
           </div>
-          <div class='content'>
-            <v-container fluid grid-list-xl>
-              <v-layout align-center justify-center row wrap>
-                <v-flex>
-                  <div class='ax-field'>
-                    <v-text-field label='First Name'></v-text-field>
-                  </div>
-                </v-flex>
-                <v-flex>
-                  <div class='ax-field'>
-                    <v-text-field label='Last Name'></v-text-field>
-                  </div>
-                </v-flex>
-                <v-flex>
-                  <div class='ax-field'>
-                    <v-text-field label='E-mail'></v-text-field>
-                  </div>
-                </v-flex>
-                <v-flex>
-                  <div class='ax-field'>
-                    <v-text-field label='Address'></v-text-field>
-                  </div>
-                </v-flex>
-                <v-btn @click='openForm()' color='primary' outline>text</v-btn>
-              </v-layout>
-            </v-container>
+          <v-container fluid grid-list-xl>
+            <v-layout align-center justify-center row wrap>
+              <AxField
+                :dbName='field.dbName'
+                :key='field.guid'
+                :name='field.name'
+                :optionsJson='field.optionsJson'
+                :tag='field.fieldType.tag'
+                :value.sync='field.value'
+                @update:value='updateValue'
+                v-for='field in this.fields'
+                v-show='isFieldVisible(field)'
+              ></AxField>
 
-            <p v-dummy='1500'></p>
-          </div>
+              <v-flex xs12>
+                <v-btn @click='submitTest' small>
+                  <i class='fas fa-vial'></i>
+                  &nbsp; {{$t("form.test-from")}}
+                </v-btn>
+                <!-- <v-btn @click='openForm()' color='primary' outline>text</v-btn> -->
+              </v-flex>
+            </v-layout>
+          </v-container>
         </div>
       </v-layout>
     </v-sheet>
-
-    <!-- <v-dialog class='dialog' lazy max-width='70%' scrollable v-model='dialogIsOpen'>
-      <v-card>
-        <AxForm no_margin></AxForm>
+    <modal adaptive height='auto' name='test-value' scrollable width='50%'>
+      <v-card class='test-value'>
+        <pre>{{value}}</pre>
       </v-card>
-    </v-dialog>-->
+    </modal>
+
     <modal :pivotX='0.52' adaptive height='auto' name='sub-form' scrollable width='70%'>
       <v-card>
         <AxForm no_margin></AxForm>
@@ -97,15 +91,24 @@
 
 <script>
 // import AxGrid from './AxGrid.vue';
+import apolloClient from '../apollo';
+import AxField from '@/components/AxField.vue';
+import gql from 'graphql-tag';
 
 export default {
   name: 'AxForm',
-  components: {},
+  components: { AxField },
   props: {
     no_margin: {
       type: Boolean,
       default: false
-    }
+    },
+    db_name: {
+      type: String,
+      default: null
+    },
+    row_guid: {},
+    update_time: null
   },
   data() {
     return {
@@ -113,35 +116,147 @@ export default {
       drawerIsHidden: false,
       overlayIsHidden: true,
       dialogIsOpen: false,
-      folders: [
-        { title: 'Home1', isActive: true },
-        { title: 'About' },
-        { title: 'Active members' },
-        { title: 'Realy long name that will break your menu' },
-        { title: 'Do it later' },
-        { title: 'Wim Hof' }
-      ]
+      guid: null,
+      name: null,
+      dbName: null,
+      icon: null,
+      tabs: [],
+      fields: [],
+      actions: [],
+      currentTabGuid: null,
+      tabFields: [],
+      activeTab: null,
+      value: null
     };
+  },
+  computed: {
+    iconClass() {
+      return `fas fa-${this.icon}`;
+    }
+  },
+  watch: {
+    db_name(newValue) {
+      if (newValue) this.loadData(newValue);
+    },
+    update_time() {
+      if (this.db_name) this.loadData(this.db_name);
+    }
   },
   created() {},
   mounted() {
+    if (this.db_name) this.loadData(this.db_name);
     this.$nextTick(() => {
       this.handleResize();
     });
   },
   methods: {
+    updateValue() {
+      const result = {};
+      this.fields.forEach(field => {
+        result[field.dbName] = field.value;
+      });
+      this.value = result;
+      this.$emit('update:value', result);
+    },
+    submitTest() {
+      this.$modal.show('test-value');
+    },
+    isFieldVisible(field) {
+      if (field.parent === this.activeTab) return true;
+      return false;
+    },
+    getTabClass(tabGUid) {
+      let retClass = 'drawer-folder-list-tile';
+      if (this.activeTab === tabGUid) retClass += ' highlighted';
+      return retClass;
+    },
+    openTab(guid) {
+      this.activeTab = guid;
+      this.hideDrawer();
+    },
+    loadData(dbName, rowGuid = null) {
+      const GET_DATA = gql`
+        query($dbName: String!, $rowGuid: String, $updateTime: String) {
+          formData(
+            dbName: $dbName
+            rowGuid: $rowGuid
+            updateTime: $updateTime
+          ) {
+            guid
+            name
+            dbName
+            parent
+            icon
+            fields {
+              edges {
+                node {
+                  guid
+                  name
+                  dbName
+                  position
+                  valueType
+                  fieldType {
+                    tag
+                    icon
+                    valueType
+                  }
+                  isTab
+                  isRequired
+                  isWholeRow
+                  parent
+                  optionsJson
+                  value
+                }
+              }
+            }
+            actions {
+              edges {
+                node {
+                  guid
+                  name
+                  icon
+                }
+              }
+            }
+          }
+        }
+      `;
+
+      apolloClient
+        .query({
+          query: GET_DATA,
+          variables: {
+            rowGuid,
+            dbName,
+            updateTime: Date.now()
+          }
+        })
+        .then(data => {
+          const currentFormData = data.data.formData;
+          this.guid = currentFormData.guid;
+          this.name = currentFormData.name;
+          this.dbName = currentFormData.dbName;
+          this.icon = currentFormData.icon;
+          this.actions = currentFormData.actions.edges.map(edge => edge.node);
+          const fields = currentFormData.fields.edges.map(edge => edge.node);
+          this.tabs = [];
+          this.fields = [];
+          fields.forEach(field => {
+            if (field.isTab) this.tabs.push(field);
+            else this.fields.push(field);
+          });
+          this.activeTab = this.tabs[0].guid;
+          this.updateValue();
+        })
+        .catch(error => {
+          this.$log.error(
+            `Error in AxForm GQL query - apollo client => ${error}`
+          );
+        });
+    },
     openForm() {
       this.$log.info(' OPEN FORM');
       this.$modal.show('sub-form');
-
-      // this.dialogIsOpen = true;
-      // this.$modal.show(AxForm);
-      // this.$modal.show({
-      //   template: '<AxForm no_margin />'
-      // });
-    },
-    openFolder(_id) {
-      this.$log.info(`Open folder - ${_id}`);
     },
     handleResize() {
       const currentWidth = this.$el.clientWidth;
@@ -255,13 +370,16 @@ export default {
 .content {
   padding: 10px 25px 25px 25px;
 }
-.ax-field {
-  min-width: 240px;
-}
 .form-container {
   margin: 20px;
 }
 .form-container-no-margin {
   margin: 0px;
+}
+.highlighted {
+  background: #e0e0e0;
+}
+.test-value {
+  padding: 25px;
 }
 </style>

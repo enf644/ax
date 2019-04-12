@@ -3,6 +3,32 @@ import gql from 'graphql-tag';
 import logger from '../../logger';
 import i18n from '../../locale.js';
 
+
+const FieldFragment = gql`
+  fragment FieldFragment on Field {
+    guid,
+    name,
+    dbName,
+    position,
+    valueType,
+    fieldType {
+      tag,
+      icon,
+      valueType,
+      isInlineEditable,
+      isBackendAvailable,
+      isUpdatedAlways,
+      isAlwaysWholeRow
+    },
+    isTab,
+    isRequired,
+    isWholeRow,
+    optionsJson,
+    parent
+  }
+`;
+
+
 const GET_FORM_DATA = gql`
   query ($dbName: String!) {
     form (dbName: $dbName) {
@@ -14,20 +40,7 @@ const GET_FORM_DATA = gql`
       fields {
         edges {
           node {    
-            guid,
-            name,
-            dbName,
-            position,
-            valueType,
-            fieldType {
-              tag,
-              icon,
-              valueType
-            },
-            isTab,
-            isRequired,
-            isWholeRow,
-            parent
+            ...FieldFragment
           }
         }
       }, 
@@ -85,102 +98,111 @@ const GET_FORM_DATA = gql`
           }
         }
       },
-
     }
   }
+  ${FieldFragment}
 `;
 
 
-const GET_FIELDS = gql`
-    query ($formGuid: String!) {
-      allFields (formGuid: $formGuid) {
-        guid,
-        formGuid,
-        name,
-        dbName,
-        position,
-        optionsJson,
-        valueType,
-        fieldTypeTag,
-        isTab,
-        isRequired,
-        isWholeRow,
-        parent
-      }
-    }
-`;
+// const GET_FIELDS = gql`
+//     query ($formGuid: String!) {
+//       allFields (formGuid: $formGuid) {
+//         guid,
+//         formGuid,
+//         name,
+//         dbName,
+//         position,
+//         optionsJson,
+//         valueType,
+//         fieldTypeTag,
+//         isTab,
+//         isRequired,
+//         isWholeRow,
+//         parent
+//       }
+//     }
+// `;
 
 const CREATE_TAB = gql`
   mutation ($formGuid: String!, $name: String!) {
     createTab(formGuid: $formGuid, name: $name) {
       field {
-        guid,
-        name,
-        dbName,
-        position,
-        valueType,
-        fieldType {
-          tag,
-          icon,
-          valueType
-        },
-        isTab,
-        isRequired,
-        isWholeRow,
-        parent
+        ...FieldFragment
       },
       ok    
     }
   }
+  ${FieldFragment}
 `;
 
+
+const UPDATE_TAB = gql`
+  mutation ($guid: String!, $name: String!) {
+    updateTab(guid: $guid, name: $name) {
+      field {
+        ...FieldFragment
+      },
+      ok    
+    }
+  }
+  ${FieldFragment}
+`;
+
+const DELETE_TAB = gql`
+  mutation ($guid: String!) {
+    deleteTab(guid: $guid) {
+      deleted,
+      ok    
+    }
+  }
+`;
 
 const CREATE_FIELD = gql`
   mutation ($formGuid: String!, $name: String!, $tag: String!, $positions: [PositionInput], $position: Int!, $parent: String! ) {
     createField(formGuid: $formGuid, name: $name, tag: $tag, positions: $positions, position: $position, parent: $parent) {
       field {
-        guid,
-        name,
-        dbName,
-        position,
-        valueType,
-        fieldType {
-          tag,
-          icon,
-          valueType
-        },
-        isTab,
-        isRequired,
-        isWholeRow,
-        parent
+        ...FieldFragment
       },
+      ok    
+    }
+  }
+  ${FieldFragment}
+`;
+
+const UPDATE_FIELD = gql`
+  mutation ($guid: String!, $name: String, $dbName: String, $isRequired: Boolean, $isWholeRow: Boolean, $optionsJson: JSONString ) {
+    updateField(guid: $guid, name: $name, dbName: $dbName, isRequired: $isRequired, isWholeRow: $isWholeRow, optionsJson: $optionsJson) {
+      field {
+        ...FieldFragment
+      },
+      ok    
+    }
+  }
+  ${FieldFragment}
+`;
+
+
+const DELETE_FIELD = gql`
+  mutation ($guid: String!) {
+    deleteField(guid: $guid) {
+      deleted,
       ok    
     }
   }
 `;
 
+
 const CHANGE_FIELDS_POSITIONS = gql`
   mutation ($formGuid: String!, $positions: [PositionInput]) {
       changeFieldsPositions(formGuid: $formGuid, positions: $positions) {
         fields {
-          guid,
-          name,
-          dbName,
-          position,
-          valueType,
-          fieldType {
-            tag,
-            icon,
-            valueType
-          },
-          isTab,
-          isRequired,
-          isWholeRow,
-          parent
+          ...FieldFragment
         }
       }
   }
+  ${FieldFragment}
 `;
+
 
 const GET_FIELD_TYPES = gql`
     query {
@@ -226,13 +248,39 @@ const mutations = {
       state.roles = data.roles ? data.roles.edges.map(edge => edge.node) : null;
       state.states = data.states ? data.states.edges.map(edge => edge.node) : null;
       state.actions = data.actions ? data.actions.edges.map(edge => edge.node) : null;
+    } else {
+      state.guid = null;
+      state.name = null;
+      state.dbName = null;
+      state.parent = null;
+      state.icon = null;
+      state.fields = [];
+      state.grids = [];
+      state.roles = [];
+      state.states = [];
+      state.actions = [];
     }
   },
   addField(state, field) {
     state.fields.push(field);
   },
+  updateField(state, newField) {
+    state.fields = [
+      ...state.fields.filter(element => element.guid !== newField.guid),
+      newField
+    ];
+  },
+  deleteField(state, deleted) {
+    state.fields = [...state.fields.filter(element => element.guid !== deleted)];
+  },
   setFieldsLoadedGuid(state, guid) {
     state.fieldsLoadedGuid = guid;
+  },
+  setIsNameChangeOperation(state, flag) {
+    state.isNameChangeOperation = flag;
+  },
+  setOpenSettingsFlag(state, guid) {
+    state.openSettingsFlag = guid;
   }
 };
 
@@ -291,7 +339,7 @@ const getters = {
         const node = {
           id: field.guid,
           parent: field.parent,
-          text: `<constructor-field guid='${field.guid}' name='${field.name}' db_name='${field.dbName}' tag='${field.fieldType.tag}' icon='${field.fieldType.icon}'></constructor-field>`,
+          text: `<constructor-field guid='${field.guid}' name='${field.name}' db_name='${field.dbName}' tag='${field.fieldType.tag}' icon='${field.fieldType.icon}' options_json='${field.optionsJson}'></constructor-field>`,
           data: { position: field.position },
           li_attr: { class: 'ax-field-node' }
         };
@@ -352,21 +400,21 @@ const actions = {
       });
   },
 
-  getFields(context, payload) {
-    apolloClient.query({
-      query: GET_FIELDS,
-      variables: {
-        formGuid: payload.formGuid
-      }
-    })
-      .then(data => {
-        context.commit('setFields', data.data.allFields);
-        context.commit('setFieldsLoadedGuid', payload.formGuid);
-      })
-      .catch(error => {
-        logger.error(`Error in getFields apollo client => ${error}`);
-      });
-  },
+  // getFields(context, payload) {
+  //   apolloClient.query({
+  //     query: GET_FIELDS,
+  //     variables: {
+  //       formGuid: payload.formGuid
+  //     }
+  //   })
+  //     .then(data => {
+  //       context.commit('setFields', data.data.allFields);
+  //       context.commit('setFieldsLoadedGuid', payload.formGuid);
+  //     })
+  //     .catch(error => {
+  //       logger.error(`Error in getFields apollo client => ${error}`);
+  //     });
+  // },
 
   getFieldTypes(context) {
     apolloClient.query({
@@ -397,6 +445,40 @@ const actions = {
       });
   },
 
+  updateTab(context, payload) {
+    apolloClient.mutate({
+      mutation: UPDATE_TAB,
+      variables: {
+        guid: payload.guid,
+        name: payload.name
+      }
+    })
+      .then(data => {
+        const newField = data.data.updateTab.field;
+        context.commit('updateField', newField);
+      })
+      .catch(error => {
+        logger.error(`Error in updateTab apollo client => ${error}`);
+      });
+  },
+
+
+  deleteTab(context, payload) {
+    apolloClient.mutate({
+      mutation: DELETE_TAB,
+      variables: {
+        guid: payload.guid
+      }
+    })
+      .then(data => {
+        const deletedGuid = data.data.deleteTab.deleted;
+        context.commit('deleteField', deletedGuid);
+      })
+      .catch(error => {
+        logger.error(`Error in deleteTab apollo client => ${error}`);
+      });
+  },
+
   createField(context, payload) {
     apolloClient.mutate({
       mutation: CREATE_FIELD,
@@ -415,6 +497,45 @@ const actions = {
       })
       .catch(error => {
         logger.error(`Error in createField apollo client => ${error}`);
+      });
+  },
+
+
+  updateField(context, payload) {
+    apolloClient.mutate({
+      mutation: UPDATE_FIELD,
+      variables: {
+        guid: payload.guid,
+        name: payload.name,
+        dbName: payload.dbName,
+        isRequired: payload.isRequired,
+        isWholeRow: payload.isWholeRow,
+        optionsJson: payload.optionsJson
+      }
+    })
+      .then(data => {
+        const newField = data.data.updateField.field;
+        context.commit('updateField', newField);
+      })
+      .catch(error => {
+        logger.error(`Error in updateField apollo client => ${error}`);
+      });
+  },
+
+
+  deleteField(context, payload) {
+    apolloClient.mutate({
+      mutation: DELETE_FIELD,
+      variables: {
+        guid: payload.guid
+      }
+    })
+      .then(data => {
+        const deletedGuid = data.data.deleteField.deleted;
+        context.commit('deleteField', deletedGuid);
+      })
+      .catch(error => {
+        logger.error(`Error in deleteField apollo client => ${error}`);
       });
   },
 
@@ -448,7 +569,9 @@ const state = {
   roles: [],
   states: [],
   actions: [],
-  fieldTypes: []
+  fieldTypes: [],
+  isNameChangeOperation: false,
+  openSettingsFlag: null
 };
 
 export default {

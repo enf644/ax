@@ -4,11 +4,12 @@ import uuid
 import graphene
 from loguru import logger
 
-from backend.model import AxForm, AxField, AxFieldType
+from backend.model import AxForm, AxField, AxFieldType, AxRoleFieldPermission, AxColumn
 import backend.model as ax_model
 # import backend.cache as ax_cache # TODO use cache!
 import backend.dialects as ax_dialects
 from backend.schemas.types import Form, Field, PositionInput
+import ujson as json
 
 
 class CreateTab(graphene.Mutation):
@@ -43,6 +44,60 @@ class CreateTab(graphene.Mutation):
             return CreateTab(field=ax_field, ok=ok)
         except Exception:
             logger.exception('Error in gql mutation - CreateTab.')
+            raise
+
+
+class UpdateTab(graphene.Mutation):
+    """ Updates AxField witch is tab """
+    class Arguments:  # pylint: disable=missing-docstring
+        guid = graphene.String()
+        name = graphene.String()
+
+    ok = graphene.Boolean()
+    field = graphene.Field(Field)
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        try:
+            del info
+            guid = args.get('guid')
+            name = args.get('name')
+
+            ax_field = ax_model.db_session.query(AxField).filter(
+                AxField.guid == uuid.UUID(guid)
+            ).first()
+            ax_field.name = name
+            ax_model.db_session.commit()
+
+            ok = True
+            return UpdateTab(field=ax_field, ok=ok)
+        except Exception:
+            logger.exception('Error in gql mutation - UpdateTab.')
+            raise
+
+
+class DeleteTab(graphene.Mutation):
+    """ Deletes AxField witch is tab """
+    class Arguments:  # pylint: disable=missing-docstring
+        guid = graphene.String()
+
+    ok = graphene.Boolean()
+    deleted = graphene.String()
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        try:
+            del info
+            guid = args.get('guid')
+
+            ax_field = ax_model.db_session.query(AxField).filter(
+                AxField.guid == uuid.UUID(guid)
+            ).first()
+            ax_model.db_session.delete(ax_field)
+            ax_model.db_session.commit()
+
+            ok = True
+            return DeleteTab(deleted=guid, ok=ok)
+        except Exception:
+            logger.exception('Error in gql mutation - DeleteTab.')
             raise
 
 
@@ -107,14 +162,17 @@ class CreateField(graphene.Mutation):
             ax_field.options_json = "{}"
             ax_field.position = position
             ax_field.parent = uuid.UUID(parent) if parent is not None else None
+
+            if ax_field_type.is_always_whole_row:
+                ax_field.is_whole_row = True
+
             ax_model.db_session.add(ax_field)
 
             if ax_field.value_type != "VIRTUAL":
-                sql = ax_dialects.dialect.add_column(
+                ax_dialects.dialect.add_column(
                     table=ax_form.db_name,
                     db_name=ax_field.db_name,
                     type_name=ax_field_type.value_type)
-                ax_model.db_session.execute(sql)
 
             ax_model.db_session.commit()
 
@@ -133,6 +191,114 @@ class CreateField(graphene.Mutation):
             return CreateTab(field=ax_field, ok=ok)
         except Exception:
             logger.exception('Error in gql mutation - CreateTab.')
+            raise
+
+
+class UpdateField(graphene.Mutation):
+    """ Updates AxField """
+    class Arguments:  # pylint: disable=missing-docstring
+        guid = graphene.String()
+        name = graphene.String()
+        db_name = graphene.String()
+        is_required = graphene.Boolean()
+        is_whole_row = graphene.Boolean()
+        options_json = graphene.JSONString()
+
+    ok = graphene.Boolean()
+    field = graphene.Field(Field)
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        del info
+        try:
+            guid = args.get('guid')
+            name = args.get('name')
+            db_name = args.get('db_name')
+            is_required = args.get('is_required')
+            is_whole_row = args.get('is_whole_row')
+            options_json = args.get('options_json')
+
+            ax_field = ax_model.db_session.query(AxField).filter(
+                AxField.guid == uuid.UUID(guid)
+            ).first()
+
+            if name:
+                ax_field.name = name
+
+            if db_name:
+                db_name_error = False
+                for field in ax_field.form.fields:
+                    if field.db_name == db_name and field.guid != uuid.UUID(guid):
+                        db_name_error = True
+
+                if db_name_error:
+                    db_name = db_name + '_enother'
+
+                sql = ax_dialects.dialect.rename_column(
+                    table=ax_field.form.db_name,
+                    old_name=ax_field.db_name,
+                    new_name=db_name,
+                    type_name=ax_field.field_type.value_type
+                )
+
+                ax_field.db_name = db_name
+                ax_model.db_session.commit()
+
+            if options_json:
+                ax_field.options_json = json.dumps(options_json)
+
+            if is_required is not None:
+                ax_field.is_required = is_required
+
+            if is_whole_row is not None:
+                if ax_field.field_type.is_always_whole_row:
+                    ax_field.is_whole_row = True
+                else:
+                    ax_field.is_whole_row = is_whole_row
+
+            ax_model.db_session.commit()
+
+            ok = True
+            return CreateTab(field=ax_field, ok=ok)
+        except Exception:
+            logger.exception('Error in gql mutation - UpdateField.')
+            raise
+
+
+class DeleteField(graphene.Mutation):
+    """ Deletes AxField """
+    class Arguments:  # pylint: disable=missing-docstring
+        guid = graphene.String()
+
+    ok = graphene.Boolean()
+    deleted = graphene.String()
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        try:
+            del info
+            guid = args.get('guid')
+
+            ax_field = ax_model.db_session.query(AxField).filter(
+                AxField.guid == uuid.UUID(guid)
+            ).first()
+
+            ax_model.db_session.query(AxRoleFieldPermission).filter(
+                AxRoleFieldPermission.field_guid == ax_field.guid).delete()
+            ax_model.db_session.query(AxColumn).filter(
+                AxColumn.field_guid == ax_field.guid).delete()
+
+            if ax_field.is_tab is False and ax_field.is_virtual is False:
+                ax_dialects.dialect.drop_column(
+                    table=ax_field.form.db_name,
+                    column=ax_field.db_name
+                )
+
+            ax_model.db_session.delete(ax_field)
+            ax_model.db_session.commit()
+
+            ok = True
+            return DeleteField(deleted=guid, ok=ok)
+        except Exception:
+            logger.exception('Error in gql mutation - DeleteField.')
             raise
 
 
@@ -183,6 +349,12 @@ class FormQuery(graphene.ObjectType):
         Form,
         db_name=graphene.Argument(type=graphene.String, required=True)
     )
+    form_data = graphene.Field(
+        Form,
+        db_name=graphene.Argument(type=graphene.String, required=True),
+        row_guid=graphene.Argument(type=graphene.String, required=False),
+        update_time=graphene.Argument(type=graphene.String, required=False)
+    )
 
     async def resolve_all_fields(self, info, form_field):
         """Get all fields of form"""
@@ -196,14 +368,25 @@ class FormQuery(graphene.ObjectType):
             logger.exception('Error in GQL query - resolve_fields.')
             raise
 
-    async def resolve_form(self, info, db_name):
+    async def resolve_form(self, info, db_name=None):
         """Get AxForm by db_name"""
         query = Form.get_query(info=info)
         return query.filter(AxForm.db_name == db_name).first()
+
+    async def resolve_form_data(self, info, db_name=None, row_guid=None, update_time=None):
+        """Get AxForm by db_name and row guid"""
+        query = Form.get_query(info=info)
+        ax_form = query.filter(AxForm.db_name == db_name).first()
+        # TODO: get value for fileds, filter actions, filter fields based on state and user
+        return ax_form
 
 
 class FormMutations(graphene.ObjectType):
     """Combine all mutations"""
     create_tab = CreateTab.Field()
+    update_tab = UpdateTab.Field()
+    delete_tab = DeleteTab.Field()
     create_field = CreateField.Field()
+    update_field = UpdateField.Field()
+    delete_field = DeleteField.Field()
     change_fields_positions = ChangeFieldsPositions.Field()

@@ -228,9 +228,17 @@ export default {
 
       if (res) {
         this.isDeleteAction = true;
-        this.$store.dispatch('home/deleteForm', {
-          guid: this.guid
-        });
+        this.$store
+          .dispatch('home/deleteForm', {
+            guid: this.guid
+          })
+          .then(() => {
+            // this.$store.commit('form/setFormData', null);
+            this.$store.dispatch('form/getFormData', {
+              dbName: this.dbName,
+              guid: this.guid
+            });
+          });
       }
     },
     resetDbNameValid() {

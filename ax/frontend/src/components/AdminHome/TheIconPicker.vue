@@ -4,7 +4,7 @@
     <v-btn @click='closeModal' class='close' color='black' flat icon>
       <i class='fas fa-times close-ico'></i>
     </v-btn>
-    <v-text-field label='Search icons' v-model='query'/>
+    <v-text-field label='Search icons' ref='search_input' v-model='query'/>
 
     <div class='flex-row'>
       <div :key='item' class='flex-cell' v-for='item in filteredItems'>
@@ -43,6 +43,9 @@ export default {
     // TODO: Change pick component to https://codepen.io/supraniti/pen/dOxPaY
     this.query = '';
     this.selected = '';
+  },
+  mounted() {
+    this.$refs.search_input.focus();
   },
   methods: {
     select(icon) {

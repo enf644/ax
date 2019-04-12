@@ -72,7 +72,7 @@ def create_field_types() -> None:
             position=1,
             icon="key"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-guid",
+            tag="AxGuid",
             parent="group-id",
             default_db_name="guid",
             position=1,
@@ -80,7 +80,7 @@ def create_field_types() -> None:
             comparator="",
             icon="key"))
         ax_model.db_session.add(AxFieldType(
-            tag='ax-num',
+            tag='AxNum',
             parent="group-id",
             default_db_name="ax_num",
             position=2,
@@ -95,14 +95,14 @@ def create_field_types() -> None:
             position=2,
             icon="code-branch"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-state",
+            tag="AxState",
             parent="group-process",
             default_db_name="ax_state",
             position=1,
             value_type="VIRTUAL",
             icon="code-branch"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-changelog",
+            tag="AxChangelog",
             parent="group-process",
             position=4,
             default_db_name="changelog_",
@@ -119,7 +119,7 @@ def create_field_types() -> None:
             position=3,
             icon="font"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-string",
+            tag="AxString",
             parent="group-string",
             default_db_name="string_",
             position=1,
@@ -127,7 +127,7 @@ def create_field_types() -> None:
             is_inline_editable=True,
             icon="font"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-email",
+            tag="AxEmail",
             parent="group-string",
             default_db_name="email_",
             position=2,
@@ -135,7 +135,7 @@ def create_field_types() -> None:
             is_inline_editable=True,
             icon="font"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-telephone",
+            tag="AxTelephone",
             parent="group-string",
             default_db_name="tel_",
             position=3,
@@ -151,7 +151,7 @@ def create_field_types() -> None:
             position=4,
             icon="align-left"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-text",
+            tag="AxText",
             parent="group-text",
             default_db_name="text_",
             position=1,
@@ -159,7 +159,7 @@ def create_field_types() -> None:
             is_inline_editable=True,
             icon="align-left"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-markdown",
+            tag="AxMarkdown",
             parent="group-text",
             default_db_name="markdown_",
             position=1,
@@ -174,7 +174,7 @@ def create_field_types() -> None:
             position=5,
             icon="hashtag"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-integer",
+            tag="AxInteger",
             parent="group-number",
             default_db_name="integer_",
             position=1,
@@ -183,7 +183,7 @@ def create_field_types() -> None:
             is_inline_editable=True,
             icon="hashtag"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-decimal",
+            tag="AxDecimal",
             parent="group-number",
             default_db_name="decimal_",
             position=2,
@@ -192,7 +192,7 @@ def create_field_types() -> None:
             is_inline_editable=True,
             icon="hashtag"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-int-slider",
+            tag="AxIntSlider",
             parent="group-number",
             default_db_name="int_slider_",
             position=1,
@@ -208,7 +208,7 @@ def create_field_types() -> None:
             position=6,
             icon="toggle-on"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-checkbox",
+            tag="AxCheckbox",
             parent="group-boolean",
             default_db_name="checkbox_",
             position=1,
@@ -223,7 +223,7 @@ def create_field_types() -> None:
             position=7,
             icon="link"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-1to1",
+            tag="Ax1to1",
             parent="group-relationship",
             default_name="types.ax-1to1-default",
             default_db_name="to1_",
@@ -232,7 +232,7 @@ def create_field_types() -> None:
             is_inline_editable=True,
             icon="link"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-1tom",
+            tag="Ax1tom",
             parent="group-relationship",
             default_name="types.ax-1tom-default",
             default_db_name="tom_",
@@ -241,7 +241,7 @@ def create_field_types() -> None:
             is_inline_editable=True,
             icon="link"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-1tom-table",
+            tag="Ax1tomTable",
             parent="group-relationship",
             default_name="types.ax-1tom-table-default",
             default_db_name="tom_inline_",
@@ -252,13 +252,13 @@ def create_field_types() -> None:
 
         #Date and Time
         ax_model.db_session.add(AxFieldType(
-            tag='date_group',
+            tag='group-date',
             is_group=True,
             position=8,
             icon="calendar"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-date",
-            parent="date_group",
+            tag="AxDate",
+            parent="group-date",
             default_db_name="date_",
             position=1,
             value_type="TIMESTAMP",
@@ -273,7 +273,7 @@ def create_field_types() -> None:
             position=9,
             icon="list"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-choise",
+            tag="AxChoise",
             parent="group-list",
             default_db_name="choise_",
             position=1,
@@ -281,7 +281,7 @@ def create_field_types() -> None:
             is_inline_editable=True,
             icon="list"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-radio",
+            tag="AxRadio",
             parent="group-list",
             default_db_name="radio_",
             position=1,
@@ -296,7 +296,7 @@ def create_field_types() -> None:
             position=10,
             icon="image"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-crop-image",
+            tag="AxCropImage",
             parent="group-images",
             position=4,
             default_db_name="crop_image_",
@@ -310,7 +310,7 @@ def create_field_types() -> None:
             position=11,
             icon="file"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-files",
+            tag="AxFiles",
             parent="group-files",
             position=1,
             default_db_name="files_",
@@ -324,7 +324,7 @@ def create_field_types() -> None:
             position=12,
             icon="user"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-users",
+            tag="AxUsers",
             parent="group-files",
             position=1,
             default_db_name="users_",
@@ -338,7 +338,7 @@ def create_field_types() -> None:
             position=13,
             icon="comments"))
         ax_model.db_session.add(AxFieldType(
-            tag="ax-comments",
+            tag="AxComments",
             parent="group-communication",
             position=4,
             default_db_name="comments_",

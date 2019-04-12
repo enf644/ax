@@ -42,39 +42,48 @@ export default {
   },
   methods: {
     initTypesTree(jsTreeData) {
-      $(this.$refs.tree).jstree({
-        core: {
-          data: jsTreeData,
-          // eslint-disable-next-line camelcase
-          check_callback(operation, node, node_parent, node_position, more) {
-            return false;
-          }
-        },
-        plugins: ['types', 'dnd', 'sort'],
-        types: {
-          default: {
-            icon: false,
-            valid_children: ['default']
+      $(this.$refs.tree)
+        .on('ready.jstree', () => this.openFirstNode())
+        .jstree({
+          core: {
+            data: jsTreeData,
+            // eslint-disable-next-line camelcase
+            check_callback(operation, node, node_parent, node_position, more) {
+              return false;
+            }
           },
-          group: {
-            icon: false,
-            draggable: false
+          plugins: ['types', 'dnd', 'sort'],
+          types: {
+            default: {
+              icon: false,
+              valid_children: ['default']
+            },
+            group: {
+              icon: false,
+              draggable: false
+            }
+          },
+          sort(a, b) {
+            const positionA = this.get_node(a).data
+              ? this.get_node(a).data.position
+              : null;
+            const positionB = this.get_node(b).data
+              ? this.get_node(b).data.position
+              : null;
+            return positionA > positionB ? 1 : -1;
+          },
+          dnd: {
+            always_copy: true
           }
-        },
-        sort(a, b) {
-          const positionA = this.get_node(a).data
-            ? this.get_node(a).data.position
-            : null;
-          const positionB = this.get_node(b).data
-            ? this.get_node(b).data.position
-            : null;
-          return positionA > positionB ? 1 : -1;
-        },
-        dnd: {
-          always_copy: true
-        }
-      });
+        });
       this.treeInitialized = true;
+    },
+    openFirstNode() {
+      setTimeout(() => {
+        $(this.$refs.tree).jstree('select_node', 'ul > li:first');
+        const selectNode = $(this.$refs.tree).jstree('get_selected');
+        $(this.$refs.tree).jstree('open_node', selectNode, false, true);
+      }, 300);
     }
   }
 };

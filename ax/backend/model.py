@@ -139,6 +139,18 @@ class AxForm(Base):
     from_state_name = ""
     from_state_object = None
 
+    @property
+    def db_fields(self):
+        """Only AxFields that are database columns"""
+        db_fields = []
+        for field in self.fields:
+            if field.value_type != "VIRTUAL" and field.is_tab is False:
+                db_fields.append(field)
+        return db_fields
+
+    def get_row_data(self):
+        """Set current AxForm to match specific row in database table"""
+        return "GET ROW DATA"
 
 # class AxFormData():
 #     """Dummy for each AxForm instance"""
@@ -174,7 +186,21 @@ class AxFieldType(Base):
     is_updated_always = Column(Boolean, unique=False, default=False)
     is_always_whole_row = Column(Boolean, unique=False, default=False)
 
-    def __init__(self, tag, name=None, position=0, default_name=None, default_db_name="", value_type="", parent="", icon="", comparator="", is_inline_editable=False, is_backend_available=False, is_updated_always=False, is_group=False, is_always_whole_row=False):
+    def __init__(self,
+                 tag, name=None,
+                 position=0,
+                 default_name=None,
+                 default_db_name="",
+                 value_type="",
+                 parent="",
+                 icon="",
+                 comparator="",
+                 is_inline_editable=False,
+                 is_backend_available=False,
+                 is_updated_always=False,
+                 is_group=False,
+                 is_always_whole_row=False
+                 ):
         self.tag = tag
         self.name = name
         self.position = position
@@ -212,6 +238,14 @@ class AxField(Base):
     value = None
     is_readonly = False
     needs_sql_update = False
+
+    @property
+    def is_virtual(self):
+        """Is current fieldtype is Virtual (calculated field)"""
+        if self.field_type.value_type == "VIRTUAL":
+            return True
+        else:
+            return False
 
 
 class Ax1tomReference(Base):
@@ -355,6 +389,7 @@ class AxAction(Base):
     code = Column(Text(convert_unicode=True))
     confirm_text = Column(String(255))
     close_modal = Column(Boolean, unique=False, default=True)
+    icon = Column(String(255))
 
 
 class AxRoleFieldPermission(Base):

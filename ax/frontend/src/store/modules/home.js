@@ -1,6 +1,7 @@
 import apolloClient from '../../apollo';
 import gql from 'graphql-tag';
 import logger from '../../logger';
+import i18n from '../../locale.js';
 
 const GET_ALL_FORMS = gql`
     query {
@@ -18,8 +19,8 @@ const GET_ALL_FORMS = gql`
 `;
 
 const CREATE_FORM = gql`
-  mutation ($name: String!, $dbName: String!) {
-    createForm(name: $name, dbName: $dbName) {
+  mutation ($name: String!, $dbName: String!, $tabName: String!) {
+    createForm(name: $name, dbName: $dbName, tabName: $tabName) {
       form {
         guid,
         name,
@@ -233,7 +234,8 @@ const actions = {
       mutation: CREATE_FORM,
       variables: {
         name: payload.name,
-        dbName: payload.dbName
+        dbName: payload.dbName,
+        tabName: i18n.tc('home.default-tab')
       }
     })
       .then(data => {
@@ -290,6 +292,7 @@ const actions = {
       .then(data => {
         context.commit('setForms', data.data.deleteForm.forms);
         context.commit('setModalMustClose', true);
+        apolloClient.resetStore();
       })
       .catch(error => {
         logger.error(`Error in deleteForm apollo client => ${error}`);

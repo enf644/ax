@@ -188,7 +188,8 @@ Lead sources
             Creating beutiful landing page.
             Create and publish Article to all media
             Start Ad compaing with relative queries "crm, helpdesk" ect
-
+    SERVICES
+        https://optinmonster.com/
 
 
 Global Plan
@@ -258,38 +259,43 @@ Updading Ax
 
 
 1. English
-1.121 billion total speakers
+1.121 billion total speakers -> 17.00
 
 2. Chinese
-1.107 billion total speakers
+1.107 billion total speakers -> 14.30
 
 3. Hindi
-534.2 million total speakers
+534.2 million total speakers -> 15.40 (from English)
 
 4. Spanish
-512.9 million total speakers
+512.9 million total speakers -> 12.10$
+
+-------------------
 
 5. French
-284.9 million total speakers
+284.9 million total speakers -> 12.10
 
 6. Arabic
-273.9 million total speakers
+273.9 million total speakers -> 15.40 (from English)
 
 7. Russian
-265 million total speakers
+265 million total speakers -> 7.7$
 
 8. Bengali
-261.8 million total speakers
+261.8 million total speakers -> 15.40 (from English)
 
 9. Portuguese
-236.5 million total speakers
+236.5 million total speakers -> 16$
 
 10. Indonesian
-198.4 million total speakers
+198.4 million total speakers -> 15.40 (from English)
+
+11. Japanese -> 24.20$
 
 
+Russian -> English, Chinese, Hindi, Spanish
 
-
+https://thewordpoint.com/prices
 
 ==============================================================================================================================
 

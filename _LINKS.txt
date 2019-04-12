@@ -55,6 +55,7 @@ WEBPACK LAZY LOADING
 
 DIALOGS
     https://www.npmjs.com/package/vue-js-modal  --> CHOISE
+        https://ppx57r3nnj.codesandbox.io/
     https://wovue.github.io/dialog/#!/examples/real-world
     https://github.com/JounQin/vue-async-modal
     https://github.com/leodd/vue-modal-wizard - bad
@@ -93,6 +94,8 @@ SERVICES TO DISCOVER
 
 LANDING PAGE INSPIRATION
     https://lokalise.co/
+    https://chartio.com/resources/tutorials/how-to-execute-raw-sql-in-sqlalchemy/
+    
 
 TREE
     https://github.com/phphe/vue-draggable-nested-tree - choise

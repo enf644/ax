@@ -8,7 +8,7 @@ from sqlalchemy import MetaData
 from loguru import logger
 
 from backend.misc import convert_column_to_string  # TODO check if needed
-from backend.model import GUID, AxForm  # TODO: check if needed
+from backend.model import GUID, AxForm, AxField  # TODO: check if needed
 import backend.model as ax_model
 import backend.cache as ax_cache
 import backend.dialects as ax_dialects
@@ -33,7 +33,6 @@ def create_db_table(_db_name: str) -> None:
     """Create database table"""
     try:
         query = ax_dialects.dialect.create_data_table(db_name=_db_name)
-        ax_model.db_session.execute(query)
     except Exception:
         logger.exception('Error creating new Form. Cant create db table')
         raise
@@ -55,11 +54,27 @@ def create_ax_form(_name: str, _db_name: str) -> object:
         raise
 
 
+def create_default_tab(ax_form, tab_name) -> None:
+    """ Create default AxForm tab """
+    try:
+        ax_field = AxField()
+        ax_field.name = tab_name
+        ax_field.form_guid = ax_form.guid
+        ax_field.is_tab = True
+        ax_field.position = 1
+        ax_model.db_session.add(ax_field)
+        ax_model.db_session.commit()
+    except Exception:
+        logger.exception('Error creating default tab.')
+        raise
+
+
 class CreateForm(graphene.Mutation):
     """ Creates AxForm """
     class Arguments:  # pylint: disable=missing-docstring
         name = graphene.String()
         db_name = graphene.String()
+        tab_name = graphene.String()
 
     ok = graphene.Boolean()
     avalible = graphene.Boolean()
@@ -70,6 +85,7 @@ class CreateForm(graphene.Mutation):
             del info
             name = args.get('name')
             db_name = args.get('db_name')
+            tab_name = args.get('tab_name')
 
             if is_db_name_avalible(_db_name=db_name) is False:
                 return CreateForm(form=None, avalible=False, ok=True)
@@ -83,7 +99,7 @@ class CreateForm(graphene.Mutation):
             # Add role to States - Start, Default state
             # Add role to Actions - Add record, Delete
             # Add default grid
-            # Add default tab
+            create_default_tab(new_form, tab_name)
 
             ok = True
             return CreateForm(form=new_form, avalible=True, ok=ok)
@@ -122,15 +138,10 @@ class UpdateForm(graphene.Mutation):
                         db_name_changed=None,
                         ok=True
                     )
-                try:
-                    query = ax_dialects.dialect.rename_table(
+                else:
+                    ax_dialects.dialect.rename_table(
                         old=ax_form.db_name,
-                        new=args.get('db_name')
-                    )
-                    ax_model.db_session.execute(query)
-                except Exception:
-                    logger.exception('Error executing sql - rename_table.')
-                    raise
+                        new=args.get('db_name'))
 
             ax_form.name = args.get('name')
             ax_form.db_name = args.get('db_name')
@@ -166,7 +177,7 @@ class DeleteForm(graphene.Mutation):
                 AxForm.guid == uuid.UUID(guid)
             ).first()
 
-            # ax_model.db_session.execute("SET FOREIGN_KEY_CHECKS=0;")
+            # s.execute("SET FOREIGN_KEY_CHECKS=0;")
 
             # Delete all AxFields, AxColumns, drop columns + field permissions
             # for f in ax_object.fields:
@@ -184,17 +195,11 @@ class DeleteForm(graphene.Mutation):
             # for v in ax_object.grids:
             #     s.delete(v)
 
-            try:
-                query = ax_dialects.dialect.drop_table(db_name=ax_form.db_name)
-                ax_model.db_session.execute(query)
-            except Exception:
-                logger.exception('Error executing sql - drop_table.')
-                raise
-
+            ax_dialects.dialect.drop_table(db_name=ax_form.db_name)
             ax_model.db_session.delete(ax_form)
             ax_model.db_session.commit()
 
-            # ax_model.db_session.execute("SET FOREIGN_KEY_CHECKS=1;")
+            # s.execute("SET FOREIGN_KEY_CHECKS=1;")
 
             query = Form.get_query(info)  # SQLAlchemy query
             form_list = query.all()

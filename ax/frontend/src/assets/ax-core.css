@@ -25,14 +25,6 @@ a {
     color: white;
 }
 
-.ax-field-node {
-    line-height: 42px !important;
-}
-
-.ax-field-node a {
-    height: 42px !important;
-}
-
 ::-webkit-scrollbar {
     width: 5px;
     height: 5px;
@@ -135,6 +127,55 @@ a {
 }
 
 /************ Splits styles } ***************/
+
+/************ Jstree styles { ***************/
+
+.jstree-clicked {
+    border-bottom: 2px solid #FF5722 !important;
+}
+
+.jstree-hovered {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.jstree-clicked .jstree-hovered {
+    background: transparent !important;
+    border-bottom: 2px solid #FF5722 !important;
+}
+
+.jstree-default .jstree-clicked {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.jstree-default a {
+    white-space: normal !important;
+    height: auto;
+    border-bottom: 2px solid transparent;
+}
+
+.jstree-anchor {
+    height: auto !important;
+}
+
+.jstree-default li>ins {
+    vertical-align: top;
+}
+
+.jstree-leaf {
+    height: auto;
+}
+
+.jstree-leaf a {
+    height: auto !important;
+}
+
+.ax-field-node a {
+    height: 42px !important;
+}
+
+/************ Jstree styles } ***************/
 
 .ax-form-app .application--wrap {
     min-height: 300px;

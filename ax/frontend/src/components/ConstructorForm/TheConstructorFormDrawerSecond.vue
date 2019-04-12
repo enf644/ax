@@ -8,6 +8,18 @@
       <i class='far fa-folder'></i>
       &nbsp; {{$t("form.add-tab")}}
     </v-btn>
+
+    <modal adaptive height='auto' name='field-settings' scrollable width='600px'>
+      <v-card>
+        <component
+          :guid='settingsGuid'
+          :is='component'
+          :options='settingsOptions'
+          @closed='closeSettings()'
+          v-if='component'
+        />
+      </v-card>
+    </modal>
   </div>
 </template>
 
@@ -22,22 +34,39 @@ import ConstructorTab from '@/components/ConstructorForm/ConstructorTab.vue';
 export default {
   name: 'admin-form-drawer-second',
   data: () => ({
-    treeInitialized: false
+    treeInitialized: false,
+    component: null,
+    settingsGuid: null,
+    settingsOptions: null
   }),
   computed: {
     fields() {
       return this.$store.state.form.fields;
+    },
+    settingsFieldGuid() {
+      return this.$store.state.form.openSettingsFlag;
     }
   },
   watch: {
-    fields() {
+    fields(newValue, oldValue) {
+      if (oldValue.length === 0) {
+        this.openFirstNode();
+      }
+
       if (this.treeInitialized) {
-        const tree = $(this.$refs.tree).jstree(true);
-        tree.settings.core.data = this.$store.getters['form/fieldTreeData'];
-        tree.refresh(true, false);
+        if (!this.$store.state.form.isNameChangeOperation) {
+          const tree = $(this.$refs.tree).jstree(true);
+          tree.settings.core.data = this.$store.getters['form/fieldTreeData'];
+          tree.refresh(true, false);
+        } else {
+          this.$store.commit('form/setIsNameChangeOperation', false);
+        }
       } else {
         this.initFieldTree(this.$store.getters['form/fieldTreeData']);
       }
+    },
+    settingsFieldGuid(newValue) {
+      if (newValue) this.openSettings(newValue);
     }
   },
   created() {
@@ -53,6 +82,42 @@ export default {
     }
   },
   methods: {
+    settingLoader(tag) {
+      return () => import(`@/components/AxFields/${tag}/${tag}Settings.vue`);
+    },
+    openSettings(fieldGuid) {
+      const field = this.$store.state.form.fields.find(
+        f => f.guid === fieldGuid
+      );
+      this.settingsGuid = field.guid;
+
+      let options = null;
+      try {
+        options = JSON.parse(field.optionsJson);
+      } catch {
+        this.$log.error(`Unable to parse options json for ${field.dbName}`);
+      }
+
+      this.settingsOptions = options;
+      const ftag = field.fieldType.tag;
+
+      import(`@/components/AxFields/${ftag}/${ftag}Settings.vue`)
+        .then(() => {
+          this.component = () => import(`@/components/AxFields/${ftag}/${ftag}Settings.vue`);
+        })
+        .catch(() => {
+          this.component = () => import('@/components/AxFieldSettings.vue');
+        });
+
+      this.$modal.show('field-settings');
+    },
+    closeSettings() {
+      this.component = null;
+      this.settingsOptions = null;
+      this.settingsGuid = null;
+      this.$store.commit('form/setOpenSettingsFlag', null);
+      this.$modal.hide('field-settings');
+    },
     createTab() {
       const args = {
         formGuid: this.$store.state.form.guid,
@@ -89,6 +154,69 @@ export default {
           );
         });
     },
+    async deleteTab(field) {
+      const tabFields = this.$store.state.form.fields.filter(
+        f => f.parent === field.guid
+      );
+      if (tabFields && tabFields.length > 0) {
+        const msg = this.$t('form.error-tab-have-children', {
+          num: tabFields.length
+        });
+        this.$dialog.error({
+          text: msg,
+          actions: {
+            false: this.$t('common.error-close')
+          }
+        });
+      } else {
+        const res = await this.$dialog.confirm({
+          text: this.$t('form.delete-tab-confirm', { name: field.name }),
+          actions: {
+            false: this.$t('common.confirm-no'),
+            true: {
+              text: this.$t('common.confirm-yes'),
+              color: 'red'
+            }
+          }
+        });
+        if (res) {
+          this.$store
+            .dispatch('form/deleteTab', { guid: field.guid })
+            .then(() => {
+              const msg = this.$t('form.delete-tab-toast');
+              this.$dialog.message.success(
+                `<i class="far fa-trash-alt"></i> &nbsp ${msg}`
+              );
+            });
+        }
+      }
+    },
+    async deleteField(guid) {
+      const field = this.$store.state.form.fields.find(f => f.guid === guid);
+      if (field.isTab) return this.deleteTab(field);
+
+      const res = await this.$dialog.confirm({
+        text: this.$t('form.delete-field-confirm', { name: field.name }),
+        actions: {
+          false: this.$t('common.confirm-no'),
+          true: {
+            text: this.$t('common.confirm-yes'),
+            color: 'red'
+          }
+        }
+      });
+      if (res) {
+        this.$store
+          .dispatch('form/deleteField', { guid: field.guid })
+          .then(() => {
+            const msg = this.$t('form.delete-field-toast');
+            this.$dialog.message.success(
+              `<i class="far fa-trash-alt"></i> &nbsp ${msg}`
+            );
+          });
+      }
+      return true;
+    },
     changeFieldsPositions() {
       const positions = this.getPositionList();
       this.$store
@@ -100,11 +228,18 @@ export default {
           );
         });
     },
+    openFirstNode() {
+      setTimeout(() => {
+        $(this.$refs.tree).jstree('select_node', 'ul > li:first');
+        const selectNode = $(this.$refs.tree).jstree('get_selected');
+        $(this.$refs.tree).jstree('open_node', selectNode, false, true);
+      }, 300);
+    },
     initFieldTree(jsTreeData) {
       $(this.$refs.tree)
         .on('move_node.jstree', (e, data) => this.changeFieldsPositions(e, data))
         .on('copy_node.jstree', (e, data) => this.createField(e, data))
-        .on('ready.jstree', () => {})
+        .on('ready.jstree', () => this.openFirstNode())
         .jstree({
           core: {
             data: jsTreeData,
@@ -148,7 +283,7 @@ export default {
       $(this.$refs.tree).on('keydown.jstree', '.jstree-anchor', e => {
         if (e.which === 46) {
           const fieldGuid = e.currentTarget.id.replace('_anchor', '');
-          console.log(`DELETE FIELD -> ${fieldGuid}`);
+          this.deleteField(fieldGuid);
         }
       });
 

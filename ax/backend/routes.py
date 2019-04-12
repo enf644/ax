@@ -2,11 +2,15 @@
 
 import os
 from sanic import response
+import asyncio
 from loguru import logger
 from graphql_ws.websockets_lib import WsLibSubscriptionServer
 import backend.cache as ax_cache
 import backend.schema as ax_schema
+import backend.model as ax_model
+import backend.dialects as ax_dialects
 import backend.misc as ax_misc
+import sqlite3
 
 
 def init_routes(app):
@@ -37,8 +41,13 @@ def init_routes(app):
         async def subscriptions(request, web_socket):  # pylint: disable=unused-variable
             """Web socket route for graphql subscriptions"""
             del request
-            await subscription_server.handle(web_socket)
-            return web_socket
+            try:
+                # TODO: Discover why socket error exception occurs without internet
+                await subscription_server.handle(web_socket)
+                return web_socket
+            except asyncio.CancelledError:
+                pass
+                # logger.exception('Socket error')
 
         @app.route("/install")
         async def install(request):  # pylint: disable=unused-variable
@@ -51,6 +60,17 @@ def init_routes(app):
             object_id = request.raw_args['object_id']
             ret_str = 'Ajax object_id = ' + object_id
             return response.text(ret_str)
+
+        @app.route('/api/test')
+        async def test(request):  # pylint: disable=unused-variable
+            """Test function"""
+            table = 'bank'
+            old_name = 'string_1'
+            new_name = 'string_644'
+            type_name = None
+            sql = ax_dialects.dialect.rename_column(
+                table, old_name, new_name, type_name)
+            return response.text(sql)
 
         @app.route('/api/set')
         async def cache_set(request):  # pylint: disable=unused-variable

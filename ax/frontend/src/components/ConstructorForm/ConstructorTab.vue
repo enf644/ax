@@ -1,13 +1,24 @@
 <template>
   <span class='wrap'>
-    <i @click='focusName' class='far fa-bookmark'></i>
-    <input @click='focusName' id='nameInput' ref='nameInput' type='text' v-model='currentName'>
+    <i class='far fa-bookmark'></i>
+    <input
+      @change='applyChange'
+      @click='focusName'
+      id='nameInput'
+      ref='nameInput'
+      type='text'
+      v-model='currentName'
+    >
   </span>
 </template>
 
 <script>
+//       tabindex='-1'
+import i18n from '../../locale.js';
+import store from '../../store';
+
 export default {
-  name: 'construcor-field',
+  name: 'construcor-tab',
   props: {
     guid: null,
     name: null
@@ -25,6 +36,19 @@ export default {
         this.$refs.nameInput.focus();
         this.$refs.nameInput.select();
       }, 10);
+    },
+    applyChange() {
+      store
+        .dispatch('form/updateTab', {
+          guid: this.guid,
+          name: this.currentName
+        })
+        .then(() => {
+          const msg = i18n.tc('form.update-tab-toast');
+          this.$dialog.message.success(
+            `<i class="far fa-folder"></i> &nbsp ${msg}`
+          );
+        });
     }
   }
 };
