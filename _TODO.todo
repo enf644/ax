@@ -251,13 +251,16 @@ AX 20:
         ✔ Create 2 field dummys - base, string, checkbox. @done(19-04-10 09:48)
         ✔ Tabs - switching tabs @done(19-04-10 11:13)
         ✔ Form submit - js @done(19-04-10 14:14)
-        ☐ Fields settings
+        ✔ Fields settings @done(19-04-12 16:38)
             ✔ BaseComponent @done(19-04-12 08:49)
             ✔ Modal window @done(19-04-12 08:49)
             ✔ Save options_json, gql query @done(19-04-12 12:55)
             ✔ Custom settings component @done(19-04-12 12:55)
-            ☐ Regexp setting for AxString
+            ✔ Regexp setting for AxString @done(19-04-12 16:37)
         ☐ Validation
+            ☐ Field is reqired
+            ☐ Field is whole row
+            ☐ Validate form - submit only valid
         ☐ When first of tab added -> open tab
         ☐ If field added -> focus name input
         ☐ If tab added -> focus name input

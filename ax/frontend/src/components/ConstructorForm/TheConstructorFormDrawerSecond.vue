@@ -137,7 +137,7 @@ export default {
         .jstree()
         .delete_node(data.node);
       const positionList = this.getPositionList(mustBePosition);
-      const locale = `types.${tag}`;
+      const locale = `types.${tag}.name`;
       const defaultName = this.$t(locale);
       this.$store
         .dispatch('form/createField', {

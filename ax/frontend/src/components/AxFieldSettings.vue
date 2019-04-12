@@ -7,14 +7,10 @@
     <br>
     <v-layout align-left row wrap>
       <v-flex xs5>
-        <v-switch :label='`Field is required`' v-model='isRequired'></v-switch>
+        <v-switch :label='isRequiredLocale' v-model='isRequired'></v-switch>
       </v-flex>
       <v-flex offset-xs2 xs5>
-        <v-switch
-          :disabled='isWholeRowIsDisabled'
-          :label='`Field takes whole row`'
-          v-model='isWholeRow'
-        ></v-switch>
+        <v-switch :disabled='isWholeRowIsDisabled' :label='isWholeRowLocale' v-model='isWholeRow'></v-switch>
       </v-flex>
     </v-layout>
     <slot></slot>
@@ -28,7 +24,6 @@
 <script>
 import i18n from '../locale.js';
 import store from '../store';
-// i18n.tc('form.field-settings-title')
 
 export default {
   name: 'AxFieldSettings',
@@ -39,8 +34,10 @@ export default {
   data() {
     return {
       isRequired: false,
+      isRequiredLocale: null,
       isWholeRow: false,
       isWholeRowIsDisabled: false,
+      isWholeRowLocale: null,
       header: null,
       submit: null,
       field: null
@@ -61,6 +58,8 @@ export default {
 
     this.header = i18n.tc('form.field-settings-title');
     this.submit = i18n.tc('form.field-settings-submit');
+    this.isWholeRowLocale = i18n.tc('form.is-whole-row');
+    this.isRequiredLocale = i18n.tc('form.is-required');
   },
   methods: {
     updateSettings() {

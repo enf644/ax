@@ -76,47 +76,101 @@
         "delete-field-confirm": "Do you realy want to delete field [{name}]?",
         "test-from": "Get form values",
         "field-settings-title": "Modifying field settings",
-        "field-settings-submit": "Save settings"
+        "field-settings-submit": "Save settings",
+        "is-whole-row": "Field takes whole row",
+        "is-required": "Field is required"
     },
     "types": {
         "group-id": "Identification",
-        "AxGuid": "Guid",
-        "AxNum": "Register number",
         "group-process": "Process controll",
-        "AxState": "Current State",
-        "AxChangelog": "Changelog",
         "group-string": "String",
-        "AxString": "String",
-        "AxEmail": "Email",
-        "AxTelephone": "Telephone",
         "group-text": "Text",
-        "AxText": "Text",
-        "AxMarkdown": "Markdown",
         "group-number": "Number",
-        "AxInteger": "Integer",
-        "AxDecimal": "Decimal",
-        "AxIntSlider": "Slider",
         "group-boolean": "Boolean",
-        "AxCheckbox": "Checkbox",
         "group-relationship": "Relationship",
-        "Ax1to1": "Dictionary 1:1",
-        "Ax1to1Default": "Dictionary",
-        "Ax1tom": "Dictionary 1:M Inline",
-        "Ax1tomDefault": "Dictionary",
-        "Ax1tomTable": "Dictionary 1:M Table",
-        "Ax1tomTableDefault": "Dictionary",
-        "group-date": "Date and Time",
-        "AxDate": "Date",
         "group-list": "List",
-        "AxChoise": "Choise",
-        "AxRadio": "Radio",
+        "group-date": "Date and Time",
         "group-images": "Images",
-        "AxCropImage": "Image Crop",
         "group-files": "Files",
-        "AxFiles": "Disk files",
         "group-users": "Users",
-        "AxUsers": "Users",
         "group-communication": "Communication",
-        "AxComments": "Comments"
+        "AxGuid": {
+            "name": "Guid"
+        },
+        "AxNum": {
+            "name": "Register number"
+        },
+        "AxState": {
+            "name": "Current State"
+        },
+        "AxChangelog": {
+            "name": "Changelog"
+        },
+        "AxString": {
+            "name": "String",
+            "regexp-label": "Regular expression",
+            "regexp-hint": "Field is valid if match expression. Example: {example}",
+            "error-label": "Error text",
+            "error-hint": "Error text that will be displayed if value does not match regexp.",
+            "tester-label": "Regexp test string",
+            "tester-hint": "Test your regular expression. Enter string to see if it is valid."
+        },
+        "AxEmail": {
+            "name": "Email"
+        },
+        "AxTelephone": {
+            "name": "Telephone"
+        },
+        "AxText": {
+            "name": "Text"
+        },
+        "AxMarkdown": {
+            "name": "Markdown"
+        },
+        "AxInteger": {
+            "name": "Integer"
+        },
+        "AxDecimal": {
+            "name": "Decimal"
+        },
+        "AxIntSlider": {
+            "name": "Slider"
+        },
+        "AxCheckbox": {
+            "name": "Checkbox"
+        },
+        "Ax1to1": {
+            "name": "Dictionary 1:1",
+            "default": "Dictionary"
+        },
+        "Ax1tom": {
+            "name": "Dictionary 1:M Inline",
+            "default": "Dictionary"
+        },
+        "Ax1tomTable": {
+            "name": "Dictionary 1:M Table",
+            "default": "Dictionary"
+        },
+        "AxDate": {
+            "name": "Date"
+        },
+        "AxChoise": {
+            "name": "Choise"
+        },
+        "AxRadio": {
+            "name": "Radio"
+        },
+        "AxCropImage": {
+            "name": "Image Crop"
+        },
+        "AxFiles": {
+            "name": "Disk files"
+        },
+        "AxUsers": {
+            "name": "Users"
+        },
+        "AxComments": {
+            "name": "Comments"
+        }
     }
 }

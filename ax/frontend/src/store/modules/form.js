@@ -290,11 +290,11 @@ const getters = {
 
     for (let i = 0; i < state.fieldTypes.length; i += 1) {
       const fieldType = state.fieldTypes[i];
-      const locale = `types.${fieldType.tag}`;
-      const name = i18n.tc(locale);
       const parent = fieldType.parent || '#';
 
       if (fieldType.isGroup) {
+        const locale = `types.${fieldType.tag}`;
+        const name = i18n.tc(locale);
         const node = {
           id: fieldType.tag,
           parent,
@@ -306,6 +306,8 @@ const getters = {
         };
         typesTreeData.push(node);
       } else {
+        const locale = `types.${fieldType.tag}.name`;
+        const name = i18n.tc(locale);
         const node = {
           id: fieldType.tag,
           parent,
