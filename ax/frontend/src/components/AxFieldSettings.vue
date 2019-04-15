@@ -56,7 +56,9 @@ export default {
       this.isWholeRowIsDisabled = true;
     }
 
-    this.header = i18n.tc('form.field-settings-title');
+    this.header = i18n.t('form.field-settings-title', {
+      name: this.field.name
+    });
     this.submit = i18n.tc('form.field-settings-submit');
     this.isWholeRowLocale = i18n.tc('form.is-whole-row');
     this.isRequiredLocale = i18n.tc('form.is-required');

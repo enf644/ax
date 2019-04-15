@@ -203,18 +203,22 @@ Global Plan
 
 Landing ideas
     Not describing software, but how it help customer
-    Gifs on how to use
+    Gifs on how to use.
+    Personal touch - personal email / twitter
 
 			
 
 Pricing
     Free
         Up to 4 users
-    Standard - 1$ per user
-    Enterprise - 5$ per user
+    Standard - 10$ per user
+    Enterprise - 25$ per user
         Ag-grid enterprice
         Redis queing
         Active directory / Google groups
+
+Need aquire 200 users - 
+40 x 5 - minimal sales.
 
 
 Growing points

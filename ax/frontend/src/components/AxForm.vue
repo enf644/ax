@@ -19,12 +19,21 @@
               :class='getTabClass(tab.guid)'
               :key='tab.name'
               @click='openTab(tab.guid)'
+              avatar
               ripple
               v-for='tab in tabs'
             >
               <v-list-tile-content class='drawer-folder-item'>
                 <v-list-tile-title>{{ tab.name }}</v-list-tile-title>
               </v-list-tile-content>
+              <v-list-tile-avatar>
+                <transition
+                  enter-active-class='animated flipInY'
+                  leave-active-class='animated flipOutY'
+                >
+                  <div class='tab-errors' v-show='tab.errors'>{{tab.errors}}</div>
+                </transition>
+              </v-list-tile-avatar>
             </v-list-tile>
           </v-list>
         </div>
@@ -36,15 +45,20 @@
             v-bind:class='{ "hidden": overlayIsHidden }'
           ></div>
           <div class='header'>
-            <v-btn
-              @click='toggleDrawer'
+            <v-badge
               class='drawer-toggle'
-              fab
-              small
+              color='red'
+              overlap
               v-bind:class='{ "hidden": !drawerIsFloating }'
+              v-model='formIsNotValid'
             >
-              <i class='fas fa-bars'></i>
-            </v-btn>
+              <template v-slot:badge>
+                <span class='drawer-toggle-errors'>{{errorsCount}}</span>
+              </template>
+              <v-btn @click='toggleDrawer' fab small>
+                <i class='fas fa-bars'></i>
+              </v-btn>
+            </v-badge>
             <i :class='iconClass'></i>
             &nbsp; {{name}}
             <resize-observer @notify='handleResize'/>
@@ -53,9 +67,12 @@
             <v-layout align-center justify-center row wrap>
               <AxField
                 :dbName='field.dbName'
+                :isRequired='field.isRequired'
+                :isWholeRow='field.isWholeRow'
                 :key='field.guid'
                 :name='field.name'
                 :optionsJson='field.optionsJson'
+                :ref='getFieldRef(field.guid)'
                 :tag='field.fieldType.tag'
                 :value.sync='field.value'
                 @update:value='updateValue'
@@ -64,7 +81,7 @@
               ></AxField>
 
               <v-flex xs12>
-                <v-btn @click='submitTest' small>
+                <v-btn :disabled='!formIsValid' @click='submitTest' small>
                   <i class='fas fa-vial'></i>
                   &nbsp; {{$t("form.test-from")}}
                 </v-btn>
@@ -91,12 +108,14 @@
 
 <script>
 // import AxGrid from './AxGrid.vue';
+import smoothReflow from 'vue-smooth-reflow';
 import apolloClient from '../apollo';
 import AxField from '@/components/AxField.vue';
 import gql from 'graphql-tag';
 
 export default {
   name: 'AxForm',
+  mixins: [smoothReflow],
   components: { AxField },
   props: {
     no_margin: {
@@ -108,7 +127,8 @@ export default {
       default: null
     },
     row_guid: {},
-    update_time: null
+    update_time: null,
+    opened_tab: null
   },
   data() {
     return {
@@ -126,12 +146,25 @@ export default {
       currentTabGuid: null,
       tabFields: [],
       activeTab: null,
-      value: null
+      value: null,
+      formIsValid: true,
+      errorsCount: 0
     };
   },
   computed: {
     iconClass() {
       return `fas fa-${this.icon}`;
+    },
+    // errorsCount() {
+    //   let counter = 0;
+    //   this.tabs.forEach(tab => {
+    //     console.log(tab.errors);
+    //     if (tab.errors) counter += tab.errors;
+    //   });
+    //   return counter;
+    // },
+    formIsNotValid() {
+      return !this.formIsValid;
     }
   },
   watch: {
@@ -148,6 +181,7 @@ export default {
     this.$nextTick(() => {
       this.handleResize();
     });
+    this.$smoothReflow({ el: this.$refs.sheet.$el });
   },
   methods: {
     updateValue() {
@@ -157,9 +191,45 @@ export default {
       });
       this.value = result;
       this.$emit('update:value', result);
+      if (!this.formIsValid) this.isValid();
+    },
+    isValid() {
+      let formIsValid = true;
+      const tabErrors = {};
+      let errorsCount = 0;
+
+      // Validate each field
+      this.fields.forEach(field => {
+        const ref = this.getFieldRef(field.guid);
+        if (this.$refs[ref]) {
+          const fieldObject = this.$refs[ref][0];
+          if (fieldObject.isValid() === false) {
+            // TODO: error counter on tabs
+            if (!tabErrors[field.parent]) tabErrors[field.parent] = 1;
+            else tabErrors[field.parent] += 1;
+            formIsValid = false;
+          }
+        }
+      });
+
+      for (let index = 0; index < this.tabs.length; index += 1) {
+        const tab = this.tabs[index];
+        if (tabErrors[tab.guid]) {
+          tab.errors = tabErrors[tab.guid];
+          errorsCount += tabErrors[tab.guid];
+        } else tab.errors = 0;
+      }
+
+      this.errorsCount = errorsCount;
+      this.formIsValid = formIsValid;
+      return formIsValid;
     },
     submitTest() {
-      this.$modal.show('test-value');
+      this.isValid();
+      if (this.formIsValid) this.$modal.show('test-value');
+    },
+    getFieldRef(guid) {
+      return `field-${guid}`;
     },
     isFieldVisible(field) {
       if (field.parent === this.activeTab) return true;
@@ -172,6 +242,7 @@ export default {
     },
     openTab(guid) {
       this.activeTab = guid;
+      this.$emit('update:tab', guid);
       this.hideDrawer();
     },
     loadData(dbName, rowGuid = null) {
@@ -242,10 +313,13 @@ export default {
           this.tabs = [];
           this.fields = [];
           fields.forEach(field => {
-            if (field.isTab) this.tabs.push(field);
-            else this.fields.push(field);
+            const thisField = field;
+            if (field.isRequired) thisField.name = `${field.name} *`;
+            if (field.isTab) this.tabs.push(thisField);
+            else this.fields.push(thisField);
           });
-          this.activeTab = this.tabs[0].guid;
+          if (this.opened_tab) this.activeTab = this.opened_tab;
+          else this.activeTab = this.tabs[0].guid;
           this.updateValue();
         })
         .catch(error => {
@@ -335,6 +409,9 @@ export default {
 .drawer-toggle {
   margin: 0px 25px 15px 0px;
 }
+.drawer-toggle-errors {
+  line-height: 19px;
+}
 .drawer-folder-list {
   background: #fafafa !important;
 }
@@ -381,5 +458,14 @@ export default {
 }
 .test-value {
   padding: 25px;
+}
+.tab-errors {
+  background: #f44336;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 13px;
+  color: white;
+  border-radius: 15px;
 }
 </style>

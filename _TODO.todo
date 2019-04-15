@@ -222,8 +222,8 @@ AX 20:
                 ✔ Delete form @done(19-03-28 11:09)
                 ✔ Delete folder @done(19-03-28 11:09)
     ☐ FORM CONSTRUCTOR
-        ☐ Field types tree
-        ☐ Fields tree
+        ✔ Field types tree @done(19-04-15 12:16)
+        ✔ Fields tree @done(19-04-15 12:16)
             ✔ Add tab @done(19-03-30 10:08)
             ✔ Add field @done(19-04-01 17:41)
             ✔ Change field position @done(19-04-03 09:32)
@@ -243,9 +243,9 @@ AX 20:
             ✔ tab @done(19-04-01 17:45)
             ✔ field @done(19-04-01 17:45)
         ✔ Bug - delete form, create with same name -> fields stay @done(19-04-07 15:49)
-        ☐ AxForm preview
-        ☐ Field settings popup
-    ☐ AxForm
+        ✔ AxForm preview @done(19-04-15 12:16)
+        ✔ Field settings popup @done(19-04-15 12:16)
+    ✔ AxForm @done(19-04-15 12:21)
         ✔ Get fields, values, actions @done(19-04-10 09:18)
         ✔ Dynamicly load field types by @done(19-04-10 09:18)
         ✔ Create 2 field dummys - base, string, checkbox. @done(19-04-10 09:48)
@@ -257,10 +257,12 @@ AX 20:
             ✔ Save options_json, gql query @done(19-04-12 12:55)
             ✔ Custom settings component @done(19-04-12 12:55)
             ✔ Regexp setting for AxString @done(19-04-12 16:37)
-        ☐ Validation
-            ☐ Field is reqired
-            ☐ Field is whole row
-            ☐ Validate form - submit only valid
+        ✔ Validation @done(19-04-15 12:16)
+            ✔ Field is reqired @done(19-04-15 12:15)
+            ✔ Validate form - submit only valid @done(19-04-15 12:15)
+            ✔ Errors in tabs and toggle drawer @done(19-04-15 12:15)
+        ✔ Field is whole row @done(19-04-15 12:16)
+    ☐ Form and home frogs
         ☐ When first of tab added -> open tab
         ☐ If field added -> focus name input
         ☐ If tab added -> focus name input
@@ -279,13 +281,7 @@ AX 20:
 		☐ ax-1tom
 		☐ ax-mtom
 		☐ ax-mtom-table
-	☐ COMPLEX FIELDS
-		☐ ax-files
-		☐ ax-crop-image
-	☐ USERS
-		☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
-				☐ Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные	
-	☐ WORKFLOW
+    ☐ WORKFLOW
 		☐ Структура БД
 		☐ Страница с редактором
 		☐ Пустая схема - Начало и Конец
@@ -314,6 +310,12 @@ AX 20:
                 ☐ для каждого Статуса и каждого Действия - подсвечиваем нужным цветом
 		☐ Опции Статуса - Выбор - доступные поля на статусе для каждой роли
 		☐ Опции Действия
+    ☐ COMPLEX FIELDS
+		☐ ax-files
+		☐ ax-crop-image
+	☐ USERS
+		☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
+				☐ Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные	
 	☐ PAGES DESIGNER
 	☐ MARKETPLACE
 		☐ Dump application to yaml

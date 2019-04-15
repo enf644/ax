@@ -1,11 +1,13 @@
 <template>
-  <v-flex class='ax-field'>
+  <v-flex :xs12='isWholeRow' class='ax-field'>
     <component
-      :dbName='name'
+      :dbName='dbName'
       :is='component'
+      :isRequired='isRequired'
       :name='name'
-      :optionsJson='optionsJson'
+      :options='options'
       :value.sync='currentValue'
+      ref='thisField'
     ></component>
   </v-flex>
 </template>
@@ -18,10 +20,14 @@ export default {
     dbName: null,
     tag: null,
     optionsJson: null,
-    value: null
+    value: null,
+    isRequired: null,
+    isWholeRow: null
   },
   data: () => ({
+    options: null,
     component: null,
+    currentName: null,
     currentValue: null
   }),
   computed: {
@@ -35,13 +41,33 @@ export default {
   watch: {
     currentValue(newValue) {
       this.$emit('update:value', newValue);
+    },
+    optionsJson(newValue) {
+      this.options = JSON.parse(newValue);
+      if (this.$refs.thisField.errors.length > 0) {
+        setTimeout(() => {
+          this.$refs.thisField.errors = [];
+          this.$refs.thisField.isValid();
+        }, 10);
+      }
     }
+  },
+  created() {
+    this.options = JSON.parse(this.optionsJson);
   },
   mounted() {
     this.loader().then(() => {
       this.component = () => this.loader();
       this.currentValue = this.value;
     });
+  },
+  methods: {
+    isValid() {
+      if (typeof this.$refs.thisField.isValid === 'function') {
+        return this.$refs.thisField.isValid();
+      }
+      return true;
+    }
   }
 };
 </script>

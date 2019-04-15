@@ -76,7 +76,7 @@ const gridPromise = () => import(/* webpackChunkName: "ax-grid" */ './components
 Vue.customElement('ax-grid', gridPromise);
 
 const formPromise = () => import(/* webpackChunkName: "ax-form" */ './components/AxForm.vue').then(m => m.default);
-Vue.customElement('ax-form', formPromise, { props: ['db_name', 'row_guid', 'update_time'] });
+Vue.customElement('ax-form', formPromise, { props: ['db_name', 'row_guid', 'update_time', 'opened_tab'] });
 
 Vue.customElement('ax-test', AxTest);
 

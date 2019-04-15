@@ -8,7 +8,8 @@
         "confirm-yes": "Yes",
         "confirm-no": "Cancel",
         "position-changed": "Positions changed",
-        "error-close": "Close"
+        "error-close": "Close",
+        "field-required": "Field is required"
     },
     "home": {
         "ax-forms": "Ax Forms",
@@ -75,7 +76,7 @@
         "delete-tab-confirm": "Do you realy want to delete tab [{name}]?",
         "delete-field-confirm": "Do you realy want to delete field [{name}]?",
         "test-from": "Get form values",
-        "field-settings-title": "Modifying field settings",
+        "field-settings-title": "Settings - [{name}]",
         "field-settings-submit": "Save settings",
         "is-whole-row": "Field takes whole row",
         "is-required": "Field is required"
@@ -108,6 +109,7 @@
         },
         "AxString": {
             "name": "String",
+            "required-text-label": "Custom required text",
             "regexp-label": "Regular expression",
             "regexp-hint": "Field is valid if match expression. Example: {example}",
             "error-label": "Error text",
