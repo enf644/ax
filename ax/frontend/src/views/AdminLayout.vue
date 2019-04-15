@@ -18,6 +18,9 @@ export default {
   computed: {
     currentFormDbName() {
       return this.$route.params.db_name;
+    },
+    redirectNeeded() {
+      return this.$store.state.home.redirectNeeded;
     }
   },
   watch: {
@@ -25,6 +28,9 @@ export default {
       if (newValue) {
         this.$store.dispatch('form/getFormData', { dbName: newValue });
       }
+    },
+    redirectNeeded(newValue) {
+      this.$router.push({ path: newValue });
     }
   },
   created() {

@@ -17,7 +17,7 @@
           <v-list class='drawer-folder-list'>
             <v-list-tile
               :class='getTabClass(tab.guid)'
-              :key='tab.name'
+              :key='tab.guid'
               @click='openTab(tab.guid)'
               avatar
               ripple

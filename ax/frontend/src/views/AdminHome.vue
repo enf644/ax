@@ -11,7 +11,7 @@
 
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
 import Splitpanes from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 import TheHomeDrawer from '@/components/AdminHome/TheHomeDrawer.vue';

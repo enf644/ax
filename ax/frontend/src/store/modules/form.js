@@ -281,6 +281,9 @@ const mutations = {
   },
   setOpenSettingsFlag(state, guid) {
     state.openSettingsFlag = guid;
+  },
+  setCreatedFieldGuid(state, guid) {
+    state.createdFieldGuid = guid;
   }
 };
 
@@ -314,7 +317,8 @@ const getters = {
           text: `<i class="fas fa-${fieldType.icon}"></i> ${name}`,
           type: 'default',
           data: {
-            position: fieldType.position
+            position: fieldType.position,
+            icon: fieldType.icon
           }
         };
         typesTreeData.push(node);
@@ -441,6 +445,7 @@ const actions = {
       .then(data => {
         const newField = data.data.createTab.field;
         context.commit('addField', newField);
+        context.commit('setCreatedFieldGuid', newField.guid);
       })
       .catch(error => {
         logger.error(`Error in createTab apollo client => ${error}`);
@@ -496,6 +501,7 @@ const actions = {
       .then(data => {
         const newField = data.data.createField.field;
         context.commit('addField', newField);
+        context.commit('setCreatedFieldGuid', newField.guid);
       })
       .catch(error => {
         logger.error(`Error in createField apollo client => ${error}`);
@@ -573,7 +579,8 @@ const state = {
   actions: [],
   fieldTypes: [],
   isNameChangeOperation: false,
-  openSettingsFlag: null
+  openSettingsFlag: null,
+  createdFieldGuid: null
 };
 
 export default {

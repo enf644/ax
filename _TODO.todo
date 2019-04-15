@@ -221,7 +221,7 @@ AX 20:
                 ✔ Check url changed, name in toolbar changed @done(19-03-28 11:09)
                 ✔ Delete form @done(19-03-28 11:09)
                 ✔ Delete folder @done(19-03-28 11:09)
-    ☐ FORM CONSTRUCTOR
+    ✔ FORM CONSTRUCTOR @done(19-04-15 13:30)
         ✔ Field types tree @done(19-04-15 12:16)
         ✔ Fields tree @done(19-04-15 12:16)
             ✔ Add tab @done(19-03-30 10:08)
@@ -262,12 +262,11 @@ AX 20:
             ✔ Validate form - submit only valid @done(19-04-15 12:15)
             ✔ Errors in tabs and toggle drawer @done(19-04-15 12:15)
         ✔ Field is whole row @done(19-04-15 12:16)
-    ☐ Form and home frogs
-        ☐ When first of tab added -> open tab
-        ☐ If field added -> focus name input
-        ☐ If tab added -> focus name input
-        ☐ If form creatred -> redirect to form constructor
-        ☐ Jstree - remember opened nodes
+    ✔ Form and home frogs @done(19-04-15 13:29)
+        ✔ If form creatred -> redirect to form constructor @done(19-04-15 12:38)
+        ✔ When first of field is added -> open tab @done(19-04-15 13:03)
+        ✔ If field added -> focus name input @done(19-04-15 13:29)
+        ✔ If tab added -> focus name input @done(19-04-15 13:29)
     ☐ AX-FIELDS
         ✔ ax-base @done(19-04-10 09:49)
 		✔ ax-string @done(19-04-10 09:49)
@@ -375,6 +374,7 @@ NEW FROGS TODOS:
     ☐ `[IMPORTANT]`  Security for all admin actions. Only admin can make gql queries
     ☐ AdminHome - if no forms created - output message
     ☐ Cant delete last tab and last field in AxForm
+    ☐ Jstree - remember opened nodes
 
 
 NEW FEATURES:

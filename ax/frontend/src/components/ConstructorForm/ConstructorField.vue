@@ -72,6 +72,7 @@ export default {
     this.currentDbName = this.db_name;
   },
   mounted() {
+    if (store.state.form.createdFieldGuid === this.guid) this.focusName();
     this.loader()
       .then(() => {
         this.component = () => this.loader();
@@ -101,6 +102,7 @@ export default {
           name: this.currentName
         })
         .then(() => {
+          this.$refs.nameInput.blur();
           const msg = i18n.tc('form.update-field-toast');
           this.$dialog.message.success(
             `<i class="fas fa-check"></i> &nbsp ${msg}`
@@ -115,6 +117,7 @@ export default {
           dbName: this.currentDbName
         })
         .then(() => {
+          this.$refs.dbInput.blur();
           const msg = i18n.tc('form.update-field-toast');
           this.$dialog.message.success(
             `<i class="fas fa-check"></i> &nbsp ${msg}`
@@ -124,8 +127,6 @@ export default {
     preventNameError() {},
     openSettings() {
       store.commit('form/setOpenSettingsFlag', this.guid);
-      // this.$emit('open_settings', { guid: this.guid });
-      // this.$modal.show(`field-settings-${this.guid}`);
     },
     closeSettings() {
       this.$modal.hide(`field-settings-${this.guid}`);

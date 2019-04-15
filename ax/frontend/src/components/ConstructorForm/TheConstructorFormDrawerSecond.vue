@@ -130,6 +130,12 @@ export default {
         );
       });
     },
+    openTab(guid) {
+      const guidId = `#${guid}`;
+      setTimeout(() => {
+        $(this.$refs.tree).jstree('open_node', $(guidId), false, true);
+      }, 300);
+    },
     createField(e, data) {
       const mustBePosition = data.position;
       const tag = data.original.id;
@@ -148,9 +154,10 @@ export default {
           parent: data.parent
         })
         .then(() => {
+          this.openTab(data.parent);
           const msg = this.$t('form.add-field-toast');
           this.$dialog.message.success(
-            `<i class="fas fa-${data.original.icon}"></i> &nbsp ${msg}`
+            `<i class="fas fa-${data.original.data.icon}"></i> &nbsp ${msg}`
           );
         });
     },

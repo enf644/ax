@@ -29,7 +29,9 @@ export default {
   created() {
     this.currentName = this.name;
   },
-  mounted() {},
+  mounted() {
+    if (store.state.form.createdFieldGuid === this.guid) this.focusName();
+  },
   methods: {
     focusName() {
       setTimeout(() => {
@@ -44,6 +46,7 @@ export default {
           name: this.currentName
         })
         .then(() => {
+          this.$refs.nameInput.blur();
           const msg = i18n.tc('form.update-tab-toast');
           this.$dialog.message.success(
             `<i class="far fa-folder"></i> &nbsp ${msg}`

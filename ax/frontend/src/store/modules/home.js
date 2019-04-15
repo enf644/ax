@@ -175,6 +175,9 @@ const mutations = {
   },
   setDbNameChanged(state, changed) {
     state.dbNameChanged = changed;
+  },
+  setRedirectNeeded(state, url) {
+    state.redirectNeeded = url;
   }
 };
 
@@ -226,7 +229,7 @@ const actions = {
         commit('setForms', data.data.allForms);
       })
       .catch(error => {
-        logger.error('Error in getAllForms apollo client');
+        logger.error(`Error in getAllForms apollo client -> ${error}`);
       });
   },
   createForm(context, payload) {
@@ -244,6 +247,7 @@ const actions = {
           const newForm = data.data.createForm.form;
           context.commit('addForm', newForm);
           context.commit('setModalMustClose', true);
+          context.commit('setRedirectNeeded', `/admin/${newForm.dbName}/form`);
         } else {
           context.commit('setDbNameIsAvalible', false);
         }
@@ -369,7 +373,8 @@ const state = {
   dbNameIsAvalible: true,
   modalMustClose: false,
   positionChangedFlag: false,
-  dbNameChanged: false
+  dbNameChanged: false,
+  redirectNeeded: null
 };
 
 export default {
