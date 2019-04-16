@@ -79,7 +79,9 @@
         "field-settings-title": "Settings - [{name}]",
         "field-settings-submit": "Save settings",
         "is-whole-row": "Field takes whole row",
-        "is-required": "Field is required"
+        "is-required": "Field is required",
+        "required-text-label": "Custom required text",
+        "hint-setting-label": "Hint for entering value for this field"
     },
     "types": {
         "group-id": "Identification",
@@ -109,7 +111,6 @@
         },
         "AxString": {
             "name": "String",
-            "required-text-label": "Custom required text",
             "regexp-label": "Regular expression",
             "regexp-hint": "Field is valid if match expression. Example: {example}",
             "error-label": "Error text",
@@ -157,7 +158,12 @@
             "name": "Date"
         },
         "AxChoise": {
-            "name": "Choise"
+            "name": "Choise",
+            "items-editor-title": "Avalible choises",
+            "multiple-setting": "Allow selection of multiple choises",
+            "clearable-setting": "Choise can be cleared",
+            "placeholder-setting": "Placeholder text",
+            "placeholder-hint": "This text will be displayed if nothing was selected"
         },
         "AxRadio": {
             "name": "Radio"

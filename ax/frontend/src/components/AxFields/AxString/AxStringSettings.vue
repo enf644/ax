@@ -1,6 +1,5 @@
 <template>
   <AxFieldSettings :guid='guid' :options='changedOptions' @closed='$emit("closed")'>
-    <v-text-field :label='requiredTextLabel' v-model='changedOptions.required_text'></v-text-field>
     <v-text-field
       :hint='regExpHint'
       :label='regExpLabel'
@@ -49,7 +48,6 @@ export default {
   }),
   created() {
     this.changedOptions = this.options;
-    this.requiredTextLabel = i18n.t('types.AxString.required-text-label');
     this.regExpLabel = i18n.t('types.AxString.regexp-label');
     this.regExpHint = i18n.t('types.AxString.regexp-hint', {
       example: '/^[a-zA-Z\\d][\\w]{0,127}$/'

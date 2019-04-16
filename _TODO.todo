@@ -267,16 +267,32 @@ AX 20:
         ✔ When first of field is added -> open tab @done(19-04-15 13:03)
         ✔ If field added -> focus name input @done(19-04-15 13:29)
         ✔ If tab added -> focus name input @done(19-04-15 13:29)
-    ☐ AX-FIELDS
+    ✔ AX-FIELDS @done(19-04-16 14:20)
         ✔ ax-base @done(19-04-10 09:49)
 		✔ ax-string @done(19-04-10 09:49)
-		☐ ax-text
-		☐ ax-num
+		✔ ax-text @done(19-04-15 18:55)
+		✔ ax-num @done(19-04-15 20:40)
 		✔ ax-checkbox @done(19-04-10 09:49)
-		☐ ax-choise
-	☐ GRID CONSTRUCTOR
+		✔ ax-choise @done(19-04-16 14:20)
+    ☐ GRID CONSTRUCTOR
+        ☐ Restore ax-grid
+        ☐ js-tree
+        ☐ GQL Schema and actions - Add column, update column, delete column
+        ☐ AxGrid takes settings
+        ☐ Create new row (fake action)
+        ☐ Settings
+            ☐ Enable column resize
+            ☐ Enable filter
+            ☐ Enable sorting
+            ☐ Allow open form
+            ☐ Show quick search
+            ☐ Allow actions
+            ☐ Enable flat table mode
+            ☐ Row height
+            ☐ Pinned columns
+        ☐ Server filter
 	☐ RELATION FIELDS
-		☐ multiple pop-ups
+		✔ multiple pop-ups @done(19-04-16 14:41)
 		☐ ax-1tom
 		☐ ax-mtom
 		☐ ax-mtom-table

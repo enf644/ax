@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import i18n from '../locale.js';
+
 export default {
   name: 'ax-field',
   props: {
@@ -54,6 +56,9 @@ export default {
   },
   created() {
     this.options = JSON.parse(this.optionsJson);
+    if (!this.options.required_text) {
+      this.options.required_text = i18n.t('common.field-required');
+    }
   },
   mounted() {
     this.loader().then(() => {

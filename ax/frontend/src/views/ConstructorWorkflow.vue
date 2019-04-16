@@ -1,9 +1,9 @@
 <template>
   <splitpanes class='ax-admin-splits' watch-slots>
-    <div class='ax-admin-drawer-first' splitpanes-default='20' splitpanes-min='20'>
+    <div class='ax-admin-drawer-first' splitpanes-min='20' splitpanes-size='20'>
       <TheConstructorWorkflowDrawer></TheConstructorWorkflowDrawer>
     </div>
-    <div class='ax-admin-drawer-second' splitpanes-default='80' splitpanes-min='50'>
+    <div class='ax-admin-drawer-second' splitpanes-min='50' splitpanes-size='80'>
       <TheConstructorWorkflowContent></TheConstructorWorkflowContent>
     </div>
   </splitpanes>

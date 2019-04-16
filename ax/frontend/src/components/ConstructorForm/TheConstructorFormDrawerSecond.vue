@@ -110,6 +110,7 @@ export default {
         });
 
       this.$modal.show('field-settings');
+      this.$store.commit('form/setOpenSettingsFlag', null);
     },
     closeSettings() {
       this.component = null;

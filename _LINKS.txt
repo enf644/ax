@@ -8,6 +8,19 @@ CODE STYLE
     https://github.com/google/styleguide/blob/gh-pages/pyguide.md
 	
 
+MARKDOWN
+    https://f-loat.github.io/vue-simplemde/
+    https://github.com/hinesboy/mavonEditor/blob/master/README-EN.md
+    https://panjiachen.github.io/vue-element-admin/#/components/markdown
+    https://ui.toast.com/tui-editor/ <-- choise
+
+
+CODE EDITOR
+    https://codemirror.net/
+    https://microsoft.github.io/monaco-editor/  <---- CHOISE
+    https://github.com/brijeshb42/monaco-themes
+
+
 REDIS
     Dogpile Caching + redislite
     https://pypi.org/project/redislite/

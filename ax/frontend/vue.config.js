@@ -1,5 +1,6 @@
 const Visualizer = require('webpack-visualizer-plugin');
 const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin');
+const MonocoEditorPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
   outputDir: './../dist',
@@ -36,7 +37,10 @@ module.exports = {
       },
       plugins: [
         new Visualizer(),
-        new VuetifyLoaderPlugin()
+        new VuetifyLoaderPlugin(),
+        new MonocoEditorPlugin({
+          languages: ['json', 'python', 'markdown', 'yaml']
+        })
       ]
     };
 

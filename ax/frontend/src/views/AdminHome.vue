@@ -1,9 +1,9 @@
 <template>
   <splitpanes class='ax-admin-splits' watch-slots>
-    <div class='ax-admin-drawer-first' splitpanes-default='20' splitpanes-min='20'>
+    <div class='ax-admin-drawer-first' splitpanes-min='20' splitpanes-size='20'>
       <TheHomeDrawer/>
     </div>
-    <div class='ax-admin-content-pane' splitpanes-default='80' splitpanes-min='30'>
+    <div class='ax-admin-content-pane' splitpanes-min='30' splitpanes-size='80'>
       <TheHomeContent/>
     </div>
   </splitpanes>

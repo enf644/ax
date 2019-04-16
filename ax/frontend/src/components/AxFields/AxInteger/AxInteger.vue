@@ -1,17 +1,18 @@
 <template>
   <v-text-field
     :error-messages='errors'
-    :hint='options.hint'
     :label='name'
     @keyup='isValid'
-    cy-data='input'
+    type='number'
     v-model='currentValue'
   ></v-text-field>
 </template>
 
 <script>
+import i18n from '../../../locale.js';
+
 export default {
-  name: 'AxString',
+  name: 'AxInteger',
   props: {
     name: null,
     dbName: null,
@@ -34,32 +35,14 @@ export default {
   },
   methods: {
     isValid() {
-      if (this.requiredIsValid() && this.regexpIsValid()) return true;
+      if (this.requiredIsValid()) return true;
       return false;
     },
     requiredIsValid() {
       if (this.isRequired) {
         if (!this.currentValue || this.currentValue.length === 0) {
-          this.errors.push(this.options.required_text);
-          return false;
-        }
-        this.errors = [];
-        return true;
-      }
-      return true;
-    },
-    regexpIsValid() {
-      if (this.options.regexp) {
-        let regexp = null;
-        const regParts = this.options.regexp.match(/^\/(.*?)\/([gim]*)$/);
-        if (regParts) {
-          regexp = new RegExp(regParts[1], regParts[2]);
-        } else {
-          regexp = new RegExp(this.options.regexp);
-        }
-        const pattern = new RegExp(regexp);
-        if (!pattern.test(this.currentValue) && this.currentValue.length > 0) {
-          this.errors.push(this.options.regexp_error);
+          const msg = i18n.t('common.field-required');
+          this.errors.push(msg);
           return false;
         }
         this.errors = [];
