@@ -10,13 +10,14 @@ from backend.schemas.users_schema import User, UsersQuery
 from backend.schemas.users_schema import UsersMutations, UsersSubscription
 from backend.schemas.home_schema import HomeQuery, HomeMutations
 from backend.schemas.form_schema import FormQuery, FormMutations
+from backend.schemas.grids_schema import GridsQuery, GridsMutations
 from backend.schemas.types import Form, FieldType, Field, Grid, Column, User, Role, State, Action, RoleFieldPermission, PositionInput
 
 this = sys.modules[__name__]
 schema = None
 
 
-class Query(HomeQuery, FormQuery, UsersQuery, graphene.ObjectType):
+class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery, graphene.ObjectType):
     """Combines all schemas queryes"""
     forms = SQLAlchemyConnectionField(Form)
     field_types = SQLAlchemyConnectionField(FieldType)
@@ -30,7 +31,7 @@ class Query(HomeQuery, FormQuery, UsersQuery, graphene.ObjectType):
     role_field_permissions = SQLAlchemyConnectionField(RoleFieldPermission)
 
 
-class Mutations(HomeMutations, FormMutations, UsersMutations, graphene.ObjectType):
+class Mutations(HomeMutations, FormMutations, UsersMutations, GridsMutations, graphene.ObjectType):
     """Combines all schemas mutations"""
 
 

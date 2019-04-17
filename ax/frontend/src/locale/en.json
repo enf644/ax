@@ -15,7 +15,6 @@
         "ax-forms": "Ax Forms",
         "create-form-btn": "Create form",
         "create-folder-btn": "Create folder",
-        "default-tab": "Default tab",
         "settings": "Settings",
         "users-btn": "Users",
         "marketplace-btn": "Marketplace",
@@ -43,7 +42,14 @@
             "delete-btn": "Delete form",
             "delete-warning": "WARNING! DANGER ZONE!",
             "delete-warning-text": "This action will delete [{name}] form and all of its fields, grids, workflow.",
-            "delete-confirm": "Are you sure you want to delete [{name}] form and all of its fields, grids, workflow?"
+            "delete-confirm": "Are you sure you want to delete [{name}] form and all of its fields, grids, workflow?",
+            "default-tab": "Default tab",
+            "default-grid": "Default grid",
+            "default-start": "Start",
+            "default-all": "All",
+            "default-create": "Add record",
+            "default-state": "Created",
+            "default-delete": "Delete record"
         },
         "new-folder": {
             "folder-name": "Folder name",
@@ -82,6 +88,9 @@
         "is-required": "Field is required",
         "required-text-label": "Custom required text",
         "hint-setting-label": "Hint for entering value for this field"
+    },
+    "grids": {
+        "add-column-toast": "Column added"
     },
     "types": {
         "group-id": "Identification",

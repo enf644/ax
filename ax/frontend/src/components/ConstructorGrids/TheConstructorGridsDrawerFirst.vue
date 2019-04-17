@@ -44,7 +44,9 @@ export default {
     initFieldTree(jsTreeData) {
       $(this.$refs.tree)
         .on('ready.jstree', () => {
-          $(this.$refs.tree).jstree('open_all');
+          setTimeout(() => {
+            $(this.$refs.tree).jstree('open_all');
+          }, 30);
         })
         .jstree({
           core: {

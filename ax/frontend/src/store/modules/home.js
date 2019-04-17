@@ -18,9 +18,37 @@ const GET_ALL_FORMS = gql`
     }
 `;
 
+// default_tab_name = graphene.String();
+// default_grid_name = graphene.String();
+// default_start = graphene.String();
+// default_all = graphene.String();
+// default_create = graphene.String();
+// default_state = graphene.String();
+// default_delete = graphene.String();
+
 const CREATE_FORM = gql`
-  mutation ($name: String!, $dbName: String!, $tabName: String!) {
-    createForm(name: $name, dbName: $dbName, tabName: $tabName) {
+  mutation (
+      $name: String!, 
+      $dbName: String!, 
+      $defaultTabName: String!, 
+      $defaultGridName: String!, 
+      $defaultStart: String!, 
+      $defaultAll: String!, 
+      $defaultCreate: String!, 
+      $defaultState: String!, 
+      $defaultDelete: String!
+    ) {
+    createForm(
+        name: $name, 
+        dbName: $dbName, 
+        defaultTabName: $defaultTabName, 
+        defaultGridName: $defaultGridName,
+        defaultStart: $defaultStart,
+        defaultAll: $defaultAll,
+        defaultCreate: $defaultCreate,
+        defaultState: $defaultState,
+        defaultDelete: $defaultDelete
+      ) {
       form {
         guid,
         name,
@@ -238,7 +266,14 @@ const actions = {
       variables: {
         name: payload.name,
         dbName: payload.dbName,
-        tabName: i18n.tc('home.default-tab')
+        tabName: i18n.tc('home.new-form.default-tab'),
+        defaultTabName: i18n.tc('home.new-form.default-tab'),
+        defaultGridName: i18n.tc('home.new-form.default-grid'),
+        defaultStart: i18n.tc('home.new-form.default-start'),
+        defaultAll: i18n.tc('home.new-form.default-all'),
+        defaultCreate: i18n.tc('home.new-form.default-create'),
+        defaultState: i18n.tc('home.new-form.default-state'),
+        defaultDelete: i18n.tc('home.new-form.default-delete')
       }
     })
       .then(data => {

@@ -49,6 +49,7 @@ const GET_FORM_DATA = gql`
           node {
             guid,
             name,
+            dbName,
             position,
             isDefaultView
           }
@@ -103,25 +104,6 @@ const GET_FORM_DATA = gql`
   ${FieldFragment}
 `;
 
-
-// const GET_FIELDS = gql`
-//     query ($formGuid: String!) {
-//       allFields (formGuid: $formGuid) {
-//         guid,
-//         formGuid,
-//         name,
-//         dbName,
-//         position,
-//         optionsJson,
-//         valueType,
-//         fieldTypeTag,
-//         isTab,
-//         isRequired,
-//         isWholeRow,
-//         parent
-//       }
-//     }
-// `;
 
 const CREATE_TAB = gql`
   mutation ($formGuid: String!, $name: String!) {

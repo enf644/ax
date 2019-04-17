@@ -1,5 +1,5 @@
 <template>
-  <v-app class='ax-form-app' id='ax-form'>
+  <v-app class='ax-form-app' id='ax-form' ref='formApp'>
     <v-sheet
       :class='no_margin ? "form-container-no-margin" : "form-container"'
       elevation='5'
@@ -13,6 +13,7 @@
             "drawer-hidden": drawerIsHidden
           }'
           class='drawer'
+          v-show='!drawerIsHidden'
         >
           <v-list class='drawer-folder-list'>
             <v-list-tile
@@ -133,7 +134,7 @@ export default {
   data() {
     return {
       drawerIsFloating: false,
-      drawerIsHidden: false,
+      drawerIsHidden: true,
       overlayIsHidden: true,
       dialogIsOpen: false,
       guid: null,
@@ -148,21 +149,14 @@ export default {
       activeTab: null,
       value: null,
       formIsValid: true,
-      errorsCount: 0
+      errorsCount: 0,
+      currentWidth: null
     };
   },
   computed: {
     iconClass() {
       return `fas fa-${this.icon}`;
     },
-    // errorsCount() {
-    //   let counter = 0;
-    //   this.tabs.forEach(tab => {
-    //     console.log(tab.errors);
-    //     if (tab.errors) counter += tab.errors;
-    //   });
-    //   return counter;
-    // },
     formIsNotValid() {
       return !this.formIsValid;
     }
@@ -173,14 +167,22 @@ export default {
     },
     update_time() {
       if (this.db_name) this.loadData(this.db_name);
+    },
+    tabs(newValue, oldValue) {
+      if (oldValue) {
+        this.drawerIsFloating = true;
+        this.drawerIsHidden = true;
+        this.overlayIsHidden = true;
+      }
+      this.handleResize(true);
     }
   },
   created() {},
   mounted() {
     if (this.db_name) this.loadData(this.db_name);
-    this.$nextTick(() => {
-      this.handleResize();
-    });
+    // setTimeout(() => {
+    //   this.handleResize();
+    // }, 30);
     this.$smoothReflow({ el: this.$refs.sheet.$el });
   },
   methods: {
@@ -332,21 +334,61 @@ export default {
       this.$log.info(' OPEN FORM');
       this.$modal.show('sub-form');
     },
-    handleResize() {
-      const currentWidth = this.$el.clientWidth;
+    handleResize(force = false) {
+      if (
+        this.currentWidth
+        && this.currentWidth === this.$el.clientWidth
+        && !force
+      ) {
+        // console.log('prevent');
+        return false;
+      }
+
+      this.currentWidth = this.$el.clientWidth;
       const breakingPoint = 800;
 
-      if (this.drawerIsFloating === false && currentWidth < breakingPoint) {
+      const foldersWithField = [];
+      this.fields.forEach(field => {
+        if (!foldersWithField.find(f => f === field.parent)) {
+          foldersWithField.push(field.parent);
+        }
+      });
+
+      if (foldersWithField.length < 2) {
+        this.drawerIsFloating = false;
+        this.drawerIsHidden = true;
+        this.overlayIsHidden = true;
+        // console.log('no tabs');
+        return true;
+      }
+
+      if (
+        this.drawerIsFloating === false
+        && this.currentWidth * 1 < breakingPoint
+      ) {
         this.drawerIsFloating = true;
         this.drawerIsHidden = true;
         this.overlayIsHidden = true;
+        // console.log('small');
+        return true;
       }
 
-      if (this.drawerIsFloating === true && currentWidth > breakingPoint) {
+      if (
+        this.drawerIsFloating === true
+        && this.currentWidth * 1 > breakingPoint
+      ) {
         this.drawerIsFloating = false;
         this.drawerIsHidden = false;
         this.overlayIsHidden = true;
+        // console.log('big');
+        return true;
       }
+      // console.log(
+      //   `nothing -> this.drawerIsFloating=${
+      //     this.drawerIsFloating
+      //   } this.currentWidth=${this.currentWidth}`
+      // );
+      return false;
     },
     toggleDrawer() {
       if (this.drawerIsFloating && this.drawerIsHidden) {

@@ -93,6 +93,7 @@ INTERNALIZATION
         https://poeditor.com/features/  -> free plan 1000 words
         https://lokalise.co/ - > free plan 500 words
         https://weblate.org
+        https://crowdin.com/join?redirect_hash=aab90e1d13bdb14d24d833a7a0039ae25509387 -> Veutify uses
     info
         Numbers, Units, Dates and Times
 
@@ -108,7 +109,7 @@ SERVICES TO DISCOVER
 LANDING PAGE INSPIRATION
     https://lokalise.co/
     https://chartio.com/resources/tutorials/how-to-execute-raw-sql-in-sqlalchemy/
-    
+    https://www.ag-grid.com/javascript-grid-features/
 
 TREE
     https://github.com/phphe/vue-draggable-nested-tree - choise

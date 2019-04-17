@@ -275,9 +275,17 @@ AX 20:
 		✔ ax-checkbox @done(19-04-10 09:49)
 		✔ ax-choise @done(19-04-16 14:20)
     ☐ GRID CONSTRUCTOR
-        ☐ Restore ax-grid
-        ☐ js-tree
-        ☐ GQL Schema and actions - Add column, update column, delete column
+        ✔ Restore ax-grid @done(19-04-16 16:06)
+        ✔ js-tree @done(19-04-17 10:39)
+        ✔ Create default grid on form creation @done(19-04-17 11:47)
+        ☐ GQL Schema and actions - 
+            ✔ Add column @done(19-04-17 17:47)
+            ☐ Change position
+            ☐ Delete column
+        ☐ Toolbar for grids
+            ✔ Grid buttons leads to default grid @done(19-04-17 17:47)
+        ☐ Toolbar menu
+        ☐ GQL Schema - Add grid, update grid, delete grid
         ☐ AxGrid takes settings
         ☐ Create new row (fake action)
         ☐ Settings
@@ -291,6 +299,8 @@ AX 20:
             ☐ Row height
             ☐ Pinned columns
         ☐ Server filter
+        ☐ Frogs
+            ☐ If icon or form name is changed -> form preview does not reload
 	☐ RELATION FIELDS
 		✔ multiple pop-ups @done(19-04-16 14:41)
 		☐ ax-1tom
@@ -391,6 +401,8 @@ NEW FROGS TODOS:
     ☐ AdminHome - if no forms created - output message
     ☐ Cant delete last tab and last field in AxForm
     ☐ Jstree - remember opened nodes
+    ☐ If form does not exist, but someone entered via url - must be error
+    ✔ AxFrom - size transition caouses a ton of resize events that are captured by handleResize @done(19-04-17 09:37)
 
 
 NEW FEATURES:

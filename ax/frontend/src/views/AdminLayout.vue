@@ -42,6 +42,12 @@ export default {
           dbName: this.$route.params.db_name
         });
       }
+      if (this.$route.params.grid_alias) {
+        this.$store.dispatch('grids/getGridData', {
+          formDbName: this.$route.params.db_name,
+          gridDbName: this.$route.params.grid_alias
+        });
+      }
     }
   }
 };

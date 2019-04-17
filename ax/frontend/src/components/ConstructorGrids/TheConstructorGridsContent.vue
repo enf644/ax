@@ -1,17 +1,24 @@
 <template>
   <div>
     <div>Grids content</div>
-    <h1>{{ this.$route.params.db_name }}</h1>
-    <h1>{{ this.$route.params.grid_alias }}</h1>
+    <h1>{{ this.$store.state.grids.guid }}</h1>
 
     <hr>
 
-    <ax-grid></ax-grid>
+    <AxGrid></AxGrid>
+
+    <!-- <ax-grid></ax-grid> -->
   </div>
 </template>
 
 <script>
-export default {};
+import AxGrid from '@/components/AxGrid.vue';
+
+export default {
+  name: 'ConstructorGridContent',
+  components: { AxGrid },
+  data: () => ({})
+};
 </script>
 
 <style scoped>

@@ -344,7 +344,7 @@ class ChangeFieldsPositions(graphene.Mutation):
 
 class FormQuery(graphene.ObjectType):
     """Query all data of AxForm and related classes"""
-    all_fields = graphene.List(Field, form_field=graphene.String())
+    # all_fields = graphene.List(Field, form_field=graphene.String())
     form = graphene.Field(
         Form,
         db_name=graphene.Argument(type=graphene.String, required=True)
@@ -356,17 +356,17 @@ class FormQuery(graphene.ObjectType):
         update_time=graphene.Argument(type=graphene.String, required=False)
     )
 
-    async def resolve_all_fields(self, info, form_field):
-        """Get all fields of form"""
-        del info
-        try:
-            field_list = ax_model.db_session.query(AxField).filter(
-                AxField.form_guid == uuid.UUID(form_field)
-            ).all()
-            return field_list
-        except Exception:
-            logger.exception('Error in GQL query - resolve_fields.')
-            raise
+    # async def resolve_all_fields(self, info, form_field):
+    #     """Get all fields of form"""
+    #     del info
+    #     try:
+    #         field_list = ax_model.db_session.query(AxField).filter(
+    #             AxField.form_guid == uuid.UUID(form_field)
+    #         ).all()
+    #         return field_list
+    #     except Exception:
+    #         logger.exception('Error in GQL query - resolve_fields.')
+    #         raise
 
     async def resolve_form(self, info, db_name=None):
         """Get AxForm by db_name"""

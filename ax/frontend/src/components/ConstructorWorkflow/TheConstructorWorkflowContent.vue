@@ -6,6 +6,8 @@
 </template>
 
 <script>
+import AxGrid from '@/components/AxGrid.vue';
+
 export default {};
 </script>
 

@@ -1,11 +1,11 @@
 <template>
   <v-app class='ax-grid-app' id='ax-grid'>
-    <div class='ag-theme-material' ref='myGrid'></div>
-    <modal adaptive height='auto' name='sub-form' scrollable width='70%'>
+    <div class='ag-theme-material grid' ref='grid'></div>
+    <!-- <modal adaptive height='auto' name='sub-form' scrollable width='70%'>
       <v-card>
         <AxForm no_margin></AxForm>
       </v-card>
-    </modal>
+    </modal>-->
   </v-app>
 </template>
 
@@ -47,15 +47,13 @@ export default {
       { make: 'Porsche', model: 'Boxter', price: 72000 }
     ];
 
-    // let the grid know which columns and what data to use
     const gridOptions = {
       columnDefs,
       rowData
     };
-    // gridOptions.onRowDoubleClicked = this.open_form;
     gridOptions.onRowDoubleClicked = event => this.openForm(event);
-
-    this.grid = new Grid(this.$refs.myGrid, gridOptions);
+    // console.log(Grid);
+    this.grid = new Grid(this.$refs.grid, gridOptions);
   },
   methods: {
     openForm(event) {
@@ -69,4 +67,8 @@ export default {
 </script>
 
 <style scoped>
+.grid {
+  width: 100%;
+  height: 100%;
+}
 </style>

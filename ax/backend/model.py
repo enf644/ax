@@ -265,6 +265,7 @@ class AxGrid(Base):
     guid = Column(GUID(), primary_key=True,
                   default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String(255))
+    db_name = Column(String(255))
     position = Column(Integer())
     options_json = Column(String(2000))
     form_guid = Column(GUID(), ForeignKey('_ax_forms.guid'))
@@ -285,6 +286,7 @@ class AxColumn(Base):
     field = relationship("AxField")
     grid_guid = Column(GUID(), ForeignKey('_ax_grids.guid'))
     grid = relationship("AxGrid")
+    column_type = Column(String(50))
     aggregation_type = Column(String(50), nullable=True)
 
 

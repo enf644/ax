@@ -29,7 +29,6 @@
         <TheNewForm :guid='this.$store.state.form.guid' @created='closeFormModal'/>
       </modal>
 
-      <!--
       <i class='fas fa-angle-right breadcrumb-devider'></i>
       <a>Grid constructor</a>
       <i class='fas fa-angle-right breadcrumb-devider'></i>
@@ -38,14 +37,17 @@
         <span class='very-small'>total: 4</span>
         <i class='fas fa-caret-down'></i>
       </div>
-      <i class='fas fa-cog breadcrumbs-action'></i>-->
+      <i class='fas fa-cog breadcrumbs-action'></i>
     </v-layout>
     <v-spacer></v-spacer>
     <transition enter-active-class='animated fadeIn faster' name='fade'>
       <v-toolbar-items class='hidden-sm-and-down' v-if='this.$route.params.db_name'>
-        <v-btn :to='"/admin/" + this.$route.params.db_name + "/form"' color='success'>Form</v-btn>
-        <v-btn :to='"/admin/" + this.$route.params.db_name + "/workflow"'>Workflow</v-btn>
-        <v-btn :to='"/admin/" + this.$route.params.db_name + "/grids/default"'>Grid</v-btn>
+        <v-btn :to='"/admin/" + this.$route.params.db_name + "/form"' small>Form</v-btn>
+        <v-btn :to='"/admin/" + this.$route.params.db_name + "/workflow"' small>Workflow</v-btn>
+        <v-btn
+          :to='"/admin/" + this.$route.params.db_name + "/grids/" + defaultGridDbName'
+          small
+        >Grid</v-btn>
       </v-toolbar-items>
     </transition>
     <div>
@@ -82,6 +84,12 @@ export default {
     currentFormName() {
       if (this.currentForm) return this.currentForm.name;
       return null;
+    },
+    defaultGridDbName() {
+      const defaultGrid = this.$store.state.form.grids.find(
+        grid => grid.isDefaultView === true
+      );
+      return defaultGrid ? defaultGrid.dbName : null;
     }
   },
   methods: {

@@ -8,7 +8,7 @@ from sqlalchemy import MetaData
 from loguru import logger
 
 from backend.misc import convert_column_to_string  # TODO check if needed
-from backend.model import GUID, AxForm, AxField  # TODO: check if needed
+from backend.model import GUID, AxForm, AxField, AxGrid  # TODO: check if needed
 import backend.model as ax_model
 import backend.cache as ax_cache
 import backend.dialects as ax_dialects
@@ -54,11 +54,11 @@ def create_ax_form(_name: str, _db_name: str) -> object:
         raise
 
 
-def create_default_tab(ax_form, tab_name) -> None:
+def create_default_tab(ax_form, name) -> None:
     """ Create default AxForm tab """
     try:
         ax_field = AxField()
-        ax_field.name = tab_name
+        ax_field.name = name
         ax_field.form_guid = ax_form.guid
         ax_field.is_tab = True
         ax_field.position = 1
@@ -69,12 +69,45 @@ def create_default_tab(ax_form, tab_name) -> None:
         raise
 
 
+def create_default_grid(ax_form, name):
+    """Creates default AxGrid"""
+    try:
+        ax_grid = AxGrid()
+        ax_grid.name = name
+        ax_grid.db_name = 'grid_1'
+        ax_grid.form_guid = ax_form.guid
+        ax_grid.position = 1
+        ax_grid.options_json = '{}'
+        ax_grid.is_default_view = True
+        ax_model.db_session.add(ax_grid)
+        ax_model.db_session.commit()
+    except Exception:
+        logger.exception('Error creating default grid.')
+        raise
+
+
+def create_default_states(new_form, default_start, default_state, default_all):
+    """Creates default AxStates"""
+    del new_form, default_start, default_state, default_all
+
+
+def create_default_actions(new_form, default_create, default_delete):
+    """Creates default AxActions"""
+    del new_form, default_create, default_delete
+
+
 class CreateForm(graphene.Mutation):
     """ Creates AxForm """
     class Arguments:  # pylint: disable=missing-docstring
         name = graphene.String()
         db_name = graphene.String()
-        tab_name = graphene.String()
+        default_tab_name = graphene.String()
+        default_grid_name = graphene.String()
+        default_start = graphene.String()
+        default_all = graphene.String()
+        default_create = graphene.String()
+        default_state = graphene.String()
+        default_delete = graphene.String()
 
     ok = graphene.Boolean()
     avalible = graphene.Boolean()
@@ -85,7 +118,13 @@ class CreateForm(graphene.Mutation):
             del info
             name = args.get('name')
             db_name = args.get('db_name')
-            tab_name = args.get('tab_name')
+            default_tab_name = args.get('default_tab_name')
+            default_grid_name = args.get('default_grid_name')
+            default_start = args.get('default_start')
+            default_all = args.get('default_all')
+            default_create = args.get('default_create')
+            default_state = args.get('default_state')
+            default_delete = args.get('default_delete')
 
             if is_db_name_avalible(_db_name=db_name) is False:
                 return CreateForm(form=None, avalible=False, ok=True)
@@ -93,13 +132,14 @@ class CreateForm(graphene.Mutation):
             create_db_table(_db_name=db_name)
             new_form = create_ax_form(_name=name, _db_name=db_name)
 
-            # Create default process
+            # Create default process ??
             # Add Admins role to object
             # Add admin group user to role
-            # Add role to States - Start, Default state
-            # Add role to Actions - Add record, Delete
-            # Add default grid
-            create_default_tab(new_form, tab_name)
+            create_default_states(new_form, default_start,
+                                  default_state, default_all)
+            create_default_actions(new_form, default_create, default_delete)
+            create_default_grid(ax_form=new_form, name=default_grid_name)
+            create_default_tab(ax_form=new_form, name=default_tab_name)
 
             ok = True
             return CreateForm(form=new_form, avalible=True, ok=ok)
