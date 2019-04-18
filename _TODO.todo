@@ -289,9 +289,9 @@ AX 20:
             ☐ Create grid
         ☐ AXGRID
             ☐ GQL - get grid data
-                ☐ Create and test simple type
-                ☐ Create and test dimple dynamic type
-                ☐ Create and test dynamic database type
+                ✔ Create and test simple type @done(19-04-19 01:20)
+                ✔ Create and test dimple dynamic type @done(19-04-19 01:20)
+                ✔ Create and test dynamic database type @done(19-04-19 01:20)
             ☐ Create new row (fake action)
         ☐ Settings
             ☐ Enable column resize
@@ -307,7 +307,9 @@ AX 20:
         ☐ Toolbar menu design
         ☐ Server filter
         ☐ Frogs
+            ☐ Grid data not loaded if user is coming form home
             ☐ If icon or form name is changed -> form preview does not reload
+            ☐ ax_state is not created in database
 	☐ RELATION FIELDS
 		✔ multiple pop-ups @done(19-04-16 14:41)
 		☐ ax-1tom

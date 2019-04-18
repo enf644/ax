@@ -1,16 +1,16 @@
 """All routes of ax-core and ax-admin"""
 
 import os
-from sanic import response
 import asyncio
+from sanic import response
 from loguru import logger
 from graphql_ws.websockets_lib import WsLibSubscriptionServer
 import backend.cache as ax_cache
 import backend.schema as ax_schema
-import backend.model as ax_model
+# import backend.model as ax_model
 import backend.dialects as ax_dialects
 import backend.misc as ax_misc
-import sqlite3
+# import sqlite3
 
 
 def init_routes(app):
@@ -42,7 +42,7 @@ def init_routes(app):
             """Web socket route for graphql subscriptions"""
             del request
             try:
-                # TODO: Discover why socket error exception occurs without internet
+                # TODO: Why socket error exception occurs without internet
                 await subscription_server.handle(web_socket)
                 return web_socket
             except asyncio.CancelledError:
@@ -64,6 +64,7 @@ def init_routes(app):
         @app.route('/api/test')
         async def test(request):  # pylint: disable=unused-variable
             """Test function"""
+            del request
             table = 'bank'
             old_name = 'string_1'
             new_name = 'string_644'

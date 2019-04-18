@@ -10,7 +10,6 @@ const FieldFragment = gql`
     name,
     dbName,
     position,
-    valueType,
     fieldType {
       tag,
       icon,

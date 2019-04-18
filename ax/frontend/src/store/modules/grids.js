@@ -296,7 +296,7 @@ const actions = {
   },
 
 
-  createGrid(context, payload) {
+  createGrid(context) {
     apolloClient.mutate({
       mutation: CREATE_GRID,
       variables: {
@@ -341,7 +341,7 @@ const actions = {
       });
   },
 
-  deleteGrid(context, payload) {
+  deleteGrid(context) {
     apolloClient.mutate({
       mutation: DELETE_GRID,
       variables: {

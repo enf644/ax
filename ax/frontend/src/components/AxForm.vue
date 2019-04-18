@@ -267,7 +267,6 @@ export default {
                   name
                   dbName
                   position
-                  valueType
                   fieldType {
                     tag
                     icon

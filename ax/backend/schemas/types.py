@@ -1,9 +1,10 @@
-
+""" Describe all static GraphQL types """
 import graphene
 from graphene import relay
-from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
+from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
-from backend.model import AxForm, AxField, AxFieldType, AxGrid, AxColumn, AxUser, AxRole, AxState, AxAction, AxRoleFieldPermission, GUID  # TODO check if needed
+from backend.model import AxForm, AxField, AxFieldType, AxGrid, AxColumn, \
+    AxUser, AxRole, AxState, AxAction, AxRoleFieldPermission, GUID
 from backend.misc import convert_column_to_string
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)

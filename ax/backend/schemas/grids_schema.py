@@ -136,7 +136,7 @@ class CreateGrid(graphene.Mutation):
             name = args.get('name')
 
             ax_form = ax_model.db_session.query(AxForm).filter(
-                AxForm.guid == uuid.UUID(args.get('form_guid'))
+                AxForm.guid == uuid.UUID(form_guid)
             ).first()
 
             db_name = "grid_"
@@ -222,7 +222,7 @@ class UpdateGrid(graphene.Mutation):
             is_default_view = args.get('is_default_view')
 
             ax_grid = ax_model.db_session.query(AxGrid).filter(
-                AxGrid.guid == uuid.UUID(args.get('guid'))
+                AxGrid.guid == uuid.UUID(guid)
             ).first()
 
             if name:
