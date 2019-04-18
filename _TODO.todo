@@ -278,16 +278,19 @@ AX 20:
         ✔ Restore ax-grid @done(19-04-16 16:06)
         ✔ js-tree @done(19-04-17 10:39)
         ✔ Create default grid on form creation @done(19-04-17 11:47)
-        ☐ GQL Schema and actions - 
+        ✔ GQL Schema and actions - @done(19-04-18 11:53)
             ✔ Add column @done(19-04-17 17:47)
-            ☐ Change position
-            ☐ Delete column
+            ✔ Change position @done(19-04-17 21:40)
+            ✔ Delete column @done(19-04-17 21:40)
+        ✔ GQL Schema - Add grid, update grid, delete grid @done(19-04-18 11:53)
         ☐ Toolbar for grids
             ✔ Grid buttons leads to default grid @done(19-04-17 17:47)
-        ☐ Toolbar menu
-        ☐ GQL Schema - Add grid, update grid, delete grid
-        ☐ AxGrid takes settings
-        ☐ Create new row (fake action)
+            ☐ Popup with list of grids
+            ☐ Create grid
+        ☐ AXGRID
+            ☐ GQL - get grid data
+            ☐ 
+            ☐ Create new row (fake action)
         ☐ Settings
             ☐ Enable column resize
             ☐ Enable filter
@@ -298,6 +301,8 @@ AX 20:
             ☐ Enable flat table mode
             ☐ Row height
             ☐ Pinned columns
+        ☐ AxGridSettings
+        ☐ Toolbar menu design
         ☐ Server filter
         ☐ Frogs
             ☐ If icon or form name is changed -> form preview does not reload

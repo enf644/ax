@@ -90,7 +90,10 @@
         "hint-setting-label": "Hint for entering value for this field"
     },
     "grids": {
-        "add-column-toast": "Column added"
+        "add-column-toast": "Column added",
+        "default-name": "New grid",
+        "grids.change-positions-toast": "Column position changed",
+        "column-deleted-toast": "Column deleted"
     },
     "types": {
         "group-id": "Identification",

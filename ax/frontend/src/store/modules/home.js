@@ -18,13 +18,6 @@ const GET_ALL_FORMS = gql`
     }
 `;
 
-// default_tab_name = graphene.String();
-// default_grid_name = graphene.String();
-// default_start = graphene.String();
-// default_all = graphene.String();
-// default_create = graphene.String();
-// default_state = graphene.String();
-// default_delete = graphene.String();
 
 const CREATE_FORM = gql`
   mutation (

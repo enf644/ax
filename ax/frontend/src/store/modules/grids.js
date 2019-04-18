@@ -1,7 +1,7 @@
 import apolloClient from '../../apollo';
 import gql from 'graphql-tag';
 import logger from '../../logger';
-// import i18n from '../../locale.js';
+import i18n from '../../locale.js';
 
 
 const ColumnFragment = gql`
@@ -29,15 +29,22 @@ const GET_GRID_DATA = gql`
       name,
       dbName,
       formGuid,
-      optionsJson,
-      isDefaultView,
       columns {
         edges {
           node {    
             ...ColumnFragment
           }
         }
-      }     
+      },
+      optionsJson,
+      isDefaultView,
+    },
+    gridsList (formDbName: $formDbName) {
+      guid,
+      name,
+      dbName,
+      isDefaultView,
+      position
     }
   }
   ${ColumnFragment}
@@ -55,17 +62,96 @@ const CREATE_COLUMN = gql`
   ${ColumnFragment}
 `;
 
+const DELETE_COLUMN = gql`
+  mutation ($guid: String!) {
+    deleteColumn(guid: $guid) {
+      deleted,
+      ok    
+    }
+  }
+`;
+
+const CHANGE_COLUMNS_POSITIONS = gql`
+  mutation ($gridGuid: String!, $positions: [PositionInput]) {
+      changeColumnsPositions(gridGuid: $gridGuid, positions: $positions) {
+        columns {
+          ...ColumnFragment
+        }
+      }
+  }
+  ${ColumnFragment}
+`;
+
+const CREATE_GRID = gql`
+  mutation ($formGuid: String!, $name: String!) {
+    createGrid(formGuid: $formGuid, name: $name) {
+      grid {
+        guid,
+        name,
+        dbName,
+        formGuid,
+        optionsJson,
+        isDefaultView,
+        columns {
+          edges {
+            node {    
+              ...ColumnFragment
+            }
+          }
+        }
+      },
+      ok
+    }
+  }
+  ${ColumnFragment}
+`;
+
+
+const DELETE_GRID = gql`
+  mutation ($guid: String!) {
+    deleteGrid(guid: $guid) {
+      deleted,
+      ok    
+    }
+  }
+`;
+
+
+const UPDATE_GRID = gql`
+  mutation ($guid: String!, $name: String!, $dbName: String, $optionsJson: String, $isDefaultView: String) {
+    createGrid(guid: $formGuid, name: $name, dbName: $dbName, optionsJson: $optionsJson, isDefaultView: $isDefaultView) {
+      grid {
+        guid,
+        name,
+        dbName,
+        formGuid,
+        optionsJson,
+        isDefaultView,
+        columns {
+          edges {
+            node {    
+              ...ColumnFragment
+            }
+          }
+        }
+      },
+      ok
+    }
+  }
+  ${ColumnFragment}
+`;
+
 
 const mutations = {
-  setGridData(state, data) {
-    if (data) {
-      state.guid = data.guid;
-      state.name = data.name;
-      state.dbName = data.dbName;
-      state.formGuid = data.formGuid;
-      state.options = JSON.parse(data.optionsJson);
-      state.isDefaultView = data.isDefaultView;
-      state.columns = data.columns ? data.columns.edges.map(edge => edge.node) : null;
+  setGridData(state, grid) {
+    if (grid) {
+      state.guid = grid.guid;
+      state.name = grid.name;
+      state.dbName = grid.dbName;
+      state.formGuid = grid.formGuid;
+      state.options = JSON.parse(grid.optionsJson);
+      state.isDefaultView = grid.isDefaultView;
+      state.columns = grid.columns ? grid.columns.edges.map(edge => edge.node) : null;
     } else {
       state.guid = null;
       state.name = null;
@@ -75,6 +161,13 @@ const mutations = {
       state.isDefaultView = null;
       state.columns = [];
     }
+  },
+  updateGrid(state, grid) {
+    state.name = grid.name;
+    state.dbName = grid.dbName;
+    state.options = JSON.parse(grid.optionsJson);
+    state.isDefaultView = grid.isDefaultView;
+    state.columns = grid.columns ? grid.columns.edges.map(edge => edge.node) : null;
   },
   setColumns(state, columns) {
     state.columns = columns;
@@ -90,6 +183,15 @@ const mutations = {
   },
   deleteColumn(state, deleted) {
     state.columns = [...state.columns.filter(element => element.guid !== deleted)];
+  },
+  setUpdateTime(state, time) {
+    state.updateTime = time;
+  },
+  setCreatedGridDbName(state, dbName) {
+    state.createdGridDbName = dbName;
+  },
+  setDeletedFlag(state, isDeleted) {
+    state.deletedFlag = isDeleted;
   }
 };
 
@@ -133,8 +235,8 @@ const actions = {
       }
     })
       .then(data => {
-        console.log(data.data.grid);
         context.commit('setGridData', data.data.grid);
+        context.commit('setUpdateTime', Date.now());
       })
       .catch(error => {
         logger.error(`Error in getGridData apollo client => ${error}`);
@@ -159,7 +261,103 @@ const actions = {
       .catch(error => {
         logger.error(`Error in createColumn apollo client => ${error}`);
       });
+  },
+
+  deleteColumn(context, payload) {
+    apolloClient.mutate({
+      mutation: DELETE_COLUMN,
+      variables: {
+        guid: payload.guid
+      }
+    })
+      .then(data => {
+        const deletedGuid = data.data.deleteColumn.deleted;
+        context.commit('deleteColumn', deletedGuid);
+      })
+      .catch(error => {
+        logger.error(`Error in deleteColumn apollo client => ${error}`);
+      });
+  },
+
+  changeColumnsPositions(context, payload) {
+    apolloClient.mutate({
+      mutation: CHANGE_COLUMNS_POSITIONS,
+      variables: {
+        gridGuid: context.state.guid,
+        positions: payload.positions
+      }
+    })
+      .then(data => {
+        context.commit('setColumns', data.data.changeColumnsPositions.columns);
+      })
+      .catch(error => {
+        logger.error(`Error in changeColumnsPositions apollo client => ${error}`);
+      });
+  },
+
+
+  createGrid(context, payload) {
+    apolloClient.mutate({
+      mutation: CREATE_GRID,
+      variables: {
+        formGuid: context.state.formGuid,
+        name: i18n.t('grids.default-name')
+      }
+    })
+      .then(data => {
+        const newGrid = data.data.createGrid.grid;
+        context.commit('setCreatedGridDbName', newGrid.dbName);
+        context.commit('form/addGrid', newGrid, { root: true });
+      })
+      .catch(error => {
+        logger.error(`Error in createColumn apollo client => ${error}`);
+      });
+  },
+
+  updateGrid(context, payload) {
+    apolloClient.mutate({
+      mutation: UPDATE_GRID,
+      variables: {
+        guid: context.state.guid,
+        name: payload.name,
+        dbName: payload.dbName,
+        optionsJson: payload.optionsJson
+      }
+    })
+      .then(data => {
+        const newGrid = data.data.updateGrid.grid;
+        const shortGrid = {
+          guid: newGrid.guid,
+          name: newGrid.name,
+          dbName: newGrid.dbName,
+          position: newGrid.position,
+          isDefaultView: newGrid.isDefaultView
+        };
+        context.commit('updateGrid', newGrid);
+        context.commit('form/updateGrid', shortGrid, { root: true });
+      })
+      .catch(error => {
+        logger.error(`Error in updateGrid apollo client => ${error}`);
+      });
+  },
+
+  deleteGrid(context, payload) {
+    apolloClient.mutate({
+      mutation: DELETE_GRID,
+      variables: {
+        guid: context.state.guid
+      }
+    })
+      .then(data => {
+        const isDeleted = data.data.createGrid.deleted;
+        context.commit('setDeletedFlag', true);
+        context.commit('form/deleteGrid', isDeleted, { root: true });
+      })
+      .catch(error => {
+        logger.error(`Error in deleteGrid apollo client => ${error}`);
+      });
   }
+
 };
 
 const state = {
@@ -170,7 +368,11 @@ const state = {
   dbName: null,
   options: null,
   isDefaultView: null,
-  columns: []
+  columns: [],
+  otherGrids: [],
+  gotoGridDbName: null,
+  updateTime: null,
+  deletedFlag: null
 };
 
 export default {

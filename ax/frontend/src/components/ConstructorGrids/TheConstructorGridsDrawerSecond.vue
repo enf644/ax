@@ -18,6 +18,9 @@ export default {
   computed: {
     columns() {
       return this.$store.state.grids.columns;
+    },
+    updated() {
+      return this.$store.state.grids.updateTime;
     }
   },
   watch: {
@@ -29,6 +32,13 @@ export default {
       } else {
         this.initColumnTree(this.$store.getters['grids/columnTreeData']);
       }
+    },
+    updated(newValue, oldValue) {
+      // if (!oldValue) {
+      //   setTimeout(() => {
+      //     $(this.$refs.tree).jstree('open_all');
+      //   }, 100);
+      // }
     }
   },
   mounted() {
@@ -63,11 +73,24 @@ export default {
         });
     },
     changeColumnPositions(e, data) {
-      console.log('CHANGE POSTION');
-      this.openGroup(data.parent);
+      const positions = this.getPositionList();
+      this.$store
+        .dispatch('grids/changeColumnsPositions', { positions })
+        .then(() => {
+          this.openGroup(data.parent);
+          const msg = this.$t('grids.change-positions-toast');
+          this.$dialog.message.success(
+            `<i class="fas fa-sort"></i> &nbsp ${msg}`
+          );
+        });
     },
     deleteColumn(guid) {
-      console.log(`DEELTE COLUMN ${guid}`);
+      this.$store.dispatch('grids/deleteColumn', { guid }).then(() => {
+        const msg = this.$t('grids.column-deleted-toast');
+        this.$dialog.message.success(
+          `<i class="fas fa-trash-alt"></i> &nbsp ${msg}`
+        );
+      });
     },
     openGroup(guid) {
       const guidId = `#${guid}`;
@@ -82,7 +105,7 @@ export default {
         .on('ready.jstree', () => {
           setTimeout(() => {
             $(this.$refs.tree).jstree('open_all');
-          }, 30);
+          }, 100);
         })
         .jstree({
           core: {

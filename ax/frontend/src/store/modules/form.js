@@ -266,6 +266,21 @@ const mutations = {
   },
   setCreatedFieldGuid(state, guid) {
     state.createdFieldGuid = guid;
+  },
+  setGrids(state, grids) {
+    state.grids = grids;
+  },
+  addGrid(state, grid) {
+    state.grids.push(grid);
+  },
+  updateGrid(state, grid) {
+    state.grids = [
+      ...state.grids.filter(element => element.guid !== grid.guid),
+      grid
+    ];
+  },
+  deleteGrid(state, deleted) {
+    state.grids = [...state.grids.filter(element => element.guid !== deleted)];
   }
 };
 
