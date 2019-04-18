@@ -17,6 +17,50 @@ this = sys.modules[__name__]
 schema = None
 
 
+TypeDictionary = {
+    'text': graphene.String,
+    'TEXT': graphene.String,
+    'VARCHAR(255)': graphene.String,
+    'INT': graphene.Int,
+    'DECIMAL(65,2)': graphene.Float,
+    'BOOL': graphene.Boolean,
+    'GUID': graphene.String,
+    'JSON': graphene.String,
+    'TIMESTAMP': graphene.Int,
+    'BLOB': graphene.String
+}
+
+# class MyType1(graphene.ObjectType):
+#     name = graphene.String()
+MyType1 = type('MyType1', (graphene.ObjectType,), {
+    'name': graphene.String(),
+})
+
+# Create types dict
+# Create typeClass based on each AxForm
+# Dynamicly crate resolvers for each typeClass
+# Dynamicly add queriy and resolve_ for each AxForm
+
+
+def make_resolver(record_name, record_class):
+    def resolver(self, info):
+        return record_class(name='Hello world')
+    resolver.__name__ = 'resolve_%s' % record_name
+    return resolver
+
+
+# class MyQuery1(graphene.ObjectType):
+#     some = graphene.Field(MyType1)
+
+
+#     def resolve_some(self, info):
+#         return MyType1(name='Hello world')
+# MyQuery1 = type('Query', (graphene.ObjectType,), {
+#     'some': graphene.Field(MyType1),
+#     'resolve_some': make_resolver('some', MyType1)
+# })
+
+
 class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery, graphene.ObjectType):
     """Combines all schemas queryes"""
     forms = SQLAlchemyConnectionField(Form)
@@ -41,9 +85,27 @@ class Subscription(UsersSubscription, graphene.ObjectType):
 
 def init_schema():
     """Initiate GQL schema"""
+
+    DynamicQuery = type('DynamicQuery', (Query,), {
+        'some': graphene.Field(MyType1),
+        'resolve_some': make_resolver('some', MyType1)
+    })
+
+    # classname = 'dynamic'
+    # fields = {}
+    # fields['name'] = graphene.String()
+
+    # dynamic_class = type(
+    #     classname,
+    #     (graphene.ObjectType,),
+    #     fields,
+    #     name=record_type['name'],
+    #     description=record_type['desc'],
+    # )
+
     try:
         this.schema = graphene.Schema(
-            query=Query,
+            query=DynamicQuery,
             mutation=Mutations,
             types=[
                 Form,
@@ -56,7 +118,8 @@ def init_schema():
                 State,
                 Action,
                 RoleFieldPermission,
-                PositionInput
+                PositionInput,
+                MyType1
             ],
             subscription=Subscription
         )

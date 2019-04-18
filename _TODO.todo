@@ -289,7 +289,9 @@ AX 20:
             ☐ Create grid
         ☐ AXGRID
             ☐ GQL - get grid data
-            ☐ 
+                ☐ Create and test simple type
+                ☐ Create and test dimple dynamic type
+                ☐ Create and test dynamic database type
             ☐ Create new row (fake action)
         ☐ Settings
             ☐ Enable column resize

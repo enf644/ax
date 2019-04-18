@@ -11,6 +11,7 @@ THINK ABOUT
 
 
 How to use Ax:
+    Headless CMS
 	Ax Deck - Create page structure and insert Forms, Grids and other web components
 	Ax Deck Mobile - View your deck in native Android or ios applicaiton
 	Any website - Load AxForms and AxGrids as web components
@@ -21,6 +22,9 @@ How to use Ax:
 	Gmail
     Kubernate application
     Docker container
+
+
+Headless CMS + Workflow engine + Web components + Pages = AX
 
 
 Who use Ax:

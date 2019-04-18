@@ -254,12 +254,30 @@ class GridsQuery(graphene.ObjectType):
         grid_db_name=graphene.Argument(type=graphene.String, required=True)
     )
 
+    grid_data = graphene.Field(
+        Grid,
+        form_db_name=graphene.Argument(type=graphene.String, required=True),
+        grid_db_name=graphene.Argument(type=graphene.String, required=True)
+    )
+
     grids_list = graphene.List(
         Grid,
         form_db_name=graphene.Argument(type=graphene.String, required=True)
     )
 
     async def resolve_grid(self, info, form_db_name, grid_db_name):
+        """Get AxGrid"""
+
+        ax_form = ax_model.db_session.query(AxForm).filter(
+            AxForm.db_name == form_db_name
+        ).first()
+
+        query = Grid.get_query(info=info)
+        grid = query.filter(AxGrid.form_guid == ax_form.guid).filter(
+            AxGrid.db_name == grid_db_name).first()
+        return grid
+
+    async def resolve_grid_data(self, info, form_db_name, grid_db_name):
         """Get AxGrid"""
 
         ax_form = ax_model.db_session.query(AxForm).filter(

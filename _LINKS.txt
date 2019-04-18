@@ -110,6 +110,12 @@ LANDING PAGE INSPIRATION
     https://lokalise.co/
     https://chartio.com/resources/tutorials/how-to-execute-raw-sql-in-sqlalchemy/
     https://www.ag-grid.com/javascript-grid-features/
+    https://strapi.io/
+
+
+DYNAMIC GRAPHENE 
+    https://stackoverflow.com/questions/50559580/creating-dynamic-schema-on-runtime-graphene
+
 
 TREE
     https://github.com/phphe/vue-draggable-nested-tree - choise
