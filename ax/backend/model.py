@@ -144,8 +144,7 @@ class AxForm(Base):
         """Only AxFields that are database columns"""
         db_fields = []
         for field in self.fields:
-            value_type = field.field_type.value_type
-            if field.is_tab is False and value_type != "VIRTUAL":
+            if field.is_tab is False and field.field_type.value_type != "VIRTUAL":
                 db_fields.append(field)
         return db_fields
 

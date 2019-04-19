@@ -38,13 +38,6 @@ const GET_GRID_DATA = gql`
       },
       optionsJson,
       isDefaultView,
-    },
-    gridsList (formDbName: $formDbName) {
-      guid,
-      name,
-      dbName,
-      isDefaultView,
-      position
     }
   }
   ${ColumnFragment}

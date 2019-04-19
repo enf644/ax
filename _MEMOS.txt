@@ -176,7 +176,14 @@ Lead sources
             Recuring posts - Yearly post calendar with recuring types -
                 once per year - statistics
                 once per month - top 5 iteresting use-cases
-                once per month - 
+                once per month - insane Usage
+                    - form inside Gmail
+                    - controlling 3d printer with workflow
+                    - controlling robot with workflow
+                    - using Ax throw console from arduino
+                    - calling actions as service, throw GQL. Creating recors, making actions
+                    - creating new tables throw GQL
+                    - Checking gmail throw action
             Online- school teaching how to use AX - additional business
             Personal uses:
                 Wedding
