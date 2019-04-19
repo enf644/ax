@@ -293,7 +293,8 @@ AX 20:
                 ✔ Create and test dimple dynamic type @done(19-04-19 01:20)
                 ✔ Create and test dynamic database type @done(19-04-19 01:20)
                 ✔ Get grid info, then get make data query @done(19-04-19 10:07)
-            ☐ Create new row (fake action)
+        ☐ Create new row (fake action)
+        ✔ Toolbar menu design @done(19-04-19 12:53)
         ☐ Settings
             ☐ Enable column resize
             ☐ Enable filter
@@ -305,7 +306,9 @@ AX 20:
             ☐ Row height
             ☐ Pinned columns
         ☐ AxGridSettings
-        ☐ Toolbar menu design
+        ☐ Grids list
+            ☐ Popup
+            ☐ Create
         ☐ Server filter
         ☐ Frogs
             ☐ Grid data not loaded if user is coming form home

@@ -1,13 +1,6 @@
 <template>
-  <div>
-    <div>Grids content</div>
-    <h1>{{ this.$store.state.grids.guid }}</h1>
-
-    <hr>
-
-    <AxGrid form='cars'></AxGrid>
-
-    <!-- <ax-grid></ax-grid> -->
+  <div class='container'>
+    <ax-grid form='cars' update_time='gridUpdateTime'></ax-grid>
   </div>
 </template>
 
@@ -22,4 +15,9 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  padding: 25px;
+  background: white;
+  height: 100%;
+}
 </style>

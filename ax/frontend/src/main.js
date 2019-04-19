@@ -7,7 +7,7 @@ import vueCustomElement from 'vue-custom-element'; // create web component from 
 import 'document-register-element'; // polyfill for vue-custom-element
 import 'animate.css/animate.min.css';
 import logger from './logger';
-import './assets/ax-core.css';
+import './assets/ax-core.css'; // TODO check if ./ needed
 import VModal from 'vue-js-modal';
 import VuetifyDialog from 'vuetify-dialog';
 
@@ -73,7 +73,7 @@ Vue.use(VueDummy);
 Vue.config.productionTip = false;
 
 const gridPromise = () => import(/* webpackChunkName: "ax-grid" */ './components/AxGrid.vue').then(m => m.default);
-Vue.customElement('ax-grid', gridPromise);
+Vue.customElement('ax-grid', gridPromise, { props: ['form', 'grid', 'update_time'] });
 
 const formPromise = () => import(/* webpackChunkName: "ax-form" */ './components/AxForm.vue').then(m => m.default);
 Vue.customElement('ax-form', formPromise, { props: ['db_name', 'row_guid', 'update_time', 'opened_tab'] });

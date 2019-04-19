@@ -10,9 +10,21 @@
       v-if='dbName'
     ></ax-form>
 
-    <!-- <v-card class='data-preview'>
-      <pre>{{value}}</pre>
-    </v-card>-->
+    <div class='footer'>
+      <v-btn
+        :to='"/admin/" + this.$route.params.db_name + "/workflow"'
+        class='constructor-button'
+        flat
+        small
+      >
+        &nbsp;
+        <b>Next</b> &nbsp;
+        <i class='fas fa-arrow-right'></i> &nbsp;
+        build Workflow
+        &nbsp;
+        <i class='fas fa-code-branch'></i>
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -62,5 +74,9 @@ export default {
   width: 60%;
   margin: auto;
   padding: 20px;
+}
+.footer {
+  width: 100%;
+  text-align: right;
 }
 </style>

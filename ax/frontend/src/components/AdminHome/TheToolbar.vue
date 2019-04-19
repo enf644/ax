@@ -2,14 +2,17 @@
   <v-toolbar app class='top-toolbar' clipped-left fixed height='40'>
     <v-toolbar-title align-center>
       <router-link to='/admin/home'>
-        <i class='fas fa-tools logo'></i>
+        <img class='logo' src='../../assets/logo1.jpg'>
       </router-link>
     </v-toolbar-title>
 
     <v-layout align-center class='breadcrumbs' fill-height justify-start>
-      <div>Ax</div>
-
-      <span cy-data='current-form-breadcrumb' href='#' v-show='currentFormDbName'>
+      <router-link
+        :to='"/admin/" + this.$route.params.db_name + "/form"'
+        cy-data='current-form-breadcrumb'
+        href='#'
+        v-show='currentFormDbName'
+      >
         <i class='fas fa-angle-right breadcrumb-devider'></i>
         <i :class='[currentFormIconClass]'></i>
         {{this.currentFormName}}
@@ -23,32 +26,63 @@
         >
           <i class='fas fa-cog breadcrumbs-action-i'></i>
         </v-btn>
-      </span>
+      </router-link>
 
       <modal adaptive height='auto' name='update-form' scrollable>
         <TheNewForm :guid='this.$store.state.form.guid' @created='closeFormModal'/>
       </modal>
 
       <i class='fas fa-angle-right breadcrumb-devider'></i>
-      <a>Grid constructor</a>
-      <i class='fas fa-angle-right breadcrumb-devider'></i>
-      <div class='grid-select'>
-        Default grid
-        <span class='very-small'>total: 4</span>
+      <a v-show='isFormRoute'>Form constructor</a>
+      <a v-show='isWorkflowRoute'>Workflow constructor</a>
+      <a v-show='isGridsRoute'>Grid constructor</a>
+
+      <i class='fas fa-angle-right breadcrumb-devider' v-show='isGridsRoute'></i>
+      <div @click='openGridsSelect' class='grid-select' v-show='isGridsRoute'>
+        {{defaultGridName}}
+        <span class='very-small'>total: {{totalGrids}}</span>
         <i class='fas fa-caret-down'></i>
       </div>
-      <i class='fas fa-cog breadcrumbs-action'></i>
+      <v-btn
+        @click='openGridModal'
+        class='breadcrumbs-action'
+        color='black'
+        cy-data
+        flat
+        icon
+        v-show='isGridsRoute'
+      >
+        <i class='fas fa-cog breadcrumbs-action-i'></i>
+      </v-btn>
     </v-layout>
     <v-spacer></v-spacer>
     <transition enter-active-class='animated fadeIn faster' name='fade'>
-      <v-toolbar-items class='hidden-sm-and-down' v-if='this.$route.params.db_name'>
-        <v-btn :to='"/admin/" + this.$route.params.db_name + "/form"' small>Form</v-btn>
-        <v-btn :to='"/admin/" + this.$route.params.db_name + "/workflow"' small>Workflow</v-btn>
+      <div class='buttons-div' v-if='this.$route.params.db_name'>
+        <v-btn
+          :to='"/admin/" + this.$route.params.db_name + "/form"'
+          class='constructor-button'
+          flat
+          small
+        >
+          <i class='fas fa-dice-d6'></i>&nbsp; Form
+        </v-btn>
+        <v-btn
+          :to='"/admin/" + this.$route.params.db_name + "/workflow"'
+          class='constructor-button'
+          flat
+          small
+        >
+          <i class='fas fa-code-branch'></i>&nbsp; Workflow
+        </v-btn>
         <v-btn
           :to='"/admin/" + this.$route.params.db_name + "/grids/" + defaultGridDbName'
+          class='constructor-button'
+          flat
           small
-        >Grid</v-btn>
-      </v-toolbar-items>
+        >
+          <i class='fas fa-columns'></i>&nbsp; Grid
+        </v-btn>
+      </div>
     </transition>
     <div>
       <v-avatar class='logout' size='27px' slot='activator'>
@@ -90,9 +124,34 @@ export default {
         grid => grid.isDefaultView === true
       );
       return defaultGrid ? defaultGrid.dbName : null;
+    },
+    isFormRoute() {
+      return this.$route.path.includes('/form');
+    },
+    isWorkflowRoute() {
+      return this.$route.path.includes('/workflow');
+    },
+    isGridsRoute() {
+      return this.$route.path.includes('/grids');
+    },
+    totalGrids() {
+      return this.$store.state.form.grids.length;
+    },
+    defaultGridName() {
+      const defGrid = this.$store.state.form.grids.find(
+        grid => grid.isDefaultView === true
+      );
+      if (defGrid) return defGrid.name;
+      return null;
     }
   },
   methods: {
+    openGridModal() {
+      console.log('OPEN GRID MODAL');
+    },
+    openGridsSelect() {
+      console.log('OPEN GRIDS LIST');
+    },
     openFormModal() {
       this.$modal.show('update-form');
     },
@@ -161,5 +220,18 @@ export default {
 }
 .top-toolbar {
   z-index: 100;
+}
+.buttons-div {
+  vertical-align: middle;
+  line-height: 25px;
+  margin: auto;
+  margin-right: 10%;
+}
+.constructor-button {
+  margin-left: 10px !important;
+}
+.logo {
+  height: 25px;
+  margin-top: 6px;
 }
 </style>

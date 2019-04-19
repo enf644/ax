@@ -106,6 +106,12 @@ SERVICES TO DISCOVER
     https://translationexchange.com/connectors/
 
 
+LOGO FONTS
+    https://www.myfonts.com/fonts/green-type/sokol?tab=individualStyles
+    https://www.myfonts.com/fonts/nikita-kanarev/sirin/
+    https://www.myfonts.com/fonts/gleb-guralnyk/bootleggers/
+
+
 LANDING PAGE INSPIRATION
     https://lokalise.co/
     https://chartio.com/resources/tutorials/how-to-execute-raw-sql-in-sqlalchemy/
