@@ -103,8 +103,7 @@ export default {
 
       import(`@/components/AxFields/${ftag}/${ftag}Settings.vue`)
         .then(() => {
-          this.component = () =>
-            import(`@/components/AxFields/${ftag}/${ftag}Settings.vue`);
+          this.component = () => import(`@/components/AxFields/${ftag}/${ftag}Settings.vue`);
         })
         .catch(() => {
           this.component = () => import('@/components/AxFieldSettings.vue');
@@ -246,9 +245,7 @@ export default {
     },
     initFieldTree(jsTreeData) {
       $(this.$refs.tree)
-        .on('move_node.jstree', (e, data) =>
-          this.changeFieldsPositions(e, data)
-        )
+        .on('move_node.jstree', (e, data) => this.changeFieldsPositions(e, data))
         .on('copy_node.jstree', (e, data) => this.createField(e, data))
         .on('ready.jstree', () => this.openFirstNode())
         .jstree({
@@ -284,8 +281,8 @@ export default {
           },
           sort(a, b) {
             // console.log(this.get_node(a).text + " > " + this.get_node(b).text);
-            return this.get_node(a).data.position >
-              this.get_node(b).data.position
+            return this.get_node(a).data.position
+              > this.get_node(b).data.position
               ? 1
               : -1;
           }

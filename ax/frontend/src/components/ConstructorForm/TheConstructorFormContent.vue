@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class='ax-form-container'>
     <ax-form
       :db_name='dbName'
       :opened_tab='openedTab'
@@ -78,5 +78,8 @@ export default {
 .footer {
   width: 100%;
   text-align: right;
+}
+.ax-form-container {
+  padding: 20px;
 }
 </style>

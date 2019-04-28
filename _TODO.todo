@@ -283,43 +283,46 @@ AX 20:
             ✔ Change position @done(19-04-17 21:40)
             ✔ Delete column @done(19-04-17 21:40)
         ✔ GQL Schema - Add grid, update grid, delete grid @done(19-04-18 11:53)
-        ☐ Toolbar for grids
+        ✔ Toolbar for grids @done(19-04-23 17:13)
             ✔ Grid buttons leads to default grid @done(19-04-17 17:47)
-            ☐ Popup with list of grids
-            ☐ Create grid
-        ☐ AXGRID
+        ✔ AXGRID @done(19-04-23 17:13)
             ✔ GQL - get grid data @done(19-04-19 10:07)
                 ✔ Create and test simple type @done(19-04-19 01:20)
                 ✔ Create and test dimple dynamic type @done(19-04-19 01:20)
                 ✔ Create and test dynamic database type @done(19-04-19 01:20)
                 ✔ Get grid info, then get make data query @done(19-04-19 10:07)
-        ☐ Create new row (fake action)
+            ✔ Open form @done(19-04-23 15:08)
         ✔ Toolbar menu design @done(19-04-19 12:53)
-        ☐ Settings
-            ☐ Enable column resize
-            ☐ Enable filter
-            ☐ Enable sorting
-            ☐ Allow open form
-            ☐ Show quick search
-            ☐ Allow actions
-            ☐ Enable flat table mode
-            ☐ Row height
-            ☐ Pinned columns
+        ✔ Update ax-grid on setting change @done(19-04-23 17:12)
+        ✔ Row width @done(19-04-25 11:17)
+        ✔ Filter @done(19-04-25 11:31)
+        ✔ Sort @done(19-04-25 11:31)
+        ✔ Qucik search @done(19-04-25 13:10)
+        ✔ Settings @done(19-04-28 18:58)
+            ✔ Quick search @done(19-04-28 18:46)
+            ✔ Column resize @done(19-04-28 18:46)
+            ✔ Filtering @done(19-04-28 18:46)
+            ✔ Sorting @done(19-04-28 18:46)
+            ✔ Open form @done(19-04-28 18:46)
+            ✔ Actions @done(19-04-28 18:46)
+            ✔ Flat mode @done(19-04-28 18:46)
+            ✔ Row height @done(19-04-28 18:58)
+            ✔ Pinned columns @done(19-04-28 18:58)
         ☐ AxGridSettings
         ☐ Grids list
             ☐ Popup
             ☐ Create
         ☐ Server filter
+        ☐ Cell is web-component
+        ☐ Diferent sorting and filtering for different types
+        ☐ Get row data for form - ax form for specific guid
         ☐ Frogs
-            ☐ Grid data not loaded if user is coming form home
+            ✔ Grid data not loaded if user is coming form home @done(19-04-23 15:50)
             ☐ If icon or form name is changed -> form preview does not reload
             ☐ ax_state is not created in database
             ☐ Reload schema on every edit
-	☐ RELATION FIELDS
-		✔ multiple pop-ups @done(19-04-16 14:41)
-		☐ ax-1tom
-		☐ ax-mtom
-		☐ ax-mtom-table
+            ☐ Form drawer transition must accur only after everything loaded
+            ✔ If grid have two columns with same field - they have only one width @done(19-04-25 11:18)
     ☐ WORKFLOW
 		☐ Структура БД
 		☐ Страница с редактором
@@ -348,7 +351,12 @@ AX 20:
 				☐ списки action2role и state2role висят в компоненте и обновляются
                 ☐ для каждого Статуса и каждого Действия - подсвечиваем нужным цветом
 		☐ Опции Статуса - Выбор - доступные поля на статусе для каждой роли
-		☐ Опции Действия
+        ☐ Опции Действия
+    ☐ RELATION FIELDS
+		✔ multiple pop-ups @done(19-04-16 14:41)
+		☐ ax-1tom
+		☐ ax-mtom
+		☐ ax-mtom-table        
     ☐ COMPLEX FIELDS
 		☐ ax-files
 		☐ ax-crop-image

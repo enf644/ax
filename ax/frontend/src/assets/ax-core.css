@@ -25,6 +25,10 @@ a {
     color: white;
 }
 
+.options-switcher .v-label {
+    font-size: 14px !important;
+}
+
 ::-webkit-scrollbar {
     width: 5px;
     height: 5px;

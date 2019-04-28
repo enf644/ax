@@ -28,6 +28,9 @@ export default {
           'form/avalibleFieldTreeData'
         ];
         tree.refresh();
+        // setTimeout(() => {
+        //   $(this.$refs.tree).jstree('open_all');
+        // }, 100);
       } else {
         this.initFieldTree(this.$store.getters['form/avalibleFieldTreeData']);
       }
@@ -41,13 +44,15 @@ export default {
     }
   },
   methods: {
+    openAllNodes() {
+      setTimeout(() => {
+        $(this.$refs.tree).jstree('open_all');
+      }, 30);
+    },
     initFieldTree(jsTreeData) {
       $(this.$refs.tree)
-        .on('ready.jstree', () => {
-          setTimeout(() => {
-            $(this.$refs.tree).jstree('open_all');
-          }, 30);
-        })
+        .on('ready.jstree', () => this.openAllNodes())
+        .on('model.jstree', () => this.openAllNodes())
         .jstree({
           core: {
             data: jsTreeData,

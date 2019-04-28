@@ -1,18 +1,19 @@
 """Describes schemas for AxForm manipulation in admin home"""
 import uuid
 import graphene
-from graphene import relay
-from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
+from loguru import logger
+# from graphene import relay
+# from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from sqlalchemy import MetaData
-from loguru import logger
+import ujson as json
 
 from backend.misc import convert_column_to_string  # TODO check if needed
 from backend.model import GUID, AxForm, AxField, AxGrid  # TODO: check if needed
 import backend.model as ax_model
 import backend.cache as ax_cache
 import backend.dialects as ax_dialects
-from backend.schemas.types import Form, Field, PositionInput
+from backend.schemas.types import Form, PositionInput
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
 
@@ -32,7 +33,7 @@ def is_db_name_avalible(_db_name) -> bool:
 def create_db_table(_db_name: str) -> None:
     """Create database table"""
     try:
-        query = ax_dialects.dialect.create_data_table(db_name=_db_name)
+        ax_dialects.dialect.create_data_table(db_name=_db_name)
     except Exception:
         logger.exception('Error creating new Form. Cant create db table')
         raise
@@ -77,7 +78,20 @@ def create_default_grid(ax_form, name):
         ax_grid.db_name = 'default'
         ax_grid.form_guid = ax_form.guid
         ax_grid.position = 1
-        ax_grid.options_json = '{}'
+
+        default_options = {
+            "enableQuickSearch": False,
+            "enableFlatMode": False,
+            "enableColumnsResize": True,
+            "enableFiltering": True,
+            "enableSorting": True,
+            "enableOpenForm": True,
+            "enableActions": True,
+            "rowHeight": 45,
+            "pinned": 0
+        }
+
+        ax_grid.options_json = json.dumps(default_options)
         ax_grid.is_default_view = True
         ax_model.db_session.add(ax_grid)
         ax_model.db_session.commit()

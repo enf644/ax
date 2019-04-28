@@ -79,7 +79,9 @@ export default {
 
 <style scoped>
 .ax-field {
-  min-width: 266px;
+  min-width: 220px;
+  padding-left: 3% !important;
+  padding-right: 3% !important;
 }
 @media only screen and (min-width: 2000px) {
   /* big screens */

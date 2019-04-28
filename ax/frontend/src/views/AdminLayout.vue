@@ -19,6 +19,9 @@ export default {
     currentFormDbName() {
       return this.$route.params.db_name;
     },
+    currentGridDbName() {
+      return this.$route.params.grid_alias;
+    },
     redirectNeeded() {
       return this.$store.state.home.redirectNeeded;
     }
@@ -27,6 +30,14 @@ export default {
     currentFormDbName(newValue) {
       if (newValue) {
         this.$store.dispatch('form/getFormData', { dbName: newValue });
+      }
+    },
+    currentGridDbName(newValue) {
+      if (newValue) {
+        this.$store.dispatch('grids/getGridData', {
+          formDbName: this.$route.params.db_name,
+          gridDbName: newValue
+        });
       }
     },
     redirectNeeded(newValue) {

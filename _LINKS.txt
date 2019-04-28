@@ -106,6 +106,10 @@ SERVICES TO DISCOVER
     https://translationexchange.com/connectors/
 
 
+AVATARS
+    https://github.com/DiceBear/avatars
+    
+
 LOGO FONTS
     https://www.myfonts.com/fonts/green-type/sokol?tab=individualStyles
     https://www.myfonts.com/fonts/nikita-kanarev/sirin/

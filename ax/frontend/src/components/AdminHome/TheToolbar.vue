@@ -2,17 +2,42 @@
   <v-toolbar app class='top-toolbar' clipped-left fixed height='40'>
     <v-toolbar-title align-center>
       <router-link to='/admin/home'>
-        <img class='logo' src='../../assets/logo1.jpg'>
+        <img class='logo' src='../../assets/axe-swing.png'>
       </router-link>
     </v-toolbar-title>
 
     <v-layout align-center class='breadcrumbs' fill-height justify-start>
-      <router-link
-        :to='"/admin/" + this.$route.params.db_name + "/form"'
-        cy-data='current-form-breadcrumb'
-        href='#'
-        v-show='currentFormDbName'
-      >
+      <div class='buttons-div'>
+        <v-btn
+          :disabled='isNotConstructorPath'
+          :to='"/admin/" + this.$route.params.db_name + "/form"'
+          class='constructor-button'
+          flat
+          small
+        >
+          <i class='fab fa-wpforms'></i>&nbsp; Form
+        </v-btn>
+        <v-btn
+          :disabled='isNotConstructorPath'
+          :to='"/admin/" + this.$route.params.db_name + "/workflow"'
+          class='constructor-button'
+          flat
+          small
+        >
+          <i class='fas fa-project-diagram'></i>&nbsp; Workflow
+        </v-btn>
+        <v-btn
+          :disabled='isNotConstructorPath'
+          :to='"/admin/" + this.$route.params.db_name + "/grids/" + defaultGridDbName'
+          class='constructor-button'
+          flat
+          small
+        >
+          <i class='fas fa-columns'></i>&nbsp; Grid
+        </v-btn>
+      </div>
+
+      <div cy-data='current-form-breadcrumb' v-show='currentFormDbName'>
         <i class='fas fa-angle-right breadcrumb-devider'></i>
         <i :class='[currentFormIconClass]'></i>
         {{this.currentFormName}}
@@ -26,16 +51,11 @@
         >
           <i class='fas fa-cog breadcrumbs-action-i'></i>
         </v-btn>
-      </router-link>
+      </div>
 
       <modal adaptive height='auto' name='update-form' scrollable>
         <TheNewForm :guid='this.$store.state.form.guid' @created='closeFormModal'/>
       </modal>
-
-      <i class='fas fa-angle-right breadcrumb-devider'></i>
-      <a v-show='isFormRoute'>Form constructor</a>
-      <a v-show='isWorkflowRoute'>Workflow constructor</a>
-      <a v-show='isGridsRoute'>Grid constructor</a>
 
       <i class='fas fa-angle-right breadcrumb-devider' v-show='isGridsRoute'></i>
       <div @click='openGridsSelect' class='grid-select' v-show='isGridsRoute'>
@@ -56,34 +76,7 @@
       </v-btn>
     </v-layout>
     <v-spacer></v-spacer>
-    <transition enter-active-class='animated fadeIn faster' name='fade'>
-      <div class='buttons-div' v-if='this.$route.params.db_name'>
-        <v-btn
-          :to='"/admin/" + this.$route.params.db_name + "/form"'
-          class='constructor-button'
-          flat
-          small
-        >
-          <i class='fas fa-dice-d6'></i>&nbsp; Form
-        </v-btn>
-        <v-btn
-          :to='"/admin/" + this.$route.params.db_name + "/workflow"'
-          class='constructor-button'
-          flat
-          small
-        >
-          <i class='fas fa-code-branch'></i>&nbsp; Workflow
-        </v-btn>
-        <v-btn
-          :to='"/admin/" + this.$route.params.db_name + "/grids/" + defaultGridDbName'
-          class='constructor-button'
-          flat
-          small
-        >
-          <i class='fas fa-columns'></i>&nbsp; Grid
-        </v-btn>
-      </div>
-    </transition>
+    <transition enter-active-class='animated fadeIn faster' name='fade'></transition>
     <div>
       <v-avatar class='logout' size='27px' slot='activator'>
         <img src='https://avatars0.githubusercontent.com/u/9064066?v=4&s=460'>
@@ -124,6 +117,10 @@ export default {
         grid => grid.isDefaultView === true
       );
       return defaultGrid ? defaultGrid.dbName : null;
+    },
+    isNotConstructorPath() {
+      if (this.currentFormDbName) return false;
+      return true;
     },
     isFormRoute() {
       return this.$route.path.includes('/form');
@@ -166,9 +163,6 @@ export default {
 .logo {
   height: 20px;
   color: #333333;
-}
-.breadcrumbs {
-  margin-left: 20px;
 }
 .breadcrumbs a {
   color: initial;
@@ -224,8 +218,8 @@ export default {
 .buttons-div {
   vertical-align: middle;
   line-height: 25px;
-  margin: auto;
-  margin-right: 10%;
+  margin-left: 60px;
+  margin-right: 20px;
 }
 .constructor-button {
   margin-left: 10px !important;
@@ -233,5 +227,6 @@ export default {
 .logo {
   height: 25px;
   margin-top: 6px;
+  margin-left: 25px;
 }
 </style>

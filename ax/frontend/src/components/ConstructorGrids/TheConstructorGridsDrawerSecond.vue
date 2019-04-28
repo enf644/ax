@@ -2,6 +2,85 @@
   <div>
     <h3>{{$t("form.columns-header")}}:</h3>
     <div data-cy='fields-tree' ref='tree'></div>
+
+    <br>
+    <v-divider></v-divider>
+    <br>
+
+    <v-switch
+      :label='this.$t("grids.options-quick-search")'
+      @change='saveOptions'
+      class='options-switcher'
+      cy-data='options-quick-search'
+      v-model='changedOptions.enableQuickSearch'
+    ></v-switch>
+
+    <v-switch
+      :label='this.$t("grids.options-flat-mode")'
+      @change='saveOptions'
+      class='options-switcher'
+      cy-data='options-flat-mode'
+      v-model='changedOptions.enableFlatMode'
+    ></v-switch>
+
+    <v-switch
+      :label='this.$t("grids.options-columns-resize")'
+      @change='saveOptions'
+      class='options-switcher'
+      cy-data='options-columns-resize'
+      v-model='changedOptions.enableColumnsResize'
+    ></v-switch>
+
+    <v-switch
+      :label='this.$t("grids.options-filtering")'
+      @change='saveOptions'
+      class='options-switcher'
+      cy-data='options-filtering'
+      v-model='changedOptions.enableFiltering'
+    ></v-switch>
+
+    <v-switch
+      :label='this.$t("grids.options-soring")'
+      @change='saveOptions'
+      class='options-switcher'
+      cy-data='options-soring'
+      v-model='changedOptions.enableSorting'
+    ></v-switch>
+
+    <v-switch
+      :label='this.$t("grids.options-open-form")'
+      @change='saveOptions'
+      class='options-switcher'
+      cy-data='options-open-form'
+      v-model='changedOptions.enableOpenForm'
+    ></v-switch>
+
+    <v-switch
+      :label='this.$t("grids.options-actions")'
+      @change='saveOptions'
+      class='options-switcher'
+      cy-data='options-actions'
+      v-model='changedOptions.enableActions'
+    ></v-switch>
+
+    <v-subheader class='pl-0'>{{$t("grids.options-row-height")}}</v-subheader>
+    <v-slider
+      @change='saveOptions'
+      class='options-switcher'
+      max='250'
+      min='35'
+      thumb-label
+      v-model='changedOptions.rowHeight'
+    ></v-slider>
+
+    <v-subheader class='pl-0'>{{$t("grids.options-pinned")}}</v-subheader>
+    <v-slider
+      @change='saveOptions'
+      class='options-switcher'
+      max='10'
+      thumb-label
+      v-model='changedOptions.pinned'
+    ></v-slider>
   </div>
 </template>
 
@@ -13,7 +92,9 @@ import 'jstree/dist/themes/default/style.css';
 export default {
   name: 'admin-grids-drawer-second',
   data: () => ({
-    treeInitialized: false
+    treeInitialized: false,
+    changedOptions: {},
+    optionsLoaded: false
   }),
   computed: {
     columns() {
@@ -21,6 +102,9 @@ export default {
     },
     updated() {
       return this.$store.state.grids.updateTime;
+    },
+    options() {
+      return this.$store.state.grids.options;
     }
   },
   watch: {
@@ -29,16 +113,18 @@ export default {
         const tree = $(this.$refs.tree).jstree(true);
         tree.settings.core.data = this.$store.getters['grids/columnTreeData'];
         tree.refresh(true, false);
+        // setTimeout(() => {
+        //   $(this.$refs.tree).jstree('open_all');
+        // }, 100);
       } else {
         this.initColumnTree(this.$store.getters['grids/columnTreeData']);
       }
     },
-    updated(newValue, oldValue) {
-      // if (!oldValue) {
-      //   setTimeout(() => {
-      //     $(this.$refs.tree).jstree('open_all');
-      //   }, 100);
-      // }
+    options(newValue) {
+      if (!this.optionsLoaded && this.$store.state.grids.loadingDone) {
+        this.changedOptions = Object.assign({}, newValue);
+        this.optionsLoaded = true;
+      }
     }
   },
   mounted() {
@@ -48,8 +134,22 @@ export default {
     if (!this.treeInitialized) {
       this.initColumnTree(this.$store.getters['grids/columnTreeData']);
     }
+
+    // this.options = this.$store.state.grids.options;
   },
   methods: {
+    saveOptions() {
+      if (this.$store.state.grids.loadingDone) {
+        this.$store.commit('grids/combineOptions', this.changedOptions);
+        this.$store.dispatch('grids/updateGrid', {}).then(() => {
+          const msg = this.$t('grids.grid-updated');
+          this.$store.commit('grids/setUpdateTime', Date.now());
+          this.$dialog.message.success(
+            `<i class="fas fa-columns"></i> &nbsp ${msg}`
+          );
+        });
+      }
+    },
     createColumn(e, data) {
       const mustBePosition = data.position;
       $(this.$refs.tree)
@@ -98,15 +198,17 @@ export default {
         $(this.$refs.tree).jstree('open_node', $(guidId), false, true);
       }, 300);
     },
+    openAllNodes() {
+      setTimeout(() => {
+        $(this.$refs.tree).jstree('open_all');
+      }, 30);
+    },
     initColumnTree(jsTreeData) {
       $(this.$refs.tree)
         .on('move_node.jstree', (e, data) => this.changeColumnPositions(e, data))
         .on('copy_node.jstree', (e, data) => this.createColumn(e, data))
-        .on('ready.jstree', () => {
-          setTimeout(() => {
-            $(this.$refs.tree).jstree('open_all');
-          }, 100);
-        })
+        .on('ready.jstree', () => this.openAllNodes())
+        .on('refresh.jstree', () => this.openAllNodes())
         .jstree({
           core: {
             data: jsTreeData,
@@ -191,4 +293,11 @@ export default {
 </script>
 
 <style scoped>
+.options-switcher {
+  margin: 0px;
+  height: 30px;
+}
+.options-switcher .v-label {
+  font-size: 14px !important;
+}
 </style>

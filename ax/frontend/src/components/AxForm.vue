@@ -64,9 +64,10 @@
             &nbsp; {{name}}
             <resize-observer @notify='handleResize'/>
           </div>
-          <v-container fluid grid-list-xl>
-            <v-layout align-center justify-center row wrap>
+          <v-container class='form-container' fluid grid-list-xl>
+            <v-layout align-left justify-left row wrap>
               <AxField
+                :class='getWidthClass(field)'
                 :dbName='field.dbName'
                 :isRequired='field.isRequired'
                 :isWholeRow='field.isWholeRow'
@@ -150,7 +151,8 @@ export default {
       value: null,
       formIsValid: true,
       errorsCount: 0,
-      currentWidth: null
+      currentWidth: null,
+      isMobile: false
     };
   },
   computed: {
@@ -186,6 +188,10 @@ export default {
     this.$smoothReflow({ el: this.$refs.sheet.$el });
   },
   methods: {
+    getWidthClass(field) {
+      if (field.isWholeRow || this.isMobile) return 'xs12';
+      return 'xs6';
+    },
     updateValue() {
       const result = {};
       this.fields.forEach(field => {
@@ -335,16 +341,20 @@ export default {
     },
     handleResize(force = false) {
       if (
-        this.currentWidth
-        && this.currentWidth === this.$el.clientWidth
-        && !force
+        this.currentWidth &&
+        this.currentWidth === this.$el.clientWidth &&
+        !force
       ) {
         // console.log('prevent');
         return false;
       }
 
       this.currentWidth = this.$el.clientWidth;
-      const breakingPoint = 800;
+      const drawerBreakingPoint = 800;
+      const mobileBreakingPoint = 520;
+
+      if (this.currentWidth < mobileBreakingPoint) this.isMobile = true;
+      else this.isMobile = false;
 
       const foldersWithField = [];
       this.fields.forEach(field => {
@@ -362,8 +372,8 @@ export default {
       }
 
       if (
-        this.drawerIsFloating === false
-        && this.currentWidth * 1 < breakingPoint
+        this.drawerIsFloating === false &&
+        this.currentWidth * 1 < drawerBreakingPoint
       ) {
         this.drawerIsFloating = true;
         this.drawerIsHidden = true;
@@ -373,8 +383,8 @@ export default {
       }
 
       if (
-        this.drawerIsFloating === true
-        && this.currentWidth * 1 > breakingPoint
+        this.drawerIsFloating === true &&
+        this.currentWidth * 1 > drawerBreakingPoint
       ) {
         this.drawerIsFloating = false;
         this.drawerIsHidden = false;
@@ -488,9 +498,6 @@ export default {
 .content {
   padding: 10px 25px 25px 25px;
 }
-.form-container {
-  margin: 20px;
-}
 .form-container-no-margin {
   margin: 0px;
 }
@@ -508,5 +515,7 @@ export default {
   font-size: 13px;
   color: white;
   border-radius: 15px;
+}
+.form-container {
 }
 </style>

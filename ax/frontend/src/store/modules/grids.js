@@ -111,8 +111,8 @@ const DELETE_GRID = gql`
 
 
 const UPDATE_GRID = gql`
-  mutation ($guid: String!, $name: String!, $dbName: String, $optionsJson: String, $isDefaultView: String) {
-    createGrid(guid: $formGuid, name: $name, dbName: $dbName, optionsJson: $optionsJson, isDefaultView: $isDefaultView) {
+  mutation ($guid: String!, $name: String!, $dbName: String, $optionsJson: String, $isDefaultView: Boolean) {
+    updateGrid(guid: $guid, name: $name, dbName: $dbName, optionsJson: $optionsJson, isDefaultView: $isDefaultView) {
       grid {
         guid,
         name,
@@ -154,6 +154,7 @@ const mutations = {
       state.isDefaultView = null;
       state.columns = [];
     }
+    state.loadingDone = true;
   },
   updateGrid(state, grid) {
     state.name = grid.name;
@@ -168,7 +169,7 @@ const mutations = {
   addColumn(state, column) {
     state.columns.push(column);
   },
-  updateField(state, newColumn) {
+  updateColumn(state, newColumn) {
     state.fields = [
       ...state.columns.filter(element => element.guid !== newColumn.guid),
       newColumn
@@ -185,7 +186,23 @@ const mutations = {
   },
   setDeletedFlag(state, isDeleted) {
     state.deletedFlag = isDeleted;
+  },
+  setColumnWidth(state, colData) {
+    if (!('widths' in state.options)) state.options.widths = {};
+    state.options.widths[colData.column] = colData.width;
+  },
+  setFilterModel(state, colData) {
+    state.options.filterModel = colData.data;
+  },
+  setSortModel(state, colData) {
+    state.options.sortModel = colData.data;
+  },
+  combineOptions(state, optionsPart) {
+    Object.keys(optionsPart).forEach(key => {
+      state.options[key] = optionsPart[key];
+    });
   }
+
 };
 
 const getters = {
@@ -224,7 +241,8 @@ const actions = {
       query: GET_GRID_DATA,
       variables: {
         formDbName: payload.formDbName,
-        gridDbName: payload.gridDbName
+        gridDbName: payload.gridDbName,
+        updateTime: Date.now()
       }
     })
       .then(data => {
@@ -250,6 +268,7 @@ const actions = {
       .then(data => {
         const newColumn = data.data.createColumn.column;
         context.commit('addColumn', newColumn);
+        context.commit('setUpdateTime', Date.now());
       })
       .catch(error => {
         logger.error(`Error in createColumn apollo client => ${error}`);
@@ -266,6 +285,7 @@ const actions = {
       .then(data => {
         const deletedGuid = data.data.deleteColumn.deleted;
         context.commit('deleteColumn', deletedGuid);
+        context.commit('setUpdateTime', Date.now());
       })
       .catch(error => {
         logger.error(`Error in deleteColumn apollo client => ${error}`);
@@ -282,6 +302,7 @@ const actions = {
     })
       .then(data => {
         context.commit('setColumns', data.data.changeColumnsPositions.columns);
+        context.commit('setUpdateTime', Date.now());
       })
       .catch(error => {
         logger.error(`Error in changeColumnsPositions apollo client => ${error}`);
@@ -308,13 +329,21 @@ const actions = {
   },
 
   updateGrid(context, payload) {
+    let currentName = context.state.name;
+    let currentDbName = context.state.dbName;
+    let currentOptionsJson = JSON.stringify(context.state.options);
+
+    if ('name' in payload) currentName = payload.name;
+    if ('dbName' in payload) currentDbName = payload.dbName;
+    if ('optionsJson' in payload) currentOptionsJson = JSON.stringify(payload.optionsJson);
+
     apolloClient.mutate({
       mutation: UPDATE_GRID,
       variables: {
         guid: context.state.guid,
-        name: payload.name,
-        dbName: payload.dbName,
-        optionsJson: payload.optionsJson
+        name: currentName,
+        dbName: currentDbName,
+        optionsJson: currentOptionsJson
       }
     })
       .then(data => {
@@ -359,13 +388,14 @@ const state = {
   formDbName: null,
   name: null,
   dbName: null,
-  options: null,
+  options: {},
   isDefaultView: null,
   columns: [],
   otherGrids: [],
   gotoGridDbName: null,
   updateTime: null,
-  deletedFlag: null
+  deletedFlag: null,
+  loadingDone: false
 };
 
 export default {

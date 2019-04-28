@@ -57,6 +57,29 @@ class CreateColumn(graphene.Mutation):
             raise
 
 
+class UpdateColumnOptions(graphene.Mutation):
+    """Updates options of column"""
+    class Arguments:  # pylint: disable=missing-docstring
+        guid = graphene.String()
+        options = graphene.String()
+
+    ok = graphene.Boolean()
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        try:
+            del info
+            ax_column = ax_model.db_session.query(AxColumn).filter(
+                AxColumn.guid == uuid.UUID(args.get('guid'))
+            ).first()
+            ax_column.options_json = args.get('options')
+            ax_model.db_session.commit()
+
+            return UpdateColumnOptions(ok=True)
+        except Exception:
+            logger.exception('Error in gql mutation - UpdateColumnOptions.')
+            raise
+
+
 class DeleteColumn(graphene.Mutation):
     """ Deletes AxColumn """
     class Arguments:  # pylint: disable=missing-docstring
@@ -251,23 +274,25 @@ class GridsQuery(graphene.ObjectType):
     grid = graphene.Field(
         Grid,
         form_db_name=graphene.Argument(type=graphene.String, required=True),
-        grid_db_name=graphene.Argument(type=graphene.String, required=True)
+        grid_db_name=graphene.Argument(type=graphene.String, required=True),
+        update_time=graphene.Argument(type=graphene.String, required=False)
     )
 
-    grid_data = graphene.Field(
-        Grid,
-        form_db_name=graphene.Argument(type=graphene.String, required=True),
-        grid_db_name=graphene.Argument(type=graphene.String, required=True)
-    )
+    # grid_data = graphene.Field(
+    #     Grid,
+    #     form_db_name=graphene.Argument(type=graphene.String, required=True),
+    #     grid_db_name=graphene.Argument(type=graphene.String, required=True),
+    #     update_time=graphene.Argument(type=graphene.String, required=False)
+    # )
 
     grids_list = graphene.List(
         Grid,
         form_db_name=graphene.Argument(type=graphene.String, required=True)
     )
 
-    async def resolve_grid(self, info, form_db_name, grid_db_name):
+    async def resolve_grid(self, info, form_db_name, grid_db_name, update_time=None):
         """Get AxGrid"""
-
+        del update_time
         ax_form = ax_model.db_session.query(AxForm).filter(
             AxForm.db_name == form_db_name
         ).first()
@@ -277,17 +302,17 @@ class GridsQuery(graphene.ObjectType):
             AxGrid.db_name == grid_db_name).first()
         return grid
 
-    async def resolve_grid_data(self, info, form_db_name, grid_db_name):
-        """Get AxGrid"""
+    # async def resolve_grid_data(self, info, form_db_name, grid_db_name, update_time):
+    #     """Get AxGrid"""
+    #     del update_time
+    #     ax_form = ax_model.db_session.query(AxForm).filter(
+    #         AxForm.db_name == form_db_name
+    #     ).first()
 
-        ax_form = ax_model.db_session.query(AxForm).filter(
-            AxForm.db_name == form_db_name
-        ).first()
-
-        query = Grid.get_query(info=info)
-        grid = query.filter(AxGrid.form_guid == ax_form.guid).filter(
-            AxGrid.db_name == grid_db_name).first()
-        return grid
+    #     query = Grid.get_query(info=info)
+    #     grid = query.filter(AxGrid.form_guid == ax_form.guid).filter(
+    #         AxGrid.db_name == grid_db_name).first()
+    #     return grid
 
     async def resolve_grids_list(self, info, form_db_name):
         """Gets list of all AxGrid of form """

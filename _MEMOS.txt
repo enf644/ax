@@ -102,6 +102,7 @@ Idea on apps:
 
 Lead sources
     INTEGRATIONS
+        Wordpress
         Slack
         Jira
         Zappier

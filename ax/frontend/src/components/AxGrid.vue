@@ -1,11 +1,26 @@
 <template>
   <v-app class='ax-grid-app' id='ax-grid'>
-    <div class='ag-theme-material grid' ref='grid'></div>
-    <!-- <modal adaptive height='auto' name='sub-form' scrollable width='70%'>
+    <v-sheet class='sheet' elevation='5' light ref='sheet'>
+      <v-text-field
+        class='quick-search'
+        cy-data='quicksearch'
+        label='Quick search'
+        v-model='quickSearch'
+        v-show='quickSearchEnabled'
+      ></v-text-field>
+      <div :class='gridClass' ref='grid'></div>
+      <div class='actions' v-show='actionsEnabled'>
+        <v-btn @click='testAction' small>
+          <i class='fas fa-tractor'></i>
+          &nbsp; {{$t("grids.test-action")}}
+        </v-btn>
+      </div>
+    </v-sheet>
+    <modal adaptive height='auto' name='sub-form' scrollable width='70%'>
       <v-card>
-        <AxForm no_margin></AxForm>
+        <AxForm :db_name='form' :guid='selectedGuid' no_margin></AxForm>
       </v-card>
-    </modal>-->
+    </modal>
   </v-app>
 </template>
 
@@ -18,11 +33,11 @@ import gql from 'graphql-tag';
 import apolloClient from '../apollo';
 import logger from '../logger';
 // import i18n from '../locale';
-// import AxForm from './AxForm.vue';
+import AxForm from './AxForm.vue';
 
 export default {
   name: 'AxGrid',
-  components: {},
+  components: { AxForm },
   props: {
     form: null,
     grid: {
@@ -39,36 +54,102 @@ export default {
       dbName: null,
       formGuid: null,
       columns: null,
-      options: null
+      options: null,
+      selectedGuid: null,
+      quickSearch: null,
+      gridInitialized: false
     };
   },
   computed: {
+    quickSearchEnabled() {
+      if (!this.options) return false;
+      return this.options.enableQuickSearch;
+    },
+    actionsEnabled() {
+      if (!this.options) return false;
+      return this.options.enableActions;
+    },
+    gridClass() {
+      const themeClass = 'ag-theme-material';
+      if (this.options) {
+        if (this.options.enableQuickSearch && this.options.enableActions) {
+          return `${themeClass} grid-search-actions`;
+        }
+        if (this.options.enableQuickSearch && !this.options.enableActions) {
+          return `${themeClass} grid-search`;
+        }
+        if (!this.options.enableQuickSearch && this.options.enableActions) {
+          return `${themeClass} grid-actions`;
+        }
+      }
+      return `${themeClass} grid`;
+    },
     columnDefs() {
+      let pinnedColumnsCounter = this.options.pinned;
       const columnDefs = [];
       this.columns.forEach(column => {
+        let currentWidth = null;
+        let currentPinned = null;
+
+        let sameDbNameCounter = 0;
+        columnDefs.forEach(subColumn => {
+          if (subColumn.field === column.field.dbName) sameDbNameCounter += 1;
+        });
+
+        let columnModelName = column.field.dbName;
+        if (sameDbNameCounter > 0) {
+          columnModelName = `${columnModelName}_${sameDbNameCounter}`;
+        }
+        if (columnModelName in this.options.widths) {
+          currentWidth = this.options.widths[columnModelName];
+        }
+        if (pinnedColumnsCounter * 1 > 0) {
+          currentPinned = 'left';
+          pinnedColumnsCounter -= 1;
+        }
+
         columnDefs.push({
           headerName: column.field.name,
-          field: column.field.dbName
+          field: column.field.dbName,
+          width: currentWidth,
+          pinned: currentPinned
         });
       });
       return columnDefs;
     }
   },
-  watch: {},
+  watch: {
+    update_time(newValue, oldValue) {
+      if (oldValue && this.gridObj) {
+        this.gridObj.gridOptions.api.destroy();
+        this.loadOptions(this.form, this.grid);
+      }
+    },
+    quickSearch(newValue) {
+      this.gridObj.gridOptions.api.setQuickFilter(newValue);
+    }
+  },
   mounted() {
     this.loadOptions(this.form, this.grid);
   },
   methods: {
-    openForm(event) {
-      this.$modal.show('sub-form');
-      this.$log.info(event);
-      // this.dialogIsOpen = true;
-      // this.$modal.open(AxGridModal);
+    testAction() {
+      console.log(' TEST ACTION ');
+    },
+    openForm(guid) {
+      if (this.options.enableOpenForm) {
+        this.selectedGuid = guid;
+        this.$modal.show('sub-form');
+      }
     },
     loadOptions(formDbName, gridDbName) {
       const GET_GRID_DATA = gql`
-        query($formDbName: String!, $gridDbName: String!) {
-          grid(formDbName: $formDbName, gridDbName: $gridDbName) {
+        query($formDbName: String!, $gridDbName: String!, $updateTime: String) {
+          grid(
+            formDbName: $formDbName
+            gridDbName: $gridDbName
+            updateTime: $updateTime
+          ) {
             guid
             name
             dbName
@@ -104,7 +185,8 @@ export default {
           query: GET_GRID_DATA,
           variables: {
             formDbName,
-            gridDbName
+            gridDbName,
+            updateTime: this.update_time
           }
         })
         .then(data => {
@@ -155,11 +237,63 @@ export default {
     },
     initAgGrid() {
       const gridOptions = {
+        defaultColDef: {
+          sortable: this.options.enableSorting,
+          resizable: this.options.enableColumnsResize,
+          filter: this.options.enableFiltering
+        },
         columnDefs: this.columnDefs,
         rowData: this.rowData
       };
-      gridOptions.onRowDoubleClicked = event => this.openForm(event);
+      gridOptions.onRowClicked = event => this.openForm(event.data.guid);
+      gridOptions.rowHeight = this.options.rowHeight;
       this.gridObj = new Grid(this.$refs.grid, gridOptions);
+
+      if (this.options.filterModel != null) {
+        this.gridObj.gridOptions.api.setFilterModel(this.options.filterModel);
+      }
+
+      if (this.options.sortModel != null) {
+        this.gridObj.gridOptions.api.setSortModel(this.options.sortModel);
+      }
+
+      if (this.options.enableFlatMode) {
+        this.gridObj.gridOptions.api.setDomLayout('print');
+      }
+
+      this.gridObj.gridOptions.onColumnResized = event => {
+        const fieldDbName = event.column.colId;
+        const fieldWidth = event.column.actualWidth;
+        if (event.finished === true) {
+          const eventData = {
+            name: 'column-width',
+            column: fieldDbName,
+            width: fieldWidth
+          };
+          this.$emit('modify', eventData);
+        }
+      };
+
+      this.gridObj.gridOptions.onFilterModified = () => {
+        const filterModel = this.gridObj.gridOptions.api.getFilterModel();
+        const eventData = {
+          name: 'filter-change',
+          data: filterModel
+        };
+        if (this.gridInitialized) this.$emit('modify', eventData);
+      };
+
+      this.gridObj.gridOptions.onSortChanged = () => {
+        const sortModel = this.gridObj.gridOptions.api.getSortModel();
+        const eventData = {
+          name: 'sort-change',
+          data: sortModel
+        };
+        if (this.gridInitialized) this.$emit('modify', eventData);
+      };
+      setTimeout(() => {
+        this.gridInitialized = true;
+      }, 50);
     }
   }
 };
@@ -169,5 +303,34 @@ export default {
 .grid {
   width: 100%;
   height: 100%;
+}
+.grid-actions {
+  width: 100%;
+  height: calc(100% - 64px);
+}
+.grid-search {
+  width: 100%;
+  height: calc(100% - 64px);
+}
+.grid-search-actions {
+  width: 100%;
+  height: calc(100% - 128px);
+}
+
+.sheet {
+  width: 100%;
+  height: 100%;
+}
+.quick-search {
+  width: 300px;
+  margin-left: auto;
+  margin-right: 25px;
+}
+.ax-grid-app {
+  height: 100%;
+}
+.actions {
+  margin: 0px 25px 0px 25px;
+  height: 64px;
 }
 </style>

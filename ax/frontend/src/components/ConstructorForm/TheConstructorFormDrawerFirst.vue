@@ -44,6 +44,7 @@ export default {
     initTypesTree(jsTreeData) {
       $(this.$refs.tree)
         .on('ready.jstree', () => this.openFirstNode())
+        .on('refresh.jstree', () => this.openFirstNode())
         .jstree({
           core: {
             data: jsTreeData,
@@ -83,7 +84,7 @@ export default {
         $(this.$refs.tree).jstree('select_node', 'ul > li:first');
         const selectNode = $(this.$refs.tree).jstree('get_selected');
         $(this.$refs.tree).jstree('open_node', selectNode, false, true);
-      }, 300);
+      }, 30);
     }
   }
 };

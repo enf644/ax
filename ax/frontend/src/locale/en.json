@@ -93,7 +93,18 @@
         "add-column-toast": "Column added",
         "default-name": "New grid",
         "grids.change-positions-toast": "Column position changed",
-        "column-deleted-toast": "Column deleted"
+        "column-deleted-toast": "Column deleted",
+        "grid-updated": "Grid options updated",
+        "options-quick-search": "Quick search",
+        "options-flat-mode": "Flat mode",
+        "options-columns-resize": "Columns resize",
+        "options-filtering": "Filtering",
+        "options-soring": "Sorting",
+        "options-open-form": "Open form",
+        "options-actions": "Actions",
+        "options-row-height": "Row height",
+        "options-pinned": "Pinned columns",
+        "test-action": "Test action"
     },
     "types": {
         "group-id": "Identification",

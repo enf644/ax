@@ -62,8 +62,8 @@ class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery, graphene.ObjectType):
     role_field_permissions = SQLAlchemyConnectionField(RoleFieldPermission)
 
 
-class Mutations(HomeMutations, FormMutations, UsersMutations, GridsMutations, \
-    graphene.ObjectType):
+class Mutations(HomeMutations, FormMutations, UsersMutations, GridsMutations,
+                graphene.ObjectType):
     """Combines all schemas mutations"""
 
 
@@ -100,10 +100,10 @@ def init_schema():
         for form in ax_forms:
             class_name = form.db_name.capitalize()
             class_fields = {}
+            class_fields['guid'] = graphene.String()
             for field in form.db_fields:
                 field_type = type_dictionary[field.field_type.value_type]
                 # TODO maybe add label as description?
-                class_fields['guid'] = graphene.String()
                 class_fields[field.db_name] = field_type()
 
             graph_class = type(
