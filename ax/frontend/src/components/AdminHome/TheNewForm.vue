@@ -114,12 +114,14 @@ export default {
         v => v.length <= 127 || this.$t('common.lenght-error', { num: 127 }),
         v => (v && this.dbNameIsAvalible)
           || this.$t('home.new-form.db-name-not-avalible'),
-        v => /^[a-zA-Z\d][\w]{0,127}$/.test(v)
+        v => /^((\d)|([A-Z0-9][a-z0-9]+))*([A-Z])?$/.test(v)
           || this.$t('home.new-form.db-name-valid-letters')
       ],
       tomLabel: null,
       icon: null,
       isDeleteAction: false
+      // /^((\d)|([A-Z0-9][a-z0-9]+))*([A-Z])?$/
+      // /^[a-zA-Z\d][\w]{0,127}$/
     };
   },
   computed: {
@@ -238,7 +240,6 @@ export default {
       }
     },
     resetDbNameValid() {
-      this.dbName = this.dbName.toLowerCase();
       if (this.dbNameIsAvalible === false) {
         this.$store.commit('home/setDbNameIsAvalible', true);
         this.$refs.form.validate();

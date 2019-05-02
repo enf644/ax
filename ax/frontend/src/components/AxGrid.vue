@@ -34,6 +34,7 @@ import apolloClient from '../apollo';
 import logger from '../logger';
 // import i18n from '../locale';
 import AxForm from './AxForm.vue';
+// import { print } from 'graphql/language/printer';
 
 export default {
   name: 'AxGrid',
@@ -85,37 +86,48 @@ export default {
       return `${themeClass} grid`;
     },
     columnDefs() {
-      let pinnedColumnsCounter = this.options.pinned;
-      const columnDefs = [];
-      this.columns.forEach(column => {
-        let currentWidth = null;
-        let currentPinned = null;
+      try {
+        let pinnedColumnsCounter = this.options.pinned;
+        const columnDefs = [];
+        this.columns.forEach(column => {
+          let currentWidth = null;
+          let currentPinned = null;
 
-        let sameDbNameCounter = 0;
-        columnDefs.forEach(subColumn => {
-          if (subColumn.field === column.field.dbName) sameDbNameCounter += 1;
+          let sameDbNameCounter = 0;
+          columnDefs.forEach(subColumn => {
+            if (subColumn.field === column.field.dbName) sameDbNameCounter += 1;
+          });
+
+          let columnModelName = column.field.dbName;
+          if (sameDbNameCounter > 0) {
+            columnModelName = `${columnModelName}_${sameDbNameCounter}`;
+          }
+          if (
+            this.options.widths
+            && Object.prototype.hasOwnProperty.call(
+              this.options.widths,
+              columnModelName
+            )
+          ) {
+            currentWidth = this.options.widths[columnModelName];
+          }
+          if (pinnedColumnsCounter * 1 > 0) {
+            currentPinned = 'left';
+            pinnedColumnsCounter -= 1;
+          }
+
+          columnDefs.push({
+            headerName: column.field.name,
+            field: column.field.dbName,
+            width: currentWidth,
+            pinned: currentPinned
+          });
         });
-
-        let columnModelName = column.field.dbName;
-        if (sameDbNameCounter > 0) {
-          columnModelName = `${columnModelName}_${sameDbNameCounter}`;
-        }
-        if (columnModelName in this.options.widths) {
-          currentWidth = this.options.widths[columnModelName];
-        }
-        if (pinnedColumnsCounter * 1 > 0) {
-          currentPinned = 'left';
-          pinnedColumnsCounter -= 1;
-        }
-
-        columnDefs.push({
-          headerName: column.field.name,
-          field: column.field.dbName,
-          width: currentWidth,
-          pinned: currentPinned
-        });
-      });
-      return columnDefs;
+        return columnDefs;
+      } catch (error) {
+        this.$log.error(`Error in AxGrid, columnDefs => ${error}`);
+        return null;
+      }
     }
   },
   watch: {
@@ -236,64 +248,68 @@ export default {
         });
     },
     initAgGrid() {
-      const gridOptions = {
-        defaultColDef: {
-          sortable: this.options.enableSorting,
-          resizable: this.options.enableColumnsResize,
-          filter: this.options.enableFiltering
-        },
-        columnDefs: this.columnDefs,
-        rowData: this.rowData
-      };
-      gridOptions.onRowClicked = event => this.openForm(event.data.guid);
-      gridOptions.rowHeight = this.options.rowHeight;
-      this.gridObj = new Grid(this.$refs.grid, gridOptions);
+      try {
+        const gridOptions = {
+          defaultColDef: {
+            sortable: this.options.enableSorting,
+            resizable: this.options.enableColumnsResize,
+            filter: this.options.enableFiltering
+          },
+          columnDefs: this.columnDefs,
+          rowData: this.rowData
+        };
+        gridOptions.onRowClicked = event => this.openForm(event.data.guid);
+        gridOptions.rowHeight = this.options.rowHeight;
+        this.gridObj = new Grid(this.$refs.grid, gridOptions);
 
-      if (this.options.filterModel != null) {
-        this.gridObj.gridOptions.api.setFilterModel(this.options.filterModel);
-      }
-
-      if (this.options.sortModel != null) {
-        this.gridObj.gridOptions.api.setSortModel(this.options.sortModel);
-      }
-
-      if (this.options.enableFlatMode) {
-        this.gridObj.gridOptions.api.setDomLayout('print');
-      }
-
-      this.gridObj.gridOptions.onColumnResized = event => {
-        const fieldDbName = event.column.colId;
-        const fieldWidth = event.column.actualWidth;
-        if (event.finished === true) {
-          const eventData = {
-            name: 'column-width',
-            column: fieldDbName,
-            width: fieldWidth
-          };
-          this.$emit('modify', eventData);
+        if (this.options.filterModel != null) {
+          this.gridObj.gridOptions.api.setFilterModel(this.options.filterModel);
         }
-      };
 
-      this.gridObj.gridOptions.onFilterModified = () => {
-        const filterModel = this.gridObj.gridOptions.api.getFilterModel();
-        const eventData = {
-          name: 'filter-change',
-          data: filterModel
-        };
-        if (this.gridInitialized) this.$emit('modify', eventData);
-      };
+        if (this.options.sortModel != null) {
+          this.gridObj.gridOptions.api.setSortModel(this.options.sortModel);
+        }
 
-      this.gridObj.gridOptions.onSortChanged = () => {
-        const sortModel = this.gridObj.gridOptions.api.getSortModel();
-        const eventData = {
-          name: 'sort-change',
-          data: sortModel
+        if (this.options.enableFlatMode) {
+          this.gridObj.gridOptions.api.setDomLayout('print');
+        }
+
+        this.gridObj.gridOptions.onColumnResized = event => {
+          const fieldDbName = event.column.colId;
+          const fieldWidth = event.column.actualWidth;
+          if (event.finished === true) {
+            const eventData = {
+              name: 'column-width',
+              column: fieldDbName,
+              width: fieldWidth
+            };
+            this.$emit('modify', eventData);
+          }
         };
-        if (this.gridInitialized) this.$emit('modify', eventData);
-      };
-      setTimeout(() => {
-        this.gridInitialized = true;
-      }, 50);
+
+        this.gridObj.gridOptions.onFilterModified = () => {
+          const filterModel = this.gridObj.gridOptions.api.getFilterModel();
+          const eventData = {
+            name: 'filter-change',
+            data: filterModel
+          };
+          if (this.gridInitialized) this.$emit('modify', eventData);
+        };
+
+        this.gridObj.gridOptions.onSortChanged = () => {
+          const sortModel = this.gridObj.gridOptions.api.getSortModel();
+          const eventData = {
+            name: 'sort-change',
+            data: sortModel
+          };
+          if (this.gridInitialized) this.$emit('modify', eventData);
+        };
+        setTimeout(() => {
+          this.gridInitialized = true;
+        }, 50);
+      } catch (e) {
+        this.$log.error(`ERROR initiating AG grid => ${e}`);
+      }
     }
   }
 };

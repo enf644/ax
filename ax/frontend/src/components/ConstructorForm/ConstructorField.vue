@@ -63,7 +63,10 @@ export default {
   },
   watch: {
     currentDbName(newValue, oldValue) {
-      const isCorrectDbName = /^[a-zA-Z\d][\w]{0,127}$/.test(newValue);
+      // const isCorrectDbName = /^[a-zA-Z\d][\w]{0,127}$/.test(newValue);
+      const isCorrectDbName = /^((\d)|([A-Z0-9][a-z0-9]+))*([A-Z])?$/.test(
+        newValue
+      );
       if (!isCorrectDbName) this.currentDbName = oldValue;
     }
   },

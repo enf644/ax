@@ -21,8 +21,8 @@ from loguru import logger
 from docopt import docopt
 from graphql.execution.executors.asyncio import AsyncioExecutor
 
-from typing import Dict, Any
-from graphql import GraphQLError
+# from typing import Dict, Any
+# from graphql import GraphQLError
 
 # Add folder with main.py to sys.path.
 root_path = Path(__file__).parent.resolve()
@@ -61,6 +61,7 @@ def init_model():
 
 
 class AxGraphQLView(GraphQLView):
+    """ Extends GraphQLView to output GQL errors"""
     @staticmethod
     def format_error(error):
         logger.error(error)
@@ -86,8 +87,8 @@ def init_ax():
         redis_timeout=int(os.environ.get('AX_REDIS_ENDPOINT') or 1),
     )  # Initiate aiocache
     ax_pubsub.init_pubsub()  # Initiate pubsub.
-    ax_schema.init_schema()  # Initiate gql schema.  Depends on cache and pubsub
     ax_migration.init_migration()  # Check if database schema needs update
+    ax_schema.init_schema()  # Initiate gql schema.  Depends on cache and pubsub
 
     # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
     CORS(app, automatic_options=True)  # TODO limit CORS to api folder

@@ -1,6 +1,7 @@
 """ GQL Chema for AxGrid and AxColumn manipulation """
 import uuid
 import graphene
+import ujson as json
 from loguru import logger
 
 from backend.model import AxForm, AxGrid, AxColumn
@@ -183,9 +184,23 @@ class CreateGrid(graphene.Mutation):
 
             ax_grid = AxGrid()
             ax_grid.name = cur_name
+            ax_grid.db_name = db_name + str(cur_num)
             ax_grid.form_guid = ax_form.guid
             ax_grid.position = len(ax_form.grids) + 1
-            ax_grid.options_json = '{}'
+
+            default_options = {
+                "enableQuickSearch": False,
+                "enableFlatMode": False,
+                "enableColumnsResize": True,
+                "enableFiltering": True,
+                "enableSorting": True,
+                "enableOpenForm": True,
+                "enableActions": True,
+                "rowHeight": 45,
+                "pinned": 0
+            }
+
+            ax_grid.options_json = json.dumps(default_options)
             ax_grid.is_default_view = False
             ax_model.db_session.add(ax_grid)
             ax_model.db_session.commit()
@@ -258,12 +273,20 @@ class UpdateGrid(graphene.Mutation):
                 ax_grid.options_json = options_json
 
             if is_default_view:
+                all_grids = ax_model.db_session.query(AxGrid).filter(
+                    AxGrid.form_guid == ax_grid.form_guid and
+                    AxGrid.guid != ax_grid.guid
+                ).all()
+
+                for grid in all_grids:
+                    grid.is_default_view = False
+
                 ax_grid.is_default_view = is_default_view
 
             ax_model.db_session.commit()
 
             ok = True
-            return CreateGrid(grid=ax_grid, ok=ok)
+            return UpdateGrid(grid=ax_grid, ok=ok)
         except Exception:
             logger.exception('Error in gql mutation - UpdateGrid.')
             raise

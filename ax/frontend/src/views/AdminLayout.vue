@@ -22,8 +22,8 @@ export default {
     currentGridDbName() {
       return this.$route.params.grid_alias;
     },
-    redirectNeeded() {
-      return this.$store.state.home.redirectNeeded;
+    redirectNeededUrl() {
+      return this.$store.state.home.redirectNeededUrl;
     }
   },
   watch: {
@@ -33,14 +33,15 @@ export default {
       }
     },
     currentGridDbName(newValue) {
-      if (newValue) {
+      if (newValue && this.$store.state.grids.dbName !== newValue) {
         this.$store.dispatch('grids/getGridData', {
           formDbName: this.$route.params.db_name,
           gridDbName: newValue
         });
+        this.$store.commit('grids/setFormDbName', this.currentFormDbName);
       }
     },
-    redirectNeeded(newValue) {
+    redirectNeededUrl(newValue) {
       this.$router.push({ path: newValue });
     }
   },
@@ -58,6 +59,7 @@ export default {
           formDbName: this.$route.params.db_name,
           gridDbName: this.$route.params.grid_alias
         });
+        this.$store.commit('grids/setFormDbName', this.currentFormDbName);
       }
     }
   }

@@ -1,6 +1,11 @@
 <template>
   <div class='container'>
-    <ax-grid :form='formDbName' :update_time='gridUpdateTime' @modify='saveGridOptions'></ax-grid>
+    <ax-grid
+      :form='formDbName'
+      :grid='gridDbName'
+      :update_time='gridUpdateTime'
+      @modify='saveGridOptions'
+    ></ax-grid>
   </div>
 </template>
 
@@ -15,13 +20,15 @@ export default {
     formDbName() {
       return this.$route.params.db_name;
     },
+    gridDbName() {
+      return this.$route.params.grid_alias;
+    },
     gridUpdateTime() {
       return this.$store.state.grids.updateTime;
     }
   },
   methods: {
     saveGridOptions(data) {
-      console.log(data);
       if (data.name === 'column-width') {
         this.$store.commit('grids/setColumnWidth', data);
         this.$store.dispatch('grids/updateGrid', {}).then(() => {

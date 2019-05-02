@@ -201,6 +201,9 @@ const mutations = {
     Object.keys(optionsPart).forEach(key => {
       state.options[key] = optionsPart[key];
     });
+  },
+  setFormDbName(state, formDbName) {
+    state.formDbName = formDbName;
   }
 
 };
@@ -246,8 +249,14 @@ const actions = {
       }
     })
       .then(data => {
-        context.commit('setGridData', data.data.grid);
-        context.commit('setUpdateTime', Date.now());
+        if (data.data.grid) {
+          context.commit('setGridData', data.data.grid);
+          context.commit('setUpdateTime', Date.now());
+        } else {
+          logger.error(`Cant find grid => ${payload.gridDbName}`);
+          const url = `/admin/${payload.formDbName}/form`;
+          context.commit('home/setRedirectNeededUrl', url, { root: true });
+        }
       })
       .catch(error => {
         logger.error(`Error in getGridData apollo client => ${error}`);
@@ -322,9 +331,11 @@ const actions = {
         const newGrid = data.data.createGrid.grid;
         context.commit('setCreatedGridDbName', newGrid.dbName);
         context.commit('form/addGrid', newGrid, { root: true });
+        const url = `/admin/${context.state.formDbName}/grids/${newGrid.dbName}`;
+        context.commit('home/setRedirectNeededUrl', url, { root: true });
       })
       .catch(error => {
-        logger.error(`Error in createColumn apollo client => ${error}`);
+        logger.error(`Error in createGrid apollo client => ${error}`);
       });
   },
 
@@ -332,10 +343,16 @@ const actions = {
     let currentName = context.state.name;
     let currentDbName = context.state.dbName;
     let currentOptionsJson = JSON.stringify(context.state.options);
+    let currentIsDefaultView = context.state.isDefaultView;
+    let redirectNeeded = false;
 
     if ('name' in payload) currentName = payload.name;
-    if ('dbName' in payload) currentDbName = payload.dbName;
+    if ('dbName' in payload) {
+      currentDbName = payload.dbName;
+      redirectNeeded = true;
+    }
     if ('optionsJson' in payload) currentOptionsJson = JSON.stringify(payload.optionsJson);
+    if ('isDefaultView' in payload) currentIsDefaultView = payload.isDefaultView;
 
     apolloClient.mutate({
       mutation: UPDATE_GRID,
@@ -343,7 +360,8 @@ const actions = {
         guid: context.state.guid,
         name: currentName,
         dbName: currentDbName,
-        optionsJson: currentOptionsJson
+        optionsJson: currentOptionsJson,
+        isDefaultView: currentIsDefaultView
       }
     })
       .then(data => {
@@ -357,13 +375,17 @@ const actions = {
         };
         context.commit('updateGrid', newGrid);
         context.commit('form/updateGrid', shortGrid, { root: true });
+        if (redirectNeeded) {
+          const url = `/admin/${context.state.formDbName}/grids/${currentDbName}`;
+          context.commit('home/setRedirectNeededUrl', url, { root: true });
+        }
       })
       .catch(error => {
         logger.error(`Error in updateGrid apollo client => ${error}`);
       });
   },
 
-  deleteGrid(context) {
+  deleteGrid(context, payload) {
     apolloClient.mutate({
       mutation: DELETE_GRID,
       variables: {
@@ -371,9 +393,11 @@ const actions = {
       }
     })
       .then(data => {
-        const isDeleted = data.data.createGrid.deleted;
+        const isDeleted = data.data.deleteGrid.deleted;
         context.commit('setDeletedFlag', true);
         context.commit('form/deleteGrid', isDeleted, { root: true });
+        const url = `/admin/${context.state.formDbName}/grids/${payload.defaultGridDbName}`;
+        context.commit('home/setRedirectNeededUrl', url, { root: true });
       })
       .catch(error => {
         logger.error(`Error in deleteGrid apollo client => ${error}`);

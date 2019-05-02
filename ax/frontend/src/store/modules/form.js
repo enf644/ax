@@ -273,10 +273,19 @@ const mutations = {
     state.grids.push(grid);
   },
   updateGrid(state, grid) {
-    state.grids = [
+    const resultGrids = [
       ...state.grids.filter(element => element.guid !== grid.guid),
       grid
     ];
+
+    if (grid.isDefaultView) {
+      for (let i = 0; i < resultGrids.length; i += 1) {
+        if (resultGrids[i].guid !== grid.guid) {
+          resultGrids[i].isDefaultView = false;
+        }
+      }
+    }
+    state.grids = resultGrids;
   },
   deleteGrid(state, deleted) {
     state.grids = [...state.grids.filter(element => element.guid !== deleted)];
@@ -395,7 +404,13 @@ const actions = {
       }
     })
       .then(data => {
-        context.commit('setFormData', data.data.form);
+        if (data.data.form) {
+          context.commit('setFormData', data.data.form);
+        } else {
+          logger.error(`Cant find form => ${payload.dbName}`);
+          const url = '/admin/home';
+          context.commit('home/setRedirectNeededUrl', url, { root: true });
+        }
       })
       .catch(error => {
         logger.error(`Error in getFormData apollo client => ${error}`);

@@ -308,19 +308,25 @@ AX 20:
             ✔ Flat mode @done(19-04-28 18:46)
             ✔ Row height @done(19-04-28 18:58)
             ✔ Pinned columns @done(19-04-28 18:58)
-        ☐ AxGridSettings
-        ☐ Grids list
-            ☐ Popup
-            ☐ Create
-        ☐ Server filter
-        ☐ Cell is web-component
-        ☐ Diferent sorting and filtering for different types
+        ✔ AxGridSettings @done(19-04-30 08:41)
+            ✔ Component @done(19-04-29 12:34)
+            ✔ Popup @done(19-04-29 12:34)
+            ✔ GQL mutation, query, action, vuex mutation. @done(19-04-29 12:34)
+                ✔ Update @done(19-04-29 12:35)
+                ✔ Delete @done(19-04-30 08:41)
+        ✔ Grids list @done(19-04-30 08:41)
+            ✔ Popup @done(19-04-29 19:05)
+            ✔ Create @done(19-04-29 19:05)
         ☐ Get row data for form - ax form for specific guid
+        ☐ Reload schema on every edit
+        ☐ Cell is web-component
+        ☐ Server filter
+        ☐ Different sorting and filtering for different types
         ☐ Frogs
             ✔ Grid data not loaded if user is coming form home @done(19-04-23 15:50)
             ☐ If icon or form name is changed -> form preview does not reload
             ☐ ax_state is not created in database
-            ☐ Reload schema on every edit
+            
             ☐ Form drawer transition must accur only after everything loaded
             ✔ If grid have two columns with same field - they have only one width @done(19-04-25 11:18)
     ☐ WORKFLOW
@@ -368,6 +374,8 @@ AX 20:
 		☐ Dump application to yaml
 		☐ Install application from yaml
     ☐ Add clould logger for python and vue
+    ☐ Product usage statistics
+    ☐ LICENSING
 
 Additional versions:
     ☐ Sass
@@ -407,7 +415,7 @@ NEW FROGS TODOS:
         ☐ Include images in js
     ☐ Margins in ax-form and ax-grid must be responsive. 0% on mobile
     ☐ Do Lazy loading with webpack - load grid first, then form.
-    ☐ `[IMPORTANT]` Change AsyncioPubsub to production pubsub implementation
+    ✔ Change AsyncioPubsub to production pubsub implementation @done(19-05-02 09:37)
     ☐ Setup must set data in many files:
         ☐ apollo.js - ip, port
         ✔ alembic - database @done(19-03-12 09:25)

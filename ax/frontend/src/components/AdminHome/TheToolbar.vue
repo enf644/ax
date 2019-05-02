@@ -57,23 +57,55 @@
         <TheNewForm :guid='this.$store.state.form.guid' @created='closeFormModal'/>
       </modal>
 
-      <i class='fas fa-angle-right breadcrumb-devider' v-show='isGridsRoute'></i>
-      <div @click='openGridsSelect' class='grid-select' v-show='isGridsRoute'>
-        {{defaultGridName}}
-        <span class='very-small'>total: {{totalGrids}}</span>
-        <i class='fas fa-caret-down'></i>
-      </div>
-      <v-btn
-        @click='openGridModal'
-        class='breadcrumbs-action'
-        color='black'
-        cy-data
-        flat
-        icon
-        v-show='isGridsRoute'
-      >
-        <i class='fas fa-cog breadcrumbs-action-i'></i>
-      </v-btn>
+      <v-menu offset-y>
+        <template v-slot:activator='{ on }'>
+          <i class='fas fa-angle-right breadcrumb-devider' v-show='isGridsRoute'></i>
+          <div class='grid-select' v-on='on' v-show='isGridsRoute'>
+            {{currentGridName}}
+            <span class='very-small'>total: {{totalGrids}}</span>
+            <i class='fas fa-caret-down'></i>
+          </div>
+          <v-btn
+            @click='openGridModal'
+            class='breadcrumbs-action'
+            color='black'
+            cy-data
+            flat
+            icon
+            v-show='isGridsRoute'
+          >
+            <i class='fas fa-cog breadcrumbs-action-i'></i>
+          </v-btn>
+        </template>
+        <v-card class='grids-card'>
+          <v-list>
+            <v-list-tile
+              :key='index'
+              @click='gotoGrid(grid.dbName)'
+              v-for='(grid, index) in allGrids'
+            >
+              <v-list-tile-title>
+                {{ grid.name }}
+                &nbsp;
+                <i
+                  class='far fa-star'
+                  v-show='grid.isDefaultView'
+                ></i>
+              </v-list-tile-title>
+            </v-list-tile>
+          </v-list>
+
+          <v-btn @click='createGrid' small>
+            <i class='fas fa-plus'></i>
+            &nbsp;
+            {{$t("home.create-new-grid-btn")}}
+          </v-btn>
+        </v-card>
+      </v-menu>
+
+      <modal adaptive height='auto' name='update-grid' scrollable>
+        <TheGridSettings :guid='this.$store.state.grids.guid' @updated='closeGridModal'/>
+      </modal>
     </v-layout>
     <v-spacer></v-spacer>
     <transition enter-active-class='animated fadeIn faster' name='fade'></transition>
@@ -87,13 +119,19 @@
 
 <script>
 import TheNewForm from '@/components/AdminHome/TheNewForm.vue';
+import TheGridSettings from '@/components/ConstructorGrids/TheGridSettings.vue';
 
 export default {
   name: 'admin-toolbar',
   components: {
-    TheNewForm
+    TheNewForm,
+    TheGridSettings
   },
   computed: {
+    allGrids() {
+      const gridsList = [...this.$store.state.form.grids];
+      return gridsList.sort((a, b) => a.name.localeCompare(b.name));
+    },
     currentFormDbName() {
       return this.$route.params.db_name;
     },
@@ -111,6 +149,11 @@ export default {
     currentFormName() {
       if (this.currentForm) return this.currentForm.name;
       return null;
+    },
+    currentGridName() {
+      const { name } = this.$store.state.grids;
+      if (!name) return this.defaultGridDbName;
+      return this.$store.state.grids.name;
     },
     defaultGridDbName() {
       const defaultGrid = this.$store.state.form.grids.find(
@@ -143,8 +186,23 @@ export default {
     }
   },
   methods: {
+    gotoGrid(dbName) {
+      const url = `/admin/${this.currentFormDbName}/grids/${dbName}`;
+      this.$store.commit('home/setRedirectNeededUrl', url);
+    },
+    createGrid() {
+      this.$store.dispatch('grids/createGrid').then(() => {
+        const msg = this.$t('grids.grid-created-toast');
+        this.$dialog.message.success(
+          `<i class="fas fa-columns"></i> &nbsp ${msg}`
+        );
+      });
+    },
     openGridModal() {
-      console.log('OPEN GRID MODAL');
+      this.$modal.show('update-grid');
+    },
+    closeGridModal() {
+      this.$modal.hide('update-grid');
     },
     openGridsSelect() {
       console.log('OPEN GRIDS LIST');
@@ -220,6 +278,7 @@ export default {
   line-height: 25px;
   margin-left: 60px;
   margin-right: 20px;
+  padding-right: 20px;
 }
 .constructor-button {
   margin-left: 10px !important;
@@ -228,5 +287,8 @@ export default {
   height: 25px;
   margin-top: 6px;
   margin-left: 25px;
+}
+.grids-card {
+  padding: 20px;
 }
 </style>

@@ -19,6 +19,7 @@
         "users-btn": "Users",
         "marketplace-btn": "Marketplace",
         "pages-designer-btn": "Pages designer",
+        "create-new-grid-btn": "Create new grid",
         "new-form": {
             "header": "Creating new Ax Form",
             "update-header": "Updating form",
@@ -29,7 +30,7 @@
             "name-required": "Form name is required",
             "db-name-required": "Database table name is required",
             "db-name-not-avalible": "Database name is not avalible. Please choose enother.",
-            "db-name-valid-letters": "Use only latin letters, numbers and _ symbol",
+            "db-name-valid-letters": "Use UpperCamelCase. Each word of the phrase begins with a capital letter, with no intervening spaces or punctuation.",
             "toast-form-created": "Form created",
             "toast-form-updated": "Form updated",
             "toast-form-deleted": "Form deleted",
@@ -92,7 +93,7 @@
     "grids": {
         "add-column-toast": "Column added",
         "default-name": "New grid",
-        "grids.change-positions-toast": "Column position changed",
+        "change-positions-toast": "Column position changed",
         "column-deleted-toast": "Column deleted",
         "grid-updated": "Grid options updated",
         "options-quick-search": "Quick search",
@@ -104,7 +105,21 @@
         "options-actions": "Actions",
         "options-row-height": "Row height",
         "options-pinned": "Pinned columns",
-        "test-action": "Test action"
+        "test-action": "Test action",
+        "settings-header": "Grid settings",
+        "settings-update-btn": "Update grid settings",
+        "grid-updated-toast": "Grid updated",
+        "grid-name": "Grid name",
+        "grid-db-name": "Grid schema alias",
+        "grid-db-name-hint": "Used by &lt;ax-grid&gt; web-component and in GQL queries.",
+        "name-required": "Grid name is required",
+        "db-name-required": "Grid alias is required",
+        "is-default-view": "Is default view",
+        "settings-delete-btn": "Delete grid",
+        "grid-delete-confirm": "Do you realy want to delete grid [{name}]?",
+        "grid-deleted-toast": "Grid deleted",
+        "grid-created-toast": "Grid created",
+        "grid-is-default-view": "This grid is set as default view"
     },
     "types": {
         "group-id": "Identification",

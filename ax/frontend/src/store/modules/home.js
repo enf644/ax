@@ -197,8 +197,8 @@ const mutations = {
   setDbNameChanged(state, changed) {
     state.dbNameChanged = changed;
   },
-  setRedirectNeeded(state, url) {
-    state.redirectNeeded = url;
+  setRedirectNeededUrl(state, url) {
+    state.redirectNeededUrl = url;
   }
 };
 
@@ -275,7 +275,7 @@ const actions = {
           const newForm = data.data.createForm.form;
           context.commit('addForm', newForm);
           context.commit('setModalMustClose', true);
-          context.commit('setRedirectNeeded', `/admin/${newForm.dbName}/form`);
+          context.commit('setRedirectNeededUrl', `/admin/${newForm.dbName}/form`);
         } else {
           context.commit('setDbNameIsAvalible', false);
         }
@@ -402,7 +402,7 @@ const state = {
   modalMustClose: false,
   positionChangedFlag: false,
   dbNameChanged: false,
-  redirectNeeded: null
+  redirectNeededUrl: null
 };
 
 export default {
