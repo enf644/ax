@@ -4,7 +4,8 @@ import uuid
 import graphene
 from loguru import logger
 
-from backend.model import AxForm, AxField, AxFieldType, AxRoleFieldPermission, AxColumn
+from backend.model import AxForm, AxField, AxFieldType, \
+    AxRoleFieldPermission, AxColumn
 import backend.model as ax_model
 # import backend.cache as ax_cache # TODO use cache!
 import backend.dialects as ax_dialects
@@ -233,7 +234,7 @@ class UpdateField(graphene.Mutation):
                 if db_name_error:
                     db_name = db_name + '_enother'
 
-                sql = ax_dialects.dialect.rename_column(
+                ax_dialects.dialect.rename_column(
                     table=ax_field.form.db_name,
                     old_name=ax_field.db_name,
                     new_name=db_name,
@@ -375,9 +376,32 @@ class FormQuery(graphene.ObjectType):
 
     async def resolve_form_data(self, info, db_name=None, row_guid=None, update_time=None):
         """Get AxForm by db_name and row guid"""
+        del update_time
+
         query = Form.get_query(info=info)
         ax_form = query.filter(AxForm.db_name == db_name).first()
-        # TODO: get value for fileds, filter actions, filter fields based on state and user
+
+        if row_guid is not None:
+            # TODO get list of fields that user have permission
+            allowed_fields = []
+            for field in ax_form.db_fields:
+                allowed_fields.append(field.db_name)
+
+            # select * from table
+            result = ax_dialects.dialect.select_one(
+                form_db_name=ax_form.db_name,
+                fields_list=allowed_fields,
+                row_guid=row_guid)
+
+            if not result:
+                return ax_form
+
+            # populate each AxField with data
+            for field in ax_form.fields:
+                if field.db_name in allowed_fields:
+                    field.value = result[0][field.db_name]
+
+        # TODO: filter actions, filter fields based on state and user
         return ax_form
 
 

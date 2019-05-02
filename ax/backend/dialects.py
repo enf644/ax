@@ -1,9 +1,9 @@
 """Initiate SQL dialects"""
 import sys
-from loguru import logger
 import sqlite3
+from loguru import logger
 import backend.model as ax_model
-from backend.model import AxForm, AxField
+from backend.model import AxForm
 
 this = sys.modules[__name__]
 dialect_name = None
@@ -31,13 +31,46 @@ class SqliteDialect(object):
         }
         return sqlite_types[type_name]
 
+    def select_all(self, form_db_name, fields_list):
+        """ Select fields from table """
+        try:
+            fields_string = 'guid, axState, axNum'
+            for field_name in fields_list:
+                fields_string += f", {field_name}"
+
+            sql = f"SELECT {fields_string} FROM {form_db_name}"
+            result = ax_model.db_session.execute(sql).fetchall()
+            return result
+            # names = [row[0] for row in result]
+        except Exception:
+            logger.exception(f"Error executing SQL - select {form_db_name}")
+            raise
+
+    def select_one(self, form_db_name, fields_list, row_guid):
+        """ Select fields from table for one row """
+        try:
+            fields_string = 'guid, axState, axNum'
+            for field_name in fields_list:
+                fields_string += f", {field_name}"
+
+            sql = (f"SELECT {fields_string} "
+                   f"FROM {form_db_name} "
+                   f"WHERE guid='{row_guid}'"
+                   )
+            result = ax_model.db_session.execute(sql).fetchall()
+            return result
+            # names = [row[0] for row in result]
+        except Exception:
+            logger.exception(f"Error executing SQL - select {form_db_name}")
+            raise
+
     def create_data_table(self, db_name: str) -> None:
         """Create table with system columns"""
         try:
             sql = f"""CREATE TABLE {db_name} (
                 guid VARCHAR PRIMARY KEY,
-                ax_num INTEGER NOT NULL,
-                ax_state VARCHAR NOT NULL
+                axNum INTEGER NOT NULL,
+                axState VARCHAR NOT NULL
             );"""
             ax_model.db_session.execute(sql)
         except Exception:
@@ -73,14 +106,20 @@ class SqliteDialect(object):
             raise
 
     def rename_column(self, table, old_name, new_name, type_name) -> None:
-        """Sqlite allows rename of column only from version 3.25.0. 
+        """Sqlite allows rename of column only from version 3.25.0.
         We have to reacreate table and copy data"""
         try:
+            del type_name
             ax_form = ax_model.db_session.query(AxForm).filter(
                 AxForm.db_name == table
             ).first()
 
-            create_tmp = 'CREATE TABLE _ax_tmp (guid VARCHAR'
+            create_tmp = (
+                f"CREATE TABLE _ax_tmp ("
+                f"guid VARCHAR, "
+                f"axNum INTEGER, "
+                f"axState VARCHAR"
+            )
             for field in ax_form.db_fields:
                 db_name = field.db_name if field.db_name != old_name else new_name
                 db_type = self.get_type(field.field_type.value_type)
@@ -88,7 +127,7 @@ class SqliteDialect(object):
 
             create_tmp += ');'
 
-            copy_data = 'INSERT INTO _ax_tmp SELECT guid'
+            copy_data = 'INSERT INTO _ax_tmp SELECT guid, axNum, axState'
             for field in ax_form.db_fields:
                 copy_data += f", {field.db_name}"
             copy_data += f" FROM {ax_form.db_name};"
@@ -119,14 +158,19 @@ class SqliteDialect(object):
                 AxForm.db_name == table
             ).first()
 
-            create_tmp = 'CREATE TABLE _ax_tmp (guid VARCHAR'
+            create_tmp = (
+                f"CREATE TABLE _ax_tmp ("
+                f"guid VARCHAR, "
+                f"axNum INTEGER, "
+                f"axState VARCHAR"
+            )
             for field in ax_form.db_fields:
                 db_type = self.get_type(field.field_type.value_type)
                 if field.db_name != column:
                     create_tmp += f", {field.db_name}  {db_type}"
             create_tmp += ');'
 
-            copy_data = 'INSERT INTO _ax_tmp SELECT guid'
+            copy_data = 'INSERT INTO _ax_tmp SELECT guid, axNum, axState'
             for field in ax_form.db_fields:
                 if field.db_name != column:
                     copy_data += f", {field.db_name}"
@@ -178,8 +222,8 @@ class PorstgreDialect(object):
         try:
             sql = f"""CREATE TABLE {db_name} (
                 guid UUID PRIMARY KEY,
-                ax_num INTEGER NOT NULL,
-                ax_state VARCHAR NOT NULL
+                axNum INTEGER NOT NULL,
+                axState VARCHAR NOT NULL
             );"""
             ax_model.db_session.execute(sql)
         except Exception:
@@ -261,8 +305,8 @@ class MysqlDialect(object):
         try:
             sql = f"""CREATE TABLE {db_name} (
                 guid VARCHAR(64) PRIMARY KEY,
-                ax_num INT NOT NULL,
-                ax_state VARCHAR(255) NOT NULL
+                axNum INT NOT NULL,
+                axState VARCHAR(255) NOT NULL
             );"""
             ax_model.db_session.execute(sql)
         except Exception:

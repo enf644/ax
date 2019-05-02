@@ -317,7 +317,7 @@ AX 20:
         ✔ Grids list @done(19-04-30 08:41)
             ✔ Popup @done(19-04-29 19:05)
             ✔ Create @done(19-04-29 19:05)
-        ☐ Get row data for form - ax form for specific guid
+        ✔ Get row data for form - ax form for specific guid @done(19-05-02 15:30)
         ☐ Reload schema on every edit
         ☐ Cell is web-component
         ☐ Server filter
@@ -433,6 +433,7 @@ NEW FROGS TODOS:
     ☐ Jstree - remember opened nodes
     ☐ If form does not exist, but someone entered via url - must be error
     ✔ AxFrom - size transition caouses a ton of resize events that are captured by handleResize @done(19-04-17 09:37)
+    ☐ Paging in AxGrid
 
 
 NEW FEATURES:

@@ -15,6 +15,8 @@ from backend.schemas.types import Form, FieldType, Field, Grid, \
 
 from backend.model import AxForm
 import backend.model as ax_model
+import backend.dialects as ax_dialects
+
 
 this = sys.modules[__name__]
 schema = None
@@ -76,9 +78,26 @@ def make_resolver(db_name, type_class):
 
     def resolver(self, info):
         del self, info
+
+        ax_form = ax_model.db_session.query(AxForm).filter(
+            AxForm.db_name == db_name
+        ).first()
+
+        # TODO add permission checks
+        allowed_fields = []
+        for field in ax_form.db_fields:
+            allowed_fields.append(field.db_name)
+
+        # select * from table
+        # TODO Add paging
+        results = ax_dialects.dialect.select_all(
+            form_db_name=ax_form.db_name,
+            fields_list=allowed_fields)
+
+        # sql = f'SELECT * FROM {db_name}'
+        # results = ax_model.db_session.execute(sql).fetchall()
+
         result_items = []
-        sql = f'SELECT * FROM {db_name}'
-        results = ax_model.db_session.execute(sql).fetchall()
         for row in results:
             kwargs = {}
             for key, value in row.items():
@@ -101,6 +120,8 @@ def init_schema():
             class_name = form.db_name.capitalize()
             class_fields = {}
             class_fields['guid'] = graphene.String()
+            class_fields['axNum'] = graphene.Int()
+            class_fields['axState'] = graphene.String()
             for field in form.db_fields:
                 field_type = type_dictionary[field.field_type.value_type]
                 # TODO maybe add label as description?

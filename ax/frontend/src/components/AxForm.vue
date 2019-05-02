@@ -128,7 +128,7 @@ export default {
       type: String,
       default: null
     },
-    row_guid: {},
+    guid: null,
     update_time: null,
     opened_tab: null
   },
@@ -138,7 +138,7 @@ export default {
       drawerIsHidden: true,
       overlayIsHidden: true,
       dialogIsOpen: false,
-      guid: null,
+      formGuid: null,
       name: null,
       dbName: null,
       icon: null,
@@ -165,10 +165,10 @@ export default {
   },
   watch: {
     db_name(newValue) {
-      if (newValue) this.loadData(newValue);
+      if (newValue) this.loadData(newValue, this.guid);
     },
     update_time() {
-      if (this.db_name) this.loadData(this.db_name);
+      if (this.db_name) this.loadData(this.db_name, this.guid);
     },
     tabs(newValue, oldValue) {
       if (oldValue) {
@@ -181,10 +181,7 @@ export default {
   },
   created() {},
   mounted() {
-    if (this.db_name) this.loadData(this.db_name);
-    // setTimeout(() => {
-    //   this.handleResize();
-    // }, 30);
+    if (this.db_name) this.loadData(this.db_name, this.guid);
     this.$smoothReflow({ el: this.$refs.sheet.$el });
   },
   methods: {
@@ -253,7 +250,7 @@ export default {
       this.$emit('update:tab', guid);
       this.hideDrawer();
     },
-    loadData(dbName, rowGuid = null) {
+    loadData(dbName, rowGuid) {
       const GET_DATA = gql`
         query($dbName: String!, $rowGuid: String, $updateTime: String) {
           formData(
@@ -311,7 +308,7 @@ export default {
         })
         .then(data => {
           const currentFormData = data.data.formData;
-          this.guid = currentFormData.guid;
+          this.formGuid = currentFormData.guid;
           this.name = currentFormData.name;
           this.dbName = currentFormData.dbName;
           this.icon = currentFormData.icon;
@@ -341,9 +338,9 @@ export default {
     },
     handleResize(force = false) {
       if (
-        this.currentWidth &&
-        this.currentWidth === this.$el.clientWidth &&
-        !force
+        this.currentWidth
+        && this.currentWidth === this.$el.clientWidth
+        && !force
       ) {
         // console.log('prevent');
         return false;
@@ -372,8 +369,8 @@ export default {
       }
 
       if (
-        this.drawerIsFloating === false &&
-        this.currentWidth * 1 < drawerBreakingPoint
+        this.drawerIsFloating === false
+        && this.currentWidth * 1 < drawerBreakingPoint
       ) {
         this.drawerIsFloating = true;
         this.drawerIsHidden = true;
@@ -383,8 +380,8 @@ export default {
       }
 
       if (
-        this.drawerIsFloating === true &&
-        this.currentWidth * 1 > drawerBreakingPoint
+        this.drawerIsFloating === true
+        && this.currentWidth * 1 > drawerBreakingPoint
       ) {
         this.drawerIsFloating = false;
         this.drawerIsHidden = false;
@@ -515,7 +512,5 @@ export default {
   font-size: 13px;
   color: white;
   border-radius: 15px;
-}
-.form-container {
 }
 </style>

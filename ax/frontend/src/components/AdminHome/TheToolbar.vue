@@ -2,7 +2,7 @@
   <v-toolbar app class='top-toolbar' clipped-left fixed height='40'>
     <v-toolbar-title align-center>
       <router-link to='/admin/home'>
-        <img class='logo' src='../../assets/axe-swing.png'>
+        <img class='logo' src='../../assets/logo1.jpg'>
       </router-link>
     </v-toolbar-title>
 
@@ -203,9 +203,6 @@ export default {
     },
     closeGridModal() {
       this.$modal.hide('update-grid');
-    },
-    openGridsSelect() {
-      console.log('OPEN GRIDS LIST');
     },
     openFormModal() {
       this.$modal.show('update-form');
