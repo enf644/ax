@@ -20,6 +20,11 @@
         "marketplace-btn": "Marketplace",
         "pages-designer-btn": "Pages designer",
         "create-new-grid-btn": "Create new grid",
+        "toolbar": {
+            "form-btn": "Form",
+            "workflow-btn": "Workflow",
+            "grids-btn": "Grids"
+        },
         "new-form": {
             "header": "Creating new Ax Form",
             "update-header": "Updating form",

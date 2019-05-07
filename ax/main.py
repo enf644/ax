@@ -17,6 +17,7 @@ from pathlib import Path
 from sanic_graphql import GraphQLView
 from sanic import Sanic
 from sanic_cors import CORS
+import asyncio
 from loguru import logger
 from docopt import docopt
 from graphql.execution.executors.asyncio import AsyncioExecutor
@@ -60,12 +61,12 @@ def init_model():
     )
 
 
-class AxGraphQLView(GraphQLView):
-    """ Extends GraphQLView to output GQL errors"""
-    @staticmethod
-    def format_error(error):
-        logger.error(error)
-        return GraphQLView.format_error(error)
+# class AxGraphQLView(GraphQLView):
+#     """ Extends GraphQLView to output GQL errors"""
+#     @staticmethod
+#     def format_error(error):
+#         logger.error(error)
+#         return GraphQLView.format_error(error)
 
 
 def init_ax():
@@ -102,13 +103,21 @@ def init_ax():
         """Initiate scheduler"""
         ax_scheduler.init_scheduler()
 
+    # @app.listener('before_server_start')
+    # def init_graphql(_app, _loop):  # pylint: disable=unused-variable
+    #     """Initiate graphql"""
+    #     graphql_view = AxGraphQLView.as_view(schema=ax_schema.schema,
+    #                                          graphiql=False,
+    #                                          executor=AsyncioExecutor(loop=_loop))
+    #     _app.add_route(graphql_view, '/api/graphql')
+
     @app.listener('before_server_start')
-    def init_graphql(_app, _loop):  # pylint: disable=unused-variable
+    def save_loop(_app, _loop):  # pylint: disable=unused-variable
         """Initiate graphql"""
-        graphql_view = AxGraphQLView.as_view(schema=ax_schema.schema,
-                                             graphiql=False,
-                                             executor=AsyncioExecutor(loop=_loop))
-        _app.add_route(graphql_view, '/api/graphql')
+        ax_routes.loop = _loop
+        ax_routes.app = _app
+        ax_routes.init_graphql_view()
+        # _app.add_route(ax_routes.graphql_view, '/api/graphql')
 
     ax_routes.init_routes(app)
     ax_dialects.init_dialects(os.environ.get('AX_DB_DIALECT') or 'sqlite')

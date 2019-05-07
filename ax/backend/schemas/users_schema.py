@@ -2,8 +2,8 @@
 
 import asyncio
 import graphene
-from graphene import relay
-from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
+# from graphene import relay
+from graphene_sqlalchemy import SQLAlchemyConnectionField
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 import aiopubsub
 from loguru import logger

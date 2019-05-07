@@ -13,7 +13,10 @@ from backend.model import GUID, AxForm, AxField, AxGrid  # TODO: check if needed
 import backend.model as ax_model
 import backend.cache as ax_cache
 import backend.dialects as ax_dialects
+import backend.schema as ax_schema
 from backend.schemas.types import Form, PositionInput
+# import backend.routes as ax_routes
+
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
 
@@ -154,6 +157,9 @@ class CreateForm(graphene.Mutation):
             create_default_actions(new_form, default_create, default_delete)
             create_default_grid(ax_form=new_form, name=default_grid_name)
             create_default_tab(ax_form=new_form, name=default_tab_name)
+            ax_schema.init_schema()
+            # TODO: check for multiple workers and load balancers.
+            # https://community.sanicframework.org/t/removing-routes-necessary-functionality/29
 
             ok = True
             return CreateForm(form=new_form, avalible=True, ok=ok)

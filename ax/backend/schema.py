@@ -114,7 +114,10 @@ def init_schema():
     """Initiate GQL schema"""
     try:
         # Create typeClass based on each AxForm
+        this.schema = None
         type_classes = {}
+        all_types = gql_types.copy()
+
         ax_forms = ax_model.db_session.query(AxForm).all()
         for form in ax_forms:
             class_name = form.db_name.capitalize()
@@ -135,7 +138,7 @@ def init_schema():
                 description=form.name
             )
             type_classes[form.db_name] = graph_class
-            gql_types.append(graph_class)
+            all_types.append(graph_class)
 
         # Dynamicly crate resolvers for each typeClass
         dynamic_fields = {}
@@ -148,7 +151,7 @@ def init_schema():
         this.schema = graphene.Schema(
             query=DynamicQuery,
             mutation=Mutations,
-            types=gql_types,
+            types=all_types,
             subscription=Subscription
         )
     except Exception:

@@ -33,7 +33,7 @@ export default {
       }
     },
     currentGridDbName(newValue) {
-      if (newValue && this.$store.state.grids.dbName !== newValue) {
+      if (newValue) {
         this.$store.dispatch('grids/getGridData', {
           formDbName: this.$route.params.db_name,
           gridDbName: newValue

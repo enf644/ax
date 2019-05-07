@@ -6,9 +6,12 @@ from loguru import logger
 
 from backend.model import AxForm, AxField, AxFieldType, \
     AxRoleFieldPermission, AxColumn
+
 import backend.model as ax_model
 # import backend.cache as ax_cache # TODO use cache!
 import backend.dialects as ax_dialects
+import backend.schema as ax_schema
+
 from backend.schemas.types import Form, Field, PositionInput
 import ujson as json
 
@@ -187,6 +190,7 @@ class CreateField(graphene.Mutation):
                         field.parent = current_parent
 
             ax_model.db_session.commit()
+            ax_schema.init_schema()
 
             ok = True
             return CreateTab(field=ax_field, ok=ok)
@@ -218,6 +222,8 @@ class UpdateField(graphene.Mutation):
             is_whole_row = args.get('is_whole_row')
             options_json = args.get('options_json')
 
+            schema_needs_update = False
+
             ax_field = ax_model.db_session.query(AxField).filter(
                 AxField.guid == uuid.UUID(guid)
             ).first()
@@ -243,6 +249,7 @@ class UpdateField(graphene.Mutation):
 
                 ax_field.db_name = db_name
                 ax_model.db_session.commit()
+                schema_needs_update = True
 
             if options_json:
                 ax_field.options_json = json.dumps(options_json)
@@ -257,6 +264,9 @@ class UpdateField(graphene.Mutation):
                     ax_field.is_whole_row = is_whole_row
 
             ax_model.db_session.commit()
+
+            if schema_needs_update:
+                ax_schema.init_schema()
 
             ok = True
             return CreateTab(field=ax_field, ok=ok)
@@ -295,6 +305,7 @@ class DeleteField(graphene.Mutation):
 
             ax_model.db_session.delete(ax_field)
             ax_model.db_session.commit()
+            ax_schema.init_schema()
 
             ok = True
             return DeleteField(deleted=guid, ok=ok)

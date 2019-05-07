@@ -15,7 +15,8 @@
           flat
           small
         >
-          <i class='fab fa-wpforms'></i>&nbsp; Form
+          <i class='fab fa-wpforms'></i>
+          &nbsp; {{$t("home.toolbar.form-btn")}}
         </v-btn>
         <v-btn
           :disabled='isNotConstructorPath'
@@ -24,7 +25,8 @@
           flat
           small
         >
-          <i class='fas fa-project-diagram'></i>&nbsp; Workflow
+          <i class='fas fa-project-diagram'></i>
+          &nbsp; {{$t("home.toolbar.workflow-btn")}}
         </v-btn>
         <v-btn
           :disabled='isNotConstructorPath'
@@ -33,7 +35,8 @@
           flat
           small
         >
-          <i class='fas fa-columns'></i>&nbsp; Grid
+          <i class='fas fa-columns'></i>
+          &nbsp; {{$t("home.toolbar.grids-btn")}}
         </v-btn>
       </div>
 
