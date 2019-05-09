@@ -85,6 +85,7 @@ def create_field_types() -> None:
             default_db_name="axNum",
             position=2,
             value_type="VIRTUAL",
+            is_columnn_avalible=True,
             comparator="number",
             icon="sort-numeric-up"))
 
@@ -106,6 +107,7 @@ def create_field_types() -> None:
             parent="group-process",
             position=4,
             default_db_name="changelog",
+            is_columnn_avalible=True,
             value_type="TEXT",
             is_backend_available=True,
             is_updated_always=True,
@@ -140,6 +142,7 @@ def create_field_types() -> None:
             default_db_name="telephone",
             position=3,
             value_type="VARCHAR(255)",
+            is_columnn_avalible=True,
             is_inline_editable=True,
             icon="font"))
 
@@ -181,6 +184,7 @@ def create_field_types() -> None:
             value_type="INT",
             comparator="number",
             is_inline_editable=True,
+            is_columnn_avalible=True,
             icon="hashtag"))
         ax_model.db_session.add(AxFieldType(
             tag="AxDecimal",
@@ -189,6 +193,7 @@ def create_field_types() -> None:
             position=2,
             value_type="DECIMAL(65,2)",
             comparator="number",
+            is_columnn_avalible=True,
             is_inline_editable=True,
             icon="hashtag"))
         ax_model.db_session.add(AxFieldType(
@@ -214,6 +219,7 @@ def create_field_types() -> None:
             position=1,
             value_type="BOOL",
             is_inline_editable=True,
+            is_columnn_avalible=True,
             icon="toggle-on"))
 
         # Relationship

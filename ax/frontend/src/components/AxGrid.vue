@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import { Grid } from 'ag-grid-community';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -93,15 +94,17 @@ export default {
           let currentWidth = null;
           let currentPinned = null;
 
+          // if table have multiple columns with same field, we need to change name
           let sameDbNameCounter = 0;
           columnDefs.forEach(subColumn => {
             if (subColumn.field === column.field.dbName) sameDbNameCounter += 1;
           });
-
           let columnModelName = column.field.dbName;
           if (sameDbNameCounter > 0) {
             columnModelName = `${columnModelName}_${sameDbNameCounter}`;
           }
+
+          // set width
           if (
             this.options.widths
             && Object.prototype.hasOwnProperty.call(
@@ -111,16 +114,44 @@ export default {
           ) {
             currentWidth = this.options.widths[columnModelName];
           }
+
+          // set pinned
           if (pinnedColumnsCounter * 1 > 0) {
             currentPinned = 'left';
             pinnedColumnsCounter -= 1;
           }
 
+          let columnComponentPromise = null;
+          const camelName = column.field.fieldType.tag;
+          const kebabName = `${camelName
+            .replace(/([a-z])([A-Z])/g, '$1-$2')
+            .toLowerCase()}-column`;
+
+          let renderer = null;
+          if (column.field.fieldType.isColumnnAvalible) {
+            columnComponentPromise = () => import(`@/components/AxFields/${camelName}/${camelName}Column.vue`).then(
+                m => m.default
+              );
+
+            Vue.customElement(kebabName, columnComponentPromise, {
+              props: ['options_json']
+            });
+
+            renderer = params => `<${kebabName} 
+                options_json='hello'>${params.value}</${kebabName}>`;
+          } else {
+            renderer = params => params.value;
+          }
+
+          // column.field.fieldType.tag
+          // params.value
+
           columnDefs.push({
             headerName: column.field.name,
             field: column.field.dbName,
             width: currentWidth,
-            pinned: currentPinned
+            pinned: currentPinned,
+            cellRenderer: renderer
           });
         });
         return columnDefs;
@@ -178,6 +209,7 @@ export default {
                     fieldType {
                       tag
                       icon
+                      isColumnnAvalible
                     }
                   }
                   columnType

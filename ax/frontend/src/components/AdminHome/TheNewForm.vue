@@ -160,6 +160,14 @@ export default {
     }
   },
   watch: {
+    dbName(newValue) {
+      if (newValue) {
+        if (newValue[0] !== newValue[0].toUpperCase()) {
+          const firstLetter = newValue.charAt(0).toUpperCase();
+          this.dbName = firstLetter + newValue.slice(1);
+        }
+      }
+    },
     dbNameIsAvalible() {
       this.$refs.form.validate();
     },

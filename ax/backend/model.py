@@ -183,6 +183,8 @@ class AxFieldType(Base):
     is_group = Column(Boolean, unique=False, default=False)
     is_inline_editable = Column(Boolean, unique=False, default=False)
     is_backend_available = Column(Boolean, unique=False, default=False)
+    is_setting_avalible = Column(Boolean, unique=False, default=False)
+    is_columnn_avalible = Column(Boolean, unique=False, default=False)
     is_updated_always = Column(Boolean, unique=False, default=False)
     is_always_whole_row = Column(Boolean, unique=False, default=False)
 
@@ -197,6 +199,8 @@ class AxFieldType(Base):
                  comparator="",
                  is_inline_editable=False,
                  is_backend_available=False,
+                 is_setting_avalible=False,
+                 is_columnn_avalible=False,
                  is_updated_always=False,
                  is_group=False,
                  is_always_whole_row=False
@@ -213,6 +217,8 @@ class AxFieldType(Base):
         self.icon = icon
         self.is_inline_editable = is_inline_editable
         self.is_backend_available = is_backend_available
+        self.is_setting_avalible = is_setting_avalible
+        self.is_columnn_avalible = is_columnn_avalible
         self.is_updated_always = is_updated_always
         self.is_always_whole_row = is_always_whole_row
 

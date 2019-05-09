@@ -319,7 +319,7 @@ AX 20:
             ✔ Create @done(19-04-29 19:05)
         ✔ Get row data for form - ax form for specific guid @done(19-05-02 15:30)
         ✔ Reload schema on every edit @done(19-05-07 09:50)
-        ☐ Cell is web-component
+        ✔ Cell is web-component @done(19-05-09 10:38)
         ☐ Server filter
         ☐ Different sorting and filtering for different types
         ☐ Frogs
