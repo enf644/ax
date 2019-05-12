@@ -31,15 +31,22 @@ class SqliteDialect(object):
         }
         return sqlite_types[type_name]
 
-    def select_all(self, form_db_name, fields_list):
+    def select_all(self, form_db_name, fields_list, server_filter=None):
         """ Select fields from table """
         try:
             fields_string = 'guid, axState, axNum'
             for field_name in fields_list:
                 fields_string += f", {field_name}"
 
+            result = {}
             sql = f"SELECT {fields_string} FROM {form_db_name}"
-            result = ax_model.db_session.execute(sql).fetchall()
+            if server_filter and len(server_filter) > 0 and len(server_filter["params"]) > 0:
+                sql += " WHERE " + server_filter["sql"]
+                result = ax_model.db_session.execute(
+                    sql, server_filter["params"]).fetchall()
+            else:
+                result = ax_model.db_session.execute(sql).fetchall()
+
             return result
             # names = [row[0] for row in result]
         except Exception:

@@ -78,7 +78,7 @@ def create_default_grid(ax_form, name):
     try:
         ax_grid = AxGrid()
         ax_grid.name = name
-        ax_grid.db_name = 'default'
+        ax_grid.db_name = 'Default'
         ax_grid.form_guid = ax_form.guid
         ax_grid.position = 1
 

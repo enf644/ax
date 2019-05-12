@@ -6,10 +6,13 @@
     "common": {
         "lenght-error": "Must be less than {num} characters",
         "confirm-yes": "Yes",
+        "save": "Save",
         "confirm-no": "Cancel",
         "position-changed": "Positions changed",
         "error-close": "Close",
-        "field-required": "Field is required"
+        "field-required": "Field is required",
+        "true": "True",
+        "false": "False"
     },
     "home": {
         "ax-forms": "Ax Forms",
@@ -124,7 +127,9 @@
         "grid-delete-confirm": "Do you realy want to delete grid [{name}]?",
         "grid-deleted-toast": "Grid deleted",
         "grid-created-toast": "Grid created",
-        "grid-is-default-view": "This grid is set as default view"
+        "grid-is-default-view": "This grid is set as default view",
+        "serer-filter-btn": "Server filters",
+        "server-filter-header": "Server filters"
     },
     "types": {
         "group-id": "Identification",

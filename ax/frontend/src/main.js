@@ -15,6 +15,7 @@ import VuetifyDialog from 'vuetify-dialog';
 import VueResize from 'vue-resize'; // detect element resize
 // import '@fortawesome/fontawesome-free/js/all.js';
 import '@fortawesome/fontawesome-free/css/all.css';
+import AsyncComputed from 'vue-async-computed';
 
 import 'vue-resize/dist/vue-resize.css';
 import Vuetify, {
@@ -70,6 +71,7 @@ Vue.use(Vuetify, {
 Vue.use(vueCustomElement);
 Vue.use(VueResize);
 Vue.use(VueDummy);
+Vue.use(AsyncComputed);
 Vue.config.productionTip = false;
 
 const gridPromise = () => import(/* webpackChunkName: "ax-grid" */ './components/AxGrid.vue').then(m => m.default);

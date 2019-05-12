@@ -7,6 +7,24 @@
     <v-divider></v-divider>
     <br>
 
+    <v-badge class='drawer-toggle' color='blue-grey' overlap>
+      <template v-slot:badge>
+        <span class='drawer-toggle-errors'>{{serverFilterRulesCount}}</span>
+      </template>
+      <v-btn @click='openServerFilterModal' small>
+        <i class='fas fa-filter'></i>
+        &nbsp;
+        {{$t("grids.serer-filter-btn")}}
+      </v-btn>
+    </v-badge>
+
+    <modal adaptive height='auto' name='server-filter' scrollable width='1000px'>
+      <TheServerFilter @close='closeServerFilterModal'/>
+    </modal>
+
+    <br>
+    <br>
+
     <v-switch
       :label='this.$t("grids.options-quick-search")'
       @change='saveOptions'
@@ -88,6 +106,7 @@
 import $ from 'jquery';
 import 'jstree/dist/jstree.js';
 import 'jstree/dist/themes/default/style.css';
+import TheServerFilter from '@/components/ConstructorGrids/TheServerFilter.vue';
 
 export default {
   name: 'admin-grids-drawer-second',
@@ -96,6 +115,9 @@ export default {
     changedOptions: {},
     optionsLoaded: false
   }),
+  components: {
+    TheServerFilter
+  },
   computed: {
     columns() {
       return this.$store.state.grids.columns;
@@ -105,6 +127,9 @@ export default {
     },
     options() {
       return this.$store.state.grids.options;
+    },
+    serverFilterRulesCount() {
+      return this.$store.getters['grids/serverFilterRulesCount'];
     }
   },
   watch: {
@@ -138,6 +163,12 @@ export default {
     // this.options = this.$store.state.grids.options;
   },
   methods: {
+    openServerFilterModal() {
+      this.$modal.show('server-filter');
+    },
+    closeServerFilterModal() {
+      this.$modal.hide('server-filter');
+    },
     saveOptions() {
       if (this.$store.state.grids.loadingDone) {
         this.$store.commit('grids/combineOptions', this.changedOptions);

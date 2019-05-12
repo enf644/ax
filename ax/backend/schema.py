@@ -4,7 +4,9 @@ Combines all Ax GraphQL schemas to one
 import sys
 import graphene
 from loguru import logger
+from sqlalchemy import literal
 from graphene_sqlalchemy import SQLAlchemyConnectionField
+import ujson as json
 from backend.schemas.users_schema import UsersQuery
 from backend.schemas.users_schema import UsersMutations, UsersSubscription
 from backend.schemas.home_schema import HomeQuery, HomeMutations
@@ -74,14 +76,31 @@ class Subscription(UsersSubscription, graphene.ObjectType):
 
 
 def make_resolver(db_name, type_class):
-    """ Dynamicly create resolver for GrapQL query based on """
+    """ Dynamicly create resolver for GrapQL query based on
+        db_name - db_name of AxForm + db_name of AxGrid.
+        or only db_name of AxForm for default view grid
+    """
 
-    def resolver(self, info):
-        del self, info
+    def resolver(self, info, update_time=None):
+        del self, info, update_time
 
         ax_form = ax_model.db_session.query(AxForm).filter(
-            AxForm.db_name == db_name
+            literal(db_name).startswith(AxForm.db_name)
         ).first()
+
+        ax_grid = {}
+        default_grid = {}
+        for grid in ax_form.grids:
+            if ax_form.db_name + grid.db_name == db_name:
+                ax_grid = grid
+            if grid.is_default_view:
+                default_grid = grid
+
+        grid_to_use = ax_grid or default_grid
+        grid_options = json.loads(grid_to_use.options_json)
+        server_filter = None
+        if 'serverFilter' in grid_options:
+            server_filter = grid_options['serverFilter']
 
         # TODO add permission checks
         allowed_fields = []
@@ -92,10 +111,8 @@ def make_resolver(db_name, type_class):
         # TODO Add paging
         results = ax_dialects.dialect.select_all(
             form_db_name=ax_form.db_name,
-            fields_list=allowed_fields)
-
-        # sql = f'SELECT * FROM {db_name}'
-        # results = ax_model.db_session.execute(sql).fetchall()
+            fields_list=allowed_fields,
+            server_filter=server_filter)
 
         result_items = []
         for row in results:
@@ -120,30 +137,35 @@ def init_schema():
 
         ax_forms = ax_model.db_session.query(AxForm).all()
         for form in ax_forms:
-            class_name = form.db_name.capitalize()
-            class_fields = {}
-            class_fields['guid'] = graphene.String()
-            class_fields['axNum'] = graphene.Int()
-            class_fields['axState'] = graphene.String()
-            for field in form.db_fields:
-                field_type = type_dictionary[field.field_type.value_type]
-                # TODO maybe add label as description?
-                class_fields[field.db_name] = field_type()
+            for grid in form.grids:
+                class_name = form.db_name.capitalize()
+                if grid.is_default_view is False:
+                    class_name = class_name + grid.db_name
+                class_fields = {}
+                class_fields['guid'] = graphene.String()
+                class_fields['axNum'] = graphene.Int()
+                class_fields['axState'] = graphene.String()
+                for field in form.db_fields:
+                    field_type = type_dictionary[field.field_type.value_type]
+                    # TODO maybe add label as description?
+                    class_fields[field.db_name] = field_type()
 
-            graph_class = type(
-                class_name,
-                (graphene.ObjectType,),
-                class_fields,
-                name=form.db_name,
-                description=form.name
-            )
-            type_classes[form.db_name] = graph_class
-            all_types.append(graph_class)
+                graph_class = type(
+                    class_name,
+                    (graphene.ObjectType,),
+                    class_fields,
+                    name=class_name,
+                    description=form.name
+                )
+                type_classes[class_name] = graph_class
+                all_types.append(graph_class)
 
         # Dynamicly crate resolvers for each typeClass
         dynamic_fields = {}
         for key, type_class in type_classes.items():
-            dynamic_fields[key] = graphene.List(type_class)
+            dynamic_fields[key] = graphene.List(
+                type_class, update_time=graphene.Argument(
+                    type=graphene.String, required=False))
             dynamic_fields['resolve_%s' % key] = make_resolver(key, type_class)
 
         DynamicQuery = type('DynamicQuery', (Query,), dynamic_fields)

@@ -1,11 +1,13 @@
 """ GQL Chema for AxGrid and AxColumn manipulation """
 import uuid
 import graphene
-import ujson as json
 from loguru import logger
+import ujson as json
 
 from backend.model import AxForm, AxGrid, AxColumn
 import backend.model as ax_model
+import backend.schema as ax_schema
+
 # import backend.cache as ax_cache # TODO use cache!
 from backend.schemas.types import Grid, Column, PositionInput
 # import ujson as json
@@ -163,7 +165,7 @@ class CreateGrid(graphene.Mutation):
                 AxForm.guid == uuid.UUID(form_guid)
             ).first()
 
-            db_name = "grid_"
+            db_name = "Grid"
             cur_num = 1
             name_is_checked = False
             while name_is_checked is False:
@@ -205,6 +207,8 @@ class CreateGrid(graphene.Mutation):
             ax_model.db_session.add(ax_grid)
             ax_model.db_session.commit()
 
+            ax_schema.init_schema()
+
             ok = True
             return CreateGrid(grid=ax_grid, ok=ok)
         except Exception:
@@ -230,6 +234,8 @@ class DeleteGrid(graphene.Mutation):
             ).first()
             ax_model.db_session.delete(ax_grid)
             ax_model.db_session.commit()
+
+            ax_schema.init_schema()
 
             ok = True
             return DeleteGrid(deleted=guid, ok=ok)
@@ -258,6 +264,7 @@ class UpdateGrid(graphene.Mutation):
             db_name = args.get('db_name')
             options_json = args.get('options_json')
             is_default_view = args.get('is_default_view')
+            schema_reload_needed = False
 
             ax_grid = ax_model.db_session.query(AxGrid).filter(
                 AxGrid.guid == uuid.UUID(guid)
@@ -268,6 +275,7 @@ class UpdateGrid(graphene.Mutation):
 
             if db_name:
                 ax_grid.db_name = db_name
+                schema_reload_needed = True
 
             if options_json:
                 ax_grid.options_json = options_json
@@ -282,8 +290,12 @@ class UpdateGrid(graphene.Mutation):
                     grid.is_default_view = False
 
                 ax_grid.is_default_view = is_default_view
+                schema_reload_needed = True
 
             ax_model.db_session.commit()
+
+            if schema_reload_needed:
+                ax_schema.init_schema()
 
             ok = True
             return UpdateGrid(grid=ax_grid, ok=ok)
@@ -324,18 +336,6 @@ class GridsQuery(graphene.ObjectType):
         grid = query.filter(AxGrid.form_guid == ax_form.guid).filter(
             AxGrid.db_name == grid_db_name).first()
         return grid
-
-    # async def resolve_grid_data(self, info, form_db_name, grid_db_name, update_time):
-    #     """Get AxGrid"""
-    #     del update_time
-    #     ax_form = ax_model.db_session.query(AxForm).filter(
-    #         AxForm.db_name == form_db_name
-    #     ).first()
-
-    #     query = Grid.get_query(info=info)
-    #     grid = query.filter(AxGrid.form_guid == ax_form.guid).filter(
-    #         AxGrid.db_name == grid_db_name).first()
-    #     return grid
 
     async def resolve_grids_list(self, info, form_db_name):
         """Gets list of all AxGrid of form """

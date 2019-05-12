@@ -207,6 +207,9 @@ ERROR HANDLING
     https://blog.apollographql.com/full-stack-error-handling-with-graphql-apollo-5c12da407210
 
 
+FREELANCE HELP
+    https://www.bountysource.com
+
 
 ALEMBIC
     ☐ https://alembic.sqlalchemy.org/en/latest/tutorial.html#create-a-migration-script
@@ -230,6 +233,7 @@ Query builder
     https://dabernathy89.github.io/vue-query-builder
     https://github.com/kongwang/vue-query-builder-plus
     https://querybuilder.js.org/index.html
+    https://github.com/GopherJ/ElsQuery - Elastic search
 
 
 1toM and MtoM

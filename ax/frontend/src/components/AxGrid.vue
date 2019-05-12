@@ -55,6 +55,8 @@ export default {
       name: null,
       dbName: null,
       formGuid: null,
+      formDbName: null,
+      isDefaultView: null,
       columns: null,
       options: null,
       selectedGuid: null,
@@ -62,32 +64,11 @@ export default {
       gridInitialized: false
     };
   },
-  computed: {
-    quickSearchEnabled() {
-      if (!this.options) return false;
-      return this.options.enableQuickSearch;
-    },
-    actionsEnabled() {
-      if (!this.options) return false;
-      return this.options.enableActions;
-    },
-    gridClass() {
-      const themeClass = 'ag-theme-material';
-      if (this.options) {
-        if (this.options.enableQuickSearch && this.options.enableActions) {
-          return `${themeClass} grid-search-actions`;
-        }
-        if (this.options.enableQuickSearch && !this.options.enableActions) {
-          return `${themeClass} grid-search`;
-        }
-        if (!this.options.enableQuickSearch && this.options.enableActions) {
-          return `${themeClass} grid-actions`;
-        }
-      }
-      return `${themeClass} grid`;
-    },
+  asyncComputed: {
     columnDefs() {
       try {
+        if (!this.options || !this.columns) return null;
+
         let pinnedColumnsCounter = this.options.pinned;
         const columnDefs = [];
         this.columns.forEach(column => {
@@ -121,7 +102,7 @@ export default {
             pinnedColumnsCounter -= 1;
           }
 
-          let columnComponentPromise = null;
+          let columnPromise = null;
           const camelName = column.field.fieldType.tag;
           const kebabName = `${camelName
             .replace(/([a-z])([A-Z])/g, '$1-$2')
@@ -129,11 +110,11 @@ export default {
 
           let renderer = null;
           if (column.field.fieldType.isColumnnAvalible) {
-            columnComponentPromise = () => import(`@/components/AxFields/${camelName}/${camelName}Column.vue`).then(
+            columnPromise = () => import(`@/components/AxFields/${camelName}/${camelName}Column.vue`).then(
                 m => m.default
               );
 
-            Vue.customElement(kebabName, columnComponentPromise, {
+            Vue.customElement(kebabName, columnPromise, {
               props: ['options_json']
             });
 
@@ -161,6 +142,35 @@ export default {
       }
     }
   },
+  computed: {
+    viewDbName() {
+      if (this.isDefaultView) return this.form;
+      return this.form + this.grid;
+    },
+    quickSearchEnabled() {
+      if (!this.options) return false;
+      return this.options.enableQuickSearch;
+    },
+    actionsEnabled() {
+      if (!this.options) return false;
+      return this.options.enableActions;
+    },
+    gridClass() {
+      const themeClass = 'ag-theme-material';
+      if (this.options) {
+        if (this.options.enableQuickSearch && this.options.enableActions) {
+          return `${themeClass} grid-search-actions`;
+        }
+        if (this.options.enableQuickSearch && !this.options.enableActions) {
+          return `${themeClass} grid-search`;
+        }
+        if (!this.options.enableQuickSearch && this.options.enableActions) {
+          return `${themeClass} grid-actions`;
+        }
+      }
+      return `${themeClass} grid`;
+    }
+  },
   watch: {
     update_time(newValue, oldValue) {
       if (oldValue && this.gridObj) {
@@ -177,7 +187,7 @@ export default {
   },
   methods: {
     testAction() {
-      console.log(' TEST ACTION ');
+      this.$log.info(' TEST ACTION ');
     },
     openForm(guid) {
       if (this.options.enableOpenForm) {
@@ -239,6 +249,7 @@ export default {
           this.name = gridData.name;
           this.dbName = gridData.dbName;
           this.formGuid = gridData.formGuid;
+          this.isDefaultView = gridData.isDefaultView;
           this.options = JSON.parse(gridData.optionsJson);
           this.columns = gridData.columns
             ? gridData.columns.edges.map(edge => edge.node)
@@ -253,9 +264,10 @@ export default {
         });
     },
     loadData() {
+      // ($updateTime: String)
       const GRID_DATA = placeholder => gql`
-        query {
-          ${this.form} {
+        query ($updateTime: String) {
+          ${this.viewDbName} (updateTime: $updateTime) {
               ${placeholder}
           }
         }
@@ -269,10 +281,12 @@ export default {
       apolloClient
         .query({
           query: dataQuery,
-          variables: {}
+          variables: {
+            updateTime: this.update_time
+          }
         })
         .then(data => {
-          this.rowData = data.data[this.form];
+          this.rowData = data.data[this.viewDbName];
           this.initAgGrid();
         })
         .catch(error => {

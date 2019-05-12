@@ -81,7 +81,7 @@ export default {
         v => v.length <= 127 || this.$t('common.lenght-error', { num: 127 }),
         v => (v && this.dbNameIsAvalible)
           || this.$t('home.new-form.db-name-not-avalible'),
-        v => /^[a-zA-Z\d][\w]{0,127}$/.test(v)
+        v => /^((\d)|([A-Z0-9][a-z0-9]+))*([A-Z])?$/.test(v)
           || this.$t('home.new-form.db-name-valid-letters')
       ]
     };
@@ -95,6 +95,16 @@ export default {
         grid => grid.isDefaultView === true
       );
       return defaultGrid ? defaultGrid.dbName : null;
+    }
+  },
+  watch: {
+    dbName(newValue) {
+      if (newValue) {
+        if (newValue[0] !== newValue[0].toUpperCase()) {
+          const firstLetter = newValue.charAt(0).toUpperCase();
+          this.dbName = firstLetter + newValue.slice(1);
+        }
+      }
     }
   },
   mounted() {

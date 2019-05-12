@@ -14,16 +14,10 @@ Options:
 import os
 import sys
 from pathlib import Path
-from sanic_graphql import GraphQLView
 from sanic import Sanic
 from sanic_cors import CORS
-import asyncio
 from loguru import logger
 from docopt import docopt
-from graphql.execution.executors.asyncio import AsyncioExecutor
-
-# from typing import Dict, Any
-# from graphql import GraphQLError
 
 # Add folder with main.py to sys.path.
 root_path = Path(__file__).parent.resolve()
@@ -102,14 +96,6 @@ def init_ax():
     async def initialize_scheduler(_app, _loop):  # pylint: disable=unused-variable
         """Initiate scheduler"""
         ax_scheduler.init_scheduler()
-
-    # @app.listener('before_server_start')
-    # def init_graphql(_app, _loop):  # pylint: disable=unused-variable
-    #     """Initiate graphql"""
-    #     graphql_view = AxGraphQLView.as_view(schema=ax_schema.schema,
-    #                                          graphiql=False,
-    #                                          executor=AsyncioExecutor(loop=_loop))
-    #     _app.add_route(graphql_view, '/api/graphql')
 
     @app.listener('before_server_start')
     def save_loop(_app, _loop):  # pylint: disable=unused-variable
