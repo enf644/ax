@@ -289,6 +289,9 @@ const mutations = {
   },
   deleteGrid(state, deleted) {
     state.grids = [...state.grids.filter(element => element.guid !== deleted)];
+  },
+  setUpdateTime(state, updateTime) {
+    state.updateTime = updateTime;
   }
 };
 
@@ -591,7 +594,8 @@ const state = {
   fieldTypes: [],
   isNameChangeOperation: false,
   openSettingsFlag: null,
-  createdFieldGuid: null
+  createdFieldGuid: null,
+  updateTime: null
 };
 
 export default {

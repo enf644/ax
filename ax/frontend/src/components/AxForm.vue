@@ -1,43 +1,47 @@
 <template>
   <v-app class='ax-form-app' id='ax-form' ref='formApp'>
+    <!-- <transition enter-active-class='animated fadeIn'> -->
     <v-sheet
       :class='no_margin ? "form-container-no-margin" : "form-container"'
       elevation='5'
       light
       ref='sheet'
+      v-show='formIsLoaded'
     >
       <v-layout align-space-between class='form-layout' justify-start row>
-        <div
-          :class='{
-            "drawer-floating": drawerIsFloating,
-            "drawer-hidden": drawerIsHidden
-          }'
-          class='drawer'
-          v-show='!drawerIsHidden'
-        >
-          <v-list class='drawer-folder-list'>
-            <v-list-tile
-              :class='getTabClass(tab.guid)'
-              :key='tab.guid'
-              @click='openTab(tab.guid)'
-              avatar
-              ripple
-              v-for='tab in tabs'
-            >
-              <v-list-tile-content class='drawer-folder-item'>
-                <v-list-tile-title>{{ tab.name }}</v-list-tile-title>
-              </v-list-tile-content>
-              <v-list-tile-avatar>
-                <transition
-                  enter-active-class='animated flipInY'
-                  leave-active-class='animated flipOutY'
-                >
-                  <div class='tab-errors' v-show='tab.errors'>{{tab.errors}}</div>
-                </transition>
-              </v-list-tile-avatar>
-            </v-list-tile>
-          </v-list>
-        </div>
+        <transition :enter-active-class='drawerAnimationClass'>
+          <div
+            :class='{
+              "drawer-floating": drawerIsFloating,
+              "drawer-hidden": drawerIsHidden,
+            }'
+            class='drawer'
+            v-show='!drawerIsHidden'
+          >
+            <v-list class='drawer-folder-list'>
+              <v-list-tile
+                :class='getTabClass(tab.guid)'
+                :key='tab.guid'
+                @click='openTab(tab.guid)'
+                avatar
+                ripple
+                v-for='tab in tabs'
+              >
+                <v-list-tile-content class='drawer-folder-item'>
+                  <v-list-tile-title>{{ tab.name }}</v-list-tile-title>
+                </v-list-tile-content>
+                <v-list-tile-avatar>
+                  <transition
+                    enter-active-class='animated flipInY'
+                    leave-active-class='animated flipOutY'
+                  >
+                    <div class='tab-errors' v-show='tab.errors'>{{tab.errors}}</div>
+                  </transition>
+                </v-list-tile-avatar>
+              </v-list-tile>
+            </v-list>
+          </div>
+        </transition>
         <div class='form'>
           <div
             @click='hideDrawer'
@@ -94,6 +98,7 @@
         </div>
       </v-layout>
     </v-sheet>
+    <!-- </transition> -->
     <modal adaptive height='auto' name='test-value' scrollable width='50%'>
       <v-card class='test-value'>
         <pre>{{value}}</pre>
@@ -152,16 +157,30 @@ export default {
       formIsValid: true,
       errorsCount: 0,
       currentWidth: null,
-      isMobile: false
+      isMobile: false,
+      formIsLoaded: false
     };
   },
   computed: {
+    drawerAnimationClass() {
+      if (this.formIsLoaded) return 'drawer-animation';
+      return 'not-exist';
+    },
     iconClass() {
       return `fas fa-${this.icon}`;
     },
     formIsNotValid() {
       return !this.formIsValid;
     }
+    // getDrawerClass() {
+    //     let retClass = 'drawer'
+    //     if(drawerIsFloating) retClass += "drawer-floating";
+    //     if()
+    //     "drawer-floating": drawerIsFloating,
+    //         "drawer-hidden": drawerIsHidden
+
+    //       class='drawer'
+    // }
   },
   watch: {
     db_name(newValue) {
@@ -182,7 +201,6 @@ export default {
   created() {},
   mounted() {
     if (this.db_name) this.loadData(this.db_name, this.guid);
-    this.$smoothReflow({ el: this.$refs.sheet.$el });
   },
   methods: {
     getWidthClass(field) {
@@ -325,6 +343,11 @@ export default {
           if (this.opened_tab) this.activeTab = this.opened_tab;
           else this.activeTab = this.tabs[0].guid;
           this.updateValue();
+
+          setTimeout(() => {
+            this.formIsLoaded = true;
+            // this.$smoothReflow({ el: this.$refs.sheet.$el });
+          }, 10);
         })
         .catch(error => {
           this.$log.error(
@@ -421,8 +444,16 @@ export default {
   border-right: 1px solid #cccccc;
   background: #fafafa;
   margin-left: 0px;
-  animation: slideIn 200ms 1 ease forwards;
   z-index: 5;
+}
+.drawer-animation {
+  animation: slideIn 200ms 1 ease forwards;
+}
+.notransition {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
 }
 @keyframes slideIn {
   0% {
@@ -497,6 +528,9 @@ export default {
 }
 .form-container-no-margin {
   margin: 0px;
+}
+.form {
+  width: 100%;
 }
 .highlighted {
   background: #e0e0e0;

@@ -50,6 +50,7 @@ export default {
       zero = this.$store.state.form.name;
       zero = this.$store.state.form.dbName;
       zero = this.$store.state.form.icon;
+      zero = this.$store.state.form.updateTime;
       return Date.now();
     }
   },

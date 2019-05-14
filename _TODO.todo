@@ -274,7 +274,7 @@ AX 20:
 		✔ ax-num @done(19-04-15 20:40)
 		✔ ax-checkbox @done(19-04-10 09:49)
 		✔ ax-choise @done(19-04-16 14:20)
-    ☐ GRID CONSTRUCTOR
+    ✔ GRID CONSTRUCTOR @done(19-05-14 12:49)
         ✔ Restore ax-grid @done(19-04-16 16:06)
         ✔ js-tree @done(19-04-17 10:39)
         ✔ Create default grid on form creation @done(19-04-17 11:47)
@@ -324,18 +324,16 @@ AX 20:
             ✔ Query builder @done(19-05-11 12:09)
             ✔ Dynamic GQL for grids @done(19-05-11 22:33)
             ✔ Filter num on button @done(19-05-11 22:58)
-        ☐ Different sorting and filtering for different types
-        ☐ Frogs
+        ✔ Frogs @done(19-05-14 12:49)
             ✔ Grid data not loaded if user is coming form home @done(19-04-23 15:50)
-            ☐ If icon or form name is changed -> form preview does not reload
-            ☐ axState is not created in database
-            ☐ Form drawer transition must accur only after everything loaded
+            ✔ If icon or form name is changed -> form preview does not reload @done(19-05-12 10:15)
+            ✔ axState is not created in database @done(19-05-12 10:16)
+            ✔ Form drawer transition must accur only after everything loaded @done(19-05-14 09:15)
             ✔ If grid have two columns with same field - they have only one width @done(19-04-25 11:18)
-            ☐ When less then 3 fields in AxForm - they do not flex
-            ☐ Problem in column positions
+            ✔ When less then 3 fields in AxForm - they do not flex @done(19-05-14 09:21)
+            ✔ Problem in column positions @done(19-05-14 12:16)
+            ✔ Remove media columns from grid constructor @done(19-05-14 12:49)
     ☐ WORKFLOW
-		☐ Структура БД
-		☐ Страница с редактором
 		☐ Пустая схема - Начало и Конец
 		☐ Добавление статусов
 		☐ Добавление действий
@@ -378,6 +376,9 @@ AX 20:
 		☐ Dump application to yaml
         ☐ Install application from yaml
         ☐ Git integration
+    ☐ Different sorting and filtering for different types
+        ☐ Server filter - must be loaded dynamicly
+        ☐ Grid filter - must be loaded dynamicly
     ☐ Add clould logger for python and vue
     ☐ Product usage statistics
     ☐ LICENSING

@@ -223,16 +223,7 @@ const getters = {
     const treeData = [];
 
     treeData.push({
-      id: 'columns', parent: '#', text: "<i class='fas fa-columns' ></i> &nbsp; Columns", type: 'agg', data: { position: 1 }
-    });
-    treeData.push({
-      id: 'all', parent: 'columns', text: "<i class='fas fa-mobile-alt' ></i> &nbsp; All media", type: 'group', data: { position: 1 }
-    });
-    treeData.push({
-      id: 'mid', parent: 'columns', text: "<i class='fas fa-tablet-alt' ></i> &nbsp; Tablet", type: 'group', data: { position: 2 }
-    });
-    treeData.push({
-      id: 'big', parent: 'columns', text: "<i class='fas fa-laptop' ></i> &nbsp; Laptop +", type: 'group', data: { position: 3 }
+      id: 'columns', parent: '#', text: "<i class='fas fa-columns' ></i> &nbsp; Columns", type: 'group', data: { position: 1 }
     });
 
     state.columns.forEach(column => {

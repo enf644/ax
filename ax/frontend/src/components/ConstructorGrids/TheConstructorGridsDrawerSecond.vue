@@ -182,26 +182,32 @@ export default {
       }
     },
     createColumn(e, data) {
-      const mustBePosition = data.position;
-      $(this.$refs.tree)
-        .jstree()
-        .delete_node(data.node);
-      const positionList = this.getPositionList(mustBePosition);
+      this.$nextTick(() => {
+        const mustBePosition = data.position;
+        $(this.$refs.tree)
+          .jstree()
+          .delete_node(data.node);
 
-      this.$store
-        .dispatch('grids/createColumn', {
-          fieldGuid: data.original.id,
-          columnType: data.parent,
-          positions: positionList,
-          position: mustBePosition
-        })
-        .then(() => {
-          this.openGroup(data.parent);
-          const msg = this.$t('grids.add-column-toast');
-          this.$dialog.message.success(
-            `<i class="fas fa-columns"></i> &nbsp ${msg}`
-          );
-        });
+        const positionList = this.getPositionList(mustBePosition);
+
+        // console.log(positionList);
+        // console.log(mustBePosition);
+
+        this.$store
+          .dispatch('grids/createColumn', {
+            fieldGuid: data.original.id,
+            columnType: data.parent,
+            positions: positionList,
+            position: mustBePosition
+          })
+          .then(() => {
+            this.openGroup(data.parent);
+            const msg = this.$t('grids.add-column-toast');
+            this.$dialog.message.success(
+              `<i class="fas fa-columns"></i> &nbsp ${msg}`
+            );
+          });
+      });
     },
     changeColumnPositions(e, data) {
       const positions = this.getPositionList();
@@ -282,11 +288,13 @@ export default {
             }
           },
           sort(a, b) {
-            // console.log(this.get_node(a).text + " > " + this.get_node(b).text);
-            return this.get_node(a).data.position
-              > this.get_node(b).data.position
-              ? 1
-              : -1;
+            if (this.get_node(a).data && this.get_node(b).data) {
+              return this.get_node(a).data.position
+                > this.get_node(b).data.position
+                ? 1
+                : -1;
+            }
+            return 1;
           }
         });
 
@@ -307,7 +315,7 @@ export default {
       $.each(realNodes, (i, node) => {
         const parentNode = tree.get_node(node.parent);
         let newPosition = $.inArray(node.id, parentNode.children);
-        if (mustBePosition && mustBePosition * 1 <= newPosition) {
+        if (mustBePosition != null && mustBePosition * 1 <= newPosition) {
           newPosition += 1;
         }
         const nodeInfo = {

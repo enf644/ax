@@ -209,13 +209,17 @@ export default {
     },
     updateForm(e) {
       e.preventDefault();
-      this.$store.dispatch('home/updateForm', {
-        guid: this.guid,
-        name: this.name,
-        dbName: this.dbName,
-        icon: this.icon,
-        tomLabel: this.tomLabel
-      });
+      this.$store
+        .dispatch('home/updateForm', {
+          guid: this.guid,
+          name: this.name,
+          dbName: this.dbName,
+          icon: this.icon,
+          tomLabel: this.tomLabel
+        })
+        .then(() => {
+          this.$store.commit('form/setUpdateTime', Date.now());
+        });
     },
     async deleteForm(e) {
       e.preventDefault();

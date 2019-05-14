@@ -47,7 +47,7 @@ class CreateColumn(graphene.Mutation):
 
             for column in ax_grid.columns:
                 for pos in positions:
-                    if column.guid == uuid.UUID(pos.guid):
+                    if str(column.guid) == pos.guid:
                         column.position = pos.position
                         column.column_type = pos.parent
 
