@@ -115,14 +115,14 @@
 
 <script>
 // import AxGrid from './AxGrid.vue';
-import smoothReflow from 'vue-smooth-reflow';
+// import smoothReflow from 'vue-smooth-reflow';
 import apolloClient from '../apollo';
 import AxField from '@/components/AxField.vue';
 import gql from 'graphql-tag';
 
 export default {
   name: 'AxForm',
-  mixins: [smoothReflow],
+  // mixins: [smoothReflow],
   components: { AxField },
   props: {
     no_margin: {

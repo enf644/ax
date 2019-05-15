@@ -334,7 +334,7 @@ AX 20:
             ✔ Problem in column positions @done(19-05-14 12:16)
             ✔ Remove media columns from grid constructor @done(19-05-14 12:49)
     ☐ WORKFLOW
-        ☐ Insert D3 sample and make it work
+        ✔ Insert D3 sample and make it work @done(19-05-15 20:09)
         ☐ Create default workflow on form creation
         ☐ Hook d3 to default workflow
         ☐ GQL actions - schema, query, vuex action, vuex setter
@@ -394,6 +394,10 @@ AX 20:
 		☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
                 ☐ Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные
         ☐ Roles modal - add users
+    ☐ TEST MILESTONE
+        ☐ Cover everything with cypress tests
+        ☐ Try pip installation
+        ☐ Try app engine installation
 	☐ PAGES DESIGNER
 	☐ MARKETPLACE
 		☐ Dump application to yaml
