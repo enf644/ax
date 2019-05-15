@@ -334,32 +334,54 @@ AX 20:
             ✔ Problem in column positions @done(19-05-14 12:16)
             ✔ Remove media columns from grid constructor @done(19-05-14 12:49)
     ☐ WORKFLOW
-		☐ Пустая схема - Начало и Конец
-		☐ Добавление статусов
-		☐ Добавление действий
-		☐ Уникальность названий статусов
-		☐ Действие на само себя при создании статуса
-		☐ Иконки в статусе и в действии
-		☐ Добавление роли
-			☐ Элемент списка ролей
-			☐ Перетаскивание роли на статус и на действие - http://bl.ocks.org/thudfactor/6611441
-		☐ Статус
-			☐ Добавление
-			☐ Редактирование
-			☐ Удаление
-		☐ Действие
-			☐ Добавление
-			☐ Редактирвоание
-			☐ Удаление
-		☐ Удалять все связанные действия при удалении статуса
-		☐ Добавление роли на статус и действие
-			☐ Добавление роли на стутус 
-			☐ Добавление роли на действие
-			☐ Подсветка статуса и действия при наведении на роль
-				☐ списки action2role и state2role висят в компоненте и обновляются
-                ☐ для каждого Статуса и каждого Действия - подсвечиваем нужным цветом
-		☐ Опции Статуса - Выбор - доступные поля на статусе для каждой роли
-        ☐ Опции Действия
+        ☐ Insert D3 sample and make it work
+        ☐ Create default workflow on form creation
+        ☐ Hook d3 to default workflow
+        ☐ GQL actions - schema, query, vuex action, vuex setter
+            ☐ Status
+                ☐ Create status
+                ☐ Update status
+                ☐ Delete status
+            ☐ Action
+                ☐ Create action
+                ☐ Update action
+                ☐ Delete action
+            ☐ Roles
+                ☐ Create role
+                ☐ Update role
+                ☐ Delete role
+            ☐ Roles2State
+                ☐ Add role to state -http://bl.ocks.org/thudfactor/6611441
+                ☐ Delete role from state
+            ☐ Roles2Action
+                ☐ Add role to action
+                ☐ Delete role from action
+            ☐ RoleFieldPermission
+                ☐ Set state permission
+        ☐ Create status on double click
+            ☐ State name must be unique
+            ☐ Self action "Update" must be created
+        ☐ Create action on drag
+        ☐ Create self-action
+        ☐ Roles list
+            ☐ Create role
+        ☐ Role modal
+            ☐ Change name
+            ☐ Delete
+        ☐ Add role to state
+        ☐ Add role to action
+        ☐ Highlite roles on mouseover
+        ☐ State modal
+            ☐ Roles - remove
+            ☐ Name
+            ☐ Permissions
+            ☐ Delete - all connected actions must be deleted
+        ☐ Action modal
+            ☐ Roles - remove
+            ☐ Name
+            ☐ Icon
+            ☐ Code
+            ☐ Delete
     ☐ RELATION FIELDS
 		✔ multiple pop-ups @done(19-04-16 14:41)
 		☐ ax-1tom
@@ -370,19 +392,23 @@ AX 20:
 		☐ ax-crop-image
 	☐ USERS
 		☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
-				☐ Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные	
+                ☐ Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные
+        ☐ Roles modal - add users
 	☐ PAGES DESIGNER
 	☐ MARKETPLACE
 		☐ Dump application to yaml
         ☐ Install application from yaml
         ☐ Git integration
-    ☐ Different sorting and filtering for different types
-        ☐ Server filter - must be loaded dynamicly
-        ☐ Grid filter - must be loaded dynamicly
-    ☐ Add clould logger for python and vue
-    ☐ Product usage statistics
-    ☐ LICENSING
+    ☐ GLOBAL FROGS
+        ☐ Different sorting and filtering for different types
+            ☐ Server filter - must be loaded dynamicly
+            ☐ Grid filter - must be loaded dynamicly
+        ☐ Add clould logger for python and vue
+        ☐ Product usage statistics
+        ☐ LICENSING
+    ☐ ALL FIELDS
 
+    
 Additional versions:
     ☐ Sass
         ☐ Деплой в App Engine через Market

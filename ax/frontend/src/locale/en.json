@@ -101,6 +101,7 @@
     "grids": {
         "add-column-toast": "Column added",
         "default-name": "New grid",
+        "columns": "Columns",
         "change-positions-toast": "Column position changed",
         "column-deleted-toast": "Column deleted",
         "grid-updated": "Grid options updated",

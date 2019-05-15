@@ -181,6 +181,115 @@ a {
 
 /************ Jstree styles } ***************/
 
+/****************** D3 styles { *************************/
+
+.d3_state_rect {
+    transition: fill 0.5s;
+    cursor: pointer;
+    stroke-width: 2;
+    stroke: black;
+    fill: white;
+}
+
+.d3_state_text {
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.3em;
+    text-anchor: middle;
+    alignment-baseline: middle;
+    pointer-events: none;
+}
+
+.d3_start {
+    cursor: pointer;
+    fill: white;
+    stroke-width: 2;
+    stroke: black;
+}
+
+.d3_end {
+    cursor: pointer;
+    fill: white;
+    stroke-width: 1;
+    stroke: black;
+}
+
+.d3_all {
+    cursor: pointer;
+    fill: white;
+    stroke-width: 2;
+    stroke: black;
+    stroke-dasharray: 10, 3;
+}
+
+.g_action {
+    pointer-events: none;
+}
+
+.d3_action_text {
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1em;
+    text-anchor: middle;
+    alignment-baseline: middle;
+    pointer-events: all;
+}
+
+.d3_action_text:hover {
+    fill: orange;
+}
+
+.d3_self_action_text {
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1em;
+    pointer-events: all;
+    text-anchor: start;
+    fill: #888888;
+}
+
+.d3_self_action_text:hover {
+    fill: orange;
+}
+
+.d3_line_action {
+    stroke: black;
+    stroke-width: 1.5;
+    fill: none;
+    opacity: 0.25;
+}
+
+.d3_new_action {
+    stroke: orange;
+    stroke-width: 1;
+    fill: none;
+    opacity: 1;
+    stroke-dasharray: 10, 3;
+    pointer-events: none;
+}
+
+.d3_new_action_state {
+    stroke: orange;
+}
+
+.dragging {
+    /*fill: #CCCCCC;*/
+    /*transition: fill 1s;*/
+}
+
+.new-action-arrow {
+    stroke-width: 1.5px;
+    pointer-events: none;
+    fill: red;
+}
+
+.hidden {
+    display: none;
+}
+
+/******************* D3 styles }************************/
+
+
 
 
 /************ Query builder styles { ***************/

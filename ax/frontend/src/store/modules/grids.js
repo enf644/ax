@@ -221,9 +221,9 @@ const getters = {
   },
   columnTreeData(state) {
     const treeData = [];
-
+    const columnsText = `<i class='fas fa-columns' ></i> &nbsp; ${i18n.t('grids.columns')}`;
     treeData.push({
-      id: 'columns', parent: '#', text: "<i class='fas fa-columns' ></i> &nbsp; Columns", type: 'group', data: { position: 1 }
+      id: 'columns', parent: '#', text: columnsText, type: 'group', data: { position: 1 }
     });
 
     state.columns.forEach(column => {
