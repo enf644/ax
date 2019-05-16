@@ -171,10 +171,7 @@ export default {
     },
     modalMustClose() {
       this.$dialog.message.success(this.okToast);
-      if (this.isDeleteAction) {
-        this.$router.push({ path: '/admin/home' });
-        this.isDeleteAction = false;
-      }
+      if (this.isDeleteAction) this.isDeleteAction = false;
       this.closeModal();
     },
     dbNameChanged(newValue) {

@@ -314,8 +314,10 @@ class AxUser(Base):
     email = Column(Text)
     password = Column(String(255))
     is_group = Column(Boolean, unique=False, default=False)
-    is_virtual = Column(Boolean, unique=False, default=False)
-    is_admin = False
+    is_admin = Column(Boolean, unique=False, default=False)
+    is_everyone = Column(Boolean, unique=False, default=False)
+    is_all_users = Column(Boolean, unique=False, default=False)
+    is_anon = Column(Boolean, unique=False, default=False)
     parent = Column(GUID())
     position = Column(Integer)
     users = relationship(
@@ -368,8 +370,10 @@ class AxState(Base):
     color = Column(String(255))
     icon = Column(String(255))
     is_start = Column(Boolean, unique=False, default=False)
-    is_end = Column(Boolean, unique=False, default=False)
+    is_deleted = Column(Boolean, unique=False, default=False)
     is_all = Column(Boolean, unique=False, default=False)
+    x = Column(Float)
+    y = Column(Float)
 
 
 class AxAction2Role(Base):
@@ -398,6 +402,7 @@ class AxAction(Base):
     confirm_text = Column(String(255))
     close_modal = Column(Boolean, unique=False, default=True)
     icon = Column(String(255))
+    radius = Column(Float)
 
 
 class AxRoleFieldPermission(Base):

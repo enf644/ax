@@ -29,7 +29,9 @@ const CREATE_FORM = gql`
       $defaultAll: String!, 
       $defaultCreate: String!, 
       $defaultState: String!, 
-      $defaultDelete: String!
+      $defaultDelete: String!,
+      $defaultDeleted: String!,
+      $defaultAdmin: String!
     ) {
     createForm(
         name: $name, 
@@ -40,7 +42,9 @@ const CREATE_FORM = gql`
         defaultAll: $defaultAll,
         defaultCreate: $defaultCreate,
         defaultState: $defaultState,
-        defaultDelete: $defaultDelete
+        defaultDelete: $defaultDelete,
+        defaultDeleted: $defaultDeleted,
+        defaultAdmin: $defaultAdmin
       ) {
       form {
         guid,
@@ -264,9 +268,11 @@ const actions = {
         defaultGridName: i18n.tc('home.new-form.default-grid'),
         defaultStart: i18n.tc('home.new-form.default-start'),
         defaultAll: i18n.tc('home.new-form.default-all'),
+        defaultDeleted: i18n.tc('home.new-form.default-deleted'),
         defaultCreate: i18n.tc('home.new-form.default-create'),
         defaultState: i18n.tc('home.new-form.default-state'),
-        defaultDelete: i18n.tc('home.new-form.default-delete')
+        defaultDelete: i18n.tc('home.new-form.default-delete'),
+        defaultAdmin: i18n.tc('home.new-form.default-admin')
       }
     })
       .then(data => {
@@ -323,7 +329,10 @@ const actions = {
     })
       .then(data => {
         context.commit('setForms', data.data.deleteForm.forms);
+        context.commit('form/setFormData', null, { root: true });
         context.commit('setModalMustClose', true);
+        const url = '/admin/home';
+        context.commit('home/setRedirectNeededUrl', url, { root: true });
         apolloClient.resetStore();
       })
       .catch(error => {

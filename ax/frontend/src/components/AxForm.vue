@@ -186,8 +186,8 @@ export default {
     db_name(newValue) {
       if (newValue) this.loadData(newValue, this.guid);
     },
-    update_time() {
-      if (this.db_name) this.loadData(this.db_name, this.guid);
+    update_time(newValue) {
+      if (newValue && this.db_name) this.loadData(this.db_name, this.guid);
     },
     tabs(newValue, oldValue) {
       if (oldValue) {

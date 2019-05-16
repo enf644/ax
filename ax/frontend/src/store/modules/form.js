@@ -76,8 +76,10 @@ const GET_FORM_DATA = gql`
               }
             },
             isStart,
-            isEnd,
-            isAll            
+            isDeleted,
+            isAll,
+            x,
+            y          
           }
         }
       },
@@ -94,7 +96,9 @@ const GET_FORM_DATA = gql`
               }
             },
             fromStateGuid,
-            toStateGuid
+            toStateGuid,
+            icon,
+            radius
           }
         }
       },
@@ -226,9 +230,6 @@ const mutations = {
       state.icon = data.icon;
       state.fields = data.fields ? data.fields.edges.map(edge => edge.node) : null;
       state.grids = data.grids ? data.grids.edges.map(edge => edge.node) : null;
-      state.roles = data.roles ? data.roles.edges.map(edge => edge.node) : null;
-      state.states = data.states ? data.states.edges.map(edge => edge.node) : null;
-      state.actions = data.actions ? data.actions.edges.map(edge => edge.node) : null;
     } else {
       state.guid = null;
       state.name = null;
@@ -237,9 +238,6 @@ const mutations = {
       state.icon = null;
       state.fields = [];
       state.grids = [];
-      state.roles = [];
-      state.states = [];
-      state.actions = [];
     }
   },
   addField(state, field) {
@@ -409,6 +407,7 @@ const actions = {
       .then(data => {
         if (data.data.form) {
           context.commit('setFormData', data.data.form);
+          context.commit('workflow/setWorkflowData', data.data.form, { root: true });
         } else {
           logger.error(`Cant find form => ${payload.dbName}`);
           const url = '/admin/home';
@@ -588,9 +587,6 @@ const state = {
   icon: null,
   fields: [],
   grids: [],
-  roles: [],
-  states: [],
-  actions: [],
   fieldTypes: [],
   isNameChangeOperation: false,
   openSettingsFlag: null,

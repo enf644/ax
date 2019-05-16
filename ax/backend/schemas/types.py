@@ -4,7 +4,8 @@ from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from backend.model import AxForm, AxField, AxFieldType, AxGrid, AxColumn, \
-    AxUser, AxRole, AxState, AxAction, AxRoleFieldPermission, GUID
+    AxUser, AxGroup2Users, AxRole, AxState, AxAction, AxAction2Role, AxState2Role, \
+    AxRoleFieldPermission, AxRole2Users, GUID
 from backend.misc import convert_column_to_string
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
@@ -75,4 +76,28 @@ class Action(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
 class RoleFieldPermission(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
     class Meta:  # pylint: disable=missing-docstring
         model = AxRoleFieldPermission
+        interfaces = (relay.Node, )
+
+
+class Group2Users(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
+    class Meta:  # pylint: disable=missing-docstring
+        model = AxGroup2Users
+        interfaces = (relay.Node, )
+
+
+class Action2Role(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
+    class Meta:  # pylint: disable=missing-docstring
+        model = AxAction2Role
+        interfaces = (relay.Node, )
+
+
+class State2Role(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
+    class Meta:  # pylint: disable=missing-docstring
+        model = AxState2Role
+        interfaces = (relay.Node, )
+
+
+class Role2Users(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
+    class Meta:  # pylint: disable=missing-docstring
+        model = AxRole2Users
         interfaces = (relay.Node, )

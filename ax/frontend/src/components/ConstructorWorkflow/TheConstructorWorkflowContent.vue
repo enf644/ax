@@ -27,8 +27,8 @@ import { debounce } from '@/misc';
 export default {
   name: 'WorkflowConstructorContent',
   data: () => ({
-    axStates: null,
-    axActions: null,
+    // axStates: null,
+    // axActions: null,
     containerMargin: null,
     containerWidth: null,
     containerHeight: null,
@@ -42,7 +42,7 @@ export default {
     actionMousedownPosition: null,
     diagramActionMode: false,
     newActionFromId: null,
-    newActionToStateId: null,
+    newActiontoStateGuid: null,
     changeRadiusActionId: null,
     change_starting_radius: null,
     selectedStateId: null,
@@ -56,7 +56,8 @@ export default {
     container: null,
     d3Actions: null,
     d3States: null,
-    newActionLine: null
+    newActionLine: null,
+    d3Initialized: false
   }),
   computed: {
     defaultGridDbName() {
@@ -67,10 +68,21 @@ export default {
     },
     debounceResize() {
       return debounce(this.handleResize, 2000);
+    },
+    axStates() {
+      return this.$store.state.workflow.states;
+    },
+    axActions() {
+      return this.$store.state.workflow.actions;
+    }
+  },
+  watch: {
+    axStates(newValue, oldValue) {
+      if (oldValue.length === 0) this.initD3();
     }
   },
   mounted() {
-    this.initD3();
+    if (!this.d3Initialized && this.axStates.length > 0) this.initD3();
   },
   methods: {
     initD3() {
@@ -84,191 +96,20 @@ export default {
       this.drawEnd();
       this.drawAll();
       this.redrawActions();
+
+      this.d3Initialized = true;
     },
 
     handleResize() {
-      d3.select('svg').remove();
-      setTimeout(() => {
-        this.initD3();
-      }, 100);
+      if (this.d3Initialized) {
+        d3.select('svg').remove();
+        setTimeout(() => {
+          this.initD3();
+        }, 100);
+      }
     },
 
     initData() {
-      this.axStates = [
-        {
-          id: 401,
-          x: 43,
-          y: 67,
-          name: 'first',
-          type: 1
-        },
-        {
-          id: 402,
-          x: 340,
-          y: 150,
-          name: 'second',
-          type: 1
-        },
-        {
-          id: 403,
-          x: 500,
-          y: 450,
-          name: 'third',
-          type: 1
-        },
-        {
-          id: 404,
-          x: 600,
-          y: 520,
-          name: 'fourth',
-          type: 1
-        },
-        {
-          id: 405,
-          x: 700,
-          y: 150,
-          name: 'fifth',
-          type: 1
-        },
-        {
-          id: 406,
-          x: 900,
-          y: 370,
-          name:
-            'Very big name with many words Very big name with many words Very big name with many words',
-          type: 1
-        },
-        {
-          id: 407,
-          x: 700,
-          y: 150,
-          name: 'Start',
-          type: 2
-        },
-        {
-          id: 408,
-          x: 700,
-          y: 250,
-          name: 'Deleted',
-          type: 3
-        },
-        {
-          id: 409,
-          x: 700,
-          y: 350,
-          name: 'All',
-          type: 4
-        }
-      ];
-
-      this.axActions = [
-        {
-          id: 900,
-          fromStateId: 401,
-          toStateId: 402,
-          name: 'First action',
-          radius: 0
-        },
-        {
-          id: 901,
-          fromStateId: 402,
-          toStateId: 401,
-          name: 'First action',
-          radius: 0
-        },
-        {
-          id: 902,
-          fromStateId: 404,
-          toStateId: 401,
-          name: 'First action',
-          radius: 500
-        },
-        {
-          id: 903,
-          fromStateId: 404,
-          toStateId: 405,
-          name: 'First action',
-          radius: 0
-        },
-        {
-          id: 904,
-          fromStateId: 402,
-          toStateId: 406,
-          name: 'Second action',
-          radius: 0
-        },
-        {
-          id: 905,
-          fromStateId: 401,
-          toStateId: 401,
-          name: 'Update 1',
-          radius: 0
-        },
-        {
-          id: 906,
-          fromStateId: 402,
-          toStateId: 402,
-          name: 'Update 2',
-          radius: 0
-        },
-        {
-          id: 907,
-          fromStateId: 403,
-          toStateId: 403,
-          name: 'Update 3',
-          radius: 0
-        },
-        {
-          id: 908,
-          fromStateId: 404,
-          toStateId: 404,
-          name: 'Update 4',
-          radius: 0
-        },
-        {
-          id: 909,
-          fromStateId: 405,
-          toStateId: 405,
-          name: 'Update 5',
-          radius: 0
-        },
-        {
-          id: 910,
-          fromStateId: 406,
-          toStateId: 406,
-          name: 'Update 6.1',
-          radius: 0
-        },
-        {
-          id: 911,
-          fromStateId: 406,
-          toStateId: 406,
-          name: 'Update 6.2',
-          radius: 0
-        },
-        {
-          id: 912,
-          fromStateId: 406,
-          toStateId: 406,
-          name: 'Update 6.3',
-          radius: 0
-        },
-        {
-          id: 913,
-          fromStateId: 406,
-          toStateId: 406,
-          name: 'Update 6.4',
-          radius: 0
-        },
-        {
-          id: 914,
-          fromStateId: 407,
-          toStateId: 405,
-          name: 'Start action',
-          radius: 0
-        }
-      ];
-
       window.addEventListener('keyup', this.checkDelete);
 
       this.containerMargin = {
@@ -344,6 +185,10 @@ export default {
         });
     },
     initSvg() {
+      const initialX = this.containerWidth / 2;
+      const initialY = this.containerHeight / 2;
+      const initialZoom = 1; // 0.75
+
       this.svg = d3
         .select('#d3div')
         .append('svg')
@@ -366,7 +211,11 @@ export default {
             this.containerMargin.right
           })`
         )
-        .call(this.zoom);
+        .call(this.zoom)
+        .call(
+          this.zoom.transform,
+          d3.zoomIdentity.translate(initialX, initialY).scale(initialZoom)
+        );
 
       // Declare actions arrow marker
       this.svg
@@ -417,6 +266,10 @@ export default {
       this.container = this.svg
         .append('g')
         .attr('id', 'globalG')
+        .attr(
+          'transform',
+          () => `translate(${initialX},${initialY}) scale(${initialZoom},${initialZoom})`
+        )
         .on('mousemove', () => {});
 
       //  Declare actions array and bind it to ax_actions data
@@ -425,7 +278,7 @@ export default {
         .selectAll('g.d3_action_g')
         .data(
           this.axActions.filter(
-            action => action.toStateId !== action.fromStateId
+            action => action.toStateGuid !== action.fromStateGuid
           )
         );
 
@@ -460,14 +313,14 @@ export default {
         .attr('x2', stateX + mousePosition[0])
         .attr('y2', stateY + mousePosition[1]);
 
-      const currentState = d3.select(`#d3_rect_${d.id}`);
+      const currentState = d3.select(`#d3_rect_${d.guid}`);
       currentState.classed('d3_new_action_state', true);
     },
 
     handleNewActionDragend(d) {
       const actionLine = d3.select('#d3_new_action');
       actionLine.classed('hidden', true);
-      const fromState = d3.select(`#d3_rect_${d.id}`);
+      const fromState = d3.select(`#d3_rect_${d.guid}`);
       fromState.classed('d3_new_action_state', false);
       const endState = d3.select('#d3_end');
       endState.classed('d3_new_action_state', false);
@@ -475,31 +328,38 @@ export default {
       this.diagramActionMode = false;
       this.newActionFromId = null;
 
-      // If  newActionToStateId is null, then the user is dropping action to globalRect
+      // If  newActiontoStateGuid is null, then the user is dropping action to globalRect
       // (not to state)
-      if (this.newActionToStateId != null) {
-        const toState = d3.select(`#d3_rect_${this.newActionToStateId}`);
+      if (this.newActiontoStateGuid != null) {
+        const toState = d3.select(`#d3_rect_${this.newActiontoStateGuid}`);
         toState.classed('d3_new_action_state', false);
-        this.handleCreateAction(d.id, this.newActionToStateId);
-        this.newActionToStateId = null;
+        this.handleCreateAction(d.guid, this.newActiontoStateGuid);
+        this.newActiontoStateGuid = null;
       }
     },
 
     setStateData(data) {
-      const stateIndex = this.axStates.findIndex(state => state.id === data.id);
+      // console.log(data.guid);
+      const stateIndex = this.axStates.findIndex(
+        state => state.guid === data.guid
+      );
       if (data.x) this.axStates[stateIndex].x = data.x;
       if (data.y) this.axStates[stateIndex].y = data.y;
     },
 
     setActionData(data) {
-      const index = this.axActions.findIndex(action => action.id === data.id);
+      const index = this.axActions.findIndex(
+        action => action.guid === data.guid
+      );
       if (data.radius) this.axActions[index].radius = data.radius;
     },
 
     handleStateDrag(d) {
-      d3.select(`#d3_state_g_${d.id}`).attr('transform', data => {
+      // const test = d3.select(`#d3_state_g_${d.guid}`);
+      // console.log(test);
+      d3.select(`#d3_state_g_${d.guid}`).attr('transform', data => {
         const newStateData = {
-          id: data.id,
+          guid: data.guid,
           x: d3.event.x,
           y: d3.event.y
         };
@@ -514,8 +374,8 @@ export default {
     },
 
     handleRadiusChangleDrag(d, mousePosition) {
-      const sourceD = this.axStates.find(el => el.id === d.fromStateId);
-      const targetD = this.axStates.find(el => el.id === d.toStateId);
+      const sourceD = this.axStates.find(el => el.guid === d.fromStateGuid);
+      const targetD = this.axStates.find(el => el.guid === d.toStateGuid);
       const sourceCenter = { x: sourceD.x, y: sourceD.y };
       const targetCenter = { x: targetD.x, y: targetD.y };
       const mouse = { x: mousePosition[0], y: mousePosition[1] };
@@ -534,33 +394,33 @@ export default {
 
       // d.radius = resultRadius;
       this.setActionData({
-        id: d.id,
+        guid: d.guid,
         radius: resultRadius
       });
 
-      this.redrawSingleAction(d.id);
+      this.redrawSingleAction(d.guid);
     },
 
     redrawActions() {
       this.d3Actions = this.d3Actions.data(
         this.axActions.filter(
-          action => action.toStateId !== action.fromStateId
+          action => action.toStateGuid !== action.fromStateGuid
         ),
-        d => d.id
+        d => d.guid
       );
 
       this.d3Actions
         .enter()
-        .filter(d => !document.getElementById(`d3_action_g_${d.id}`))
+        .filter(d => !document.getElementById(`d3_action_g_${d.guid}`))
         .append('g')
         .each((d, i, nodes) => {
           const currentElement = d3.select(nodes[i]);
-          currentElement.attr('id', `d3_action_g_${d.id}`); // set id for current g
+          currentElement.attr('id', `d3_action_g_${d.guid}`); // set id for current g
           currentElement.attr('class', 'd3_action_g'); // set class for current g
 
           currentElement
             .append('path')
-            .attr('id', `d3_action_${d.id}`)
+            .attr('id', `d3_action_${d.guid}`)
             .attr('class', 'd3_line_action')
             .attr('d', this.linkArcGenerator)
             .attr('stroke-linecap', 'round')
@@ -570,7 +430,7 @@ export default {
           const currentElement = d3.select(nodes[i]);
           currentElement
             .append('text')
-            .attr('id', `d3_action_text_${d.id}`)
+            .attr('id', `d3_action_text_${d.guid}`)
             .attr('class', 'd3_action_text')
             .attr('text-anchor', 'middle')
             .attr('alignment-baseline', 'alphabetic')
@@ -581,10 +441,10 @@ export default {
             .on('mousedown', data => {
               // event.preventDefault();
               this.stateMouseDownTimestamp = new Date();
-              this.changeRadiusActionId = data.id;
+              this.changeRadiusActionId = data.guid;
             })
             .on('mouseover', data => {
-              this.selectedActionId = data.id;
+              this.selectedActionId = data.guid;
             })
             .on('mouseleave', () => {
               this.selectedActionId = null;
@@ -594,8 +454,8 @@ export default {
         .merge(this.d3Actions)
         .each(d => {
           // Update function
-          const midpoint = this.getCenterOfPath(d.id);
-          const d3ActionText = d3.select(`#d3_action_text_${d.id}`);
+          const midpoint = this.getCenterOfPath(d.guid);
+          const d3ActionText = d3.select(`#d3_action_text_${d.guid}`);
           d3ActionText.attr(
             'transform',
             () => `translate(${[midpoint.x, midpoint.y]})`
@@ -606,13 +466,14 @@ export default {
     },
 
     redrawStates() {
-      this.d3States = this.d3States.data(this.axStates, d => d.id);
+      this.d3States = this.d3States.data(this.axStates, d => d.guid);
 
       this.d3States
         .enter()
         .filter(d => {
-          const element = document.getElementById(`d3_rect_${d.id}`);
-          const isNewElement = element === null && d.type === 1;
+          const element = document.getElementById(`d3_rect_${d.guid}`);
+          const isNewElement =            element === null
+            && (d.isStart === false && d.isDeleted === false && d.isAll === false);
           return isNewElement;
         })
         .append('g')
@@ -621,10 +482,10 @@ export default {
         .call(this.drag)
         .each((d, i, nodes) => {
           const currentElement = d3.select(nodes[i]);
-          currentElement.attr('id', `d3_state_g_${d.id}`); // set id for current g
+          currentElement.attr('id', `d3_state_g_${d.guid}`); // set id for current g
           currentElement
             .append('rect')
-            .attr('id', `d3_rect_${d.id}`)
+            .attr('id', `d3_rect_${d.guid}`)
             .attr('class', 'd3_state_rect')
             .attr('width', this.BOX_WIDTH)
             .attr('height', this.BOX_HEIGHT)
@@ -637,22 +498,22 @@ export default {
             })
             .on('mousedown', data => {
               this.stateMouseDownTimestamp = new Date();
-              this.newActionFromId = data.id;
+              this.newActionFromId = data.guid;
             })
             .on('mouseover', data => {
-              this.selectedStateId = data.id;
+              this.selectedStateId = data.guid;
               if (this.diagramActionMode && this.newActionFromId) {
-                const currentRect = d3.select(`#d3_rect_${data.id}`);
+                const currentRect = d3.select(`#d3_rect_${data.guid}`);
                 currentRect.classed('d3_new_action_state', true);
-                this.newActionToStateId = data.id;
+                this.newActiontoStateGuid = data.guid;
               }
             })
             .on('mouseleave', data => {
               this.selectedStateId = null;
               if (this.diagramActionMode) {
-                const currentRect = d3.select(`#d3_rect_${data.id}`);
+                const currentRect = d3.select(`#d3_rect_${data.guid}`);
                 currentRect.classed('d3_new_action_state', false);
-                this.newActionToStateId = null;
+                this.newActiontoStateGuid = null;
               }
             });
         })
@@ -661,9 +522,10 @@ export default {
           const currentElement = d3.select(nodes[i]);
           currentElement
             .append('text')
-            .attr('id', `d3_text_${d.id}`)
+            .attr('id', `d3_text_${d.guid}`)
             .attr('class', 'd3_state_text')
             .attr('text-anchor', 'middle')
+            .attr('y', 7)
             .attr('alignment-baseline', 'alphabetic')
             .text(data => data.name)
             .call(this.wrap, this.BOX_WIDTH);
@@ -672,17 +534,17 @@ export default {
           const currentElement = d3.select(nodes[i]);
           // Self actions
           // eslint-disable-next-line no-underscore-dangle
-          let startHeight = d3.select(`#d3_rect_${d.id}`)._groups[0][0]
+          let startHeight = d3.select(`#d3_rect_${d.guid}`)._groups[0][0]
             .attributes.height.value;
           startHeight = startHeight * 1 + 5; // 5 is first time offset
           const currentStateSelfActions = this.axActions.filter(
-            action => action.toStateId === action.fromStateId
-              && action.toStateId === d.id
+            action => action.toStateGuid === action.fromStateGuid
+              && action.toStateGuid === d.guid
           );
           currentStateSelfActions.forEach(actionD => {
             currentElement
               .append('text')
-              .attr('id', `d3_self_action_text_${actionD.id}`)
+              .attr('id', `d3_self_action_text_${actionD.guid}`)
               .attr('class', 'd3_self_action_text')
               .attr('text-anchor', 'end')
               .attr('alignment-baseline', 'hanging')
@@ -693,7 +555,7 @@ export default {
                 this.handleEditAction(actionD);
               })
               .on('mouseover', () => {
-                this.selectedActionId = actionD.id;
+                this.selectedActionId = actionD.guid;
               })
               .on('mouseleave', () => {
                 this.selectedActionId = null;
@@ -716,12 +578,15 @@ export default {
     },
 
     drawStart() {
-      this.d3_start = this.d3States.data(this.axStates, d => d.id);
+      this.d3_start = this.d3States.data(this.axStates, d => d.guid);
 
       this.d3States
         .enter()
         .filter(
-          d => !!(!document.getElementById(`d3_rect_${d.id}`) && d.type === 2)
+          d => !!(
+              !document.getElementById(`d3_rect_${d.guid}`)
+              && d.isStart === true
+            )
         )
         .append('g')
         .attr('transform', d => `translate(${[d.x, d.y]})`) // starting position of state group
@@ -729,7 +594,7 @@ export default {
         .call(this.drag)
         .each((d, i, nodes) => {
           const currentElement = d3.select(nodes[i]);
-          currentElement.attr('id', `d3_state_g_${d.id}`); // set id for current g
+          currentElement.attr('id', `d3_state_g_${d.guid}`); // set id for current g
 
           currentElement
             .append('circle')
@@ -742,7 +607,7 @@ export default {
             .on('mousedown', data => {
               // event.preventDefault();
               this.stateMouseDownTimestamp = new Date();
-              this.newActionFromId = data.id;
+              this.newActionFromId = data.guid;
             });
         })
         .each((d, i, nodes) => {
@@ -750,7 +615,7 @@ export default {
           // State text
           currentElement
             .append('text')
-            .attr('id', `d3_text_${d.id}`)
+            .attr('id', `d3_text_${d.guid}`)
             .attr('class', 'd3_state_text')
             .attr('text-anchor', 'middle')
             .attr('alignment-baseline', 'alphabetic')
@@ -768,12 +633,14 @@ export default {
     },
 
     drawAll() {
-      this.d3_start = this.d3States.data(this.axStates, d => d.id);
+      this.d3_start = this.d3States.data(this.axStates, d => d.guid);
 
       this.d3States
         .enter()
         .filter(
-          d => !!(!document.getElementById(`d3_rect_${d.id}`) && d.type === 4)
+          d => !!(
+              !document.getElementById(`d3_rect_${d.guid}`) && d.isAll === true
+            )
         )
         .append('g')
         .attr('transform', d => `translate(${[d.x, d.y]})`) // starting position of state group
@@ -781,7 +648,7 @@ export default {
         .call(this.drag)
         .each((d, i, nodes) => {
           const currentElement = d3.select(nodes[i]);
-          currentElement.attr('id', `d3_state_g_${d.id}`); // set id for current g
+          currentElement.attr('id', `d3_state_g_${d.guid}`); // set id for current g
 
           currentElement
             .append('circle')
@@ -791,7 +658,7 @@ export default {
             .on('mousedown', data => {
               // event.preventDefault();
               this.stateMouseDownTimestamp = new Date();
-              this.newActionFromId = data.id;
+              this.newActionFromId = data.guid;
             });
         })
         .each((d, i, nodes) => {
@@ -799,7 +666,7 @@ export default {
           // State text
           currentElement
             .append('text')
-            .attr('id', `d3_text_${d.id}`)
+            .attr('id', `d3_text_${d.guid}`)
             .attr('class', 'd3_state_text')
             .attr('text-anchor', 'middle')
             .attr('alignment-baseline', 'alphabetic')
@@ -811,12 +678,15 @@ export default {
     },
 
     drawEnd() {
-      this.d3States = this.d3States.data(this.axStates, d => d.id);
+      this.d3States = this.d3States.data(this.axStates, d => d.guid);
 
       this.d3States
         .enter()
         .filter(
-          d => !!(!document.getElementById(`d3_rect_${d.id}`) && d.type === 3)
+          d => !!(
+              !document.getElementById(`d3_rect_${d.guid}`)
+              && d.isDeleted === true
+            )
         )
         .append('g')
         .attr('transform', d => `translate(${[d.x, d.y]})`) // starting position of state group
@@ -824,7 +694,7 @@ export default {
         .call(this.drag)
         .each((d, i, nodes) => {
           const currentElement = d3.select(nodes[i]);
-          currentElement.attr('id', `d3_state_g_${d.id}`); // set id for current g
+          currentElement.attr('id', `d3_state_g_${d.guid}`); // set id for current g
           currentElement
             .append('circle')
             .attr('class', 'd3_end')
@@ -841,14 +711,14 @@ export default {
               if (this.diagramActionMode && this.newActionFromId) {
                 const currentRect = d3.select('#d3_end');
                 currentRect.classed('d3_new_action_state', true);
-                this.newActionToStateId = data.id;
+                this.newActiontoStateGuid = data.guid;
               }
             })
             .on('mouseleave', () => {
               if (this.diagramActionMode) {
                 const currentRect = d3.select('#d3_end');
                 currentRect.classed('d3_new_action_state', false);
-                this.newActionToStateId = null;
+                this.newActiontoStateGuid = null;
               }
             });
         })
@@ -857,7 +727,7 @@ export default {
           // State text
           currentElement
             .append('text')
-            .attr('id', `d3_text_${d.id}`)
+            .attr('id', `d3_text_${d.guid}`)
             .attr('class', 'd3_state_text')
             .attr('text-anchor', 'middle')
             .attr('alignment-baseline', 'alphabetic')
@@ -929,42 +799,44 @@ export default {
     },
 
     linkArcGenerator(d) {
-      const sourceD = this.axStates.find(el => el.id === d.fromStateId);
-      const sourceObj = document.getElementById(`d3_rect_${d.fromStateId}`);
+      const sourceD = this.axStates.find(el => el.guid === d.fromStateGuid);
+      const sourceObj = document.getElementById(`d3_rect_${d.fromStateGuid}`);
+      const sourceIsState =        sourceD.isStart === false
+        && sourceD.isDeleted === false
+        && sourceD.isAll === false;
       const sourceCenter = {
         x: sourceD.x,
-        y:
-          sourceD.type === 1
-            ? sourceD.y + d3.select(sourceObj).attr('height') / 2
-            : sourceD.y,
-        h: sourceD.type === 1 ? d3.select(sourceObj).attr('height') : 50,
-        w: sourceD.type === 1 ? d3.select(sourceObj).attr('width') : 50,
+        y: sourceIsState
+          ? sourceD.y + d3.select(sourceObj).attr('height') / 2
+          : sourceD.y,
+        h: sourceIsState ? d3.select(sourceObj).attr('height') : 50,
+        w: sourceIsState ? d3.select(sourceObj).attr('width') : 50,
         min_x: null,
         max_x: null,
         min_y: null,
-        max_y: null,
-        type: sourceD.type
+        max_y: null
       };
       sourceCenter.min_x = sourceCenter.x - sourceCenter.w / 2;
       sourceCenter.max_x = sourceCenter.x + sourceCenter.w / 2;
       sourceCenter.min_y = sourceCenter.y - sourceCenter.h / 2 - 5;
       sourceCenter.max_y = sourceCenter.y + sourceCenter.h / 2 - 5;
 
-      const targetD = this.axStates.find(el => el.id === d.toStateId);
-      const targetObj = document.getElementById(`d3_rect_${d.toStateId}`);
+      const targetD = this.axStates.find(el => el.guid === d.toStateGuid);
+      const targetObj = document.getElementById(`d3_rect_${d.toStateGuid}`);
+      const targetIsState =        targetD.isStart === false
+        && targetD.isDeleted === false
+        && targetD.isAll === false;
       const targetCenter = {
         x: targetD.x,
-        y:
-          targetD.type === 1
-            ? targetD.y + d3.select(targetObj).attr('height') / 2
-            : targetD.y,
-        h: targetD.type === 1 ? d3.select(targetObj).attr('height') : 100,
-        w: targetD.type === 1 ? d3.select(targetObj).attr('width') : 100,
+        y: targetIsState
+          ? targetD.y + d3.select(targetObj).attr('height') / 2
+          : targetD.y,
+        h: targetIsState ? d3.select(targetObj).attr('height') : 100,
+        w: targetIsState ? d3.select(targetObj).attr('width') : 100,
         min_x: null,
         max_x: null,
         min_y: null,
-        max_y: null,
-        type: targetD.type
+        max_y: null
       };
       targetCenter.min_x = targetCenter.x - targetCenter.w / 2;
       targetCenter.max_x = targetCenter.x + targetCenter.w / 2;
@@ -1159,47 +1031,46 @@ export default {
       const coords = d3.mouse(globalG);
 
       // eslint-disable-next-line max-len
-      const oldestState = this.axStates.reduce((prev, current) => (prev.id > current.id ? prev : current));
+      const oldestState = this.axStates.reduce((prev, current) => (prev.guid > current.guid ? prev : current));
 
       const newState = {
-        id: oldestState.id + 1,
+        id: oldestState.guid + 1,
         x: coords[0],
         y: coords[1],
-        name: 'New State',
-        type: 1
+        name: 'New State'
       };
       this.axStates.push(newState);
       this.redrawStates();
     },
 
-    handleCreateAction(_fromStateId, _toStateId) {
+    handleCreateAction(_fromStateGuid, _toStateGuid) {
       // eslint-disable-next-line max-len
-      const oldestAction = this.axActions.reduce((prev, current) => (prev.id > current.id ? prev : current));
-      const newActionId = oldestAction.id + 1;
+      const oldestAction = this.axActions.reduce((prev, current) => (prev.guid > current.guid ? prev : current));
+      const newActionId = oldestAction.guid + 1;
 
       const newAction = {
         id: newActionId,
-        fromStateId: _fromStateId,
-        toStateId: _toStateId,
+        fromStateGuid: _fromStateGuid,
+        toStateGuid: _toStateGuid,
         name: `New action ${newActionId}`,
         radius: 0
       };
 
       this.axActions.push(newAction);
 
-      if (_fromStateId === _toStateId) {
-        this.redrawSingleState(_fromStateId);
+      if (_fromStateGuid === _toStateGuid) {
+        this.redrawSingleState(_fromStateGuid);
       } else this.redrawActions();
 
-      console.log(`CREATE ACTION FROM ${_fromStateId} TO ${_toStateId}`);
+      console.log(`CREATE ACTION FROM ${_fromStateGuid} TO ${_toStateGuid}`);
     },
 
     handleEditState(d) {
-      console.log(`HANDLE EDIT STATE ${d.id}`);
+      console.log(`HANDLE EDIT STATE ${d.guid}`);
     },
 
     handleEditAction(d) {
-      console.log(`HANDLE EDIT ACTION ${d.id}`);
+      console.log(`HANDLE EDIT ACTION ${d.guid}`);
     },
 
     handleStateDelete(_id) {

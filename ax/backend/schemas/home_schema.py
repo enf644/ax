@@ -9,7 +9,9 @@ from sqlalchemy import MetaData
 import ujson as json
 
 from backend.misc import convert_column_to_string  # TODO check if needed
-from backend.model import GUID, AxForm, AxField, AxGrid  # TODO: check if needed
+from backend.model import GUID, AxForm, AxField, AxGrid, AxAction, AxState, \
+    AxRole, AxRole2Users, AxRoleFieldPermission, AxState2Role, AxAction2Role, \
+    Ax1tomReference
 import backend.model as ax_model
 import backend.cache as ax_cache
 import backend.dialects as ax_dialects
@@ -103,14 +105,110 @@ def create_default_grid(ax_form, name):
         raise
 
 
-def create_default_states(new_form, default_start, default_state, default_all):
+def create_default_states(ax_form, default_start, default_state, default_all, default_deleted):
     """Creates default AxStates"""
-    del new_form, default_start, default_state, default_all
+    try:
+        start = AxState()
+        start.name = default_start
+        start.form_guid = ax_form.guid
+        start.x = 0
+        start.y = -200
+        start.is_start = True
+        ax_model.db_session.add(start)
+
+        created = AxState()
+        created.name = default_state
+        created.form_guid = ax_form.guid
+        created.x = 0
+        created.y = 0
+        ax_model.db_session.add(created)
+
+        deleted = AxState()
+        deleted.name = default_deleted
+        deleted.form_guid = ax_form.guid
+        deleted.x = 0
+        deleted.y = 200
+        deleted.is_deleted = True
+        ax_model.db_session.add(deleted)
+
+        all_state = AxState()
+        all_state.name = default_all
+        all_state.form_guid = ax_form.guid
+        all_state.x = 300
+        all_state.y = 20
+        all_state.is_all = True
+        ax_model.db_session.add(all_state)
+
+        ax_model.db_session.commit()
+        return {
+            "start": start.guid,
+            "created": created.guid,
+            "deleted": deleted.guid
+        }
+
+    except Exception:
+        logger.exception('Error creating default states.')
+        raise
 
 
-def create_default_actions(new_form, default_create, default_delete):
+def create_default_actions(ax_form, states, default_create, default_delete):
     """Creates default AxActions"""
-    del new_form, default_create, default_delete
+    try:
+        create = AxAction()
+        create.name = default_create
+        create.form_guid = ax_form.guid
+        create.from_state_guid = states['start']
+        create.to_state_guid = states['created']
+        ax_model.db_session.add(create)
+
+        delete = AxAction()
+        delete.name = default_delete
+        delete.form_guid = ax_form.guid
+        delete.from_state_guid = states['created']
+        delete.to_state_guid = states['deleted']
+        ax_model.db_session.add(delete)
+
+        ax_model.db_session.commit()
+        return {
+            "create": create.guid,
+            "delete": delete.guid
+        }
+    except Exception:
+        logger.exception('Error creating default actions.')
+        raise
+
+
+def create_default_roles(ax_form, states, actions, default_admin):
+    "Creates default AxRole"
+
+    admin_role = AxRole()
+    admin_role.name = default_admin
+    admin_role.form_guid = ax_form.guid
+    # TODO add admin group user to role
+    ax_model.db_session.add(admin_role)
+    ax_model.db_session.commit()
+
+    start_role = AxState2Role()
+    start_role.state_guid = states['start']
+    start_role.role_guid = admin_role.guid
+    ax_model.db_session.add(start_role)
+
+    created_role = AxState2Role()
+    created_role.state_guid = states['created']
+    created_role.role_guid = admin_role.guid
+    ax_model.db_session.add(created_role)
+
+    create_action_role = AxAction2Role()
+    create_action_role.action_guid = actions['create']
+    create_action_role.role_guid = admin_role.guid
+    ax_model.db_session.add(create_action_role)
+
+    delete_action_role = AxAction2Role()
+    delete_action_role.action_guid = actions['delete']
+    delete_action_role.role_guid = admin_role.guid
+    ax_model.db_session.add(delete_action_role)
+
+    ax_model.db_session.commit()
 
 
 class CreateForm(graphene.Mutation):
@@ -125,6 +223,8 @@ class CreateForm(graphene.Mutation):
         default_create = graphene.String()
         default_state = graphene.String()
         default_delete = graphene.String()
+        default_deleted = graphene.String()
+        default_admin = graphene.String()
 
     ok = graphene.Boolean()
     avalible = graphene.Boolean()
@@ -142,6 +242,8 @@ class CreateForm(graphene.Mutation):
             default_create = args.get('default_create')
             default_state = args.get('default_state')
             default_delete = args.get('default_delete')
+            default_deleted = args.get('default_deleted')
+            default_admin = args.get('default_admin')
 
             if is_db_name_avalible(_db_name=db_name) is False:
                 return CreateForm(form=None, avalible=False, ok=True)
@@ -150,13 +252,30 @@ class CreateForm(graphene.Mutation):
             new_form = create_ax_form(_name=name, _db_name=db_name)
 
             # Create default process ??
+
             # Add Admins role to object
-            # Add admin group user to role
-            create_default_states(new_form, default_start,
-                                  default_state, default_all)
-            create_default_actions(new_form, default_create, default_delete)
+            states = create_default_states(
+                ax_form=new_form,
+                default_start=default_start,
+                default_state=default_state,
+                default_all=default_all,
+                default_deleted=default_deleted)
+
+            actions = create_default_actions(
+                ax_form=new_form,
+                states=states,
+                default_create=default_create,
+                default_delete=default_delete)
+
+            create_default_roles(
+                ax_form=new_form,
+                states=states,
+                actions=actions,
+                default_admin=default_admin)
+
             create_default_grid(ax_form=new_form, name=default_grid_name)
             create_default_tab(ax_form=new_form, name=default_tab_name)
+
             ax_schema.init_schema()
             # TODO: check for multiple workers and load balancers.
             # https://community.sanicframework.org/t/removing-routes-necessary-functionality/29
@@ -237,23 +356,39 @@ class DeleteForm(graphene.Mutation):
                 AxForm.guid == uuid.UUID(guid)
             ).first()
 
+            if not ax_form:
+                return DeleteForm(forms=None, ok=False)
+
             # s.execute("SET FOREIGN_KEY_CHECKS=0;")
 
-            # Delete all AxFields, AxColumns, drop columns + field permissions
-            # for f in ax_object.fields:
-            #     ax_object.delete_field(f)
+            Ax1tomReference.query.filter(
+                Ax1tomReference.form_guid == ax_form.guid).delete()
 
-            # for a in ax_object.actions:
-            #     s.delete(a)
+            for role in ax_form.roles:
+                AxRole2Users.query.filter(
+                    AxRole2Users.role_guid == role.guid).delete()
+                AxState2Role.query.filter(
+                    AxState2Role.role_guid == role.guid).delete()
+                AxAction2Role.query.filter(
+                    AxAction2Role.role_guid == role.guid).delete()
+                AxRoleFieldPermission.query.filter(
+                    AxRoleFieldPermission.role_guid == role.guid).delete()
 
-            # for st in ax_object.states:
-            #     s.delete(st)
+                ax_model.db_session.delete(role)
 
-            # for r in ax_object.roles:
-            #     s.delete(r)
+            for action in ax_form.actions:
+                ax_model.db_session.delete(action)
 
-            # for v in ax_object.grids:
-            #     s.delete(v)
+            for state in ax_form.states:
+                ax_model.db_session.delete(state)
+
+            for grid in ax_form.grids:
+                for column in grid.columns:
+                    ax_model.db_session.delete(column)
+                ax_model.db_session.delete(grid)
+
+            for field in ax_form.fields:
+                ax_model.db_session.delete(field)
 
             ax_dialects.dialect.drop_table(db_name=ax_form.db_name)
             ax_model.db_session.delete(ax_form)

@@ -11,9 +11,11 @@ from backend.schemas.users_schema import UsersQuery
 from backend.schemas.users_schema import UsersMutations, UsersSubscription
 from backend.schemas.home_schema import HomeQuery, HomeMutations
 from backend.schemas.form_schema import FormQuery, FormMutations
+from backend.schemas.workflow_schema import WorkflowQuery, WorkflowMutations
 from backend.schemas.grids_schema import GridsQuery, GridsMutations
 from backend.schemas.types import Form, FieldType, Field, Grid, \
-    Column, User, Role, State, Action, RoleFieldPermission, PositionInput
+    Column, User, Role, State, Action, RoleFieldPermission, Group2Users, \
+    Action2Role, State2Role, Role2Users, PositionInput
 
 from backend.model import AxForm
 import backend.model as ax_model
@@ -48,11 +50,16 @@ gql_types = [
     State,
     Action,
     RoleFieldPermission,
+    Group2Users,
+    Action2Role,
+    State2Role,
+    Role2Users,
     PositionInput,
 ]
 
 
-class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery, graphene.ObjectType):
+class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery,
+            WorkflowQuery, graphene.ObjectType):
     """Combines all schemas queryes"""
     forms = SQLAlchemyConnectionField(Form)
     field_types = SQLAlchemyConnectionField(FieldType)
@@ -64,10 +71,11 @@ class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery, graphene.ObjectType):
     states = SQLAlchemyConnectionField(State)
     actions = SQLAlchemyConnectionField(Action)
     role_field_permissions = SQLAlchemyConnectionField(RoleFieldPermission)
+    group_to_users = SQLAlchemyConnectionField(Group2Users)
 
 
 class Mutations(HomeMutations, FormMutations, UsersMutations, GridsMutations,
-                graphene.ObjectType):
+                WorkflowMutations, graphene.ObjectType):
     """Combines all schemas mutations"""
 
 

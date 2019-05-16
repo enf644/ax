@@ -335,13 +335,14 @@ AX 20:
             ✔ Remove media columns from grid constructor @done(19-05-14 12:49)
     ☐ WORKFLOW
         ✔ Insert D3 sample and make it work @done(19-05-15 20:09)
-        ☐ Create default workflow on form creation
-        ☐ Hook d3 to default workflow
+        ✔ Create default workflow on form creation @done(19-05-16 14:13)
+        ✔ Change sample - switch ids to guids @done(19-05-16 15:07)
+        ✔ Hook d3 to default workflow @done(19-05-16 18:10)
         ☐ GQL actions - schema, query, vuex action, vuex setter
-            ☐ Status
-                ☐ Create status
-                ☐ Update status
-                ☐ Delete status
+            ☐ State
+                ☐ Create state
+                ☐ Update state
+                ☐ Delete state
             ☐ Action
                 ☐ Create action
                 ☐ Update action
@@ -398,6 +399,8 @@ AX 20:
         ☐ Cover everything with cypress tests
         ☐ Try pip installation
         ☐ Try app engine installation
+        ☐ ESTABLISH CI
+            ☐ Each commit runs tests - installs from pip, runs cypress tests
 	☐ PAGES DESIGNER
 	☐ MARKETPLACE
 		☐ Dump application to yaml

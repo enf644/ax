@@ -58,7 +58,9 @@
             "default-all": "All",
             "default-create": "Add record",
             "default-state": "Created",
-            "default-delete": "Delete record"
+            "default-delete": "Delete record",
+            "default_admin": "Administrator",
+            "default-deleted": "Deleted"
         },
         "new-folder": {
             "folder-name": "Folder name",
