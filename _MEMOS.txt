@@ -70,15 +70,8 @@ NEW DOMAINS
     ax.parts
     ax.mx
     getax.today
-    ax-workflow.com
+    ax-workflow.com  <-----------
 
-
-======================================================================================================================================
-
-home_schema.py -> mutation
-main.js -> gql Query
-main.js -> actiom
-main.js -> mutation
 
 
 ======================================================================================================================================
@@ -133,6 +126,12 @@ Lead sources
         Offer consulting services to one client each week. 
             Each hacker-news article is followed by invite to participate in free consulting session.
             Week auction? Clients compete with each other. (How to filter expensive apps?)
+    Include in all posible listings
+        sanic users
+        vue users
+        wikipedia -> workflow
+        alternative listing sites
+        everything with 'workflow' keywoard
     MEDIA ARTICLES
         Articles are translated to 4 languages. 
         Media contains popular us, china, india, russia sites
@@ -170,27 +169,26 @@ Lead sources
             Comparision with other software and services:
                 Sass -> Kissflow, Google App Maker, Zoho creator, Nintex, RunMyProcess, Airtable
                 On-premise -> Jira, PEGA , Apian , Microsoft SharePoint, IBM Lotus Notes
+                JotForms, Infinity Box, Wufoo, Formstack, and PerfectForms.
             Instructions for running in diferent enviroments:
                 App engine detailed instruction
                 AWS
                 Heroku
                 Docker
-            Include in all posible listings
-                sanic users
-                vue users
-                wikipedia -> workflow
-                alternative listing sites
-                everything with 'workflow' keywoard
             Deck as standalone tool
             Building Sass business ontop of Ax
                 Billing users inside Ax!!!
             Overview of ax-fields
             Ax technology stack
-            Ax benchmark - speed, size            
+            Ax benchmark - speed, size
             1$ implementation - CRM, HelpDesk, Invoices ect
             New integration
             New Ax-Field
-            Usage story - robot automation, interesting use-cases
+            Usage story
+                robot automation
+                3d printer automation
+                garden automation
+                race registration
             Recuring posts - Yearly post calendar with recuring types -
                 once per year - statistics
                 once per month - top 5 iteresting use-cases
@@ -219,6 +217,7 @@ Lead sources
             Start Ad compaing with relative queries "crm, helpdesk" ect
     SERVICES
         https://optinmonster.com/
+        justreachout
 
 
 Global Plan
@@ -447,33 +446,9 @@ BaseException
 
 
 
-home.js
-    forms
-    fieldTypes
-    actionSnippets
-form.js
-    formSettings
-    fields
-    tabs
-workflow.js
-    roles -> states, actions
-    roleUsers
-    states
-    actions
-    actionSettings
-    permissions
-grids.js
-    grids
-    columns
-    gridSettings
-deck.js
-    deckItems
-users.js
-    users
-    groups
-test.js
 
 
+===========================================================================
 
 
 9fcf4361-57de-4810-b4b2-22e03716da95

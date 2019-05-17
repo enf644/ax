@@ -121,6 +121,7 @@ LANDING PAGE INSPIRATION
     https://chartio.com/resources/tutorials/how-to-execute-raw-sql-in-sqlalchemy/
     https://www.ag-grid.com/javascript-grid-features/
     https://strapi.io/
+    https://www.jotform.com/
 
 
 DYNAMIC GRAPHENE 

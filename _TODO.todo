@@ -391,7 +391,10 @@ AX 20:
     ☐ COMPLEX FIELDS
 		☐ ax-files
 		☐ ax-crop-image
-	☐ USERS
+    ☐ USERS
+        ☐ GAuth
+        ☐ GraphQL authorisation
+        ☐ Every GQL mutation needs permissions
 		☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
                 ☐ Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные
         ☐ Roles modal - add users
@@ -415,17 +418,6 @@ AX 20:
         ☐ LICENSING
     ☐ ALL FIELDS
 
-    
-Additional versions:
-    ☐ Sass
-        ☐ Деплой в App Engine через Market
-    ☐ Сборка docker image и деплой куда-то
-    ☐ Kubernates
-
-
-=============================================================================================
-
-
 
 BEFORE LAUNCH:
     ☐ Landing page
@@ -435,6 +427,15 @@ BEFORE LAUNCH:
         ☐ Ax Deck !!!
     ☐ Lincese key generation, desribution and 
 
+
+    
+Additional versions:
+    ☐ Sass
+        ☐ Деплой в App Engine через Market
+    ☐ Сборка docker image и деплой куда-то
+    ☐ Kubernates
+
+    
 =============================================================================================
 
 
@@ -872,7 +873,12 @@ ALL AX FIELDS:
 		☐ Slider
 	☐ Boolean
 		☐ Checkbox				++
-		☐ Switch
+        ☐ Switch
+        ☐ 2D radio survey
+    ☐ Payment
+        ☐ Paypal
+        ☐ Stripe
+        ☐ ... check jotforms
 	☐ Relationship
 		☐ 1:1 Inline				++
 		☐ 1:M Inline				++

@@ -67,7 +67,6 @@ const GET_FORM_DATA = gql`
           node {
             guid,
             name,
-            color,
             roles{
               edges {
                 node {

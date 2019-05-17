@@ -367,8 +367,6 @@ class AxState(Base):
     form_guid = Column(GUID(), ForeignKey('_ax_forms.guid'))
     form = relationship("AxForm")
     roles = relationship("AxRole", secondary='_ax_state2role')
-    color = Column(String(255))
-    icon = Column(String(255))
     is_start = Column(Boolean, unique=False, default=False)
     is_deleted = Column(Boolean, unique=False, default=False)
     is_all = Column(Boolean, unique=False, default=False)

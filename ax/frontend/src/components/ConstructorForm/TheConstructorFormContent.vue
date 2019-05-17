@@ -56,7 +56,7 @@ export default {
   },
   watch: {
     formWatcher() {
-      if (this.$store.state.form.updateTime) this.updateFormFlag = Date.now();
+      if (this.$store.state.form.dbName) this.updateFormFlag = Date.now();
     }
   },
   methods: {
