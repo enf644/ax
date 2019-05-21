@@ -31,6 +31,8 @@ const CREATE_FORM = gql`
       $defaultState: String!, 
       $defaultDelete: String!,
       $defaultDeleted: String!,
+      $deleteConfirm: String!,
+      $defaultUpdate: String!,
       $defaultAdmin: String!
     ) {
     createForm(
@@ -44,6 +46,8 @@ const CREATE_FORM = gql`
         defaultState: $defaultState,
         defaultDelete: $defaultDelete,
         defaultDeleted: $defaultDeleted,
+        deleteConfirm: $deleteConfirm,
+        defaultUpdate: $defaultUpdate,
         defaultAdmin: $defaultAdmin
       ) {
       form {
@@ -272,7 +276,9 @@ const actions = {
         defaultCreate: i18n.tc('home.new-form.default-create'),
         defaultState: i18n.tc('home.new-form.default-state'),
         defaultDelete: i18n.tc('home.new-form.default-delete'),
-        defaultAdmin: i18n.tc('home.new-form.default-admin')
+        defaultAdmin: i18n.tc('home.new-form.default-admin'),
+        defaultUpdate: i18n.tc('workflow.new-self-action-dummy'),
+        deleteConfirm: i18n.tc('workflow.delete-confirm')
       }
     })
       .then(data => {

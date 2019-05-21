@@ -20,12 +20,14 @@ class CreateState(graphene.Mutation):
     """Create AxState"""
     class Arguments:  # pylint: disable=missing-docstring
         name = graphene.String()
+        update = graphene.String(required=False, default_value=None)
         form_guid = graphene.String()
-        x = graphene.Int()
-        y = graphene.Int()
+        x = graphene.Float()
+        y = graphene.Float()
 
     ok = graphene.Boolean()
     state = graphene.Field(State)
+    action = graphene.Field(Action)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         try:
@@ -39,10 +41,21 @@ class CreateState(graphene.Mutation):
             ax_model.db_session.add(new_state)
             ax_model.db_session.commit()
 
+            update_action = None
+            if args.get('update'):
+                update_action = AxAction()
+                update_action.name = args.get('update')
+                update_action.form_guid = args.get('form_guid')
+                update_action.from_state_guid = new_state.guid
+                update_action.to_state_guid = new_state.guid
+
+                ax_model.db_session.add(update_action)
+                ax_model.db_session.commit()
+
             # TODO: Add default admin role!
 
             ok = True
-            return CreateState(state=new_state, ok=ok)
+            return CreateState(state=new_state, action=update_action, ok=ok)
         except Exception:
             logger.exception('Error in gql mutation - CreateState.')
             raise
@@ -53,8 +66,8 @@ class UpdateState(graphene.Mutation):
     class Arguments:  # pylint: disable=missing-docstring
         guid = graphene.String()
         name = graphene.String()
-        x = graphene.Int()
-        y = graphene.Int()
+        x = graphene.Float()
+        y = graphene.Float()
 
     ok = graphene.Boolean()
     state = graphene.Field(State)
@@ -68,9 +81,9 @@ class UpdateState(graphene.Mutation):
             if args.get('name'):
                 ax_state.name = args.get('name')
             if args.get('x'):
-                ax_state.name = args.get('x')
+                ax_state.x = args.get('x')
             if args.get('y'):
-                ax_state.name = args.get('y')
+                ax_state.y = args.get('y')
 
             ax_model.db_session.commit()
 
@@ -121,7 +134,7 @@ class CreateAction(graphene.Mutation):
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         try:
             del info
-            new_action = AxState()
+            new_action = AxAction()
             new_action.name = args.get('name')
             new_action.form_guid = args.get('form_guid')
             new_action.from_state_guid = args.get('from_state_guid')
@@ -143,12 +156,12 @@ class UpdateAction(graphene.Mutation):
     """Updates AxAction"""
     class Arguments:  # pylint: disable=missing-docstring
         guid = graphene.String()
-        name = graphene.String()
-        code = graphene.String()
-        confirm_text = graphene.String()
-        close_modal = graphene.Boolean()
-        icon = graphene.String()
-        radius = graphene.Float()
+        name = graphene.String(required=False, default_value=None)
+        code = graphene.String(required=False, default_value=None)
+        confirm_text = graphene.String(required=False, default_value=None)
+        close_modal = graphene.Boolean(required=False, default_value=None)
+        icon = graphene.String(required=False, default_value=None)
+        radius = graphene.Float(required=False, default_value=None)
 
     ok = graphene.Boolean()
     action = graphene.Field(Action)
@@ -170,7 +183,7 @@ class UpdateAction(graphene.Mutation):
                 ax_action.close_modal = args.get('close_modal')
             if args.get('icon'):
                 ax_action.icon = args.get('icon')
-            if args.get('radius'):
+            if args.get('radius') is not None:
                 ax_action.radius = args.get('radius')
 
             ax_model.db_session.commit()
@@ -239,24 +252,44 @@ class DeleteRoleFromState(graphene.Mutation):
     """Deletes AxState2Role"""
     class Arguments:  # pylint: disable=missing-docstring
         guid = graphene.String()
+        role_guid = graphene.String()
+        state_guid = graphene.String()
 
     ok = graphene.Boolean()
     deleted = graphene.String()
+    role_guid = graphene.String()
+    state_guid = graphene.String()
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         try:
             del info
             guid = args.get('guid')
+            role_guid = args.get('role_guid')
+            state_guid = args.get('state_guid')
 
-            role2state = ax_model.db_session.query(AxState2Role).filter(
-                AxState2Role.guid == uuid.UUID(guid)
-            ).first()
+            role2state = None
+            if guid:
+                role2state = ax_model.db_session.query(AxState2Role).filter(
+                    AxState2Role.guid == uuid.UUID(guid)
+                ).first()
+            else:
+                role2state = ax_model.db_session.query(AxState2Role).filter(
+                    AxState2Role.role_guid == uuid.UUID(role_guid)
+                    and AxState2Role.state_guid == uuid.UUID(state_guid)
+                ).first()
+
+            the_role_guid = role2state.role_guid
+            the_state_guid = role2state.state_guid
 
             ax_model.db_session.delete(role2state)
             ax_model.db_session.commit()
 
             ok = True
-            return DeleteRoleFromState(deleted=guid, ok=ok)
+            return DeleteRoleFromState(
+                deleted=guid,
+                role_guid=the_role_guid,
+                state_guid=the_state_guid,
+                ok=ok)
         except Exception:
             logger.exception('Error in gql mutation - DeleteRoleFromState.')
             raise
@@ -295,6 +328,7 @@ class DeleteRoleFromAction(graphene.Mutation):
 
     ok = graphene.Boolean()
     deleted = graphene.String()
+    role_guid = graphene.String()
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         try:
@@ -304,12 +338,12 @@ class DeleteRoleFromAction(graphene.Mutation):
             role2action = ax_model.db_session.query(AxAction2Role).filter(
                 AxAction2Role.guid == uuid.UUID(guid)
             ).first()
-
+            role_guid = role2action.role_guid
             ax_model.db_session.delete(role2action)
             ax_model.db_session.commit()
 
             ok = True
-            return DeleteRoleFromState(deleted=guid, ok=ok)
+            return DeleteRoleFromState(deleted=guid, ok=ok, role_guid=role_guid)
         except Exception:
             logger.exception('Error in gql mutation - DeleteRoleFromState.')
             raise

@@ -338,34 +338,18 @@ AX 20:
         ✔ Create default workflow on form creation @done(19-05-16 14:13)
         ✔ Change sample - switch ids to guids @done(19-05-16 15:07)
         ✔ Hook d3 to default workflow @done(19-05-16 18:10)
-        ☐ GQL actions - schema, query, vuex action, vuex setter
-            ☐ State
-                ☐ Create state
-                ☐ Update state
-                ☐ Delete state
-            ☐ Action
-                ☐ Create action
-                ☐ Update action
-                ☐ Delete action
-            ☐ Roles
-                ☐ Create role
-                ☐ Update role
-                ☐ Delete role
-            ☐ Roles2State
-                ☐ Add role to state -http://bl.ocks.org/thudfactor/6611441
-                ☐ Delete role from state
-            ☐ Roles2Action
-                ☐ Add role to action
-                ☐ Delete role from action
-            ☐ RoleFieldPermission
-                ☐ Set state permission
-        ☐ Create status on double click
-            ☐ State name must be unique
-            ☐ Self action "Update" must be created
-        ☐ Create action on drag
-        ☐ Create self-action
+        ✔ GQL actions - schema, query, vuex action, vuex setter @done(19-05-20 20:00)
+        ✔ Create status on double click @done(19-05-21 10:51)
+            ✔ State name must be unique @done(19-05-20 19:54)
+        ✔ Create self-action @done(19-05-21 10:51)
+            ✔ Update action in default workflow @done(19-05-21 10:22)
+            ✔ Create "update" action on state creation @done(19-05-21 10:51)
+            ✔ Create "update" action on drag to self @done(19-05-21 10:51)
+            ✔ Delete confirmation to default workflow @done(19-05-21 10:51)
+        ✔ Create action on drag @done(19-05-20 19:58)
         ☐ Roles list
             ☐ Create role
+            ☐ Role list
         ☐ Role modal
             ☐ Change name
             ☐ Delete
@@ -387,24 +371,24 @@ AX 20:
 		✔ multiple pop-ups @done(19-04-16 14:41)
 		☐ ax-1tom
 		☐ ax-mtom
-		☐ ax-mtom-table        
+		☐ ax-mtom-table
     ☐ COMPLEX FIELDS
 		☐ ax-files
 		☐ ax-crop-image
-    ☐ USERS
-        ☐ GAuth
-        ☐ GraphQL authorisation
-        ☐ Every GQL mutation needs permissions
-		☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
-                ☐ Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные
-        ☐ Roles modal - add users
     ☐ TEST MILESTONE
         ☐ Cover everything with cypress tests
         ☐ Try pip installation
         ☐ Try app engine installation
         ☐ ESTABLISH CI
             ☐ Each commit runs tests - installs from pip, runs cypress tests
-	☐ PAGES DESIGNER
+    ☐ USERS
+        ☐ GAuth
+        ☐ GraphQL authorisation
+        ☐ Every GQL mutation needs permissions
+        ☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
+            ☐ Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные
+        ☐ Roles modal - add users
+    ☐ PAGES DESIGNER
 	☐ MARKETPLACE
 		☐ Dump application to yaml
         ☐ Install application from yaml

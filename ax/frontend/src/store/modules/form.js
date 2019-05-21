@@ -70,7 +70,8 @@ const GET_FORM_DATA = gql`
             roles{
               edges {
                 node {
-                  guid
+                  guid,
+                  name
                 }
               }
             },
@@ -90,7 +91,8 @@ const GET_FORM_DATA = gql`
             roles{
               edges {
                 node {
-                  guid
+                  guid,
+                  name
                 }
               }
             },

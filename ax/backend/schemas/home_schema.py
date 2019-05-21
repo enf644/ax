@@ -151,7 +151,7 @@ def create_default_states(ax_form, default_start, default_state, default_all, de
         raise
 
 
-def create_default_actions(ax_form, states, default_create, default_delete):
+def create_default_actions(ax_form, states, default_create, default_delete, default_update, delete_confirm):
     """Creates default AxActions"""
     try:
         create = AxAction()
@@ -161,11 +161,19 @@ def create_default_actions(ax_form, states, default_create, default_delete):
         create.to_state_guid = states['created']
         ax_model.db_session.add(create)
 
+        update = AxAction()
+        update.name = default_update
+        update.form_guid = ax_form.guid
+        update.from_state_guid = states['created']
+        update.to_state_guid = states['created']
+        ax_model.db_session.add(update)
+
         delete = AxAction()
         delete.name = default_delete
         delete.form_guid = ax_form.guid
         delete.from_state_guid = states['created']
         delete.to_state_guid = states['deleted']
+        delete.confirm_text = delete_confirm
         ax_model.db_session.add(delete)
 
         ax_model.db_session.commit()
@@ -225,6 +233,8 @@ class CreateForm(graphene.Mutation):
         default_delete = graphene.String()
         default_deleted = graphene.String()
         default_admin = graphene.String()
+        default_update = graphene.String()
+        delete_confirm = graphene.String()
 
     ok = graphene.Boolean()
     avalible = graphene.Boolean()
@@ -244,6 +254,8 @@ class CreateForm(graphene.Mutation):
             default_delete = args.get('default_delete')
             default_deleted = args.get('default_deleted')
             default_admin = args.get('default_admin')
+            default_update = args.get('default_update')
+            delete_confirm = args.get('delete_confirm')
 
             if is_db_name_avalible(_db_name=db_name) is False:
                 return CreateForm(form=None, avalible=False, ok=True)
@@ -265,7 +277,9 @@ class CreateForm(graphene.Mutation):
                 ax_form=new_form,
                 states=states,
                 default_create=default_create,
-                default_delete=default_delete)
+                default_delete=default_delete,
+                default_update=default_update,
+                delete_confirm=delete_confirm)
 
             create_default_roles(
                 ax_form=new_form,

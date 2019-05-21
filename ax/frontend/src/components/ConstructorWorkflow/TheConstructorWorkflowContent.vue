@@ -74,11 +74,27 @@ export default {
     },
     axActions() {
       return this.$store.state.workflow.actions;
+    },
+    addedAction() {
+      return this.$store.state.workflow.addedAction;
     }
   },
   watch: {
     axStates(newValue, oldValue) {
-      if (oldValue.length === 0) this.initD3();
+      if (newValue && oldValue.length === 0) this.initD3();
+      if (newValue && this.d3Initialized) this.redrawStates();
+    },
+    axActions(newValue) {
+      if (newValue && this.d3Initialized) {
+        this.redrawActions();
+      }
+    },
+    addedAction(newValue) {
+      if (newValue && newValue) {
+        if (newValue.fromStateGuid === newValue.toStateGuid) {
+          this.redrawSingleState(newValue.fromStateGuid);
+        }
+      }
     }
   },
   mounted() {
@@ -177,10 +193,15 @@ export default {
         .on('end', d => {
           if (this.diagramActionMode && this.newActionFromId) {
             this.handleNewActionDragend(d);
-          } else {
+          } else if (this.diagramActionMode && this.changeRadiusActionId) {
             this.diagramActionMode = false;
             this.changeRadiusActionId = null;
             this.actionMousedownPosition = null;
+            this.dispatchActionChange(d);
+          } else {
+            this.diagramActionMode = false;
+            this.dispatchStateChange(d);
+            this.redrawStates();
           }
         });
     },
@@ -338,25 +359,48 @@ export default {
       }
     },
 
+    dispatchStateChange(data) {
+      const newState = {
+        guid: data.guid,
+        x: data.x,
+        y: data.y
+      };
+      this.$store
+        .dispatch('workflow/updateStatePosition', newState)
+        .then(() => {});
+    },
+
     setStateData(data) {
-      // console.log(data.guid);
-      const stateIndex = this.axStates.findIndex(
-        state => state.guid === data.guid
-      );
-      if (data.x) this.axStates[stateIndex].x = data.x;
-      if (data.y) this.axStates[stateIndex].y = data.y;
+      const newState = {
+        guid: data.guid,
+        x: data.x,
+        y: data.y
+      };
+      this.$store.commit('workflow/setStatePosition', newState);
     },
 
     setActionData(data) {
-      const index = this.axActions.findIndex(
-        action => action.guid === data.guid
-      );
-      if (data.radius) this.axActions[index].radius = data.radius;
+      // const index = this.axActions.findIndex(
+      //   action => action.guid === data.guid
+      // );
+      // if (data.radius) this.axActions[index].radius = data.radius;
+
+      const newAction = {
+        guid: data.guid,
+        radius: data.radius
+      };
+      this.$store.commit('workflow/updateActionRadius', newAction);
+    },
+
+    dispatchActionChange(data) {
+      const newAction = {
+        guid: data.guid,
+        radius: data.radius
+      };
+      this.$store.dispatch('workflow/updateActionRadius', newAction);
     },
 
     handleStateDrag(d) {
-      // const test = d3.select(`#d3_state_g_${d.guid}`);
-      // console.log(test);
       d3.select(`#d3_state_g_${d.guid}`).attr('transform', data => {
         const newStateData = {
           guid: data.guid,
@@ -366,7 +410,6 @@ export default {
         this.setStateData(newStateData);
         return `translate(${[d3.event.x, d3.event.y]})`;
       });
-      // console.log(this.axStates[0]);
 
       // Actions are redrawed each time on drag
       d3.selectAll('.d3_action_g').remove();
@@ -468,12 +511,19 @@ export default {
     redrawStates() {
       this.d3States = this.d3States.data(this.axStates, d => d.guid);
 
+      // console.log(this.axStates);
+      // console.log(this.d3States);
+
       this.d3States
         .enter()
         .filter(d => {
           const element = document.getElementById(`d3_rect_${d.guid}`);
+          // console.log('------');
+          // console.log(d);
+          // console.log(element);
           const isNewElement =            element === null
             && (d.isStart === false && d.isDeleted === false && d.isAll === false);
+          // console.log(isNewElement);
           return isNewElement;
         })
         .append('g')
@@ -1026,43 +1076,64 @@ export default {
       };
     },
 
+    checkStateName(name) {
+      const isChecked = this.axStates.some(e => e.name === name);
+      return isChecked;
+    },
+    checkActionName(name) {
+      const isChecked = this.axActions.some(e => e.name === name);
+      return isChecked;
+    },
+
     handleCreateState() {
       const globalG = document.getElementById('globalG');
       const coords = d3.mouse(globalG);
 
-      // eslint-disable-next-line max-len
-      const oldestState = this.axStates.reduce((prev, current) => (prev.guid > current.guid ? prev : current));
+      let nameIsChecked = false;
+      let currentNum = 0;
+      let currentName = this.$t('workflow.new-state-dummy');
 
-      const newState = {
-        id: oldestState.guid + 1,
+      while (nameIsChecked === false) {
+        if (this.checkStateName(currentName)) {
+          currentNum += 1;
+          currentName = `${this.$t('workflow.new-state-dummy')} ${currentNum}`;
+        } else nameIsChecked = true;
+      }
+
+      const args = {
+        formGuid: this.$store.state.formGuid,
+        name: currentName,
         x: coords[0],
-        y: coords[1],
-        name: 'New State'
+        y: coords[1]
       };
-      this.axStates.push(newState);
-      this.redrawStates();
+      this.$store.dispatch('workflow/createState', args).then(() => {
+        // setTimeout(() => {
+        //   this.redrawStates();
+        // }, 50);
+
+        const msg = this.$t('workflow.add-state-toast');
+        this.$dialog.message.success(
+          `<i class="fas fa-project-diagram"></i> &nbsp ${msg}`
+        );
+      });
     },
 
     handleCreateAction(_fromStateGuid, _toStateGuid) {
-      // eslint-disable-next-line max-len
-      const oldestAction = this.axActions.reduce((prev, current) => (prev.guid > current.guid ? prev : current));
-      const newActionId = oldestAction.guid + 1;
-
-      const newAction = {
-        id: newActionId,
+      const args = {
+        formGuid: this.$store.state.formGuid,
+        name:
+          _fromStateGuid === _toStateGuid
+            ? this.$t('workflow.new-self-action-dummy')
+            : this.$t('workflow.new-action-dummy'),
         fromStateGuid: _fromStateGuid,
-        toStateGuid: _toStateGuid,
-        name: `New action ${newActionId}`,
-        radius: 0
+        toStateGuid: _toStateGuid
       };
-
-      this.axActions.push(newAction);
-
-      if (_fromStateGuid === _toStateGuid) {
-        this.redrawSingleState(_fromStateGuid);
-      } else this.redrawActions();
-
-      console.log(`CREATE ACTION FROM ${_fromStateGuid} TO ${_toStateGuid}`);
+      this.$store.dispatch('workflow/createAction', args).then(() => {
+        const msg = this.$t('workflow.add-action-toast');
+        this.$dialog.message.success(
+          `<i class="fas fa-angle-double-right"></i> &nbsp ${msg}`
+        );
+      });
     },
 
     handleEditState(d) {
