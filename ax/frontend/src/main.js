@@ -19,6 +19,7 @@ import AsyncComputed from 'vue-async-computed';
 
 import 'vue-resize/dist/vue-resize.css';
 import Vuetify, {
+  VTextField,
   VSnackbar,
   VDialog,
   VCard,
@@ -48,6 +49,7 @@ import VueDummy from 'vue-dummy'; // create lorum ipsum
 Vue.use(VModal, { dynamic: true, injectModalsContainer: true });
 Vue.use(Vuetify, {
   components: {
+    VTextField,
     VSnackbar,
     VDialog,
     VCard,

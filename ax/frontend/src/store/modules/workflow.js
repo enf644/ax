@@ -130,6 +130,43 @@ const DELETE_ACTION = gql`
   }
 `;
 
+const CREATE_ROLE = gql`
+  mutation ($formGuid: String!, $name: String!) {
+    createRole(formGuid: $formGuid, name: $name) {
+      role {
+        guid,
+        name,
+        icon
+      },
+      ok    
+    }
+  }
+`;
+
+
+const UPDATE_ROLE = gql`
+  mutation ($formGuid: String!, $name: String, $icon: String) {
+    createRole(formGuid: $formGuid, name: $name, icon: $icon) {
+      role {
+        guid,
+        name,
+        icon
+      },
+      ok    
+    }
+  }
+`;
+
+const DELETE_ROLE = gql`
+  mutation ($guid: String!) {
+    deleteRole(guid: $guid) {
+      deleted,
+      ok    
+    }
+  }
+`;
+
+
 const ADD_ROLE_TO_STATE = gql`
   mutation ($stateGuid: String!, $roleGuid: String!) {
     addRoleToState(stateGuid: $stateGuid, roleGuid: $roleGuid) {
@@ -246,6 +283,18 @@ const mutations = {
   },
   deleteAction(state, guid) {
     state.states = [...state.states.filter(element => element.guid === guid)];
+  },
+  addRole(state, role) {
+    state.roles.push(role);
+  },
+  updateRole(state, role) {
+    state.roles = [
+      ...state.roles.filter(element => element.guid !== role.guid),
+      role
+    ];
+  },
+  deleteRole(state, guid) {
+    state.roles = [...state.roles.filter(element => element.guid === guid)];
   },
   addRoleToState(state, state2role) {
     state.states.forEach(currentState => {
@@ -437,6 +486,58 @@ const actions = {
       })
       .catch(error => {
         logger.error(`Error in deleteAction apollo client => ${error}`);
+      });
+  },
+
+  createRole(context, payload) {
+    apolloClient.mutate({
+      mutation: CREATE_ROLE,
+      variables: {
+        formGuid: context.state.formGuid,
+        name: payload.name
+      }
+    })
+      .then(data => {
+        const newRole = data.data.createRole.role;
+        context.commit('addRole', newRole);
+      })
+      .catch(error => {
+        logger.error(`Error in createRole apollo client => ${error}`);
+      });
+  },
+
+
+  updateRole(context, payload) {
+    apolloClient.mutate({
+      mutation: UPDATE_ROLE,
+      variables: {
+        guid: payload.guid,
+        name: payload.name,
+        icon: payload.icon
+      }
+    })
+      .then(data => {
+        const newRole = data.data.updateRole.role;
+        context.commit('updateRole', newRole);
+      })
+      .catch(error => {
+        logger.error(`Error in updateRole apollo client => ${error}`);
+      });
+  },
+
+  deleteRole(context, payload) {
+    apolloClient.mutate({
+      mutation: DELETE_ROLE,
+      variables: {
+        guid: payload.guid
+      }
+    })
+      .then(data => {
+        const { deleted } = data.data.deleteRole;
+        context.commit('deleteRole', deleted);
+      })
+      .catch(error => {
+        logger.error(`Error in deleteRole apollo client => ${error}`);
       });
   },
 

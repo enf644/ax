@@ -57,7 +57,8 @@ export default {
     d3Actions: null,
     d3States: null,
     newActionLine: null,
-    d3Initialized: false
+    d3Initialized: false,
+    emInPx: null
   }),
   computed: {
     defaultGridDbName() {
@@ -99,6 +100,13 @@ export default {
   },
   mounted() {
     if (!this.d3Initialized && this.axStates.length > 0) this.initD3();
+    // get height in px of 1em
+    this.emInPx = Number(
+      window
+        .getComputedStyle(document.body)
+        .getPropertyValue('font-size')
+        .match(/\d+/)[0]
+    );
   },
   methods: {
     initD3() {
@@ -115,7 +123,6 @@ export default {
 
       this.d3Initialized = true;
     },
-
     handleResize() {
       if (this.d3Initialized) {
         d3.select('svg').remove();
@@ -575,7 +582,7 @@ export default {
             .attr('id', `d3_text_${d.guid}`)
             .attr('class', 'd3_state_text')
             .attr('text-anchor', 'middle')
-            .attr('y', 7)
+            // .attr('y', 7)
             .attr('alignment-baseline', 'alphabetic')
             .text(data => data.name)
             .call(this.wrap, this.BOX_WIDTH);
@@ -813,7 +820,7 @@ export default {
         let lineNumber = 0;
         const lineHeight = 0.1;
         const y = d3Text.attr('y');
-        const dy = 1;
+        const dy = 1.3;
         let tspan = d3Text
           .text(null)
           .append('tspan')
@@ -842,8 +849,10 @@ export default {
         if (lineNumber > 0) {
           // eslint-disable-next-line no-underscore-dangle
           const d3Rect = currentElement._groups[0][0].previousElementSibling;
-          const newHeight = lineNumber * this.WRAP_LINE_HEIGHT;
-          d3Rect.setAttribute('height', newHeight);
+          // const newHeight = lineNumber * this.WRAP_LINE_HEIGHT + 10;
+          const newHeight = currentElement.node().getBoundingClientRect()
+            .height;
+          d3Rect.setAttribute('height', newHeight + 10);
         }
       });
     },
@@ -1085,55 +1094,69 @@ export default {
       return isChecked;
     },
 
-    handleCreateState() {
+    async handleCreateState() {
       const globalG = document.getElementById('globalG');
       const coords = d3.mouse(globalG);
 
-      let nameIsChecked = false;
-      let currentNum = 0;
-      let currentName = this.$t('workflow.new-state-dummy');
-
-      while (nameIsChecked === false) {
-        if (this.checkStateName(currentName)) {
-          currentNum += 1;
-          currentName = `${this.$t('workflow.new-state-dummy')} ${currentNum}`;
-        } else nameIsChecked = true;
-      }
-
-      const args = {
-        formGuid: this.$store.state.formGuid,
-        name: currentName,
-        x: coords[0],
-        y: coords[1]
-      };
-      this.$store.dispatch('workflow/createState', args).then(() => {
-        // setTimeout(() => {
-        //   this.redrawStates();
-        // }, 50);
-
-        const msg = this.$t('workflow.add-state-toast');
-        this.$dialog.message.success(
-          `<i class="fas fa-project-diagram"></i> &nbsp ${msg}`
-        );
+      const res = await this.$dialog.prompt({
+        text: this.$t('workflow.add-state-prompt'),
+        actions: {
+          true: {
+            text: this.$t('common.confirm')
+          }
+        }
       });
+      if (res) {
+        let nameIsChecked = false;
+        let currentNum = 0;
+        let currentName = res;
+
+        while (nameIsChecked === false) {
+          if (this.checkStateName(currentName)) {
+            currentNum += 1;
+            currentName = `${res} ${currentNum}`;
+          } else nameIsChecked = true;
+        }
+
+        const args = {
+          formGuid: this.$store.state.formGuid,
+          name: currentName,
+          x: coords[0],
+          y: coords[1]
+        };
+        this.$store.dispatch('workflow/createState', args).then(() => {
+          const msg = this.$t('workflow.add-state-toast');
+          this.$dialog.message.success(
+            `<i class="fas fa-project-diagram"></i> &nbsp ${msg}`
+          );
+        });
+      }
     },
 
-    handleCreateAction(_fromStateGuid, _toStateGuid) {
-      const args = {
-        formGuid: this.$store.state.formGuid,
-        name:
-          _fromStateGuid === _toStateGuid
-            ? this.$t('workflow.new-self-action-dummy')
-            : this.$t('workflow.new-action-dummy'),
-        fromStateGuid: _fromStateGuid,
-        toStateGuid: _toStateGuid
-      };
-      this.$store.dispatch('workflow/createAction', args).then(() => {
-        const msg = this.$t('workflow.add-action-toast');
-        this.$dialog.message.success(
-          `<i class="fas fa-angle-double-right"></i> &nbsp ${msg}`
-        );
+    async handleCreateAction(_fromStateGuid, _toStateGuid) {
+      const res = await this.$dialog.prompt({
+        text: this.$t('workflow.add-action-prompt'),
+        actions: {
+          true: {
+            text: this.$t('common.confirm')
+          }
+        }
       });
+
+      if (res) {
+        const args = {
+          formGuid: this.$store.state.formGuid,
+          name: res,
+          fromStateGuid: _fromStateGuid,
+          toStateGuid: _toStateGuid
+        };
+        this.$store.dispatch('workflow/createAction', args).then(() => {
+          const msg = this.$t('workflow.add-action-toast');
+          this.$dialog.message.success(
+            `<i class="fas fa-angle-double-right"></i> &nbsp ${msg}`
+          );
+        });
+      }
     },
 
     handleEditState(d) {

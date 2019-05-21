@@ -2,7 +2,7 @@
   <v-toolbar app class='top-toolbar' clipped-left fixed height='40'>
     <v-toolbar-title align-center>
       <router-link to='/admin/home'>
-        <img class='logo' src='../../assets/logo1.jpg'>
+        <img class='logo' src='../../assets/small_axe.png'>
       </router-link>
     </v-toolbar-title>
 
@@ -279,6 +279,7 @@ export default {
   margin-left: 60px;
   margin-right: 20px;
   padding-right: 20px;
+  background: #eee;
 }
 .constructor-button {
   margin-left: 10px !important;

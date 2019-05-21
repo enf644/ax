@@ -77,8 +77,8 @@ DIALOGS
     https://github.com/Egorvah/vudal
 
 
-NOTIFICATIONS
-    https://github.com/yariksav/vuetify-dialog
+NOTIFICATIONS AND TOAST
+    https://github.com/yariksav/vuetify-dialog <-- CHOISE
     
 
 INTERNALIZATION

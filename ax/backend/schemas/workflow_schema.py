@@ -12,7 +12,7 @@ import backend.schema as ax_schema
 
 # import backend.cache as ax_cache # TODO use cache!
 from backend.schemas.types import Grid, Column, State, Action, PositionInput, \
-    State2Role, Action2Role, RoleFieldPermission
+    State2Role, Action2Role, RoleFieldPermission, Role
 # import ujson as json
 
 
@@ -222,6 +222,88 @@ class DeleteAction(graphene.Mutation):
             raise
 
 
+class CreateRole(graphene.Mutation):
+    """Creates AxRole"""
+    class Arguments:  # pylint: disable=missing-docstring
+        form_guid = graphene.String()
+        name = graphene.String()
+
+    ok = graphene.Boolean()
+    role = graphene.Field(Role)
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        try:
+            del info
+
+            ax_role = AxRole()
+            ax_role.name = args.get('name')
+            ax_role.form_guid = args.get('form_guid')
+
+            ax_model.db_session.add(ax_role)
+            ax_model.db_session.commit()
+            ok = True
+
+            return CreateRole(role=ax_role, ok=ok)
+        except Exception:
+            logger.exception('Error in gql mutation - CreateRole.')
+            raise
+
+
+class UpdateRole(graphene.Mutation):
+    """Updates AxRole"""
+    class Arguments:  # pylint: disable=missing-docstring
+        guid = graphene.String()
+        name = graphene.String(required=False, default_value=None)
+        icon = graphene.String(required=False, default_value=None)
+
+    ok = graphene.Boolean()
+    role = graphene.Field(Role)
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        try:
+            del info
+            ax_role = ax_model.db_session.query(AxRole).filter(
+                AxRole.guid == uuid.UUID(args.get('guid'))
+            ).first()
+
+            if args.get('name'):
+                ax_role.name = args.get('name')
+
+            if args.get('icon'):
+                ax_role.icon = args.get('icon')
+
+            ok = True
+            return UpdateRole(role=ax_role, ok=ok)
+        except Exception:
+            logger.exception('Error in gql mutation - UpdateRole.')
+            raise
+
+class DeleteRole(graphene.Mutation):
+    """Deletes AxRole"""
+    class Arguments:  # pylint: disable=missing-docstring
+        guid = graphene.String()
+
+    ok = graphene.Boolean()
+    deleted = graphene.String()
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        try:
+            del info
+            guid = args.get('guid')
+            ax_role = ax_model.db_session.query(AxRole).filter(
+                AxRole.guid == uuid.UUID(guid)
+            ).first()
+
+            ax_model.db_session.delete(ax_role)
+            ax_model.db_session.commit()
+
+            ok = True
+            return DeleteRole(deleted=guid, ok=ok)
+        except Exception:
+            logger.exception('Error in gql mutation - DeleteRole.')
+            raise
+
+
 class AddRoleToState(graphene.Mutation):
     """Create AxState2Role"""
     class Arguments:  # pylint: disable=missing-docstring
@@ -274,8 +356,8 @@ class DeleteRoleFromState(graphene.Mutation):
                 ).first()
             else:
                 role2state = ax_model.db_session.query(AxState2Role).filter(
-                    AxState2Role.role_guid == uuid.UUID(role_guid)
-                    and AxState2Role.state_guid == uuid.UUID(state_guid)
+                    AxState2Role.role_guid == uuid.UUID(role_guid) and
+                    AxState2Role.state_guid == uuid.UUID(state_guid)
                 ).first()
 
             the_role_guid = role2state.role_guid
@@ -429,6 +511,9 @@ class WorkflowMutations(graphene.ObjectType):
     create_action = CreateAction.Field()
     update_action = UpdateAction.Field()
     delete_action = DeleteAction.Field()
+    create_role = CreateRole.Field()
+    update_role = UpdateRole.Field()
+    delete_role = DeleteRole.Field()
     add_role_to_state = AddRoleToState.Field()
     delete_role_from_state = DeleteRoleFromState.Field()
     add_role_to_action = AddRoleToAction.Field()

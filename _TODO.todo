@@ -347,9 +347,14 @@ AX 20:
             ✔ Create "update" action on drag to self @done(19-05-21 10:51)
             ✔ Delete confirmation to default workflow @done(19-05-21 10:51)
         ✔ Create action on drag @done(19-05-20 19:58)
-        ☐ Roles list
-            ☐ Create role
-            ☐ Role list
+        ✔ Roles list @done(19-05-21 16:32)
+            ✔ Default Admin role in default workflow @done(19-05-21 13:10)
+            ✔ Role list @done(19-05-21 13:45)
+            ✔ Create role button @done(19-05-21 16:32)
+        ☐ Modals dummys
+            ☐ Role modal
+            ☐ Action modal
+            ☐ State modal
         ☐ Role modal
             ☐ Change name
             ☐ Delete

@@ -58,7 +58,8 @@ const GET_FORM_DATA = gql`
         edges {
           node {
             guid,  
-            name
+            name,
+            icon
           }
         }
       },          

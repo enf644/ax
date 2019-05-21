@@ -12,7 +12,8 @@
         "error-close": "Close",
         "field-required": "Field is required",
         "true": "True",
-        "false": "False"
+        "false": "False",
+        "confirm": "Confirm"
     },
     "home": {
         "ax-forms": "Ax Forms",
@@ -59,7 +60,7 @@
             "default-create": "Add record",
             "default-state": "Created",
             "default-delete": "Delete record",
-            "default_admin": "Administrator",
+            "default-admin": "Administrator",
             "default-deleted": "Deleted"
         },
         "new-folder": {
@@ -136,11 +137,19 @@
     },
     "workflow": {
         "new-state-dummy": "New state",
+        "add-state-prompt": "Please input name of state",
         "add-state-toast": "State added",
         "new-action-dummy": "New action",
+        "add-action-prompt": "Please input name of action",
         "new-self-action-dummy": "Update",
         "add-action-toast": "Action added",
-        "delete-confirm": "Are you sure you want to delete record?"
+        "delete-confirm": "Are you sure you want to delete record?",
+        "roles-header": "Workflow roles",
+        "create-role-btn": "Create role",
+        "add-role-toast": "Role created",
+        "add-role-prompt": "Please input name of role",
+        "update-role-toast": "Role updated",
+        "delete-role-toast": "Role deleted"
     },
     "types": {
         "group-id": "Identification",

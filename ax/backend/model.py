@@ -347,6 +347,7 @@ class AxRole(Base):
     form_guid = Column(GUID(), ForeignKey('_ax_forms.guid'))
     form = relationship("AxForm")
     users = relationship("AxUser", secondary='_ax_role2user')
+    icon = Column(String(255))
 
 
 class AxState2Role(Base):
