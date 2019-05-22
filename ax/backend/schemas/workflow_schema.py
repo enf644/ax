@@ -110,6 +110,14 @@ class DeleteState(graphene.Mutation):
                 AxState.guid == uuid.UUID(guid)
             ).first()
 
+            ax_model.db_session.query(AxAction).filter(
+                AxAction.from_state_guid == uuid.UUID(guid)
+            ).delete()
+
+            ax_model.db_session.query(AxAction).filter(
+                AxAction.to_state_guid == uuid.UUID(guid)
+            ).delete()
+
             ax_model.db_session.delete(ax_state)
             ax_model.db_session.commit()
 

@@ -136,20 +136,36 @@
         "server-filter-header": "Server filters"
     },
     "workflow": {
-        "new-state-dummy": "New state",
-        "add-state-prompt": "Please input name of state",
-        "add-state-toast": "State added",
-        "new-action-dummy": "New action",
-        "add-action-prompt": "Please input name of action",
-        "new-self-action-dummy": "Update",
-        "add-action-toast": "Action added",
-        "delete-confirm": "Are you sure you want to delete record?",
-        "roles-header": "Workflow roles",
-        "create-role-btn": "Create role",
-        "add-role-toast": "Role created",
-        "add-role-prompt": "Please input name of role",
-        "update-role-toast": "Role updated",
-        "delete-role-toast": "Role deleted"
+        "state": {
+            "new-state-dummy": "New state",
+            "add-state-prompt": "Please input name of state",
+            "add-state-toast": "State added",
+            "state-delete-confirm": "Do you realy want to delete state [{name}]? All actions from or to this state will be deleted!",
+            "state-deleted-toast": "State deleted",
+            "state-name": "State name"
+        },
+        "action": {
+            "new-action-dummy": "New action",
+            "add-action-prompt": "Please input name of action",
+            "new-self-action-dummy": "Update",
+            "add-action-toast": "Action added",
+            "action-delete-confirm": "Do you realy want to delete action [{name}]?",
+            "action-deleted-toast": "Action deleted",
+            "action-name": "Action name"
+        },
+        "role": {
+            "roles-header": "Workflow roles",
+            "create-role-btn": "Create role",
+            "add-role-toast": "Role created",
+            "add-role-prompt": "Please input name of role",
+            "update-role-toast": "Role updated",
+            "delete-role-toast": "Role deleted",
+            "role-delete-confirm": "Do you realy want to delete role [{name}]?",
+            "role-name-required": "Role name required",
+            "role-deleted-toast": "Role deleted",
+            "role-name": "Role name"
+        },
+        "delete-confirm": "Are you sure you want to delete record?"
     },
     "types": {
         "group-id": "Identification",

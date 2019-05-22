@@ -191,6 +191,10 @@ a {
     fill: white;
 }
 
+.d3_state_rect:hover {
+    fill: #FFD180;
+}
+
 .d3_state_text {
     cursor: pointer;
     font-family: 'Roboto', sans-serif;
@@ -205,13 +209,24 @@ a {
     fill: white;
     stroke-width: 2;
     stroke: black;
+    transition: fill 0.5s;
 }
+
+.d3_start:hover {
+    fill: #FFD180;
+}
+
 
 .d3_end {
     cursor: pointer;
     fill: white;
     stroke-width: 1;
     stroke: black;
+    transition: fill 0.5s;
+}
+
+.d3_end:hover {
+    fill: #FFD180;
 }
 
 .d3_all {
@@ -220,6 +235,11 @@ a {
     stroke-width: 2;
     stroke: black;
     stroke-dasharray: 10, 3;
+    transition: fill 0.5s;
+}
+
+.d3_all:hover {
+    fill: #FFD180;
 }
 
 .g_action {
@@ -260,7 +280,7 @@ a {
 }
 
 .d3_new_action {
-    stroke: orange;
+    stroke: #FF9800;
     stroke-width: 1;
     fill: none;
     opacity: 1;
@@ -269,7 +289,7 @@ a {
 }
 
 .d3_new_action_state {
-    stroke: orange;
+    stroke: #FF9800;
 }
 
 .dragging {

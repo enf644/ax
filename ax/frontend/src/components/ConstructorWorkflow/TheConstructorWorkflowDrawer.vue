@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>{{$t("workflow.roles-header")}}:</h3>
+    <h3>{{$t("workflow.role.roles-header")}}:</h3>
     <div :key='role.guid' @click='openRoleModal(role)' draggable='true' v-for='role in roles'>
       <div :style='{ background: getColor(role)}' class='role-box'>
         <i :class='getIconClass(role)'></i>
@@ -8,19 +8,27 @@
       </div>
     </div>
 
+    <modal adaptive height='auto' name='update-role' scrollable>
+      <TheRoleModal :guid='this.selectedRoleGuid' @close='closeModal'/>
+    </modal>
+
     <br>
 
     <v-btn @click='createRole' data-cy='create-role-btn' small>
       <i class='fas fa-plus'></i>
-      &nbsp; {{$t("workflow.create-role-btn")}}
+      &nbsp; {{$t("workflow.role.create-role-btn")}}
     </v-btn>
   </div>
 </template>
 
 <script>
+import TheRoleModal from '@/components/ConstructorWorkflow/TheRoleModal.vue';
+
 export default {
   name: 'WorkflowDrawer',
+  components: { TheRoleModal },
   data: () => ({
+    selectedRoleGuid: null,
     materialColors: [
       '#8BC34A',
       '#FFEB3B',
@@ -59,7 +67,7 @@ export default {
     },
     async createRole() {
       const res = await this.$dialog.prompt({
-        text: this.$t('workflow.add-role-prompt'),
+        text: this.$t('workflow.role.add-role-prompt'),
         actions: {
           true: {
             text: this.$t('common.confirm')
@@ -71,7 +79,7 @@ export default {
           name: res
         };
         this.$store.dispatch('workflow/createRole', args).then(() => {
-          const msg = this.$t('workflow.add-role-toast');
+          const msg = this.$t('workflow.role.add-role-toast');
           this.$dialog.message.success(
             `<i class="fas user-tie"></i> &nbsp ${msg}`
           );
@@ -79,7 +87,11 @@ export default {
       }
     },
     openRoleModal(role) {
-      console.log(role);
+      this.selectedRoleGuid = role.guid;
+      this.$modal.show('update-role');
+    },
+    closeModal() {
+      this.$modal.hide('update-role');
     }
   }
 };

@@ -17,18 +17,31 @@
       </v-btn>
     </div>-->
     <resize-observer @notify='debounceResize'/>
+
+    <modal adaptive height='auto' name='update-state' scrollable>
+      <TheStateModal :guid='this.selectedStateGuid' @close='closeModal'/>
+    </modal>
+
+    <modal adaptive height='auto' name='update-action' scrollable>
+      <TheActionModal :guid='this.selectedActionGuid' @close='closeModal'/>
+    </modal>
   </div>
 </template>
 
 <script>
 import * as d3 from 'd3';
 import { debounce } from '@/misc';
+import TheStateModal from '@/components/ConstructorWorkflow/TheStateModal.vue';
+import TheActionModal from '@/components/ConstructorWorkflow/TheActionModal.vue';
 
 export default {
   name: 'WorkflowConstructorContent',
+  components: { TheStateModal, TheActionModal },
   data: () => ({
-    // axStates: null,
-    // axActions: null,
+    selectedStateGuid: null,
+    selectedActionGuid: null,
+    resizeWidth: null,
+    resizeHeight: null,
     containerMargin: null,
     containerWidth: null,
     containerHeight: null,
@@ -124,11 +137,18 @@ export default {
       this.d3Initialized = true;
     },
     handleResize() {
-      if (this.d3Initialized) {
+      const deltaX = Math.abs(
+        this.resizeWidth - this.$refs.workflowContainer.clientWidth
+      );
+      const deltaY = Math.abs(
+        this.resizeHeight - this.$refs.workflowContainer.clientHeight
+      );
+
+      if (this.d3Initialized && (deltaX > 10 || deltaY > 10)) {
         d3.select('svg').remove();
         setTimeout(() => {
           this.initD3();
-        }, 100);
+        }, 1000);
       }
     },
 
@@ -143,6 +163,8 @@ export default {
       };
       const paneWidth = this.$refs.workflowContainer.clientWidth;
       const paneHeight = this.$refs.workflowContainer.clientHeight;
+      this.resizeWidth = this.$refs.workflowContainer.clientWidth;
+      this.resizeHeight = this.$refs.workflowContainer.clientHeight;
       const { left } = this.containerMargin;
       const { right } = this.containerMargin;
       const { top } = this.containerMargin;
@@ -525,9 +547,6 @@ export default {
         .enter()
         .filter(d => {
           const element = document.getElementById(`d3_rect_${d.guid}`);
-          // console.log('------');
-          // console.log(d);
-          // console.log(element);
           const isNewElement =            element === null
             && (d.isStart === false && d.isDeleted === false && d.isAll === false);
           // console.log(isNewElement);
@@ -1099,7 +1118,7 @@ export default {
       const coords = d3.mouse(globalG);
 
       const res = await this.$dialog.prompt({
-        text: this.$t('workflow.add-state-prompt'),
+        text: this.$t('workflow.state.add-state-prompt'),
         actions: {
           true: {
             text: this.$t('common.confirm')
@@ -1125,7 +1144,7 @@ export default {
           y: coords[1]
         };
         this.$store.dispatch('workflow/createState', args).then(() => {
-          const msg = this.$t('workflow.add-state-toast');
+          const msg = this.$t('workflow.state.add-state-toast');
           this.$dialog.message.success(
             `<i class="fas fa-project-diagram"></i> &nbsp ${msg}`
           );
@@ -1135,7 +1154,7 @@ export default {
 
     async handleCreateAction(_fromStateGuid, _toStateGuid) {
       const res = await this.$dialog.prompt({
-        text: this.$t('workflow.add-action-prompt'),
+        text: this.$t('workflow.action.add-action-prompt'),
         actions: {
           true: {
             text: this.$t('common.confirm')
@@ -1151,7 +1170,7 @@ export default {
           toStateGuid: _toStateGuid
         };
         this.$store.dispatch('workflow/createAction', args).then(() => {
-          const msg = this.$t('workflow.add-action-toast');
+          const msg = this.$t('workflow.action.add-action-toast');
           this.$dialog.message.success(
             `<i class="fas fa-angle-double-right"></i> &nbsp ${msg}`
           );
@@ -1160,19 +1179,90 @@ export default {
     },
 
     handleEditState(d) {
-      console.log(`HANDLE EDIT STATE ${d.guid}`);
+      this.selectedStateGuid = d.guid;
+      this.$modal.show('update-state');
     },
 
     handleEditAction(d) {
-      console.log(`HANDLE EDIT ACTION ${d.guid}`);
+      this.selectedActionGuid = d.guid;
+      this.$modal.show('update-action');
     },
 
-    handleStateDelete(_id) {
-      console.log(`DELETE STATE ${_id}`);
+    async handleStateDelete(guid) {
+      this.name = this.$store.state.workflow.states.find(
+        state => state.guid === guid
+      ).name;
+
+      const res = await this.$dialog.confirm({
+        text: this.$t('workflow.state.state-delete-confirm', {
+          name: this.name
+        }),
+        actions: {
+          false: this.$t('common.confirm-no'),
+          true: {
+            text: this.$t('common.confirm-yes'),
+            color: 'red'
+          }
+        }
+      });
+
+      if (res) {
+        this.$store
+          .dispatch('workflow/deleteState', {
+            guid
+          })
+          .then(() => {
+            const msg = this.$t('workflow.state.state-deleted-toast');
+            this.$dialog.message.success(
+              `<i class="fas fa-trash-alt"></i> &nbsp ${msg}`
+            );
+            d3.select(`#d3_state_g_${guid}`).remove();
+          });
+      }
     },
 
-    handleActionDelete(_id) {
-      console.log(`DELETE ACTION ${_id}`);
+    async handleActionDelete(guid) {
+      const actionToDelete = this.$store.state.workflow.actions.find(
+        action => action.guid === guid
+      );
+      const actionName = actionToDelete.name;
+      let isSelfActionState = null;
+      if (actionToDelete.fromStateGuid === actionToDelete.toStateGuid) {
+        isSelfActionState = actionToDelete.toStateGuid;
+      }
+
+      const res = await this.$dialog.confirm({
+        text: this.$t('workflow.action.action-delete-confirm', {
+          name: actionName
+        }),
+        actions: {
+          false: this.$t('common.confirm-no'),
+          true: {
+            text: this.$t('common.confirm-yes'),
+            color: 'red'
+          }
+        }
+      });
+
+      if (res) {
+        this.$store
+          .dispatch('workflow/deleteAction', {
+            guid
+          })
+          .then(() => {
+            const msg = this.$t('workflow.action.action-deleted-toast');
+            this.$dialog.message.success(
+              `<i class="fas fa-trash-alt"></i> &nbsp ${msg}`
+            );
+            if (!isSelfActionState) d3.select(`#d3_action_g_${guid}`).remove();
+            else {
+              setTimeout(() => {
+                this.redrawSingleState(isSelfActionState);
+              }, 100);
+            }
+            // d3.select(`#d3_self_action_text_${guid}`).remove();
+          });
+      }
     },
 
     intersect_two_circles(x1, y1, r1, x2, y2, r2) {
@@ -1287,6 +1377,13 @@ export default {
           this.handleActionDelete(this.selectedActionId);
         }
       }
+    },
+    closeModal() {
+      this.$modal.hide('update-state');
+      this.$modal.hide('update-action');
+
+      this.selectedStateGuid = null;
+      this.selectedActionGuid = null;
     }
   }
 };

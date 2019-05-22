@@ -264,7 +264,7 @@ const mutations = {
     state.states[stateIndex].y = newState.y;
   },
   deleteState(state, guid) {
-    state.states = [...state.states.filter(element => element.guid === guid)];
+    state.states = [...state.states.filter(element => element.guid !== guid)];
   },
   addAction(state, action) {
     state.actions.push(action);
@@ -282,7 +282,7 @@ const mutations = {
     state.actions[index].radius = action.radius;
   },
   deleteAction(state, guid) {
-    state.states = [...state.states.filter(element => element.guid === guid)];
+    state.actions = [...state.actions.filter(element => element.guid !== guid)];
   },
   addRole(state, role) {
     state.roles.push(role);
@@ -294,7 +294,7 @@ const mutations = {
     ];
   },
   deleteRole(state, guid) {
-    state.roles = [...state.roles.filter(element => element.guid === guid)];
+    state.roles = [...state.roles.filter(element => element.guid !== guid)];
   },
   addRoleToState(state, state2role) {
     state.states.forEach(currentState => {
@@ -350,7 +350,7 @@ const actions = {
         name: payload.name,
         x: payload.x,
         y: payload.y,
-        update: i18n.tc('workflow.new-self-action-dummy')
+        update: i18n.tc('workflow.action.new-self-action-dummy')
       }
     })
       .then(data => {
@@ -481,7 +481,7 @@ const actions = {
       }
     })
       .then(data => {
-        const deletedGuid = data.data.deleteState.deleted;
+        const deletedGuid = data.data.deleteAction.deleted;
         context.commit('deleteAction', deletedGuid);
       })
       .catch(error => {

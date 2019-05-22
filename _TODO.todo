@@ -351,10 +351,14 @@ AX 20:
             ✔ Default Admin role in default workflow @done(19-05-21 13:10)
             ✔ Role list @done(19-05-21 13:45)
             ✔ Create role button @done(19-05-21 16:32)
-        ☐ Modals dummys
-            ☐ Role modal
-            ☐ Action modal
-            ☐ State modal
+        ✔ Modals dummys @done(19-05-22 09:35)
+            ✔ Role modal @done(19-05-22 09:35)
+            ✔ Action modal @done(19-05-22 09:35)
+            ✔ State modal @done(19-05-22 09:35)
+        ✔ Delete actions @done(19-05-22 21:26)
+            ✔ Delete role @done(19-05-22 21:26)
+            ✔ Delete state @done(19-05-22 21:26)
+            ✔ Delete action @done(19-05-22 21:26)
         ☐ Role modal
             ☐ Change name
             ☐ Delete
