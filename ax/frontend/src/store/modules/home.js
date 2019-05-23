@@ -277,7 +277,7 @@ const actions = {
         defaultState: i18n.tc('home.new-form.default-state'),
         defaultDelete: i18n.tc('home.new-form.default-delete'),
         defaultAdmin: i18n.tc('home.new-form.default-admin'),
-        defaultUpdate: i18n.tc('workflow.new-self-action-dummy'),
+        defaultUpdate: i18n.tc('workflow.action.new-self-action-dummy'),
         deleteConfirm: i18n.tc('workflow.delete-confirm')
       }
     })

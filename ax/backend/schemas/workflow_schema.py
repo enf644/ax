@@ -324,9 +324,21 @@ class AddRoleToState(graphene.Mutation):
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         try:
             del info
+            role_guid = args.get('role_guid')
+            state_guid = args.get('state_guid')
+            existing_state2role = ax_model.db_session.query(AxState2Role).filter(
+                AxState2Role.role_guid == uuid.UUID(role_guid)
+             ).filter(
+                AxState2Role.state_guid == uuid.UUID(state_guid) 
+            ).first()
+
+            if existing_state2role:
+                ok = True
+                return AddRoleToState(state2role=existing_state2role, ok=ok)
+
             state2role = AxState2Role()
-            state2role.state_guid = args.get('state_guid')
-            state2role.role_guid = args.get('role_guid')
+            state2role.state_guid = uuid.UUID(state_guid) 
+            state2role.role_guid = uuid.UUID(role_guid)
 
             ax_model.db_session.add(state2role)
             ax_model.db_session.commit()
@@ -397,15 +409,30 @@ class AddRoleToAction(graphene.Mutation):
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         try:
             del info
+
+            role_guid = args.get('role_guid')
+            action_guid = args.get('action_guid')
+            existing_action2role = ax_model.db_session.query(
+                AxAction2Role
+            ).filter(
+                AxAction2Role.role_guid == uuid.UUID(role_guid)
+            ).filter(
+                AxAction2Role.action_guid == uuid.UUID(action_guid)
+            ).first()
+
+            if existing_action2role:
+                ok = True
+                return AddRoleToAction(action2role=existing_action2role, ok=ok)
+
             action2role = AxAction2Role()
-            action2role.action_guid = args.get('action_guid')
-            action2role.role_guid = args.get('role_guid')
+            action2role.action_guid = uuid.UUID(action_guid) 
+            action2role.role_guid = uuid.UUID(role_guid)
 
             ax_model.db_session.add(action2role)
             ax_model.db_session.commit()
 
             ok = True
-            return AddRoleToState(action2role=action2role, ok=ok)
+            return AddRoleToAction(action2role=action2role, ok=ok)
         except Exception:
             logger.exception('Error in gql mutation - AddRoleToAction.')
             raise

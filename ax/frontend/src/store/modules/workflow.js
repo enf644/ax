@@ -145,8 +145,8 @@ const CREATE_ROLE = gql`
 
 
 const UPDATE_ROLE = gql`
-  mutation ($formGuid: String!, $name: String, $icon: String) {
-    createRole(formGuid: $formGuid, name: $name, icon: $icon) {
+  mutation ($guid: String!, $name: String, $icon: String) {
+    updateRole(guid: $guid, name: $name, icon: $icon) {
       role {
         guid,
         name,

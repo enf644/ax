@@ -292,6 +292,16 @@ a {
     stroke: #FF9800;
 }
 
+.d3_dragover {
+    stroke: #FF5722;
+}
+
+.d3_dragover_line {
+    stroke: #FF5722;
+    fill: #FF5722;
+    opacity: 1;
+}
+
 .dragging {
     /*fill: #CCCCCC;*/
     /*transition: fill 1s;*/

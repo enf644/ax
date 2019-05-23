@@ -22,69 +22,80 @@
         required
         v-model='dbName'
       ></v-text-field>
-    </v-form>
 
-    <v-layout row>
-      <v-flex xs3>
+      <v-layout row>
+        <v-flex xs3>
+          <v-btn
+            @click='openIconPicker'
+            data-cy='new-form-icon-btn'
+            small
+            v-if='this.$route.params.db_name'
+          >
+            <i :class='[iconClass]' key='formIcon'></i>
+            &nbsp; {{$t("home.new-form.change-icon")}}
+          </v-btn>
+          <modal adaptive height='auto' name='new-form-icon' scrollable width='800px'>
+            <TheIconPicker :icon='icon' @choosed='ChangeIconAndCloseModal'/>
+          </modal>
+        </v-flex>
+        <v-flex offset-xs1 xs8>
+          <v-text-field
+            :hint='$t("home.new-form.tom-label-hint")'
+            :label='$t("home.new-form.tom-label")'
+            data-cy='new-form-tom'
+            required
+            v-if='this.$route.params.db_name'
+            v-model='tomLabel'
+          />
+        </v-flex>
+      </v-layout>
+
+      <br>
+      <div class='chip-preview' v-if='this.$route.params.db_name'>
+        <span>{{$t("home.new-form.chip-preview")}}:</span>
+        &nbsp;
+        <v-chip>
+          <v-avatar class='grey darken-2'>
+            <i :class='["ax-chip-icon", iconClass]'></i>
+          </v-avatar>
+          {{tomLabel}}
+        </v-chip>
+      </div>
+
+      <br>
+      <div class='actions'>
         <v-btn
-          @click='openIconPicker'
-          data-cy='new-form-icon-btn'
+          @click='createNewForm'
+          data-cy='new-form-btn'
+          small
+          type='submit'
+          v-if='!this.$route.params.db_name'
+        >
+          <i class='fas fa-plus'></i>
+          &nbsp; {{$t("home.new-form.create-btn")}}
+        </v-btn>
+        <v-btn
+          @click='updateForm'
+          data-cy='update-form-btn'
           small
           v-if='this.$route.params.db_name'
         >
-          <i :class='[iconClass]' key='formIcon'></i>
-          &nbsp; {{$t("home.new-form.change-icon")}}
+          <i class='fas fa-pencil-alt'></i>
+          &nbsp; {{$t("home.new-form.update-btn")}}
         </v-btn>
-        <modal adaptive height='auto' name='new-form-icon' scrollable width='800px'>
-          <TheIconPicker :icon='icon' @choosed='ChangeIconAndCloseModal'/>
-        </modal>
-      </v-flex>
-      <v-flex offset-xs1 xs8>
-        <v-text-field
-          :hint='$t("home.new-form.tom-label-hint")'
-          :label='$t("home.new-form.tom-label")'
-          data-cy='new-form-tom'
-          required
+        <v-btn
+          @click='deleteForm'
+          color='error'
+          data-cy='delete-form-btn'
+          flat
+          small
           v-if='this.$route.params.db_name'
-          v-model='tomLabel'
-        />
-      </v-flex>
-    </v-layout>
-
-    <br>
-    <div class='chip-preview' v-if='this.$route.params.db_name'>
-      <span>{{$t("home.new-form.chip-preview")}}:</span>
-      &nbsp;
-      <v-chip>
-        <v-avatar class='grey darken-2'>
-          <i :class='["ax-chip-icon", iconClass]'></i>
-        </v-avatar>
-        {{tomLabel}}
-      </v-chip>
-    </div>
-
-    <br>
-    <div class='actions'>
-      <v-btn @click='createNewForm' data-cy='new-form-btn' small v-if='!this.$route.params.db_name'>
-        <i class='fas fa-plus'></i>
-        &nbsp; {{$t("home.new-form.create-btn")}}
-      </v-btn>
-      <v-btn @click='updateForm' data-cy='update-form-btn' small v-if='this.$route.params.db_name'>
-        <i class='fas fa-pencil-alt'></i>
-        &nbsp; {{$t("home.new-form.update-btn")}}
-      </v-btn>
-      <v-btn
-        @click='deleteForm'
-        color='error'
-        data-cy='delete-form-btn'
-        flat
-        small
-        v-if='this.$route.params.db_name'
-      >
-        <i class='fas fa-trash-alt'></i>
-        &nbsp; {{$t("home.new-form.delete-btn")}}
-      </v-btn>
-    </div>
+        >
+          <i class='fas fa-trash-alt'></i>
+          &nbsp; {{$t("home.new-form.delete-btn")}}
+        </v-btn>
+      </div>
+    </v-form>
   </div>
 </template>
 

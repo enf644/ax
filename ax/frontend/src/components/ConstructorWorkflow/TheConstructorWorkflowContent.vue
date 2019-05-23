@@ -200,8 +200,8 @@ export default {
           // (create action or change radius)
           const timeDelta = new Date() - this.stateMouseDownTimestamp;
           this.diagramActionMode = !(
-            this.stateMouseDownTimestamp != null
-            && timeDelta < this.NEW_ACTION_TIMEOUT
+            this.stateMouseDownTimestamp != null &&
+            timeDelta < this.NEW_ACTION_TIMEOUT
           );
           if (elementIsDragged) this.stateMouseDownTimestamp = null;
 
@@ -244,15 +244,15 @@ export default {
         .append('svg')
         .attr(
           'width',
-          this.containerWidth
-            + this.containerMargin.left
-            + this.containerMargin.right
+          this.containerWidth +
+            this.containerMargin.left +
+            this.containerMargin.right
         )
         .attr(
           'height',
-          this.containerHeight
-            + this.containerMargin.top
-            + this.containerMargin.bottom
+          this.containerHeight +
+            this.containerMargin.top +
+            this.containerMargin.bottom
         )
         .append('g')
         .attr(
@@ -318,7 +318,8 @@ export default {
         .attr('id', 'globalG')
         .attr(
           'transform',
-          () => `translate(${initialX},${initialY}) scale(${initialZoom},${initialZoom})`
+          () =>
+            `translate(${initialX},${initialY}) scale(${initialZoom},${initialZoom})`
         )
         .on('mousemove', () => {});
 
@@ -441,7 +442,19 @@ export default {
       });
 
       // Actions are redrawed each time on drag
-      d3.selectAll('.d3_action_g').remove();
+      // d3.selectAll('.d3_action_g').remove();
+      const formActions = this.$store.state.workflow.actions.filter(
+        action => action.fromStateGuid === d.guid
+      );
+      formActions.forEach(element => {
+        d3.select(`#d3_action_g_${element.guid}`).remove();
+      });
+      const toActions = this.$store.state.workflow.actions.filter(
+        action => action.toStateGuid === d.guid
+      );
+      toActions.forEach(element => {
+        d3.select(`#d3_action_g_${element.guid}`).remove();
+      });
       this.redrawActions();
     },
 
@@ -483,7 +496,11 @@ export default {
 
       this.d3Actions
         .enter()
-        .filter(d => !document.getElementById(`d3_action_g_${d.guid}`))
+        .filter(d => {
+          const element = document.getElementById(`d3_action_g_${d.guid}`);
+          const isNewElement = element === null;
+          return isNewElement;
+        })
         .append('g')
         .each((d, i, nodes) => {
           const currentElement = d3.select(nodes[i]);
@@ -521,6 +538,23 @@ export default {
             .on('mouseleave', () => {
               this.selectedActionId = null;
             })
+            .on('dragover', data => {
+              // Allow drop
+              d3.event.preventDefault();
+              const currentLine = d3.select(`#d3_action_${data.guid}`);
+              currentLine.classed('d3_dragover_line', true);
+            })
+            .on('dragleave', data => {
+              const currentLine = d3.select(`#d3_action_${data.guid}`);
+              currentLine.classed('d3_dragover_line', false);
+            })
+            .on('drop', data => {
+              const currentLine = d3.select(`#d3_action_${data.guid}`);
+              currentLine.classed('d3_dragover_line', false);
+
+              const roleGuid = d3.event.dataTransfer.getData('roleGuid');
+              this.handleAddRoleToAction(roleGuid, data.guid);
+            })
             .call(this.drag);
         })
         .merge(this.d3Actions)
@@ -547,8 +581,9 @@ export default {
         .enter()
         .filter(d => {
           const element = document.getElementById(`d3_rect_${d.guid}`);
-          const isNewElement =            element === null
-            && (d.isStart === false && d.isDeleted === false && d.isAll === false);
+          const isNewElement =
+            element === null &&
+            (d.isStart === false && d.isDeleted === false && d.isAll === false);
           // console.log(isNewElement);
           return isNewElement;
         })
@@ -591,6 +626,23 @@ export default {
                 currentRect.classed('d3_new_action_state', false);
                 this.newActiontoStateGuid = null;
               }
+            })
+            .on('dragover', data => {
+              // Allow drop
+              d3.event.preventDefault();
+              const currentRect = d3.select(`#d3_rect_${data.guid}`);
+              currentRect.classed('d3_dragover', true);
+            })
+            .on('dragleave', data => {
+              const currentRect = d3.select(`#d3_rect_${data.guid}`);
+              currentRect.classed('d3_dragover', false);
+            })
+            .on('drop', data => {
+              const currentRect = d3.select(`#d3_rect_${data.guid}`);
+              currentRect.classed('d3_dragover', false);
+
+              const roleGuid = d3.event.dataTransfer.getData('roleGuid');
+              this.handleAddRoleToState(roleGuid, data.guid);
             });
         })
         .each((d, i, nodes) => {
@@ -614,8 +666,9 @@ export default {
             .attributes.height.value;
           startHeight = startHeight * 1 + 5; // 5 is first time offset
           const currentStateSelfActions = this.axActions.filter(
-            action => action.toStateGuid === action.fromStateGuid
-              && action.toStateGuid === d.guid
+            action =>
+              action.toStateGuid === action.fromStateGuid &&
+              action.toStateGuid === d.guid
           );
           currentStateSelfActions.forEach(actionD => {
             currentElement
@@ -659,9 +712,10 @@ export default {
       this.d3States
         .enter()
         .filter(
-          d => !!(
-              !document.getElementById(`d3_rect_${d.guid}`)
-              && d.isStart === true
+          d =>
+            !!(
+              !document.getElementById(`d3_rect_${d.guid}`) &&
+              d.isStart === true
             )
         )
         .append('g')
@@ -714,7 +768,8 @@ export default {
       this.d3States
         .enter()
         .filter(
-          d => !!(
+          d =>
+            !!(
               !document.getElementById(`d3_rect_${d.guid}`) && d.isAll === true
             )
         )
@@ -759,9 +814,10 @@ export default {
       this.d3States
         .enter()
         .filter(
-          d => !!(
-              !document.getElementById(`d3_rect_${d.guid}`)
-              && d.isDeleted === true
+          d =>
+            !!(
+              !document.getElementById(`d3_rect_${d.guid}`) &&
+              d.isDeleted === true
             )
         )
         .append('g')
@@ -879,9 +935,10 @@ export default {
     linkArcGenerator(d) {
       const sourceD = this.axStates.find(el => el.guid === d.fromStateGuid);
       const sourceObj = document.getElementById(`d3_rect_${d.fromStateGuid}`);
-      const sourceIsState =        sourceD.isStart === false
-        && sourceD.isDeleted === false
-        && sourceD.isAll === false;
+      const sourceIsState =
+        sourceD.isStart === false &&
+        sourceD.isDeleted === false &&
+        sourceD.isAll === false;
       const sourceCenter = {
         x: sourceD.x,
         y: sourceIsState
@@ -901,9 +958,10 @@ export default {
 
       const targetD = this.axStates.find(el => el.guid === d.toStateGuid);
       const targetObj = document.getElementById(`d3_rect_${d.toStateGuid}`);
-      const targetIsState =        targetD.isStart === false
-        && targetD.isDeleted === false
-        && targetD.isAll === false;
+      const targetIsState =
+        targetD.isStart === false &&
+        targetD.isDeleted === false &&
+        targetD.isAll === false;
       const targetCenter = {
         x: targetD.x,
         y: targetIsState
@@ -963,12 +1021,14 @@ export default {
 
         // P1=2P(0.5)−0.5P0−0.5P2
         // https://math.stackexchange.com/questions/1666026/find-the-control-point-of-quadratic-bezier-curve-having-only-the-end-points
-        controlPoint.x =          mouseDistancePoint.x * 2
-          - sourceCenter.x / 2
-          - targetSweetPoint.x / 2;
-        controlPoint.y =          mouseDistancePoint.y * 2
-          - sourceCenter.y / 2
-          - targetSweetPoint.y / 2;
+        controlPoint.x =
+          mouseDistancePoint.x * 2 -
+          sourceCenter.x / 2 -
+          targetSweetPoint.x / 2;
+        controlPoint.y =
+          mouseDistancePoint.y * 2 -
+          sourceCenter.y / 2 -
+          targetSweetPoint.y / 2;
 
         // drawDebugCircle("debug_controlPoint", "red", controlPoint.x, controlPoint.y);
         // eslint-disable-next-line max-len
@@ -1020,8 +1080,9 @@ export default {
       // assert minX <= maxX;
       // assert minY <= maxY;
       if (validate && (minX < x && x < maxX) && (minY < y && y < maxY)) {
-        const msg =          `Point ${[x, y]}cannot be inside `
-          + `the rectangle: ${[minX, minY]} - ${[maxX, maxY]}.`;
+        const msg =
+          `Point ${[x, y]}cannot be inside ` +
+          `the rectangle: ${[minX, minY]} - ${[maxX, maxY]}.`;
         this.$log.error(msg);
         return false;
       }
@@ -1265,6 +1326,56 @@ export default {
       }
     },
 
+    handleAddRoleToState(roleGuid, stateGuid) {
+      // console.log(`Add ${roleGuid} role to ${stateGuid} state`);
+      this.$store
+        .dispatch('workflow/addRoleToState', {
+          stateGuid,
+          roleGuid
+        })
+        .then(() => {
+          const roleName = this.$store.state.workflow.roles.find(
+            element => element.guid === roleGuid
+          ).name;
+          const stateName = this.$store.state.workflow.states.find(
+            element => element.guid === stateGuid
+          ).name;
+
+          const msg = this.$t('workflow.role.role-added-to-state-toast', {
+            role: roleName,
+            state: stateName
+          });
+          this.$dialog.message.success(
+            `<i class="fas fa-user-plus"></i> &nbsp ${msg}`
+          );
+        });
+    },
+
+    handleAddRoleToAction(roleGuid, actionGuid) {
+      // console.log(`Add ${roleGuid} role to ${stateGuid} action`);
+      this.$store
+        .dispatch('workflow/addRoleToAction', {
+          actionGuid,
+          roleGuid
+        })
+        .then(() => {
+          const roleName = this.$store.state.workflow.roles.find(
+            element => element.guid === roleGuid
+          ).name;
+          const actionName = this.$store.state.workflow.actions.find(
+            element => element.guid === actionGuid
+          ).name;
+
+          const msg = this.$t('workflow.role.role-added-to-action-toast', {
+            role: roleName,
+            action: actionName
+          });
+          this.$dialog.message.success(
+            `<i class="fas fa-user-plus"></i> &nbsp ${msg}`
+          );
+        });
+    },
+
     intersect_two_circles(x1, y1, r1, x2, y2, r2) {
       const centerdx = x1 - x2;
       const centerdy = y1 - y2;
@@ -1311,8 +1422,9 @@ export default {
       // if value > 0, p2 is on the left side of the line.
       // if value = 0, p2 is on the same line.
       // if value < 0, p2 is on the right side of the line.
-      const value =        (lineTo.x - lineFrom.x) * (_point.y - lineFrom.y)
-        - (_point.x - lineFrom.x) * (lineTo.y - lineFrom.y);
+      const value =
+        (lineTo.x - lineFrom.x) * (_point.y - lineFrom.y) -
+        (_point.x - lineFrom.x) * (lineTo.y - lineFrom.y);
       if (value > 0) return true;
       return false;
     },
@@ -1340,9 +1452,10 @@ export default {
         return Math.sqrt(this.getDistanceSquared(_point, lineStart));
       }
 
-      const t =        ((_point.x - lineStart.x) * (lineEnd.x - lineStart.x)
-          + (_point.y - lineStart.y) * (lineEnd.y - lineStart.y))
-        / l2;
+      const t =
+        ((_point.x - lineStart.x) * (lineEnd.x - lineStart.x) +
+          (_point.y - lineStart.y) * (lineEnd.y - lineStart.y)) /
+        l2;
       if (t < 0) {
         return Math.sqrt(this.getDistanceSquared(_point, lineStart));
       }

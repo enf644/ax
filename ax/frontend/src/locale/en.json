@@ -163,7 +163,9 @@
             "role-delete-confirm": "Do you realy want to delete role [{name}]?",
             "role-name-required": "Role name required",
             "role-deleted-toast": "Role deleted",
-            "role-name": "Role name"
+            "role-name": "Role name",
+            "role-added-to-state-toast": "Role [{role}] added to state [{state}]",
+            "role-added-to-action-toast": "Role [{role}] added to action [{action}]"
         },
         "delete-confirm": "Are you sure you want to delete record?"
     },

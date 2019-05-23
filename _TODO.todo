@@ -359,11 +359,11 @@ AX 20:
             ✔ Delete role @done(19-05-22 21:26)
             ✔ Delete state @done(19-05-22 21:26)
             ✔ Delete action @done(19-05-22 21:26)
-        ☐ Role modal
-            ☐ Change name
-            ☐ Delete
-        ☐ Add role to state
-        ☐ Add role to action
+        ✔ Role modal @done(19-05-23 11:01)
+            ✔ Change name @done(19-05-23 11:01)
+            ✔ Delete @done(19-05-23 11:01)
+        ✔ Add role to state @done(19-05-23 15:02)
+        ✔ Add role to action @done(19-05-23 15:02)
         ☐ Highlite roles on mouseover
         ☐ State modal
             ☐ Roles - remove
@@ -481,6 +481,7 @@ NEW FEATURES:
     ☐ Detect unsuported browsers and print error
     ☐ Backup mechanism
     ☐ If js exception - show toast with rerort button
+    ☐ Icons of roles in workflow constructor
     
 MAYBE LATER:
     ☐ python autodoc

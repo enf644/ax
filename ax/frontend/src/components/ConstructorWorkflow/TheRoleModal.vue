@@ -60,10 +60,11 @@ export default {
       if (this.$refs.form.validate()) {
         const data = {
           guid: this.guid,
-          name: this.name
+          name: this.name,
+          icon: null
         };
         this.$store.dispatch('workflow/updateRole', data).then(() => {
-          const msg = this.$t('workflow.role.role-updated-toast');
+          const msg = this.$t('workflow.role.update-role-toast');
           this.$dialog.message.success(
             `<i class="fas fa-pencil-alt"></i> &nbsp ${msg}`
           );

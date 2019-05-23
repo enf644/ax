@@ -1,7 +1,13 @@
 <template>
   <div>
     <h3>{{$t("workflow.role.roles-header")}}:</h3>
-    <div :key='role.guid' @click='openRoleModal(role)' draggable='true' v-for='role in roles'>
+    <div
+      :key='role.guid'
+      @click='openRoleModal(role)'
+      @dragstart='onDragStart(role, $event)'
+      draggable='true'
+      v-for='role in roles'
+    >
       <div :style='{ background: getColor(role)}' class='role-box'>
         <i :class='getIconClass(role)'></i>
         &nbsp; {{ role.name }}
@@ -53,6 +59,9 @@ export default {
     }
   },
   methods: {
+    onDragStart(role, ev) {
+      ev.dataTransfer.setData('roleGuid', role.guid);
+    },
     getIconClass(role) {
       let roleIcon = 'user-tie';
       if (role.icon) roleIcon = role.icon;
