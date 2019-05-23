@@ -191,9 +191,9 @@ a {
     fill: white;
 }
 
-.d3_state_rect:hover {
+/* .d3_state_rect:hover {
     fill: #FFD180;
-}
+} */
 
 .d3_state_text {
     cursor: pointer;
@@ -212,9 +212,9 @@ a {
     transition: fill 0.5s;
 }
 
-.d3_start:hover {
+/* .d3_start:hover {
     fill: #FFD180;
-}
+} */
 
 
 .d3_end {
@@ -225,9 +225,9 @@ a {
     transition: fill 0.5s;
 }
 
-.d3_end:hover {
+/* .d3_end:hover {
     fill: #FFD180;
-}
+} */
 
 .d3_all {
     cursor: pointer;
@@ -238,9 +238,9 @@ a {
     transition: fill 0.5s;
 }
 
-.d3_all:hover {
+/* .d3_all:hover {
     fill: #FFD180;
-}
+} */
 
 .g_action {
     pointer-events: none;
@@ -277,6 +277,7 @@ a {
     stroke-width: 1.5;
     fill: none;
     opacity: 0.25;
+    transition: stroke 0.5s;
 }
 
 .d3_new_action {
@@ -289,7 +290,7 @@ a {
 }
 
 .d3_new_action_state {
-    stroke: #FF9800;
+    fill: #FF9800;
 }
 
 .d3_dragover {
@@ -316,6 +317,16 @@ a {
 .hidden {
     display: none;
 }
+
+.d3_highlighted_action {
+    opacity: 1;
+}
+
+.end-arrow {
+    stroke-width: 1.5 !important;
+}
+
+/* .d3_highlighted_state {} */
 
 /******************* D3 styles }************************/
 

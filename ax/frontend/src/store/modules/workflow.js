@@ -336,6 +336,9 @@ const mutations = {
   },
   setAddedAction(state, action) {
     state.addedAction = action;
+  },
+  setHighlightedRole(state, role) {
+    state.highlightedRole = role;
   }
 };
 
@@ -655,7 +658,8 @@ const state = {
   currentStateGuid: [],
   permissions: [],
   updateTime: null,
-  addedAction: null
+  addedAction: null,
+  highlightedRole: null
 };
 
 export default {

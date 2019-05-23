@@ -5,6 +5,8 @@
       :key='role.guid'
       @click='openRoleModal(role)'
       @dragstart='onDragStart(role, $event)'
+      @mouseout='highlightRole(null)'
+      @mouseover='highlightRole(role)'
       draggable='true'
       v-for='role in roles'
     >
@@ -59,6 +61,11 @@ export default {
     }
   },
   methods: {
+    highlightRole(role) {
+      const roleWithColor = role;
+      if (roleWithColor) roleWithColor.color = this.getColor(roleWithColor);
+      this.$store.commit('workflow/setHighlightedRole', roleWithColor);
+    },
     onDragStart(role, ev) {
       ev.dataTransfer.setData('roleGuid', role.guid);
     },

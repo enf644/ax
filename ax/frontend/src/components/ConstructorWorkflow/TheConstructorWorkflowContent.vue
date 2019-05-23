@@ -74,6 +74,9 @@ export default {
     emInPx: null
   }),
   computed: {
+    hightlightedRole() {
+      return this.$store.state.workflow.highlightedRole;
+    },
     defaultGridDbName() {
       const defaultGrid = this.$store.state.form.grids.find(
         grid => grid.isDefaultView === true
@@ -94,6 +97,57 @@ export default {
     }
   },
   watch: {
+    hightlightedRole(newValue) {
+      if (newValue) {
+        const states2lite = [];
+        this.$store.state.workflow.states.forEach(state => {
+          state.roles.edges.forEach(edge => {
+            if (edge.node.guid === newValue.guid) states2lite.push(state);
+          });
+        });
+
+        states2lite.forEach(state => {
+          const currentState = d3.select(`#d3_rect_${state.guid}`);
+          currentState.style('fill', newValue.color);
+          currentState.classed('d3_highlighted_state', true);
+        });
+
+        const actions2lite = [];
+        this.$store.state.workflow.actions.forEach(action => {
+          action.roles.edges.forEach(edge => {
+            if (edge.node.guid === newValue.guid) actions2lite.push(action);
+          });
+        });
+
+        actions2lite.forEach(action => {
+          const currentAction = d3.select(`#d3_action_${action.guid}`);
+          currentAction.style('stroke', newValue.color);
+          currentAction.classed('d3_highlighted_action', true);
+
+          const currentArrow = d3.select(`#d3_marker_${action.guid}`);
+          currentArrow.style('stroke', newValue.color);
+          currentArrow.style('fill', newValue.color);
+          currentArrow.classed('d3_highlighted_action', true);
+        });
+      } else {
+        this.axStates.forEach(state => {
+          const currentState = d3.select(`#d3_rect_${state.guid}`);
+          currentState.style('fill', null);
+          currentState.classed('d3_highlighted_state', false);
+        });
+
+        this.axActions.forEach(action => {
+          const currentAction = d3.select(`#d3_action_${action.guid}`);
+          currentAction.style('stroke', null);
+          currentAction.classed('d3_highlighted_action', false);
+
+          const currentArrow = d3.select(`#d3_marker_${action.guid}`);
+          currentArrow.style('stroke', null);
+          currentArrow.style('fill', null);
+          currentArrow.classed('d3_highlighted_action', false);
+        });
+      }
+    },
     axStates(newValue, oldValue) {
       if (newValue && oldValue.length === 0) this.initD3();
       if (newValue && this.d3Initialized) this.redrawStates();
@@ -268,21 +322,24 @@ export default {
         );
 
       // Declare actions arrow marker
-      this.svg
-        .append('defs')
-        .selectAll('marker')
-        .data(this.axActions)
-        .enter()
-        .append('marker')
-        .attr('id', () => 'd3_marker')
-        .attr('viewBox', '0 -5 10 10')
-        .attr('refX', 10)
-        .attr('markerWidth', 10)
-        .attr('markerHeight', 10)
-        .attr('orient', 'auto')
-        .append('svg:path')
-        .attr('d', 'M0,-5L10,0L0,5')
-        .attr('class', 'end-arrow');
+      // this.svg
+      //   .append('defs')
+      //   .selectAll('marker')
+      //   .data(this.axActions)
+      //   .enter()
+      //   .append('marker')
+      //   .attr('id', data => {
+      //     return `d3_marker_${data.guid}`;
+      //   })
+      //   .attr('class', () => 'd3_marker')
+      //   .attr('viewBox', '0 -5 10 10')
+      //   .attr('refX', 10)
+      //   .attr('markerWidth', 10)
+      //   .attr('markerHeight', 10)
+      //   .attr('orient', 'auto')
+      //   .append('svg:path')
+      //   .attr('d', 'M0,-5L10,0L0,5')
+      //   .attr('class', 'end-arrow');
 
       // declare  new action marker
       this.svg
@@ -502,6 +559,21 @@ export default {
           return isNewElement;
         })
         .append('g')
+        .each(data => {
+          this.svg
+            .append('defs')
+            .append('marker')
+            .attr('id', `d3_marker_${data.guid}`)
+            .attr('class', () => 'd3_marker')
+            .attr('viewBox', '0 -5 10 10')
+            .attr('refX', 10)
+            .attr('markerWidth', 10)
+            .attr('markerHeight', 10)
+            .attr('orient', 'auto')
+            .append('svg:path')
+            .attr('d', 'M0,-5L10,0L0,5')
+            .attr('class', 'end-arrow');
+        })
         .each((d, i, nodes) => {
           const currentElement = d3.select(nodes[i]);
           currentElement.attr('id', `d3_action_g_${d.guid}`); // set id for current g
@@ -513,7 +585,7 @@ export default {
             .attr('class', 'd3_line_action')
             .attr('d', this.linkArcGenerator)
             .attr('stroke-linecap', 'round')
-            .attr('marker-end', () => 'url(#d3_marker)');
+            .attr('marker-end', () => `url(#d3_marker_${d.guid})`);
         })
         .each((d, i, nodes) => {
           const currentElement = d3.select(nodes[i]);
@@ -543,6 +615,9 @@ export default {
               d3.event.preventDefault();
               const currentLine = d3.select(`#d3_action_${data.guid}`);
               currentLine.classed('d3_dragover_line', true);
+
+              const currentArrow = d3.select(`#d3_marker_${data.guid}`);
+              currentArrow.classed('d3_dragover_line', true);
             })
             .on('dragleave', data => {
               const currentLine = d3.select(`#d3_action_${data.guid}`);
@@ -551,6 +626,9 @@ export default {
             .on('drop', data => {
               const currentLine = d3.select(`#d3_action_${data.guid}`);
               currentLine.classed('d3_dragover_line', false);
+
+              const currentArrow = d3.select(`#d3_marker_${data.guid}`);
+              currentArrow.classed('d3_dragover_line', false);
 
               const roleGuid = d3.event.dataTransfer.getData('roleGuid');
               this.handleAddRoleToAction(roleGuid, data.guid);
@@ -822,7 +900,7 @@ export default {
         )
         .append('g')
         .attr('transform', d => `translate(${[d.x, d.y]})`) // starting position of state group
-        .attr('class', 'g_state')
+        .attr('class', 'g_end')
         .call(this.drag)
         .each((d, i, nodes) => {
           const currentElement = d3.select(nodes[i]);
