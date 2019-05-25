@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>{{$t("workflow.role.roles-header")}}:</h3>
+    <h3>{{$t("workflow.role.roles-list-header")}}:</h3>
     <div
       :key='role.guid'
       @click='openRoleModal(role)'

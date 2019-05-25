@@ -286,6 +286,7 @@ class UpdateRole(graphene.Mutation):
             logger.exception('Error in gql mutation - UpdateRole.')
             raise
 
+
 class DeleteRole(graphene.Mutation):
     """Deletes AxRole"""
     class Arguments:  # pylint: disable=missing-docstring
@@ -326,10 +327,12 @@ class AddRoleToState(graphene.Mutation):
             del info
             role_guid = args.get('role_guid')
             state_guid = args.get('state_guid')
-            existing_state2role = ax_model.db_session.query(AxState2Role).filter(
+            existing_state2role = ax_model.db_session.query(
+                AxState2Role
+            ).filter(
                 AxState2Role.role_guid == uuid.UUID(role_guid)
-             ).filter(
-                AxState2Role.state_guid == uuid.UUID(state_guid) 
+            ).filter(
+                AxState2Role.state_guid == uuid.UUID(state_guid)
             ).first()
 
             if existing_state2role:
@@ -337,7 +340,7 @@ class AddRoleToState(graphene.Mutation):
                 return AddRoleToState(state2role=existing_state2role, ok=ok)
 
             state2role = AxState2Role()
-            state2role.state_guid = uuid.UUID(state_guid) 
+            state2role.state_guid = uuid.UUID(state_guid)
             state2role.role_guid = uuid.UUID(role_guid)
 
             ax_model.db_session.add(state2role)
@@ -376,7 +379,8 @@ class DeleteRoleFromState(graphene.Mutation):
                 ).first()
             else:
                 role2state = ax_model.db_session.query(AxState2Role).filter(
-                    AxState2Role.role_guid == uuid.UUID(role_guid) and
+                    AxState2Role.role_guid == uuid.UUID(role_guid)
+                ).filter(
                     AxState2Role.state_guid == uuid.UUID(state_guid)
                 ).first()
 
@@ -425,7 +429,7 @@ class AddRoleToAction(graphene.Mutation):
                 return AddRoleToAction(action2role=existing_action2role, ok=ok)
 
             action2role = AxAction2Role()
-            action2role.action_guid = uuid.UUID(action_guid) 
+            action2role.action_guid = uuid.UUID(action_guid)
             action2role.role_guid = uuid.UUID(role_guid)
 
             ax_model.db_session.add(action2role)
@@ -491,14 +495,14 @@ class SetStatePermission(graphene.Mutation):
             edit = args.get('edit')
 
             current_fields_guids = []
-            return_permissions = []
+
             ax_field = ax_model.db_session.query(AxField).filter(
-                AxField.id == uuid.UUID(field_guid)).first()
+                AxField.guid == uuid.UUID(field_guid)).first()
 
             if not ax_field.is_tab:
                 current_fields_guids.append(ax_field.guid)
             else:
-                for field in ax_field.ax_object.fields:
+                for field in ax_field.form.fields:
                     if field.parent == ax_field.guid:
                         current_fields_guids.append(field.guid)
 
@@ -517,14 +521,22 @@ class SetStatePermission(graphene.Mutation):
                     ax_perm = AxRoleFieldPermission()
                     ax_perm.form_guid = uuid.UUID(form_guid)
                     ax_perm.role_guid = uuid.UUID(role_guid)
-                    ax_perm.field_guid = uuid.UUID(field_guid)
+                    ax_perm.field_guid = current_guid
+                    ax_perm.state_guid = uuid.UUID(state_guid)
+                    ax_perm.read = read
+                    ax_perm.edit = edit
                     ax_model.db_session.add(ax_perm)
+                    ax_model.db_session.commit()
+                else:
+                    ax_perm.read = read
+                    ax_perm.edit = edit
+                    ax_model.db_session.commit()
 
-                ax_perm.read = read
-                ax_perm.edit = edit
-
-                ax_model.db_session.commit()
-                return_permissions.append(ax_perm)
+            return_permissions = ax_model.db_session.query(
+                AxRoleFieldPermission
+            ).filter(
+                AxRoleFieldPermission.state_guid == uuid.UUID(state_guid)
+            ).all()
 
             ok = True
             return SetStatePermission(permissions=return_permissions, ok=ok)

@@ -138,6 +138,8 @@ class AxForm(Base):
     current_state_object = None
     from_state_name = ""
     from_state_object = None
+    permissions = relationship(
+        "AxRoleFieldPermission", cascade="all, delete-orphan")
 
     @property
     def db_fields(self):

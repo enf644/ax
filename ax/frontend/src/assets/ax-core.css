@@ -299,6 +299,11 @@ a {
 
 .d3_dragover_line {
     stroke: #FF5722;
+    opacity: 1;
+}
+
+.d3_dragover_line_arrow {
+    stroke: #FF5722;
     fill: #FF5722;
     opacity: 1;
 }

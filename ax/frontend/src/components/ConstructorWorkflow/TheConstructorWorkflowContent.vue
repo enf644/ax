@@ -18,12 +18,22 @@
     </div>-->
     <resize-observer @notify='debounceResize'/>
 
-    <modal adaptive height='auto' name='update-state' scrollable>
-      <TheStateModal :guid='this.selectedStateGuid' @close='closeModal'/>
+    <modal adaptive height='auto' name='update-state' scrollable width='1000px'>
+      <TheStateModal
+        :guid='this.selectedStateGuid'
+        @close='closeModal'
+        @updateState='updateModalState'
+        ref='stateModal'
+      />
     </modal>
 
     <modal adaptive height='auto' name='update-action' scrollable>
-      <TheActionModal :guid='this.selectedActionGuid' @close='closeModal'/>
+      <TheActionModal
+        :guid='this.selectedActionGuid'
+        @close='closeModal'
+        @updateAction='updateModalAction'
+        ref='actionModal'
+      />
     </modal>
   </div>
 </template>
@@ -100,6 +110,7 @@ export default {
     hightlightedRole(newValue) {
       if (newValue) {
         const states2lite = [];
+        const highlightStart = false;
         this.$store.state.workflow.states.forEach(state => {
           state.roles.edges.forEach(edge => {
             if (edge.node.guid === newValue.guid) states2lite.push(state);
@@ -107,9 +118,15 @@ export default {
         });
 
         states2lite.forEach(state => {
-          const currentState = d3.select(`#d3_rect_${state.guid}`);
-          currentState.style('fill', newValue.color);
-          currentState.classed('d3_highlighted_state', true);
+          if (state.isStart) {
+            const startState = d3.select('#d3_start');
+            startState.style('fill', newValue.color);
+            startState.classed('d3_highlighted_state', true);
+          } else {
+            const currentState = d3.select(`#d3_rect_${state.guid}`);
+            currentState.style('fill', newValue.color);
+            currentState.classed('d3_highlighted_state', true);
+          }
         });
 
         const actions2lite = [];
@@ -146,6 +163,10 @@ export default {
           currentArrow.style('fill', null);
           currentArrow.classed('d3_highlighted_action', false);
         });
+
+        const startState = d3.select('#d3_start');
+        startState.style('fill', null);
+        startState.classed('d3_highlighted_state', false);
       }
     },
     axStates(newValue, oldValue) {
@@ -617,18 +638,21 @@ export default {
               currentLine.classed('d3_dragover_line', true);
 
               const currentArrow = d3.select(`#d3_marker_${data.guid}`);
-              currentArrow.classed('d3_dragover_line', true);
+              currentArrow.classed('d3_dragover_line_arrow', true);
             })
             .on('dragleave', data => {
               const currentLine = d3.select(`#d3_action_${data.guid}`);
               currentLine.classed('d3_dragover_line', false);
+
+              const currentArrow = d3.select(`#d3_marker_${data.guid}`);
+              currentArrow.classed('d3_dragover_line_arrow', false);
             })
             .on('drop', data => {
               const currentLine = d3.select(`#d3_action_${data.guid}`);
               currentLine.classed('d3_dragover_line', false);
 
               const currentArrow = d3.select(`#d3_marker_${data.guid}`);
-              currentArrow.classed('d3_dragover_line', false);
+              currentArrow.classed('d3_dragover_line_arrow', false);
 
               const roleGuid = d3.event.dataTransfer.getData('roleGuid');
               this.handleAddRoleToAction(roleGuid, data.guid);
@@ -816,6 +840,23 @@ export default {
               // event.preventDefault();
               this.stateMouseDownTimestamp = new Date();
               this.newActionFromId = data.guid;
+            })
+            .on('dragover', data => {
+              // Allow drop
+              d3.event.preventDefault();
+              const currentRect = d3.select('#d3_start');
+              currentRect.classed('d3_dragover', true);
+            })
+            .on('dragleave', data => {
+              const currentRect = d3.select('#d3_start');
+              currentRect.classed('d3_dragover', false);
+            })
+            .on('drop', data => {
+              const currentRect = d3.select('#d3_start');
+              currentRect.classed('d3_dragover', false);
+
+              const roleGuid = d3.event.dataTransfer.getData('roleGuid');
+              this.handleAddRoleToState(roleGuid, data.guid);
             });
         })
         .each((d, i, nodes) => {
@@ -1322,9 +1363,23 @@ export default {
       this.$modal.show('update-state');
     },
 
+    updateModalState() {
+      const stateGuid = this.$refs.stateModal.currentGuid;
+      setTimeout(() => {
+        d3.select(`#d3_state_g_${stateGuid}`).remove();
+        this.redrawStates();
+        this.closeModal();
+      }, 100);
+    },
+
     handleEditAction(d) {
       this.selectedActionGuid = d.guid;
       this.$modal.show('update-action');
+    },
+
+    updateModalAction() {
+      const actionGuid = this.$refs.actionModal.currentGuid;
+      this.redrawSingleAction(actionGuid);
     },
 
     async handleStateDelete(guid) {

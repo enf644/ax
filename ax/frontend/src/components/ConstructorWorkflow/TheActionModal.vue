@@ -5,7 +5,7 @@
       <i class='fas fa-times close-ico'></i>
     </v-btn>
     <br>
-    <v-form @submit='updateGrid' ref='form' v-model='valid'>
+    <v-form @submit.prevent='updateGrid' ref='form' v-model='valid'>
       <v-text-field
         :label='$t("grids.grid-name")'
         data-cy='grid-name'

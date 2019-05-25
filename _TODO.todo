@@ -365,15 +365,16 @@ AX 20:
         ✔ Add role to state @done(19-05-23 15:02)
         ✔ Add role to action @done(19-05-23 15:02)
         ✔ Highlite roles on mouseover @done(19-05-23 21:01)
-        ☐ State modal
-            ☐ Roles - remove
-            ☐ Name
-            ☐ Permissions
-                ☐ Permission component
-            ☐ Delete - all connected actions must be deleted
+        ✔ State modal @done(19-05-25 23:54)
+            ✔ Name @done(19-05-24 12:45)
+            ✔ Delete - all connected actions must be deleted @done(19-05-24 12:45)
+            ✔ Roles - remove @done(19-05-25 18:27)
+            ✔ Permissions
+                ✔ Permission component @done(19-05-25 23:52)
+        ☐ On field cration -> add admin role to 
         ☐ Action modal
-            ☐ Roles - remove
             ☐ Name
+            ☐ Roles - remove
             ☐ Icon
             ☐ Code
             ☐ Delete

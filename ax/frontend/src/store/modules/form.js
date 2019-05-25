@@ -104,6 +104,18 @@ const GET_FORM_DATA = gql`
           }
         }
       },
+      permissions {
+        edges {
+          node {
+            guid,
+            roleGuid,
+            fieldGuid,
+            stateGuid,
+            edit,
+            read
+          }
+        }
+      }
     }
   }
   ${FieldFragment}
@@ -296,6 +308,20 @@ const mutations = {
 };
 
 const getters = {
+  fieldsTabSorted(state) {
+    const retFields = [];
+    const tabs = state.fields.filter(field => field.isTab).sort(field => field.position);
+    tabs.forEach(tab => {
+      retFields.push(tab);
+      const fields = state.fields
+        .filter(field => field.parent === tab.guid)
+        .sort(field => field.position);
+      fields.forEach(tabField => {
+        retFields.push(tabField);
+      });
+    });
+    return retFields;
+  },
   typesTreeData(state) {
     const typesTreeData = [];
 

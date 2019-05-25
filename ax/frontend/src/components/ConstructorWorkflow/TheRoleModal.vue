@@ -1,11 +1,11 @@
 <template>
   <div class='card'>
-    <h1>{{$t("grids.settings-header")}}</h1>
+    <h1>{{$t("workflow.role.role-settings-header")}}</h1>
     <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
       <i class='fas fa-times close-ico'></i>
     </v-btn>
     <br>
-    <v-form @submit='updateRole' ref='form' v-model='valid'>
+    <v-form @submit.prevent='updateRole' ref='form' v-model='valid'>
       <v-text-field
         :label='$t("workflow.role.role-name")'
         :rules='nameRules'
@@ -20,12 +20,12 @@
     <div class='actions'>
       <v-btn @click='updateRole' data-cy='update-role-btn' small>
         <i class='fas fa-pencil-alt'></i>
-        &nbsp; {{$t("grids.settings-update-btn")}}
+        &nbsp; {{$t("workflow.role.update-role-btn")}}
       </v-btn>
 
       <v-btn @click='deleteRole' color='error' data-cy='delete-role-btn' flat small>
         <i class='fas fa-trash-alt'></i>
-        &nbsp; {{$t("grids.settings-delete-btn")}}
+        &nbsp; {{$t("workflow.role.delete-role-btn")}}
       </v-btn>
     </div>
   </div>

@@ -239,12 +239,14 @@ const mutations = {
       state.roles = data.roles ? data.roles.edges.map(edge => edge.node) : null;
       state.states = data.states ? data.states.edges.map(edge => edge.node) : null;
       state.actions = data.actions ? data.actions.edges.map(edge => edge.node) : null;
+      state.permissions = data.permissions ? data.permissions.edges.map(edge => edge.node) : null;
     } else {
       state.formGuid = null;
       state.formDbName = null;
       state.roles = [];
       state.states = [];
       state.actions = [];
+      state.permissions = [];
     }
   },
   addState(state, newState) {
@@ -299,17 +301,21 @@ const mutations = {
   addRoleToState(state, state2role) {
     state.states.forEach(currentState => {
       const newNode = {};
-      newNode.node = { guid: state2role.roleGuid };
+      const roleName = state.roles.find(role => role.guid === state2role.roleGuid).name;
+      newNode.node = {
+        guid: state2role.roleGuid,
+        name: roleName
+      };
       if (currentState.guid === state2role.stateGuid) currentState.roles.edges.push(newNode);
     });
   },
   deleteRoleFromState(state, state2role) {
     state.states.forEach((currentState, i) => {
       if (currentState.guid === state2role.stateGuid) {
-        const filtered = currentState.role.edges
-          .filter(element => element.node.guid === state2role.roleGuid);
+        const filtered = currentState.roles.edges
+          .filter(element => element.node.guid !== state2role.roleGuid);
         const newRoles = [...filtered];
-        state.states[i].role.edges = newRoles;
+        state.states[i].roles.edges = newRoles;
       }
     });
   },
@@ -324,15 +330,20 @@ const mutations = {
     state.actions.forEach((currentAction, i) => {
       if (currentAction.guid === action2role.actionGuid) {
         const filtered = currentAction.role.edges
-          .filter(element => element.node.guid === action2role.roleGuid);
+          .filter(element => element.node.guid !== action2role.roleGuid);
         const newRoles = [...filtered];
         state.actions[i].role.edges = newRoles;
       }
     });
   },
-  setPermissions(state, permissions) {
-    state.currentStateGuid = permissions[0].stateGuid;
-    state.permissions = permissions;
+  setStatePermissions(state, statePermissions) {
+    if (statePermissions[0]) {
+      state.currentStateGuid = statePermissions[0].stateGuid;
+      const filtered = state.permissions
+        .filter(element => element.stateGuid !== state.currentStateGuid);
+      const combined = filtered.concat(statePermissions);
+      state.permissions = [...combined];
+    }
   },
   setAddedAction(state, action) {
     state.addedAction = action;
@@ -640,7 +651,7 @@ const actions = {
     })
       .then(data => {
         const { permissions } = data.data.setStatePermission;
-        context.commit('setPermissions', permissions);
+        context.commit('setStatePermissions', permissions);
       })
       .catch(error => {
         logger.error(`Error in setStatePermission apollo client => ${error}`);

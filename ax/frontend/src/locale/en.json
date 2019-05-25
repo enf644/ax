@@ -137,6 +137,12 @@
     },
     "workflow": {
         "state": {
+            "state-settings-header": "State settings",
+            "update-state-btn": "Update state settings",
+            "delete-state-btn": "Delete state",
+            "state-name-required": "State name is required",
+            "update-state-toast": "State updated",
+            "delete-state-toast": "State deleted",
             "new-state-dummy": "New state",
             "add-state-prompt": "Please input name of state",
             "add-state-toast": "State added",
@@ -154,18 +160,25 @@
             "action-name": "Action name"
         },
         "role": {
-            "roles-header": "Workflow roles",
+            "roles-list-header": "Workflow roles",
+            "role-settings-header": "Role settings",
             "create-role-btn": "Create role",
+            "update-role-btn": "Update role settings",
+            "delete-role-btn": "Delete role",
             "add-role-toast": "Role created",
             "add-role-prompt": "Please input name of role",
             "update-role-toast": "Role updated",
             "delete-role-toast": "Role deleted",
             "role-delete-confirm": "Do you realy want to delete role [{name}]?",
-            "role-name-required": "Role name required",
+            "role-name-required": "Role name is required",
             "role-deleted-toast": "Role deleted",
             "role-name": "Role name",
             "role-added-to-state-toast": "Role [{role}] added to state [{state}]",
-            "role-added-to-action-toast": "Role [{role}] added to action [{action}]"
+            "role-added-to-action-toast": "Role [{role}] added to action [{action}]",
+            "permissions-header": "Change state permissions",
+            "delete-role-from-state-confirm": "Are you sure you want to delete [{role}] role from [{state}] state?",
+            "role-removed-from-state-toast": "Role removed",
+            "permission-set-toast": "State permissions modified"
         },
         "delete-confirm": "Are you sure you want to delete record?"
     },
