@@ -5,14 +5,15 @@ import graphene
 from loguru import logger
 
 from backend.model import AxForm, AxField, AxFieldType, \
-    AxRoleFieldPermission, AxColumn
+    AxRoleFieldPermission, AxColumn, AxRole
 
 import backend.model as ax_model
 # import backend.cache as ax_cache # TODO use cache!
 import backend.dialects as ax_dialects
 import backend.schema as ax_schema
 
-from backend.schemas.types import Form, Field, PositionInput
+from backend.schemas.types import Form, Field, PositionInput, \
+    RoleFieldPermission
 import ujson as json
 
 
@@ -117,6 +118,7 @@ class CreateField(graphene.Mutation):
 
     ok = graphene.Boolean()
     field = graphene.Field(Field)
+    permissions = graphene.List(RoleFieldPermission)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         del info
@@ -189,11 +191,28 @@ class CreateField(graphene.Mutation):
                         field.position = pos.position
                         field.parent = current_parent
 
+            # add permission for default admin role on every state
+            admin_role = ax_model.db_session.query(AxRole).filter(
+                AxRole.is_admin.is_(True)
+            ).filter(AxRole.form_guid == ax_form.guid).first()
+
+            permissions = []
+            for state in ax_form.states:
+                perm = AxRoleFieldPermission()
+                perm.form_guid = ax_form.guid
+                perm.state_guid = state.guid
+                perm.role_guid = admin_role.guid
+                perm.field_guid = ax_field.guid
+                perm.read = True
+                perm.edit = True
+                ax_model.db_session.add(perm)
+                permissions.append(perm)
+
             ax_model.db_session.commit()
             ax_schema.init_schema()
 
             ok = True
-            return CreateTab(field=ax_field, ok=ok)
+            return CreateField(field=ax_field, permissions=permissions, ok=ok)
         except Exception:
             logger.exception('Error in gql mutation - CreateTab.')
             raise

@@ -350,6 +350,7 @@ class AxRole(Base):
     form = relationship("AxForm")
     users = relationship("AxUser", secondary='_ax_role2user')
     icon = Column(String(255))
+    is_admin = Column(Boolean, unique=False, default=False)
 
 
 class AxState2Role(Base):

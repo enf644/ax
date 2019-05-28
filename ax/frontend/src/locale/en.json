@@ -148,7 +148,8 @@
             "add-state-toast": "State added",
             "state-delete-confirm": "Do you realy want to delete state [{name}]? All actions from or to this state will be deleted!",
             "state-deleted-toast": "State deleted",
-            "state-name": "State name"
+            "state-name": "State name",
+            "name-not-avalible": "Current name is not avalible. State name must be unique."
         },
         "action": {
             "new-action-dummy": "New action",
@@ -157,7 +158,16 @@
             "add-action-toast": "Action added",
             "action-delete-confirm": "Do you realy want to delete action [{name}]?",
             "action-deleted-toast": "Action deleted",
-            "action-name": "Action name"
+            "action-name": "Action name",
+            "action-settings-header": "Action settings",
+            "settings-update-btn": "Update action settings",
+            "settings-delete-btn": "Delete action",
+            "action-name-required": "Action name is required",
+            "update-action-toast": "State updated",
+            "delete-action-toast": "State deleted",
+            "settings-roles-list": "Roles that can perform current action",
+            "icon-btn": "Change icon",
+            "code-header": "Actions python code"
         },
         "role": {
             "roles-list-header": "Workflow roles",
@@ -178,6 +188,7 @@
             "permissions-header": "Change state permissions",
             "delete-role-from-state-confirm": "Are you sure you want to delete [{role}] role from [{state}] state?",
             "role-removed-from-state-toast": "Role removed",
+            "role-removed-from-action-toast": "Role removed",
             "permission-set-toast": "State permissions modified"
         },
         "delete-confirm": "Are you sure you want to delete record?"

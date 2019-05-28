@@ -28,6 +28,7 @@ class CreateState(graphene.Mutation):
     ok = graphene.Boolean()
     state = graphene.Field(State)
     action = graphene.Field(Action)
+    permissions = graphene.List(RoleFieldPermission)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         try:
@@ -45,17 +46,51 @@ class CreateState(graphene.Mutation):
             if args.get('update'):
                 update_action = AxAction()
                 update_action.name = args.get('update')
-                update_action.form_guid = args.get('form_guid')
+                update_action.form_guid = uuid.UUID(args.get('form_guid'))
                 update_action.from_state_guid = new_state.guid
                 update_action.to_state_guid = new_state.guid
 
                 ax_model.db_session.add(update_action)
                 ax_model.db_session.commit()
 
-            # TODO: Add default admin role!
+            # Add default admin role
+            admin_role = ax_model.db_session.query(AxRole).filter(
+                AxRole.form_guid == uuid.UUID(args.get('form_guid'))
+            ).filter(
+                AxRole.is_admin.is_(True)
+            ).first()
+
+            permissions = []
+            if admin_role:
+                state2role = AxState2Role()
+                state2role.state_guid = new_state.guid
+                state2role.role_guid = admin_role.guid
+                ax_model.db_session.add(state2role)
+                ax_model.db_session.commit()
+
+                ax_form = ax_model.db_session.query(AxForm).filter(
+                    AxForm.guid == uuid.UUID(args.get('form_guid'))
+                ).first()
+
+                for field in ax_form.fields:
+                    perm = AxRoleFieldPermission()
+                    perm.form_guid = ax_form.guid
+                    perm.state_guid = new_state.guid
+                    perm.role_guid = admin_role.guid
+                    perm.field_guid = field.guid
+                    perm.read = True
+                    perm.edit = True
+                    ax_model.db_session.add(perm)
+                    permissions.append(perm)
+
+                ax_model.db_session.commit()
 
             ok = True
-            return CreateState(state=new_state, action=update_action, ok=ok)
+            return CreateState(
+                state=new_state,
+                action=update_action,
+                permissions=permissions,
+                ok=ok)
         except Exception:
             logger.exception('Error in gql mutation - CreateState.')
             raise
@@ -151,7 +186,19 @@ class CreateAction(graphene.Mutation):
             ax_model.db_session.add(new_action)
             ax_model.db_session.commit()
 
-            # TODO: Add default admin roles
+            # Add default admin role
+            admin_role = ax_model.db_session.query(AxRole).filter(
+                AxRole.form_guid == uuid.UUID(args.get('form_guid'))
+            ).filter(
+                AxRole.is_admin.is_(True)
+            ).first()
+
+            if admin_role:
+                action2role = AxAction2Role()
+                action2role.action_guid = new_action.guid
+                action2role.role_guid = admin_role.guid
+                ax_model.db_session.add(action2role)
+                ax_model.db_session.commit()
 
             ok = True
             return CreateAction(action=new_action, ok=ok)
@@ -446,25 +493,39 @@ class DeleteRoleFromAction(graphene.Mutation):
     """Deletes AxAction2Role"""
     class Arguments:  # pylint: disable=missing-docstring
         guid = graphene.String()
+        action_guid = graphene.String()
+        role_guid = graphene.String()
 
     ok = graphene.Boolean()
     deleted = graphene.String()
     role_guid = graphene.String()
+    action_guid = graphene.String()
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         try:
             del info
             guid = args.get('guid')
+            action_guid = args.get('action_guid')
+            role_guid = args.get('role_guid')
 
-            role2action = ax_model.db_session.query(AxAction2Role).filter(
-                AxAction2Role.guid == uuid.UUID(guid)
-            ).first()
-            role_guid = role2action.role_guid
+            role2action = None
+            if guid:
+                role2action = ax_model.db_session.query(AxAction2Role).filter(
+                    AxAction2Role.guid == uuid.UUID(guid)
+                ).first()
+            else:
+                role2action = ax_model.db_session.query(AxAction2Role).filter(
+                    AxAction2Role.role_guid == uuid.UUID(role_guid)
+                ).filter(
+                    AxAction2Role.action_guid == uuid.UUID(action_guid)
+                ).first()
+
+            deleted = role2action.guid
             ax_model.db_session.delete(role2action)
             ax_model.db_session.commit()
 
             ok = True
-            return DeleteRoleFromState(deleted=guid, ok=ok, role_guid=role_guid)
+            return DeleteRoleFromAction(deleted=deleted, ok=ok, role_guid=role_guid, action_guid=action_guid)
         except Exception:
             logger.exception('Error in gql mutation - DeleteRoleFromState.')
             raise
@@ -547,7 +608,17 @@ class SetStatePermission(graphene.Mutation):
 
 class WorkflowQuery(graphene.ObjectType):
     """Query all data of AxGrid and related classes"""
-    pass
+    action_data=graphene.Field(
+        Action,
+        guid=graphene.Argument(type=graphene.String, required=True),
+        update_time=graphene.Argument(type=graphene.String, required=False))
+
+    async def resolve_action_data(self, info, guid=None, update_time=None):
+        """ get AxAction code and other big settings """
+        del update_time
+        query = Action.get_query(info=info)
+        ax_action = query.filter(AxAction.guid == uuid.UUID(guid)).first()
+        return ax_action
 
 
 class WorkflowMutations(graphene.ObjectType):

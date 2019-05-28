@@ -8,6 +8,8 @@
     <v-form @submit.prevent='updateState' ref='form' v-model='valid'>
       <v-text-field
         :label='$t("workflow.state.state-name")'
+        :rules='nameRules'
+        @input='resetNameValid'
         data-cy='state-name'
         ref='nameField'
         required
@@ -89,11 +91,22 @@ export default {
       valid: false,
       nameRules: [
         v => !!v || this.$t('workflow.state.state-name-required'),
-        v => v.length <= 255 || this.$t('common.lenght-error', { num: 255 })
+        v => v.length <= 255 || this.$t('common.lenght-error', { num: 255 }),
+        v => (v && this.nameIsAvalible)
+          || this.$t('workflow.state.name-not-avalible')
       ]
     };
   },
   computed: {
+    nameIsAvalible() {
+      let isAvalible = true;
+      this.$store.state.workflow.states.forEach(state => {
+        if (state.guid !== this.guid && state.name === this.name) {
+          isAvalible = false;
+        }
+      });
+      return isAvalible;
+    },
     currentState() {
       return this.$store.state.workflow.states.find(
         element => element.guid === this.guid
@@ -116,6 +129,11 @@ export default {
     this.name = this.currentState.name;
   },
   methods: {
+    resetNameValid() {
+      if (this.nameIsAvalible === false) {
+        this.$refs.form.validate();
+      }
+    },
     async deleteRoleFromState(role) {
       const res = await this.$dialog.confirm({
         text: this.$t('workflow.role.delete-role-from-state-confirm', {

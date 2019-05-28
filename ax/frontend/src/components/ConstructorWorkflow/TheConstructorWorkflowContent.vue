@@ -27,7 +27,7 @@
       />
     </modal>
 
-    <modal adaptive height='auto' name='update-action' scrollable>
+    <modal adaptive height='auto' name='update-action' scrollable width='1000px'>
       <TheActionModal
         :guid='this.selectedActionGuid'
         @close='closeModal'
@@ -275,8 +275,8 @@ export default {
           // (create action or change radius)
           const timeDelta = new Date() - this.stateMouseDownTimestamp;
           this.diagramActionMode = !(
-            this.stateMouseDownTimestamp != null &&
-            timeDelta < this.NEW_ACTION_TIMEOUT
+            this.stateMouseDownTimestamp != null
+            && timeDelta < this.NEW_ACTION_TIMEOUT
           );
           if (elementIsDragged) this.stateMouseDownTimestamp = null;
 
@@ -319,15 +319,15 @@ export default {
         .append('svg')
         .attr(
           'width',
-          this.containerWidth +
-            this.containerMargin.left +
-            this.containerMargin.right
+          this.containerWidth
+            + this.containerMargin.left
+            + this.containerMargin.right
         )
         .attr(
           'height',
-          this.containerHeight +
-            this.containerMargin.top +
-            this.containerMargin.bottom
+          this.containerHeight
+            + this.containerMargin.top
+            + this.containerMargin.bottom
         )
         .append('g')
         .attr(
@@ -396,8 +396,7 @@ export default {
         .attr('id', 'globalG')
         .attr(
           'transform',
-          () =>
-            `translate(${initialX},${initialY}) scale(${initialZoom},${initialZoom})`
+          () => `translate(${initialX},${initialY}) scale(${initialZoom},${initialZoom})`
         )
         .on('mousemove', () => {});
 
@@ -683,9 +682,8 @@ export default {
         .enter()
         .filter(d => {
           const element = document.getElementById(`d3_rect_${d.guid}`);
-          const isNewElement =
-            element === null &&
-            (d.isStart === false && d.isDeleted === false && d.isAll === false);
+          const isNewElement =            element === null
+            && (d.isStart === false && d.isDeleted === false && d.isAll === false);
           // console.log(isNewElement);
           return isNewElement;
         })
@@ -768,9 +766,8 @@ export default {
             .attributes.height.value;
           startHeight = startHeight * 1 + 5; // 5 is first time offset
           const currentStateSelfActions = this.axActions.filter(
-            action =>
-              action.toStateGuid === action.fromStateGuid &&
-              action.toStateGuid === d.guid
+            action => action.toStateGuid === action.fromStateGuid
+              && action.toStateGuid === d.guid
           );
           currentStateSelfActions.forEach(actionD => {
             currentElement
@@ -814,10 +811,9 @@ export default {
       this.d3States
         .enter()
         .filter(
-          d =>
-            !!(
-              !document.getElementById(`d3_rect_${d.guid}`) &&
-              d.isStart === true
+          d => !!(
+              !document.getElementById(`d3_rect_${d.guid}`)
+              && d.isStart === true
             )
         )
         .append('g')
@@ -887,8 +883,7 @@ export default {
       this.d3States
         .enter()
         .filter(
-          d =>
-            !!(
+          d => !!(
               !document.getElementById(`d3_rect_${d.guid}`) && d.isAll === true
             )
         )
@@ -933,10 +928,9 @@ export default {
       this.d3States
         .enter()
         .filter(
-          d =>
-            !!(
-              !document.getElementById(`d3_rect_${d.guid}`) &&
-              d.isDeleted === true
+          d => !!(
+              !document.getElementById(`d3_rect_${d.guid}`)
+              && d.isDeleted === true
             )
         )
         .append('g')
@@ -1054,10 +1048,9 @@ export default {
     linkArcGenerator(d) {
       const sourceD = this.axStates.find(el => el.guid === d.fromStateGuid);
       const sourceObj = document.getElementById(`d3_rect_${d.fromStateGuid}`);
-      const sourceIsState =
-        sourceD.isStart === false &&
-        sourceD.isDeleted === false &&
-        sourceD.isAll === false;
+      const sourceIsState =        sourceD.isStart === false
+        && sourceD.isDeleted === false
+        && sourceD.isAll === false;
       const sourceCenter = {
         x: sourceD.x,
         y: sourceIsState
@@ -1077,10 +1070,9 @@ export default {
 
       const targetD = this.axStates.find(el => el.guid === d.toStateGuid);
       const targetObj = document.getElementById(`d3_rect_${d.toStateGuid}`);
-      const targetIsState =
-        targetD.isStart === false &&
-        targetD.isDeleted === false &&
-        targetD.isAll === false;
+      const targetIsState =        targetD.isStart === false
+        && targetD.isDeleted === false
+        && targetD.isAll === false;
       const targetCenter = {
         x: targetD.x,
         y: targetIsState
@@ -1140,14 +1132,12 @@ export default {
 
         // P1=2P(0.5)−0.5P0−0.5P2
         // https://math.stackexchange.com/questions/1666026/find-the-control-point-of-quadratic-bezier-curve-having-only-the-end-points
-        controlPoint.x =
-          mouseDistancePoint.x * 2 -
-          sourceCenter.x / 2 -
-          targetSweetPoint.x / 2;
-        controlPoint.y =
-          mouseDistancePoint.y * 2 -
-          sourceCenter.y / 2 -
-          targetSweetPoint.y / 2;
+        controlPoint.x =          mouseDistancePoint.x * 2
+          - sourceCenter.x / 2
+          - targetSweetPoint.x / 2;
+        controlPoint.y =          mouseDistancePoint.y * 2
+          - sourceCenter.y / 2
+          - targetSweetPoint.y / 2;
 
         // drawDebugCircle("debug_controlPoint", "red", controlPoint.x, controlPoint.y);
         // eslint-disable-next-line max-len
@@ -1199,9 +1189,8 @@ export default {
       // assert minX <= maxX;
       // assert minY <= maxY;
       if (validate && (minX < x && x < maxX) && (minY < y && y < maxY)) {
-        const msg =
-          `Point ${[x, y]}cannot be inside ` +
-          `the rectangle: ${[minX, minY]} - ${[maxX, maxY]}.`;
+        const msg =          `Point ${[x, y]}cannot be inside `
+          + `the rectangle: ${[minX, minY]} - ${[maxX, maxY]}.`;
         this.$log.error(msg);
         return false;
       }
@@ -1379,7 +1368,10 @@ export default {
 
     updateModalAction() {
       const actionGuid = this.$refs.actionModal.currentGuid;
-      this.redrawSingleAction(actionGuid);
+      setTimeout(() => {
+        this.redrawSingleAction(actionGuid);
+        this.closeModal();
+      }, 100);
     },
 
     async handleStateDelete(guid) {
@@ -1555,9 +1547,8 @@ export default {
       // if value > 0, p2 is on the left side of the line.
       // if value = 0, p2 is on the same line.
       // if value < 0, p2 is on the right side of the line.
-      const value =
-        (lineTo.x - lineFrom.x) * (_point.y - lineFrom.y) -
-        (_point.x - lineFrom.x) * (lineTo.y - lineFrom.y);
+      const value =        (lineTo.x - lineFrom.x) * (_point.y - lineFrom.y)
+        - (_point.x - lineFrom.x) * (lineTo.y - lineFrom.y);
       if (value > 0) return true;
       return false;
     },
@@ -1585,10 +1576,9 @@ export default {
         return Math.sqrt(this.getDistanceSquared(_point, lineStart));
       }
 
-      const t =
-        ((_point.x - lineStart.x) * (lineEnd.x - lineStart.x) +
-          (_point.y - lineStart.y) * (lineEnd.y - lineStart.y)) /
-        l2;
+      const t =        ((_point.x - lineStart.x) * (lineEnd.x - lineStart.x)
+          + (_point.y - lineStart.y) * (lineEnd.y - lineStart.y))
+        / l2;
       if (t < 0) {
         return Math.sqrt(this.getDistanceSquared(_point, lineStart));
       }

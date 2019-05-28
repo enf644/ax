@@ -365,19 +365,24 @@ AX 20:
         ✔ Add role to state @done(19-05-23 15:02)
         ✔ Add role to action @done(19-05-23 15:02)
         ✔ Highlite roles on mouseover @done(19-05-23 21:01)
-        ✔ State modal @done(19-05-25 23:54)
+        ✔ State modal @done(19-05-28 16:39)
             ✔ Name @done(19-05-24 12:45)
             ✔ Delete - all connected actions must be deleted @done(19-05-24 12:45)
             ✔ Roles - remove @done(19-05-25 18:27)
             ✔ Permissions
                 ✔ Permission component @done(19-05-25 23:52)
-        ☐ On field cration -> add admin role to 
-        ☐ Action modal
-            ☐ Name
-            ☐ Roles - remove
-            ☐ Icon
-            ☐ Code
-            ☐ Delete
+            ✔ State name must be unique @done(19-05-28 16:39)
+        ✔ Admin default permissions @done(19-05-27 11:11)
+            ✔ On state creation -> add admin role @done(19-05-27 10:23)
+            ✔ On field cration -> add admin role to @done(19-05-27 10:23)
+            ✔ On action creation -> add admin @done(19-05-27 11:11)
+            ✔ Cant rename or delete admin group @done(19-05-27 11:11)
+        ✔ Action modal @done(19-05-28 11:08)
+            ✔ Name @done(19-05-27 11:39)
+            ✔ Roles - remove @done(19-05-27 14:13)
+            ✔ Icon @done(19-05-27 15:31)
+            ✔ Code @done(19-05-28 10:27)
+            ✔ Delete @done(19-05-28 11:08)
     ☐ RELATION FIELDS
 		✔ multiple pop-ups @done(19-04-16 14:41)
 		☐ ax-1tom
@@ -386,6 +391,14 @@ AX 20:
     ☐ COMPLEX FIELDS
 		☐ ax-files
 		☐ ax-crop-image
+    ☐ ACTION ENGINE
+        ☐ Create actions
+        ☐ Change state action
+        ☐ Delete action
+        ☐ Run python code action
+            ☐ Try email
+        ☐ Confirm text
+        ☐ Close modal
     ☐ TEST MILESTONE
         ☐ Cover everything with cypress tests
         ☐ Try pip installation
@@ -403,6 +416,7 @@ AX 20:
 	☐ MARKETPLACE
 		☐ Dump application to yaml
         ☐ Install application from yaml
+        ☐ Load settings for existing forms from yaml - form, workflow, grids
         ☐ Git integration
     ☐ GLOBAL FROGS
         ☐ Different sorting and filtering for different types
@@ -412,6 +426,12 @@ AX 20:
         ☐ Product usage statistics
         ☐ LICENSING
     ☐ ALL FIELDS
+    ☐ ACTION EXPERIENCE
+        ☐ Message pop-up from python code
+        ☐ Logging code 
+        ☐ Code highlite and autocomplete
+            ☐ Monaco language server, language client
+            ☐ Code snippets
 
 
 BEFORE LAUNCH:
@@ -638,66 +658,6 @@ Every new version checklist:
 ============================================================================================
 
 
-REFACTORING ROUND 2:
-	☐ Отказоустойчивость
-		☐ Мониторить пул соединений к Mysql - в случае проблем, перегружать приложение.
-		☐ Система фиксации багов пользователями
-AX ON-PREMISE BETA RELEASE:
-	☐ MARKETPLACE
-		☐ Yaml vs SQl
-	☐ РАЗРАБОТКА ПОЛЕЙ (60 полей)
-	☐ Выкладывание в apt-get и pip
-GETTING SERIOUS:
-	☐ ПРИЧЕСКА и ПРОВЕРКИ
-		☐ Admin только для админов
-		☐ Тест - доступы распространяются на подгруппы
-		☐ Убрать лишние файлы
-	☐ Bower - перейти на latest версии всего
-	☐ MYSQL - Быстродействие
-		☐ Переделать все json поля на тип mysql JSON
-		☐ Кэширвоание sqlalchemy самой структуры - Dogpile Caching
-		☐ Динамическая загрузка скриптов - ????
-	☐ Документирование
-		☐ Актуализировать схему объектной модели
-		☐ Нарисовать схему вызовов web_element -> route -> object (Подумать над автогенерацией)
-	☐ Отказоустойчивость
-		☐ Бэкапирование
-		☐ При пропаже соединения в любом месте должны быть проверки и попытки пере-конекта. Таймер не-активности в системе - выбрасывать
-		☐ Система мониторинга и устранения багов
-	☐ Тестирование
-		☐ BEHAVE - описать все сценарии
-		☐ Организовать возможность оутстаф тестирования
-	☐ Закрыть все висюки
-	☐ Проверки
-		☐ Вставка на удаленные страницы систем - google sites, sharepoint, bitrix
-		☐ Проверка - медленное соединение
-		☐ Проверка - Большой объем данных - Залить большой объем - https://github.com/datacharmer/test_db
-		☐ Одновременная работа
-			☐ Над объектом
-			☐ Над гридом
-			☐ Над процессом
-			☐ Над записью
-	☐ Авторизация - google, auth
-		☐ Пользователь в grid server filter
-		☐ Пользователь в action code			
-	☐ Features
-		☐ Проверка на ошибку выполнения действия - выводится на экран
-		☐ Показывать - какие поля обязательны
-		☐ Должно быть видно - какие поля можно редактировать
-		☐ Изменение типа поля - можно только с одним db-type
-		☐ Dashboard Menu Breadcrumbs
-		☐ Dashboard Lazy-loading - iron-lazy-pages
-		☐ Dashboard - message toasts
-		☐ Grid - Inline edit - В зависимости от доступа, устанавливаем editable=true
-		☐ Validate при inline edit
-		☐ Избавится от Update. Это должно быть действие.
-		☐ Поля с типами TEXT, BLOB грузятся через ajax, а не в момент запроса.
-		☐ Toast в случае работы ax-grid вне ax.cloud
-		☐ Динамический Title на всех страницах
-	☐ Bugs
-		☐ После установки приложения переходит не в то приложение
-
-
 AX SAAS BETA:
 	☐ DEPLOY
 		☐ Очередь вместо ajax запроса.
@@ -748,60 +708,7 @@ AX SAAS BETA:
 		☐ Copy action
 		☐ Export to excel
 
-
-
-
-MID TODOS:
-	☐ Тип поля в опциях в конструкторе форм
-	☐ 1tom и mtom сделать уменьшающийся label при focus как в material design
-	☐ Кастомные сортировки в зависимости от типа объекта (возможно часть назначения нового поля) http://ag-grid.com/angular-grid-sorting/index.php
-	☐ CRUD -> JSONP - https://jvaneyck.wordpress.com/2014/01/07/cross-domain-requests-in-javascript/
-	☐ Проверять работает ли MySQL
-	☐ Автоматическое db_name
-	☐ Убрать "example" в гриде и в форме
-	☐ ax-files - очищать папки, которые не привязаны к записям (нажать создать, загрузить фото, но не сохранить запись)
-	☐ При авторизации - Сохраняемый токен пользователя сейчас логин, а должен быть микс из логина и пароля.
-	☐ Ограничение длинны названия статуса - 256 символов
-	☐ Проверять везде служебные строки - ax_state, anon, id
-	☐ Переделать close_modal и update. Сейчас грид обновляется только при закрытии. Нужно сделать отдельный сигнал на обновление гридов.
-	☐ Анимация loading при обновлении грида и формы	
-	☐ Везде одинаковые кнопки - либо MDL либо paper
-	☐ Users-form - проверка в полях - email, пароль. Пароль нужно хешировать.
-	☐ Ax-dashboard стиль для mdl-layout__container устанавливается таймером на 2000
-	☐ Grid - в flat mode (forPrint) не работает сортировка
-	☐ Process-constructor - Field Permission - кода выбираем "редактирование" на закладку, виртуальные поля должны простовляться "просмотр"
-	☐ Ax-form - усли происходит переход с статуса на котором нет drawer на стутус с drawer - то drawer не показывается
-	☐ Ag-grid - Inline edit - если значение не изменилось - не отправлять запрос
-	☐ Ax-crop-image Field - не работает inline edit. Не ловится iron-signal в элементе editor
-	☐ Toast при update в ax-grid
-	☐ URL в dashboard - при перегрузке должна сохраняться открытая страница
-	☐ Избавится от paper-card
-	☐ Избавится от paper-drawer-panel
-	☐ Избавится от config.py
-	☐ Избавится от ax-core.css - или минимизировать
-	☐ Market - deploy - Проверка безопасности - се��вис можно дернуть только из действия и только с этой системы.
-	☐ Ax-action - spiiner при исполнении действия
-	☐ Form-constructor - Сделать добавление поля по клику на тип поля
-	☐ Constructor - если изменить settings формы, при переходе в грид-конструктор грид не обновляется
-	☐ Ax-form - Update only fields that were modified on form submit
-	☐ Ax-action Delete action must have confirm text on default!
-	☐ Ax-from при выводе decimal переводится в float. Либо разобраться с сериализацией, либо заменить все поле на float
-	☐ Деревья всегда открыты - Form, Grid, Dashboard constructor
-	☐ Grid-constructor - Переделать выбор грида с option на jstree
-	☐ Ax-grid - при добавлении строки группы не должны сворачиваться.
-	☐ MtoM Table - один грид для отображения в форме, другой грид для поп-ап.
-	☐ Form-constructor - при вводе db_name не должна быть возможность сохранить, если такое db_name уже есть.
-	☐ Form-construcotr - emulate_screen при загрузке не работает. Если включить - drawer скрывается, но иконка-кнопка не показывается на больших формах.
-	☐ Проверять установленные библиотеки при запуске приложения - https://stackoverflow.com/questions/16294819/how-to-check-if-my-python-has-all-required-packages
-	☐ !!!!!!!!!!!!!!!! Переделать ax-form и все ajax сохранения, где может быть много текста на body. см. update_dashboard_item.
-	☐ Разобраться с константами - everyone, anon, all_users и тд
-	☐ Ревизия названия переменных
-		☐ Максимально убрать ax_
-		☐ object-construcotr -> form-constructor
-		☐ process -> workflow
-
-
-FEATURES:
+OLD FEATURES:
 	☐ Редактировать объект можно исключительно клавиатурой
 	☐ Сообщение при создании - ИД созданной записи
 	☐ Удаление нескольких объектов через правый клик 

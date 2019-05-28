@@ -10,7 +10,7 @@
       draggable='true'
       v-for='role in roles'
     >
-      <div :style='{ background: getColor(role)}' class='role-box'>
+      <div :style='{ background: role.color }' class='role-box'>
         <i :class='getIconClass(role)'></i>
         &nbsp; {{ role.name }}
       </div>
@@ -36,35 +36,16 @@ export default {
   name: 'WorkflowDrawer',
   components: { TheRoleModal },
   data: () => ({
-    selectedRoleGuid: null,
-    materialColors: [
-      '#8BC34A',
-      '#FFEB3B',
-      '#FFC107',
-      '#2196F3',
-      '#FF9800',
-      '#00BCD4',
-      '#CDDC39',
-      '#E91E63',
-      '#FF5722',
-      '#009688',
-      '#4CAF50',
-      '#9E9E9E',
-      '#F44336',
-      '#3F51B5',
-      '#FF9800'
-    ]
+    selectedRoleGuid: null
   }),
   computed: {
     roles() {
-      return this.$store.state.workflow.roles;
+      return this.$store.getters['workflow/rolesWithColor'];
     }
   },
   methods: {
     highlightRole(role) {
-      const roleWithColor = role;
-      if (roleWithColor) roleWithColor.color = this.getColor(roleWithColor);
-      this.$store.commit('workflow/setHighlightedRole', roleWithColor);
+      this.$store.commit('workflow/setHighlightedRole', role);
     },
     onDragStart(role, ev) {
       ev.dataTransfer.setData('roleGuid', role.guid);
@@ -73,13 +54,6 @@ export default {
       let roleIcon = 'user-tie';
       if (role.icon) roleIcon = role.icon;
       return `fas fa-${roleIcon}`;
-    },
-    getColor(role) {
-      let index = this.roles.indexOf(role);
-      while (index > this.materialColors.length) {
-        index -= this.materialColors.length;
-      }
-      return this.materialColors[index];
     },
     async createRole() {
       const res = await this.$dialog.prompt({

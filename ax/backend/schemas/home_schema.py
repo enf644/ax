@@ -192,6 +192,7 @@ def create_default_roles(ax_form, states, actions, default_admin):
     admin_role = AxRole()
     admin_role.name = default_admin
     admin_role.form_guid = ax_form.guid
+    admin_role.is_admin = True
     # TODO add admin group user to role
     ax_model.db_session.add(admin_role)
     ax_model.db_session.commit()

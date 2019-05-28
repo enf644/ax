@@ -59,7 +59,8 @@ const GET_FORM_DATA = gql`
           node {
             guid,  
             name,
-            icon
+            icon,
+            isAdmin
           }
         }
       },          
@@ -161,6 +162,15 @@ const CREATE_FIELD = gql`
     createField(formGuid: $formGuid, name: $name, tag: $tag, positions: $positions, position: $position, parent: $parent) {
       field {
         ...FieldFragment
+      },
+      permissions {
+        guid,
+        formGuid,
+        roleGuid,
+        stateGuid,
+        fieldGuid,
+        read,
+        edit        
       },
       ok    
     }
@@ -543,6 +553,9 @@ const actions = {
         const newField = data.data.createField.field;
         context.commit('addField', newField);
         context.commit('setCreatedFieldGuid', newField.guid);
+
+        const newPermissions = data.data.createField.permissions;
+        context.commit('workflow/setFieldPermissions', newPermissions, { root: true });
       })
       .catch(error => {
         logger.error(`Error in createField apollo client => ${error}`);

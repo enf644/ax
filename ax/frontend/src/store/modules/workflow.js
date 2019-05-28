@@ -12,7 +12,8 @@ const CREATE_STATE = gql`
         roles{
           edges {
             node {
-              guid
+              guid,
+              name
             }
           }
         },
@@ -28,7 +29,8 @@ const CREATE_STATE = gql`
         roles{
           edges {
             node {
-              guid
+              guid,
+              name
             }
           }
         },
@@ -36,7 +38,16 @@ const CREATE_STATE = gql`
         toStateGuid,
         icon,
         radius
-      },      
+      },
+      permissions {
+        guid,
+        formGuid,
+        roleGuid,
+        stateGuid,
+        fieldGuid,
+        read,
+        edit        
+      }  
       ok  
     }
   }
@@ -114,7 +125,10 @@ const UPDATE_ACTION = gql`
         fromStateGuid,
         toStateGuid,
         icon,
-        radius
+        radius,
+        code,
+        confirmText,
+        closeModal
       },
       ok    
     }
@@ -126,6 +140,30 @@ const DELETE_ACTION = gql`
     deleteAction(guid: $guid) {
       deleted,
       ok    
+    }
+  }
+`;
+
+const GET_ACTION_DATA = gql`
+  query ($guid: String!, $updateTime: String) {
+    actionData(guid: $guid, updateTime: $updateTime) {
+      guid,
+      name,
+      code,
+      confirmText,
+      closeModal,
+      roles{
+        edges {
+          node {
+            guid,
+            name
+          }
+        }
+      },
+      fromStateGuid,
+      toStateGuid,
+      icon,
+      radius
     }
   }
 `;
@@ -205,9 +243,10 @@ const ADD_ROLE_TO_ACTION = gql`
 `;
 
 const DELETE_ROLE_FROM_ACTION = gql`
-  mutation ($guid: String!) {
-    deleteRoleFromAction(guid: $guid) {
+  mutation ($guid: String, $actionGuid: String, $roleGuid: String) {
+    deleteRoleFromAction(guid: $guid, actionGuid: $actionGuid, roleGuid: $roleGuid) {
       deleted,
+      roleGuid,
       actionGuid,
       ok    
     }
@@ -329,10 +368,10 @@ const mutations = {
   deleteRoleFromAction(state, action2role) {
     state.actions.forEach((currentAction, i) => {
       if (currentAction.guid === action2role.actionGuid) {
-        const filtered = currentAction.role.edges
+        const filtered = currentAction.roles.edges
           .filter(element => element.node.guid !== action2role.roleGuid);
         const newRoles = [...filtered];
-        state.actions[i].role.edges = newRoles;
+        state.actions[i].roles.edges = newRoles;
       }
     });
   },
@@ -345,6 +384,15 @@ const mutations = {
       state.permissions = [...combined];
     }
   },
+  setFieldPermissions(state, fieldPermissions) {
+    if (fieldPermissions[0]) {
+      const { fieldGuid } = fieldPermissions[0];
+      const filtered = state.permissions
+        .filter(element => element.fieldGuid !== fieldGuid);
+      const combined = filtered.concat(fieldPermissions);
+      state.permissions = [...combined];
+    }
+  },
   setAddedAction(state, action) {
     state.addedAction = action;
   },
@@ -353,7 +401,38 @@ const mutations = {
   }
 };
 
-const getters = {};
+const getters = {
+  rolesWithColor(state) {
+    const retRoles = [];
+    const materialColors = [
+      '#8BC34A',
+      '#FFEB3B',
+      '#FFC107',
+      '#2196F3',
+      '#FF9800',
+      '#00BCD4',
+      '#CDDC39',
+      '#E91E63',
+      '#FF5722',
+      '#009688',
+      '#4CAF50',
+      '#9E9E9E',
+      '#F44336',
+      '#3F51B5',
+      '#FF9800'
+    ];
+    state.roles.forEach(role => {
+      const newRole = Object.assign({}, role);
+      let index = state.roles.indexOf(role);
+      while (index > materialColors.length) {
+        index -= this.materialColors.length;
+      }
+      newRole.color = materialColors[index];
+      retRoles.push(newRole);
+    });
+    return retRoles;
+  }
+};
 const actions = {
 
   createState(context, payload) {
@@ -374,6 +453,9 @@ const actions = {
         const updateAction = data.data.createState.action;
         context.commit('addAction', updateAction);
         context.commit('setAddedAction', updateAction);
+
+        const newPermissions = data.data.createState.permissions;
+        context.commit('setStatePermissions', newPermissions);
       })
       .catch(error => {
         logger.error(`Error in createState apollo client => ${error}`);
@@ -500,6 +582,23 @@ const actions = {
       })
       .catch(error => {
         logger.error(`Error in deleteAction apollo client => ${error}`);
+      });
+  },
+
+  getActionData(context, payload) {
+    apolloClient.query({
+      query: GET_ACTION_DATA,
+      variables: {
+        guid: payload.guid,
+        updateTime: Date.now()
+      }
+    })
+      .then(data => {
+        const newAction = data.data.actionData;
+        context.commit('updateAction', newAction);
+      })
+      .catch(error => {
+        logger.error(`Error in getActionData apollo client => ${error}`);
       });
   },
 
