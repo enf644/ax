@@ -134,7 +134,8 @@
         "grid-created-toast": "Grid created",
         "grid-is-default-view": "This grid is set as default view",
         "serer-filter-btn": "Server filters",
-        "server-filter-header": "Server filters"
+        "server-filter-header": "Server filters",
+        "select-relation": "Select"
     },
     "workflow": {
         "state": {

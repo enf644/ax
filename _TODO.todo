@@ -404,7 +404,7 @@ AX 20:
             ✔ Required error @done(19-06-04 09:02)
             ✔ Hint @done(19-06-04 09:10)
             ✔ Error when adding field @done(19-06-04 09:25)
-		☐ ax-mtom
+		✔ ax-mtom @done(19-06-04 15:26)
 		☐ ax-mtom-table
     ☐ ACTION ENGINE
         ☐ Create actions

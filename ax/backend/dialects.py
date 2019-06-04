@@ -111,7 +111,7 @@ class SqliteDialect(object):
 
                 guids_string = ", ".join(
                     "'" + item + "'" for item in guids_array)
-                guids_sql = f"AND guid IN ({guids_string})"
+                guids_sql = f"OR guid IN ({guids_string})"
             sql = (
                 f"SELECT guid, axState, axNum, {fields_sql}"
                 f", {tom_name} as axLabel FROM {ax_form.db_name}"

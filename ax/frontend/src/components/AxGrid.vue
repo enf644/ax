@@ -15,6 +15,12 @@
           &nbsp; {{$t("grids.test-action")}}
         </v-btn>
       </div>
+      <div class='actions' v-if='this.isTomMode'>
+        <v-btn @click='emitSelectedItems' small>
+          <i class='fas fa-check-double'></i>
+          &nbsp; {{$t("grids.select-relation")}}
+        </v-btn>
+      </div>
     </v-sheet>
     <modal :name='`sub-form-${this.modalGuid}`' adaptive height='auto' scrollable width='70%'>
       <v-card>
@@ -52,7 +58,8 @@ export default {
     },
     update_time: null,
     tom_mode: null,
-    to1_mode: null
+    to1_mode: null,
+    preselect: null
   },
   data() {
     return {
@@ -79,10 +86,9 @@ export default {
         let pinnedColumnsCounter = this.options.pinned;
         const columnDefs = [];
         let firstRun = false;
-        if (this.to1_mode !== null && this.to1_mode !== undefined) {
+        if (this.to1_mode !== undefined || this.tom_mode !== undefined) {
           firstRun = true;
         }
-        // console.log(this.tom_mode);
 
         this.columns.forEach(column => {
           let currentWidth = null;
@@ -169,8 +175,8 @@ export default {
     },
     actionsEnabled() {
       if (!this.options) return false;
-      if (this.to1_mode != null && this.to1_mode !== undefined) return false;
-      if (this.tom_mode != null && this.tom_mode !== undefined) return false;
+      if (this.to1_mode !== undefined) return false;
+      if (this.tom_mode !== undefined) return false;
       return this.options.enableActions;
     },
     gridClass() {
@@ -187,6 +193,9 @@ export default {
         }
       }
       return `${themeClass} grid`;
+    },
+    isTomMode() {
+      return this.tom_mode !== undefined;
     }
   },
   watch: {
@@ -327,9 +336,12 @@ export default {
             filter: this.options.enableFiltering
           },
           columnDefs: this.columnDefs,
-          rowData: this.rowData
+          rowData: this.rowData,
+          rowSelection: 'multiple'
         };
-        gridOptions.onRowClicked = event => this.openForm(event.data.guid);
+        gridOptions.onRowClicked = event => {
+          this.openForm(event.data.guid);
+        };
         gridOptions.onRowSelected = event => this.rowSelected(event);
         gridOptions.rowHeight = this.options.rowHeight;
         this.gridObj = new Grid(this.$refs.grid, gridOptions);
@@ -378,19 +390,33 @@ export default {
         };
         setTimeout(() => {
           this.gridInitialized = true;
+          if (this.isTomMode) {
+            this.gridObj.gridOptions.suppressRowClickSelection = true;
+            this.doPreselect(this.preselect);
+          }
         }, 50);
       } catch (e) {
         this.$log.error(`ERROR initiating AG grid => ${e}`);
       }
     },
     rowSelected(event) {
-      // const axItems = [
-      //   {
-      //     guid: event.node.data.guid,
-      //     label: event.node.data.axLabel
-      //   }
-      // ];
-      this.$emit('selected', event.node.data.guid);
+      if (this.to1_mode !== undefined) {
+        this.$emit('selected', event.node.data.guid);
+      }
+    },
+    emitSelectedItems() {
+      const selectedItems = this.gridObj.gridOptions.api.getSelectedRows();
+      const selectedGuids = selectedItems.map(item => item.guid);
+      this.$emit('selected', selectedGuids);
+    },
+    doPreselect(selectedGuids) {
+      if (selectedGuids) {
+        this.gridObj.gridOptions.api.forEachNode(node => {
+          if (selectedGuids.indexOf(node.data.guid) > -1) {
+            node.setSelected(true);
+          } else node.setSelected(false);
+        });
+      }
     }
   }
 };
@@ -427,7 +453,7 @@ export default {
   height: 100%;
 }
 .actions {
-  margin: 0px 25px 0px 25px;
+  margin: 15px 25px 0px 25px;
   height: 64px;
 }
 .close {
