@@ -13,6 +13,17 @@ const GET_ALL_FORMS = gql`
         parent,
         position,
         icon,
+        grids {
+          edges {
+            node {
+              guid,
+              name,
+              dbName,
+              position,
+              isDefaultView
+            }
+          }
+        },  
         tomLabel
       }
     }
@@ -207,6 +218,16 @@ const mutations = {
   },
   setRedirectNeededUrl(state, url) {
     state.redirectNeededUrl = url;
+  },
+  addGrid(state, grid) {
+    state.forms.forEach(form => {
+      console.log(grid);
+      if (form.guid === grid.formGuid) {
+        form.grids.edges.push({
+          node: grid
+        });
+      }
+    });
   }
 };
 

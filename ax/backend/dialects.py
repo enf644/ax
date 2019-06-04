@@ -1,13 +1,50 @@
 """Initiate SQL dialects"""
 import sys
 import sqlite3
+import uuid
+import re
 from loguru import logger
+import ujson as json
 import backend.model as ax_model
 from backend.model import AxForm
 
 this = sys.modules[__name__]
 dialect_name = None
 dialect = None
+
+
+def get_tom_sql(form_db_name, form_name, tom_label, fields):
+    """ Constructs sql string form select query resulting to-M-label of row"""
+    tags = re.findall("{{(.*?)}}", tom_label)
+    true_tags = []
+    for field in fields:
+        if field.db_name in tags:
+            true_tags.append(field.db_name)
+
+    if "guid" in tags:
+        true_tags.append("guid")
+
+    tom_label_modified = tom_label.replace("{{ax_form_name}}", form_name)
+    tom_label_modified = tom_label_modified.replace(
+        "{{ax_db_name}}", form_db_name)
+
+    texts = re.split('{{.*?}}', tom_label_modified)
+    true_texts = []
+    for text in texts:
+        if text != "":
+            true_texts.append("'" + text + "'")
+        else:
+            true_texts.append(text)
+
+    if not true_tags:
+        return f"{true_texts[0]}"
+
+    zip_result = zip(true_texts, true_tags)
+    tom_view_arr = [x for item in zip_result for x in item]
+    tom_view_arr_clean = [name for name in tom_view_arr if name != ""]
+
+    sql_tom_name = " || ".join(tom_view_arr_clean)
+    return sql_tom_name
 
 
 class SqliteDialect(object):
@@ -31,26 +68,66 @@ class SqliteDialect(object):
         }
         return sqlite_types[type_name]
 
-    def select_all(self, form_db_name, fields_list, server_filter=None):
+    def select_all(
+            self,
+            ax_form,
+            quicksearch=None,
+            server_filter=None,
+            guids=None):
         """ Select fields from table """
         try:
-            fields_string = 'guid, axState, axNum'
-            for field_name in fields_list:
-                fields_string += f", {field_name}"
+            sql_params = {}
 
-            result = {}
-            sql = f"SELECT {fields_string} FROM {form_db_name}"
-            if server_filter and len(server_filter) > 0 and len(server_filter["params"]) > 0:
-                sql += " WHERE " + server_filter["sql"]
-                result = ax_model.db_session.execute(
-                    sql, server_filter["params"]).fetchall()
-            else:
-                result = ax_model.db_session.execute(sql).fetchall()
+            tom_name = this.get_tom_sql(
+                form_db_name=ax_form.db_name,
+                form_name=ax_form.name,
+                tom_label=ax_form.tom_label,
+                fields=ax_form.db_fields)
+
+            fields_sql = ", ".join(
+                field.db_name for field in ax_form.db_fields)
+
+            quicksearch_sql = ''
+            if quicksearch:
+                sql_params['quicksearch'] = quicksearch
+                quicksearch_sql = f"AND axLabel LIKE ('%' || :quicksearch || '%') "
+
+            serverfilter_sql = ''
+            if server_filter and server_filter["params"]:
+                serverfilter_sql = f"AND ({server_filter['sql']})"
+                for key, param in server_filter["params"].items():
+                    sql_params[key] = param
+
+            guids_sql = ''
+            if guids:
+                guids_array = json.loads(guids)['items']
+                for check_guid in guids_array:
+                    try:
+                        uuid.UUID(check_guid)
+                    except Exception:
+                        logger.exception(
+                            f"Error in guids argument. Cant parse json")
+                        raise
+
+                guids_string = ", ".join(
+                    "'" + item + "'" for item in guids_array)
+                guids_sql = f"AND guid IN ({guids_string})"
+            sql = (
+                f"SELECT guid, axState, axNum, {fields_sql}"
+                f", {tom_name} as axLabel FROM {ax_form.db_name}"
+                f" WHERE 1=1 {quicksearch_sql} {serverfilter_sql} {guids_sql}"
+            )
+
+            result = ax_model.db_session.execute(
+                sql,
+                sql_params
+            ).fetchall()
 
             return result
             # names = [row[0] for row in result]
         except Exception:
-            logger.exception(f"Error executing SQL - select {form_db_name}")
+            logger.exception(
+                f"Error executing SQL - quicksearch {ax_form.db_name}")
             raise
 
     def select_one(self, form_db_name, fields_list, row_guid):
@@ -151,6 +228,7 @@ class SqliteDialect(object):
                 ax_model.db_session.commit()
             except Exception:
                 ax_model.db_session.rollback()
+                raise
 
             return True
         except Exception:
@@ -195,6 +273,7 @@ class SqliteDialect(object):
                 ax_model.db_session.commit()
             except Exception:
                 ax_model.db_session.rollback()
+                raise
 
             return True
         except Exception:

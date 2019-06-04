@@ -13,6 +13,7 @@ from backend.schemas.home_schema import HomeQuery, HomeMutations
 from backend.schemas.form_schema import FormQuery, FormMutations
 from backend.schemas.workflow_schema import WorkflowQuery, WorkflowMutations
 from backend.schemas.grids_schema import GridsQuery, GridsMutations
+from backend.schemas.fields_schema import FieldsQuery, FieldsMutations
 from backend.schemas.types import Form, FieldType, Field, Grid, \
     Column, User, Role, State, Action, RoleFieldPermission, Group2Users, \
     Action2Role, State2Role, Role2Users, PositionInput
@@ -59,7 +60,7 @@ gql_types = [
 
 
 class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery,
-            WorkflowQuery, graphene.ObjectType):
+            WorkflowQuery, FieldsQuery, graphene.ObjectType):
     """Combines all schemas queryes"""
     forms = SQLAlchemyConnectionField(Form)
     field_types = SQLAlchemyConnectionField(FieldType)
@@ -75,7 +76,7 @@ class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery,
 
 
 class Mutations(HomeMutations, FormMutations, UsersMutations, GridsMutations,
-                WorkflowMutations, graphene.ObjectType):
+                WorkflowMutations, FieldsMutations, graphene.ObjectType):
     """Combines all schemas mutations"""
 
 
@@ -89,7 +90,7 @@ def make_resolver(db_name, type_class):
         or only db_name of AxForm for default view grid
     """
 
-    def resolver(self, info, update_time=None):
+    def resolver(self, info, update_time=None, quicksearch=None, guids=None):
         del self, info, update_time
 
         ax_form = ax_model.db_session.query(AxForm).filter(
@@ -118,9 +119,10 @@ def make_resolver(db_name, type_class):
         # select * from table
         # TODO Add paging
         results = ax_dialects.dialect.select_all(
-            form_db_name=ax_form.db_name,
-            fields_list=allowed_fields,
-            server_filter=server_filter)
+            ax_form=ax_form,
+            quicksearch=quicksearch,
+            server_filter=server_filter,
+            guids=guids)
 
         result_items = []
         for row in results:
@@ -146,13 +148,14 @@ def init_schema():
         ax_forms = ax_model.db_session.query(AxForm).all()
         for form in ax_forms:
             for grid in form.grids:
-                class_name = form.db_name.capitalize()
-                if grid.is_default_view is False:
-                    class_name = class_name + grid.db_name
+                class_name = form.db_name.capitalize() + grid.db_name
                 class_fields = {}
                 class_fields['guid'] = graphene.String()
                 class_fields['axNum'] = graphene.Int()
                 class_fields['axState'] = graphene.String()
+                class_fields['axLabel'] = graphene.String()
+                class_fields['axIcon'] = graphene.String()
+
                 for field in form.db_fields:
                     field_type = type_dictionary[field.field_type.value_type]
                     # TODO maybe add label as description?
@@ -168,12 +171,32 @@ def init_schema():
                 type_classes[class_name] = graph_class
                 all_types.append(graph_class)
 
+                if grid.is_default_view is True:
+                    default_class_name = form.db_name.capitalize()
+
+                    default_graph_class = type(
+                        default_class_name,
+                        (graphene.ObjectType,),
+                        class_fields,
+                        name=default_class_name,
+                        description=form.name
+                    )
+                    type_classes[default_class_name] = graph_class
+                    all_types.append(default_graph_class)
+
         # Dynamicly crate resolvers for each typeClass
         dynamic_fields = {}
         for key, type_class in type_classes.items():
             dynamic_fields[key] = graphene.List(
-                type_class, update_time=graphene.Argument(
-                    type=graphene.String, required=False))
+                type_class,
+                update_time=graphene.Argument(
+                    type=graphene.String, required=False),
+                quicksearch=graphene.Argument(
+                    type=graphene.String, required=False),
+                guids=graphene.Argument(
+                    type=graphene.String, required=False)
+            )
+
             dynamic_fields['resolve_%s' % key] = make_resolver(key, type_class)
 
         DynamicQuery = type('DynamicQuery', (Query,), dynamic_fields)

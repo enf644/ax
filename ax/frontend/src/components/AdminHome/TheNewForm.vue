@@ -32,18 +32,6 @@
         v-model='tomLabel'
       />
 
-      <!-- <br>
-      <div class='chip-preview' v-if='this.$route.params.db_name'>
-        <span>{{$t("home.new-form.chip-preview")}}:</span>
-        &nbsp;
-        <v-chip>
-          <v-avatar class='grey darken-2'>
-            <i :class='["ax-chip-icon", iconClass]'></i>
-          </v-avatar>
-          {{tomLabel}}
-        </v-chip>
-      </div>-->
-
       <br>
       <div class='actions'>
         <v-btn
@@ -213,17 +201,19 @@ export default {
     },
     updateForm(e) {
       e.preventDefault();
-      this.$store
-        .dispatch('home/updateForm', {
-          guid: this.guid,
-          name: this.name,
-          dbName: this.dbName,
-          icon: this.icon,
-          tomLabel: this.tomLabel
-        })
-        .then(() => {
-          this.$store.commit('form/setUpdateTime', Date.now());
-        });
+      if (this.$refs.form.validate()) {
+        this.$store
+          .dispatch('home/updateForm', {
+            guid: this.guid,
+            name: this.name,
+            dbName: this.dbName,
+            icon: this.icon,
+            tomLabel: this.tomLabel
+          })
+          .then(() => {
+            this.$store.commit('form/setUpdateTime', Date.now());
+          });
+      }
     },
     async deleteForm(e) {
       e.preventDefault();

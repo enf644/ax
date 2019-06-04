@@ -408,6 +408,7 @@ const actions = {
         const newGrid = data.data.createGrid.grid;
         context.commit('setCreatedGridDbName', newGrid.dbName);
         context.commit('form/addGrid', newGrid, { root: true });
+        context.commit('home/addGrid', newGrid, { root: true });
         const url = `/admin/${context.state.formDbName}/grids/${newGrid.dbName}`;
         context.commit('home/setRedirectNeededUrl', url, { root: true });
       })

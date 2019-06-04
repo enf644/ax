@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import i18n from '../../../locale.js';
+
 export default {
   name: 'AxString',
   props: {
@@ -40,7 +42,9 @@ export default {
     requiredIsValid() {
       if (this.isRequired) {
         if (!this.currentValue || this.currentValue.length === 0) {
-          this.errors.push(this.options.required_text);
+          let msg = i18n.t('common.field-required');
+          if (this.options.required_text) msg = this.options.required_text;
+          this.errors.push(msg);
           return false;
         }
         this.errors = [];

@@ -29,8 +29,8 @@ const FieldFragment = gql`
 
 
 const GET_FORM_DATA = gql`
-  query ($dbName: String!) {
-    form (dbName: $dbName) {
+  query ($dbName: String!, $updateTime: String) {
+    form (dbName: $dbName, updateTime: $updateTime) {
       guid,
       name,
       dbName,
@@ -439,7 +439,8 @@ const actions = {
     apolloClient.query({
       query: GET_FORM_DATA,
       variables: {
-        dbName: payload.dbName
+        dbName: payload.dbName,
+        updateTime: Date.now()
       }
     })
       .then(data => {

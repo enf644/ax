@@ -130,6 +130,9 @@ export default {
     },
     serverFilterRulesCount() {
       return this.$store.getters['grids/serverFilterRulesCount'];
+    },
+    updateTime() {
+      return this.$store.state.grids.updateTime;
     }
   },
   watch: {
@@ -145,9 +148,9 @@ export default {
         this.initColumnTree(this.$store.getters['grids/columnTreeData']);
       }
     },
-    options(newValue) {
-      if (!this.optionsLoaded && this.$store.state.grids.loadingDone) {
-        this.changedOptions = Object.assign({}, newValue);
+    updateTime() {
+      if (this.updateTime && this.$store.state.grids.loadingDone) {
+        this.changedOptions = Object.assign({}, this.options);
         this.optionsLoaded = true;
       }
     }

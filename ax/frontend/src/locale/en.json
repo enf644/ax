@@ -13,7 +13,8 @@
         "field-required": "Field is required",
         "true": "True",
         "false": "False",
-        "confirm": "Confirm"
+        "confirm": "Confirm",
+        "no-field-settings-error": "[{name}] - Settings error"
     },
     "home": {
         "ax-forms": "Ax Forms",
@@ -254,7 +255,13 @@
         },
         "Ax1to1": {
             "name": "Dictionary 1:1",
-            "default": "Dictionary"
+            "default": "Dictionary",
+            "settings-form-select": "Select form to set relation field *",
+            "settings-form-header": "Relation form",
+            "settings-grid-select": "Select grid for modal window",
+            "settings-grid-hint": "Used for server-filter and modal window *",
+            "settings-height": "Height of modal grid",
+            "settings-enable-modal": "Open related form on click"
         },
         "Ax1tom": {
             "name": "Dictionary 1:M Inline",

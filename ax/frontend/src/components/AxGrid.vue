@@ -16,9 +16,12 @@
         </v-btn>
       </div>
     </v-sheet>
-    <modal adaptive height='auto' name='sub-form' scrollable width='70%'>
+    <modal :name='`sub-form-${this.modalGuid}`' adaptive height='auto' scrollable width='70%'>
       <v-card>
-        <AxForm :db_name='form' :guid='selectedGuid' no_margin></AxForm>
+        <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
+          <i class='fas fa-times close-ico'></i>
+        </v-btn>
+        <AxForm :db_name='form' :guid='selectedGuid'></AxForm>
       </v-card>
     </modal>
   </v-app>
@@ -36,6 +39,7 @@ import logger from '../logger';
 // import i18n from '../locale';
 import AxForm from './AxForm.vue';
 // import { print } from 'graphql/language/printer';
+import uuid4 from 'uuid4';
 
 export default {
   name: 'AxGrid',
@@ -46,7 +50,9 @@ export default {
       type: String,
       default: 'default'
     },
-    update_time: null
+    update_time: null,
+    tom_mode: null,
+    to1_mode: null
   },
   data() {
     return {
@@ -61,7 +67,8 @@ export default {
       options: null,
       selectedGuid: null,
       quickSearch: null,
-      gridInitialized: false
+      gridInitialized: false,
+      modalGuid: null
     };
   },
   asyncComputed: {
@@ -71,6 +78,12 @@ export default {
 
         let pinnedColumnsCounter = this.options.pinned;
         const columnDefs = [];
+        let firstRun = false;
+        if (this.to1_mode !== null && this.to1_mode !== undefined) {
+          firstRun = true;
+        }
+        // console.log(this.tom_mode);
+
         this.columns.forEach(column => {
           let currentWidth = null;
           let currentPinned = null;
@@ -132,8 +145,11 @@ export default {
             field: column.field.dbName,
             width: currentWidth,
             pinned: currentPinned,
-            cellRenderer: renderer
+            cellRenderer: renderer,
+            checkboxSelection: firstRun
           });
+
+          firstRun = false;
         });
         return columnDefs;
       } catch (error) {
@@ -153,6 +169,8 @@ export default {
     },
     actionsEnabled() {
       if (!this.options) return false;
+      if (this.to1_mode != null && this.to1_mode !== undefined) return false;
+      if (this.tom_mode != null && this.tom_mode !== undefined) return false;
       return this.options.enableActions;
     },
     gridClass() {
@@ -182,6 +200,9 @@ export default {
       this.gridObj.gridOptions.api.setQuickFilter(newValue);
     }
   },
+  created() {
+    this.modalGuid = uuid4();
+  },
   mounted() {
     this.loadOptions(this.form, this.grid);
   },
@@ -192,8 +213,12 @@ export default {
     openForm(guid) {
       if (this.options.enableOpenForm) {
         this.selectedGuid = guid;
-        this.$modal.show('sub-form');
+        this.$modal.show(`sub-form-${this.modalGuid}`);
       }
+    },
+    closeModal() {
+      this.selectedGuid = null;
+      this.$modal.hide(`sub-form-${this.modalGuid}`);
     },
     loadOptions(formDbName, gridDbName) {
       const GET_GRID_DATA = gql`
@@ -305,6 +330,7 @@ export default {
           rowData: this.rowData
         };
         gridOptions.onRowClicked = event => this.openForm(event.data.guid);
+        gridOptions.onRowSelected = event => this.rowSelected(event);
         gridOptions.rowHeight = this.options.rowHeight;
         this.gridObj = new Grid(this.$refs.grid, gridOptions);
 
@@ -356,6 +382,15 @@ export default {
       } catch (e) {
         this.$log.error(`ERROR initiating AG grid => ${e}`);
       }
+    },
+    rowSelected(event) {
+      // const axItems = [
+      //   {
+      //     guid: event.node.data.guid,
+      //     label: event.node.data.axLabel
+      //   }
+      // ];
+      this.$emit('selected', event.node.data.guid);
     }
   }
 };
@@ -394,5 +429,14 @@ export default {
 .actions {
   margin: 0px 25px 0px 25px;
   height: 64px;
+}
+.close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 100;
+}
+.close-ico {
+  font-size: 20px;
 }
 </style>

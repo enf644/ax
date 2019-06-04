@@ -30,6 +30,7 @@
         "splitpanes": "^1.13.0",
         "sql-parser-mistic": "^1.2.2",
         "subscriptions-transport-ws": "^0.9.15",
+        "uuid4": "^1.1.4",
         "vue": "^2.6.6",
         "vue-async-computed": "^3.6.1",
         "vue-custom-element": "^3.2.6",

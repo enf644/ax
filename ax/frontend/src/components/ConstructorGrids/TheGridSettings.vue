@@ -5,7 +5,7 @@
       <i class='fas fa-times close-ico'></i>
     </v-btn>
     <br>
-    <v-form @submit='updateGrid' ref='form' v-model='valid'>
+    <v-form @submit.prevent='updateGrid' ref='form' v-model='valid'>
       <v-text-field
         :label='$t("grids.grid-name")'
         :rules='nameRules'
@@ -36,27 +36,27 @@
         &nbsp;
         {{$t("grids.grid-is-default-view")}}
       </div>
+      <br>
+
+      <div class='actions'>
+        <v-btn @click.prevent='updateGrid' data-cy='update-grids-btn' small type='submit'>
+          <i class='fas fa-pencil-alt'></i>
+          &nbsp; {{$t("grids.settings-update-btn")}}
+        </v-btn>
+
+        <v-btn
+          @click='deleteGrid'
+          color='error'
+          data-cy='delete-grid-btn'
+          flat
+          small
+          v-show='isNotDefaultView'
+        >
+          <i class='fas fa-trash-alt'></i>
+          &nbsp; {{$t("grids.settings-delete-btn")}}
+        </v-btn>
+      </div>
     </v-form>
-    <br>
-
-    <div class='actions'>
-      <v-btn @click='updateGrid' data-cy='update-grids-btn' small>
-        <i class='fas fa-pencil-alt'></i>
-        &nbsp; {{$t("grids.settings-update-btn")}}
-      </v-btn>
-
-      <v-btn
-        @click='deleteGrid'
-        color='error'
-        data-cy='delete-grid-btn'
-        flat
-        small
-        v-show='isNotDefaultView'
-      >
-        <i class='fas fa-trash-alt'></i>
-        &nbsp; {{$t("grids.settings-delete-btn")}}
-      </v-btn>
-    </div>
   </div>
 </template>
 

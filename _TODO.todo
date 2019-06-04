@@ -385,12 +385,27 @@ AX 20:
             ✔ Delete @done(19-05-28 11:08)
     ☐ RELATION FIELDS
 		✔ multiple pop-ups @done(19-04-16 14:41)
-		☐ ax-1tom
+        ✔ ax-1tom @done(19-06-04 09:25)
+            ✔ Settings @done(19-05-29 10:23)
+            ✔ Quicksearch - @done(19-05-30 08:52)
+                ✔ graphene query (sql_quicksearch) @done(19-05-29 16:46)
+                ✔ apolo query @done(19-05-29 16:46)
+            ✔ Frog - if grid added -> you must update home.js data @done(19-05-30 09:05)
+            ✔ Frog - if form and grid not selected -> display message @done(19-05-30 09:46)
+            ✔ Grid select is must @done(19-05-30 11:23)
+            ✔ Open form click -> modal @done(19-05-30 19:50)
+            ✔ Select from grid button @done(19-06-03 21:21)
+                ✔ Make AxForm and AxGrid closeble @done(19-05-30 22:00)
+                ✔ Make unique modal name form each AxForm and AxGrid @done(19-05-30 21:46)
+                ✔ toM mode of AxGrid - select column, no actions, select event @done(19-06-03 21:21)
+                    ✔ Checkbox and emit action @done(19-06-03 16:40)
+                    ✔ Quicksearch GQL with ids argument @done(19-06-03 21:21)
+            ✔ Error - enable quicksearch on grid, switch grids. Quicksearch not avalible in grid. @done(19-06-04 08:58)
+            ✔ Required error @done(19-06-04 09:02)
+            ✔ Hint @done(19-06-04 09:10)
+            ✔ Error when adding field @done(19-06-04 09:25)
 		☐ ax-mtom
 		☐ ax-mtom-table
-    ☐ COMPLEX FIELDS
-		☐ ax-files
-		☐ ax-crop-image
     ☐ ACTION ENGINE
         ☐ Create actions
         ☐ Change state action
@@ -399,6 +414,10 @@ AX 20:
             ☐ Try email
         ☐ Confirm text
         ☐ Close modal
+        ☐ AxGrid update subscribtion. AxGrid updated on the fly.
+    ☐ COMPLEX FIELDS
+		☐ ax-files
+		☐ ax-crop-image
     ☐ TEST MILESTONE
         ☐ Cover everything with cypress tests
         ☐ Try pip installation
@@ -489,6 +508,7 @@ NEW FROGS TODOS:
     ☐ If form does not exist, but someone entered via url - must be error
     ✔ AxFrom - size transition caouses a ton of resize events that are captured by handleResize @done(19-04-17 09:37)
     ☐ Paging in AxGrid
+    ☐ Close icon in form values preview
 
 
 NEW FEATURES:

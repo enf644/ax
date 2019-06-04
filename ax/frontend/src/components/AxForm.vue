@@ -105,7 +105,14 @@
       </v-card>
     </modal>
 
-    <modal :pivotX='0.52' adaptive height='auto' name='sub-form' scrollable width='70%'>
+    <modal
+      :name='`sub-form-${this.modalGuid}`'
+      :pivotX='0.52'
+      adaptive
+      height='auto'
+      scrollable
+      width='70%'
+    >
       <v-card>
         <AxForm no_margin></AxForm>
       </v-card>
@@ -119,6 +126,7 @@
 import apolloClient from '../apollo';
 import AxField from '@/components/AxField.vue';
 import gql from 'graphql-tag';
+import uuid4 from 'uuid4';
 
 export default {
   name: 'AxForm',
@@ -158,7 +166,8 @@ export default {
       errorsCount: 0,
       currentWidth: null,
       isMobile: false,
-      formIsLoaded: false
+      formIsLoaded: false,
+      modalGuid: null
     };
   },
   computed: {
@@ -198,7 +207,9 @@ export default {
       this.handleResize(true);
     }
   },
-  created() {},
+  created() {
+    this.modalGuid = uuid4();
+  },
   mounted() {
     if (this.db_name) this.loadData(this.db_name, this.guid);
   },
@@ -357,7 +368,7 @@ export default {
     },
     openForm() {
       this.$log.info(' OPEN FORM');
-      this.$modal.show('sub-form');
+      this.$modal.show(`sub-form-${this.modalGuid}`);
     },
     handleResize(force = false) {
       if (

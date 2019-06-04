@@ -378,7 +378,8 @@ class FormQuery(graphene.ObjectType):
     # all_fields = graphene.List(Field, form_field=graphene.String())
     form = graphene.Field(
         Form,
-        db_name=graphene.Argument(type=graphene.String, required=True)
+        db_name=graphene.Argument(type=graphene.String, required=True),
+        update_time=graphene.Argument(type=graphene.String, required=False)
     )
     form_data = graphene.Field(
         Form,
@@ -399,8 +400,9 @@ class FormQuery(graphene.ObjectType):
     #         logger.exception('Error in GQL query - resolve_fields.')
     #         raise
 
-    async def resolve_form(self, info, db_name=None):
+    async def resolve_form(self, info, db_name=None, update_time=None):
         """Get AxForm by db_name"""
+        del update_time
         query = Form.get_query(info=info)
         return query.filter(AxForm.db_name == db_name).first()
 
