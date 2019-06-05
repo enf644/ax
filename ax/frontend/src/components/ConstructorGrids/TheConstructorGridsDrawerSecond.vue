@@ -34,6 +34,14 @@
     ></v-switch>
 
     <v-switch
+      :label='this.$t("grids.options-title")'
+      @change='saveOptions'
+      class='options-switcher'
+      cy-data='options-quick-search'
+      v-model='changedOptions.enableTitle'
+    ></v-switch>
+
+    <v-switch
       :label='this.$t("grids.options-flat-mode")'
       @change='saveOptions'
       class='options-switcher'

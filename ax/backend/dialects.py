@@ -101,21 +101,23 @@ class SqliteDialect(object):
             guids_sql = ''
             if guids:
                 guids_array = json.loads(guids)['items']
-                for check_guid in guids_array:
-                    try:
-                        uuid.UUID(check_guid)
-                    except Exception:
-                        logger.exception(
-                            f"Error in guids argument. Cant parse json")
-                        raise
-
-                guids_string = ", ".join(
-                    "'" + item + "'" for item in guids_array)
+                guids_string = ''
+                if guids_array:
+                    for check_guid in guids_array:
+                        try:
+                            uuid.UUID(check_guid)
+                        except Exception:
+                            logger.exception(
+                                f"Error in guids argument. Cant parse json")
+                            raise
+               
+                    guids_string = ", ".join(
+                        "'" + item + "'" for item in guids_array)
                 guids_sql = f"OR guid IN ({guids_string})"
             sql = (
                 f"SELECT guid, axState, axNum, {fields_sql}"
                 f", {tom_name} as axLabel FROM {ax_form.db_name}"
-                f" WHERE 1=1 {quicksearch_sql} {serverfilter_sql} {guids_sql}"
+                f" WHERE (1=1 {quicksearch_sql} {serverfilter_sql}) {guids_sql}"
             )
 
             result = ax_model.db_session.execute(

@@ -250,7 +250,7 @@ def create_field_types() -> None:
             tag="Ax1tomTable",
             parent="group-relationship",
             default_name="types.ax-1tom-table-default",
-            default_db_name="toManyInline",
+            default_db_name="toManyTable",
             position=3,
             value_type="JSON",
             is_inline_editable=True,

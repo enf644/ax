@@ -110,6 +110,7 @@
         "column-deleted-toast": "Column deleted",
         "grid-updated": "Grid options updated",
         "options-quick-search": "Quick search",
+        "options-title": "Show title",
         "options-flat-mode": "Flat mode",
         "options-columns-resize": "Columns resize",
         "options-filtering": "Filtering",
@@ -135,7 +136,8 @@
         "grid-is-default-view": "This grid is set as default view",
         "serer-filter-btn": "Server filters",
         "server-filter-header": "Server filters",
-        "select-relation": "Select"
+        "select-relation": "Select",
+        "open-select-dialog": "Add relation"
     },
     "workflow": {
         "state": {
@@ -265,12 +267,15 @@
             "settings-enable-modal": "Open related form on click"
         },
         "Ax1tom": {
-            "name": "Dictionary 1:M Inline",
+            "name": "Dictionary 1:M",
             "default": "Dictionary"
         },
         "Ax1tomTable": {
             "name": "Dictionary 1:M Table",
-            "default": "Dictionary"
+            "default": "Dictionary",
+            "settings-inline-grid-select": "Select inline grid *",
+            "settings-inline-grid-hint": "Displayed inline form fields (server filter ignored)",
+            "settings-inline-height": "Height of inline grid"
         },
         "AxDate": {
             "name": "Date"

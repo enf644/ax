@@ -1,14 +1,23 @@
 <template>
   <v-app class='ax-grid-app' id='ax-grid'>
     <v-sheet class='sheet' elevation='5' light ref='sheet'>
-      <v-text-field
-        class='quick-search'
-        cy-data='quicksearch'
-        label='Quick search'
-        v-model='quickSearch'
-        v-show='quickSearchEnabled'
-      ></v-text-field>
+      <div class='header'>
+        <div class='grid-title' v-show='titleEnabled'>
+          <i :class='`fas fa-${this.formIcon}`'></i>
+          &nbsp; {{gridTitle}}
+        </div>
+        <div class='quick-search' v-show='quickSearchEnabled'>
+          <v-text-field
+            cy-data='quicksearch'
+            label='Quick search'
+            ref='quickSearch'
+            v-model='quickSearch'
+          ></v-text-field>
+        </div>
+      </div>
+
       <div :class='gridClass' ref='grid'></div>
+
       <div class='actions' v-show='actionsEnabled'>
         <v-btn @click='testAction' small>
           <i class='fas fa-tractor'></i>
@@ -19,6 +28,12 @@
         <v-btn @click='emitSelectedItems' small>
           <i class='fas fa-check-double'></i>
           &nbsp; {{$t("grids.select-relation")}}
+        </v-btn>
+      </div>
+      <div class='actions' v-if='this.isTomInlineMode'>
+        <v-btn @click='emitSelectDialog' small>
+          <i class='fas fa-check-double'></i>
+          &nbsp; {{$t("grids.open-select-dialog")}}
         </v-btn>
       </div>
     </v-sheet>
@@ -59,7 +74,10 @@ export default {
     update_time: null,
     tom_mode: null,
     to1_mode: null,
-    preselect: null
+    tom_inline_mode: null,
+    preselect: null,
+    title: null,
+    guids: null
   },
   data() {
     return {
@@ -69,6 +87,8 @@ export default {
       dbName: null,
       formGuid: null,
       formDbName: null,
+      formIcon: null,
+      formName: null,
       isDefaultView: null,
       columns: null,
       options: null,
@@ -179,16 +199,29 @@ export default {
       if (this.tom_mode !== undefined) return false;
       return this.options.enableActions;
     },
+    titleEnabled() {
+      if (!this.options) return false;
+      return this.options.enableTitle;
+    },
     gridClass() {
       const themeClass = 'ag-theme-material';
       if (this.options) {
-        if (this.options.enableQuickSearch && this.options.enableActions) {
+        if (
+          (this.options.enableQuickSearch || this.options.enableTitle)
+          && (this.options.enableActions || this.isTomInlineMode)
+        ) {
           return `${themeClass} grid-search-actions`;
         }
-        if (this.options.enableQuickSearch && !this.options.enableActions) {
+        if (
+          (this.options.enableQuickSearch || this.options.enableTitle)
+          && !(this.options.enableActions || this.isTomInlineMode)
+        ) {
           return `${themeClass} grid-search`;
         }
-        if (!this.options.enableQuickSearch && this.options.enableActions) {
+        if (
+          !(this.options.enableQuickSearch || this.options.enableTitle)
+          && (this.options.enableActions || this.isTomInlineMode)
+        ) {
           return `${themeClass} grid-actions`;
         }
       }
@@ -196,6 +229,20 @@ export default {
     },
     isTomMode() {
       return this.tom_mode !== undefined;
+    },
+    isTomInlineMode() {
+      return this.tom_inline_mode !== undefined;
+    },
+    gridTitle() {
+      if (this.title) return this.title;
+      return this.name;
+    },
+    guidsString() {
+      if (this.tom_inline_mode === undefined) return null;
+      const retObj = {
+        items: this.guids
+      };
+      return JSON.stringify(retObj);
     }
   },
   watch: {
@@ -265,6 +312,10 @@ export default {
             optionsJson
             isDefaultView
           }
+          form(dbName: $formDbName) {
+            name
+            icon
+          }
         }
       `;
 
@@ -283,6 +334,8 @@ export default {
           this.name = gridData.name;
           this.dbName = gridData.dbName;
           this.formGuid = gridData.formGuid;
+          this.formName = data.data.form.name;
+          this.formIcon = data.data.form.icon;
           this.isDefaultView = gridData.isDefaultView;
           this.options = JSON.parse(gridData.optionsJson);
           this.columns = gridData.columns
@@ -298,10 +351,19 @@ export default {
         });
     },
     loadData() {
-      // ($updateTime: String)
+      // If tom_inline_mode we use quicksearch with impossible query.
+      // So only guids rows  will be returned
+      let impossibleGuid = null;
+      if (this.isTomInlineMode) {
+        impossibleGuid = 'de24a16e-3b4d-4abf-8d50-0bb30f3e6aab';
+      }
+
       const GRID_DATA = placeholder => gql`
-        query ($updateTime: String) {
-          ${this.viewDbName} (updateTime: $updateTime) {
+        query ($updateTime: String, $quicksearch: String, $guids: String) {
+          ${this.viewDbName} (
+            updateTime: $updateTime, 
+            quicksearch: $quicksearch, 
+            guids: $guids) {
               ${placeholder}
           }
         }
@@ -316,7 +378,9 @@ export default {
         .query({
           query: dataQuery,
           variables: {
-            updateTime: this.update_time
+            updateTime: this.update_time,
+            quicksearch: impossibleGuid,
+            guids: this.guidsString
           }
         })
         .then(data => {
@@ -409,6 +473,9 @@ export default {
       const selectedGuids = selectedItems.map(item => item.guid);
       this.$emit('selected', selectedGuids);
     },
+    emitSelectDialog() {
+      this.$emit('openSelectDialog');
+    },
     doPreselect(selectedGuids) {
       if (selectedGuids) {
         this.gridObj.gridOptions.api.forEachNode(node => {
@@ -444,11 +511,6 @@ export default {
   width: 100%;
   height: 100%;
 }
-.quick-search {
-  width: 300px;
-  margin-left: auto;
-  margin-right: 25px;
-}
 .ax-grid-app {
   height: 100%;
 }
@@ -464,5 +526,21 @@ export default {
 }
 .close-ico {
   font-size: 20px;
+}
+.header {
+  justify-content: space-between;
+  display: flex;
+  vertical-align: middle;
+  max-height: 52px;
+}
+.grid-title {
+  margin-top: 16px;
+  margin-left: 25px;
+  font-size: 1.2em;
+}
+.quick-search {
+  width: 300px;
+  margin-left: auto;
+  margin-right: 25px;
 }
 </style>

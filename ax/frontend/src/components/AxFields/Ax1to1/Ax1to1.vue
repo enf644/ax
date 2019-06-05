@@ -53,7 +53,7 @@
         <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
           <i class='fas fa-times close-ico'></i>
         </v-btn>
-        <div style='height: 400px'>
+        <div :style='{height: this.options.height + "px"}'>
           <AxGrid
             :form='options.form'
             :grid='options.grid'

@@ -1,38 +1,28 @@
 <template>
-  <div class='nobr'>
-    <v-autocomplete
-      :error-messages='errors'
-      :hide-no-data='hideNoData'
-      :hint='this.options.hint'
-      :items='axItems'
-      :label='name'
-      :loading='loading'
-      :search-input.sync='search'
-      @change='isValid'
-      chips
-      dense
-      hide-selected
-      item-text='axLabel'
-      item-value='guid'
-      multiple
-      v-if='options.grid'
-      v-model='currentValue'
+  <div>
+    <div
+      :class='getErrorClass'
+      :style='{height: this.options.inline_height + "px"}'
+      v-if='options.inline_grid'
     >
-      <template v-slot:selection='{ item, selected }'>
-        <v-chip @click='openFormModal(item)' @input='clearValue(item)' class='chip' close>
-          <v-avatar class='grey'>
-            <i :class='`ax-chip-icon fas fa-${formIcon}`'></i>
-          </v-avatar>
-          {{item.axLabel}}
-        </v-chip>
-      </template>
+      <AxGrid
+        :filtered='currentValue'
+        :form='options.form'
+        :grid='options.inline_grid'
+        :guids='currentValue'
+        :title='name'
+        :update_time='updateTime'
+        @openSelectDialog='openGridModal()'
+        cy-data='tomTableGrid'
+        tom_inline_mode
+      ></AxGrid>
 
-      <template v-slot:append>
-        <v-btn @click='openGridModal' icon>
-          <i class='fas fa-link'></i>
-        </v-btn>
-      </template>
-    </v-autocomplete>
+      <span class='hint' v-show='this.options.hint'>{{this.options.hint}} &nbsp;</span>
+
+      <transition enter-active-class='animated shake' leave-active-class='animated fadeOut'>
+        <span class='required-error' v-show='errorString'>{{errorString}}</span>
+      </transition>
+    </div>
     <v-alert
       :value='true'
       type='warning'
@@ -70,8 +60,6 @@
 
 <script>
 import i18n from '../../../locale.js';
-import gql from 'graphql-tag';
-import apolloClient from '../../../apollo.js';
 import uuid4 from 'uuid4';
 import AxForm from '@/components/AxForm.vue';
 import AxGrid from '@/components/AxGrid.vue';
@@ -93,8 +81,10 @@ export default {
     search: null,
     axItems: [],
     formIcon: null,
+    formName: null,
     modalGuid: null,
-    activeItemGuid: null
+    activeItemGuid: null,
+    updateTime: null
   }),
   components: { AxForm, AxGrid },
   computed: {
@@ -112,6 +102,14 @@ export default {
     hideNoData() {
       if (this.search && this.search.length >= 2) return false;
       return true;
+    },
+    errorString() {
+      if (this.errors.length > 0) return this.errors.join('. ');
+      return false;
+    },
+    getErrorClass() {
+      if (this.errors.length > 0) return 'div-error';
+      return null;
     }
   },
   watch: {
@@ -126,6 +124,7 @@ export default {
     this.currentValue = this.value;
     if (this.currentValue) this.loadData();
     this.modalGuid = uuid4();
+    this.updateTime = Date.now();
   },
   methods: {
     openFormModal(item) {
@@ -168,57 +167,9 @@ export default {
       }
       return true;
     },
-    doQuicksearch() {
-      const searchQuery = this.search;
-      if (searchQuery.length < 2) return false;
-      this.loadData();
-      return true;
-    },
-    loadData() {
-      if (!this.currentValue && !this.search) return false;
-
-      const GRID_DATA = gql`
-        query ($updateTime: String, $quicksearch: String, $guids: String, $dbName: String!) {
-          ${this.viewDbName} (
-            updateTime: $updateTime, 
-            quicksearch: $quicksearch,
-            guids: $guids
-          ) {
-              guid
-              axLabel
-          }
-          form (dbName: $dbName) {
-              name
-              icon
-          }          
-        }
-      `;
-
-      apolloClient
-        .query({
-          query: GRID_DATA,
-          variables: {
-            updateTime: Date.now(),
-            quicksearch: this.search,
-            guids: this.guidsString,
-            dbName: this.options.form
-          }
-        })
-        .then(data => {
-          this.axItems = data.data[this.viewDbName];
-          this.formIcon = data.data.form.icon;
-        })
-        .catch(error => {
-          this.$log.error(
-            `Error in Ax1to1 => loadData apollo client => ${error}`
-          );
-        });
-
-      return true;
-    },
     onGridSelected(items) {
       this.currentValue = items;
-      this.loadData();
+      this.updateTime = Date.now();
       this.closeModal();
     }
   }
@@ -243,5 +194,18 @@ export default {
 }
 .close-ico {
   font-size: 20px;
+}
+.required-error {
+  margin-top: '5px' !important;
+  color: #b71c1c;
+  font-size: 12px;
+}
+.hint {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 12px;
+  margin-top: '5px' !important;
+}
+.div-error {
+  border: 1px solid #b71c1c;
 }
 </style>

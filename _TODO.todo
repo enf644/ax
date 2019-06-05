@@ -383,7 +383,7 @@ AX 20:
             ✔ Icon @done(19-05-27 15:31)
             ✔ Code @done(19-05-28 10:27)
             ✔ Delete @done(19-05-28 11:08)
-    ☐ RELATION FIELDS
+    ✔ RELATION FIELDS @done(19-06-05 17:10)
 		✔ multiple pop-ups @done(19-04-16 14:41)
         ✔ ax-1tom @done(19-06-04 09:25)
             ✔ Settings @done(19-05-29 10:23)
@@ -405,7 +405,12 @@ AX 20:
             ✔ Hint @done(19-06-04 09:10)
             ✔ Error when adding field @done(19-06-04 09:25)
 		✔ ax-mtom @done(19-06-04 15:26)
-		☐ ax-mtom-table
+        ✔ ax-mtom-table @done(19-06-05 15:01)
+            ✔ Field name and icon @done(19-06-05 10:05)
+            ✔ GQL - filter argument @done(19-06-05 14:30)
+            ✔ Select button @done(19-06-05 14:30)
+            ✔ Delete button column @done(19-06-05 14:30)
+            ✔ Hint, required @done(19-06-05 15:01)
     ☐ ACTION ENGINE
         ☐ Create actions
         ☐ Change state action
@@ -424,6 +429,8 @@ AX 20:
         ☐ Try app engine installation
         ☐ ESTABLISH CI
             ☐ Each commit runs tests - installs from pip, runs cypress tests
+            ☐ Start versionning
+            ☐ Each new version comes with patch
     ☐ USERS
         ☐ GAuth
         ☐ GraphQL authorisation
@@ -445,12 +452,61 @@ AX 20:
         ☐ Product usage statistics
         ☐ LICENSING
     ☐ ALL FIELDS
+        ☐ Identification
+            ☐ GuId
+            ☐ Numeration    `[COMPLEX]`
+        ☐ Decoration
+            ☐ Header
+            ☐ Text
+        ☐ String
+            ✔ String @done(19-06-04 17:38)
+            ☐ Email
+            ☐ Telephone number
+        ☐ Number
+            ☐ Integer					
+            ☐ Decimal
+            ☐ Int Slider
+        ☐ Boolean
+            ☐ Checkbox
+            ✔ Switch @done(19-06-04 17:38)
+            ☐ 2D radio survey
+        ☐ Payment
+            ☐ Paypal    `[COMPLEX]`
+            ☐ Stripe    `[COMPLEX]`
+            ☐ ... check jotforms
+        ☐ Relationship
+            ✔ 1:1 Inline @done(19-06-04 17:38)
+            ✔ 1:M Inline @done(19-06-04 17:38)
+            ☐ 1:M Table				
+        ☐ Date and Time
+            ☐ Date
+        ☐ List
+            ☐ Select					
+            ☐ Radio
+            ☐ Tags input
+        ☐ Text
+            ☐ Simple text				
+            ☐ WYSIWYG
+            ☐ BB Code
+            ☐ Code highlite
+        ☐ Images
+            ☐ Database Images   `[COMPLEX]`
+            ☐ Database Image Crop   `[COMPLEX]`
+        ☐ Files
+            ☐ Filesystem Files  `[COMPLEX]`
+        ☐ Users
+            ☐ Users    `[COMPLEX]`
+        ☐ Object Control
+            ☐ Edit history (Logging)    `[COMPLEX]`
+        ☐ Communications
+            ☐ Comments
     ☐ ACTION EXPERIENCE
         ☐ Message pop-up from python code
         ☐ Logging code 
         ☐ Code highlite and autocomplete
             ☐ Monaco language server, language client
             ☐ Code snippets
+    ☐ Role and user based server-filter
 
 
 BEFORE LAUNCH:
@@ -524,6 +580,9 @@ NEW FEATURES:
     ☐ Backup mechanism
     ☐ If js exception - show toast with rerort button
     ☐ Icons of roles in workflow constructor
+    ☐ MtoM Create new record inside inline tom field? Added to table and added to field value
+    ☐ Grid constructor - place * near required field in jstree
+
     
 MAYBE LATER:
     ☐ python autodoc
@@ -780,64 +839,63 @@ PROBLEMS:
 
 ALL AX FIELDS:
 	☐ Identification
-		☐ Id
-		☐ Numeration
+		☐ GuId
+		☐ Numeration    `[COMPLEX]`
 	☐ Decoration
 		☐ Header
 		☐ Text
 	☐ String
-		☐ Simple String			++
+		☐ Simple String	
 		☐ Email
-		☐ Static header
 	☐ Number
-		☐ Integer					++
+		☐ Integer					
 		☐ Decimal
 		☐ Telephone number
 		☐ Slider
 	☐ Boolean
-		☐ Checkbox				++
+		☐ Checkbox				
         ☐ Switch
         ☐ 2D radio survey
     ☐ Payment
-        ☐ Paypal
-        ☐ Stripe
+        ☐ Paypal    `[COMPLEX]`
+        ☐ Stripe    `[COMPLEX]`
         ☐ ... check jotforms
 	☐ Relationship
-		☐ 1:1 Inline				++
-		☐ 1:M Inline				++
-		☐ 1:M Table				++
+		☐ 1:1 Inline				
+		☐ 1:M Inline				
+		☐ 1:M Table				
 	☐ Date and Time
 		☐ Date
 		☐ Date Range
 		☐ Date and Time
 		☐ Spinner Date
 	☐ List
-		☐ Select					++
+		☐ Select					
 		☐ Cascade ajax select
 		☐ Radio
 		☐ Json Table
 		☐ Tags input
 	☐ Text
-		☐ Simple text				++
+		☐ Simple text				
 		☐ WYSIWYG
 		☐ BB Code
 		☐ Code highlite
 		☐ Static text
 	☐ Images
-		☐ Filesystem Images		++
-		☐ Filesystem Image Crop	++
+		☐ Filesystem Images		    `[COMPLEX]`
+		☐ Filesystem Image Crop	    `[COMPLEX]`
 		☐ Database Images
 		☐ Database Image Crop
-		☐ Google Drive Images
+		☐ Google Drive Images    `[COMPLEX]`
 	☐ Files
-		☐ Filesystem Files		++
+		☐ Filesystem Files		    `[COMPLEX]`
 		☐ Database Files
-		☐ Google Disk Files
+		☐ Google Disk Files    `[COMPLEX]`
 	☐ Users
-		☐ Users
-		☐ Approval path
+		☐ Users    `[COMPLEX]`
+		☐ Approval path    `[COMPLEX]`
 	☐ Itegration
-		☐ Google Maps
+		☐ Google Maps    `[COMPLEX]`
 		☐ Google SpreadSheet
 		☐ Google Text
 		☐ Google calendar
@@ -846,9 +904,10 @@ ALL AX FIELDS:
 		☐ D3 Graph
 	☐ Calculated values
 		☐ Condition styling
-		☐ Ajax request field
+		☐ Ajax request field    `[COMPLEX]`
 	☐ Object Control
-		☐ Edit history (Logging)
-		☐ Detailed edit history (Version control)
-	☐ Communications
-		☐ Google Comments
+		☐ Edit history (Logging)    `[COMPLEX]`
+		☐ Detailed edit history (Version control)    `[COMPLEX]`
+    ☐ Communications
+        ☐ Comments
+		☐ Google Comments    `[COMPLEX]`
