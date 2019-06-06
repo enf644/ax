@@ -138,6 +138,7 @@ class AxForm(Base):
     current_state_object = None
     from_state_name = ""
     from_state_object = None
+    avalible_actions = None
     permissions = relationship(
         "AxRoleFieldPermission", cascade="all, delete-orphan")
 

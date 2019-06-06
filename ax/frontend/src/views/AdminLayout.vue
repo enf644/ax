@@ -29,14 +29,18 @@ export default {
   watch: {
     currentFormDbName(newValue) {
       if (newValue) {
-        this.$store.dispatch('form/getFormData', { dbName: newValue });
+        this.$store.dispatch('form/getFormData', {
+          dbName: newValue,
+          updateTime: Date.now()
+        });
       }
     },
     currentGridDbName(newValue) {
       if (newValue) {
         this.$store.dispatch('grids/getGridData', {
           formDbName: this.$route.params.db_name,
-          gridDbName: newValue
+          gridDbName: newValue,
+          updateTime: Date.now()
         });
         this.$store.commit('grids/setFormDbName', this.currentFormDbName);
       }
@@ -51,13 +55,15 @@ export default {
       this.$store.dispatch('form/getFieldTypes');
       if (this.$route.params.db_name) {
         this.$store.dispatch('form/getFormData', {
-          dbName: this.$route.params.db_name
+          dbName: this.$route.params.db_name,
+          updateTime: Date.now()
         });
       }
       if (this.$route.params.grid_alias) {
         this.$store.dispatch('grids/getGridData', {
           formDbName: this.$route.params.db_name,
-          gridDbName: this.$route.params.grid_alias
+          gridDbName: this.$route.params.grid_alias,
+          updateTime: Date.now()
         });
         this.$store.commit('grids/setFormDbName', this.currentFormDbName);
       }

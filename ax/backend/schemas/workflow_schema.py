@@ -1,5 +1,6 @@
 """ GQL Chema for Workflow manipulation """
 import uuid
+import copy
 import graphene
 from loguru import logger
 import ujson as json
@@ -9,10 +10,11 @@ from backend.model import GUID, AxForm, AxField, AxGrid, AxAction, AxState, \
     AxColumn, Ax1tomReference
 import backend.model as ax_model
 import backend.schema as ax_schema
+import backend.dialects as ax_dialects
 
 # import backend.cache as ax_cache # TODO use cache!
 from backend.schemas.types import Grid, Column, State, Action, PositionInput, \
-    State2Role, Action2Role, RoleFieldPermission, Role
+    State2Role, Action2Role, RoleFieldPermission, Role, Form
 # import ujson as json
 
 
@@ -605,12 +607,103 @@ class SetStatePermission(graphene.Mutation):
             logger.exception('Error in gql mutation - SetStatePermission.')
             raise
 
+class DoAction(graphene.Mutation):
+    """ Performs Action or row """
+    class Arguments:  # pylint: disable=missing-docstring
+        row_guid = graphene.String(required=False, default_value=None)
+        form_guid = graphene.String()
+        action_guid = graphene.String()
+        values = graphene.String()
+
+    ok = graphene.Boolean()
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        try:
+            del info
+            values_string = args.get('values')
+            values = json.loads(values_string)
+            row_guid = args.get('row_guid')
+            new_guid = uuid.uuid4()
+
+            # 0. Get AxForm and AxAction
+            # TODO check permissions and modify values (remove forbidden fields)
+            ax_action = ax_model.db_session.query(AxAction).filter(
+                AxAction.guid == uuid.UUID(args.get('action_guid'))
+            ).first()
+
+            tobe_form = ax_model.db_session.query(AxForm).filter(
+                AxForm.guid == uuid.UUID(args.get('form_guid'))
+            ).first()
+            fields_names = [field.db_name for field in tobe_form.db_fields]
+            
+            # 0. Get before_form        
+            before_form = None
+            if row_guid:
+                before_form = copy.deepcopy(tobe_form)
+                before_result = ax_dialects.dialect.select_one(
+                    form_db_name=tobe_form.db_name,
+                    fields_list=fields_names,
+                    row_guid=row_guid)
+
+                if not before_result:
+                    raise Exception(
+                        'Error in DoAction. Cant find row for action')
+
+                before_form.current_state_name = before_result[0]['axState']
+                if before_form.current_state_name != ax_action.from_state.name:
+                    raise Exception('Error in DoAction. Performed \
+                    action does not fit axState')
+
+                # populate each AxField of before_form with old data
+                for field in before_form.db_fields:
+                    field.value = before_result[0][field.db_name]                   
+
+            # 1. Assemble tobe_object
+            for field in tobe_form.db_fields:
+                if field.db_name in values.keys():
+                    field.value = values[field.db_name]
+                    field.needs_sql_update = True
+         
+            # 2. Run before_update from field.py for each field. Rewrite field_value
+            # 3. Run python action, rewrite tobe_object (not implemented) #TODO - 
+            # 4. Make update or insert or delete query
+
+            if ax_action.from_state.is_start:
+                tobe_form.row_guid = ax_dialects.dialect.insert(
+                    form=tobe_form,
+                    to_state_name=ax_action.to_state.name,
+                    new_guid=new_guid
+                )
+            elif ax_action.to_state.is_deleted:
+                ax_dialects.dialect.delete(
+                    form=tobe_form,
+                    row_guid=row_guid
+                )                
+            else:
+                ax_dialects.dialect.update(
+                    form=tobe_form,
+                    to_state_name=ax_action.to_state.name,
+                    row_guid=row_guid
+                )
+
+            # 5. Run after_update from field.py for each field. Rewrite after_object
+
+            ok = True
+            return DoAction(ok=ok)
+        except Exception:
+            logger.exception('Error in gql mutation - DoAction.')
+            raise
 
 class WorkflowQuery(graphene.ObjectType):
     """Query all data of AxGrid and related classes"""
-    action_data=graphene.Field(
+    action_data = graphene.Field(
         Action,
         guid=graphene.Argument(type=graphene.String, required=True),
+        update_time=graphene.Argument(type=graphene.String, required=False))
+    actions_avalible = graphene.List(
+        Action,
+        form_db_name=graphene.Argument(type=graphene.String, required=True),
+        current_state=graphene.Argument(type=graphene.String, required=False),
         update_time=graphene.Argument(type=graphene.String, required=False))
 
     async def resolve_action_data(self, info, guid=None, update_time=None):
@@ -619,6 +712,31 @@ class WorkflowQuery(graphene.ObjectType):
         query = Action.get_query(info=info)
         ax_action = query.filter(AxAction.guid == uuid.UUID(guid)).first()
         return ax_action
+
+    async def resolve_actions_avalible(self, info, form_db_name,
+                                       current_state=None, update_time=None):
+        """ get AxActions for current state """
+        # TODO: Add permissions based on roles and current user
+        try:
+            del update_time
+            query = Action.get_query(info=info)
+            ax_form = ax_model.db_session.query(AxForm).filter(
+                AxForm.db_name == form_db_name
+            ).first()
+
+            ax_state = None
+            for state in ax_form.states:
+                if (state.name == current_state) or \
+                (current_state is None and state.is_start):
+                    ax_state = state
+
+            ax_actions = query.filter(
+                AxAction.from_state_guid == ax_state.guid
+            ).all()
+            return ax_actions
+        except Exception:
+            logger.exception('Error in gql query - resolve_actions_avalible.')
+            raise
 
 
 class WorkflowMutations(graphene.ObjectType):
@@ -637,3 +755,4 @@ class WorkflowMutations(graphene.ObjectType):
     add_role_to_action = AddRoleToAction.Field()
     delete_role_from_action = DeleteRoleFromAction.Field()
     set_state_permission = SetStatePermission.Field()
+    do_action = DoAction.Field()

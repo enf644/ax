@@ -19,11 +19,13 @@
       <div :class='gridClass' ref='grid'></div>
 
       <div class='actions' v-show='actionsEnabled'>
-        <v-btn @click='testAction' small>
-          <i class='fas fa-tractor'></i>
-          &nbsp; {{$t("grids.test-action")}}
+        <v-btn :key='action.guid' @click='doAction(action)' small v-for='action in this.actions'>
+          <i :class='getActionIconClass(action)'></i>
+          &nbsp;
+          {{ action.name }}
         </v-btn>
       </div>
+
       <div class='actions' v-if='this.isTomMode'>
         <v-btn @click='emitSelectedItems' small>
           <i class='fas fa-check-double'></i>
@@ -42,7 +44,7 @@
         <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
           <i class='fas fa-times close-ico'></i>
         </v-btn>
-        <AxForm :db_name='form' :guid='selectedGuid'></AxForm>
+        <AxForm :action_guid='selectedActionGuid' :db_name='form' :guid='selectedGuid'></AxForm>
       </v-card>
     </modal>
   </v-app>
@@ -93,9 +95,11 @@ export default {
       columns: null,
       options: null,
       selectedGuid: null,
+      selectedActionGuid: null,
       quickSearch: null,
       gridInitialized: false,
-      modalGuid: null
+      modalGuid: null,
+      actions: null
     };
   },
   asyncComputed: {
@@ -263,22 +267,14 @@ export default {
     this.loadOptions(this.form, this.grid);
   },
   methods: {
-    testAction() {
-      this.$log.info(' TEST ACTION ');
-    },
-    openForm(guid) {
-      if (this.options.enableOpenForm) {
-        this.selectedGuid = guid;
-        this.$modal.show(`sub-form-${this.modalGuid}`);
-      }
-    },
-    closeModal() {
-      this.selectedGuid = null;
-      this.$modal.hide(`sub-form-${this.modalGuid}`);
-    },
     loadOptions(formDbName, gridDbName) {
       const GET_GRID_DATA = gql`
-        query($formDbName: String!, $gridDbName: String!, $updateTime: String) {
+        query(
+          $formDbName: String!
+          $gridDbName: String!
+          $currentState: String
+          $updateTime: String
+        ) {
           grid(
             formDbName: $formDbName
             gridDbName: $gridDbName
@@ -312,8 +308,19 @@ export default {
             optionsJson
             isDefaultView
           }
-          form(dbName: $formDbName) {
+          form(dbName: $formDbName, updateTime: $updateTime) {
             name
+            icon
+          }
+          actionsAvalible(
+            formDbName: $formDbName
+            currentState: $currentState
+            updateTime: $updateTime
+          ) {
+            guid
+            name
+            fromStateGuid
+            toStateGuid
             icon
           }
         }
@@ -325,6 +332,7 @@ export default {
           variables: {
             formDbName,
             gridDbName,
+            currentState: null,
             updateTime: this.update_time
           }
         })
@@ -341,6 +349,7 @@ export default {
           this.columns = gridData.columns
             ? gridData.columns.edges.map(edge => edge.node)
             : null;
+          this.actions = data.data.actionsAvalible;
 
           this.loadData();
         })
@@ -484,6 +493,26 @@ export default {
           } else node.setSelected(false);
         });
       }
+    },
+    getActionIconClass(action) {
+      if (action.icon) return `fas fa-${action.icon}`;
+      return 'far fa-arrow-alt-circle-right';
+    },
+    doAction(action) {
+      this.selectedGuid = null;
+      this.selectedActionGuid = action.guid;
+      this.$modal.show(`sub-form-${this.modalGuid}`);
+    },
+    openForm(guid) {
+      if (this.options.enableOpenForm) {
+        this.selectedGuid = guid;
+        this.selectedActionGuid = null;
+        this.$modal.show(`sub-form-${this.modalGuid}`);
+      }
+    },
+    closeModal() {
+      this.selectedGuid = null;
+      this.$modal.hide(`sub-form-${this.modalGuid}`);
     }
   }
 };

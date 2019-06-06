@@ -279,6 +279,7 @@ const mutations = {
       state.states = data.states ? data.states.edges.map(edge => edge.node) : null;
       state.actions = data.actions ? data.actions.edges.map(edge => edge.node) : null;
       state.permissions = data.permissions ? data.permissions.edges.map(edge => edge.node) : null;
+      console.log(state.actions);
     } else {
       state.formGuid = null;
       state.formDbName = null;

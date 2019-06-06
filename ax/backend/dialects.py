@@ -68,6 +68,33 @@ class SqliteDialect(object):
         }
         return sqlite_types[type_name]
 
+    def get_value_sql(self, type_name, value=None):
+        ret_val = None
+
+        if "VARCHAR" in type_name:
+            ret_val = "'" + value + "'" if value else 'NULL'
+        elif "TEXT" in type_name:
+            # val = re.escape(val).replace("\_", "_").replace("\%", "%")
+            ret_val = "'" + value + "'" if value else 'NULL'
+        elif "TIMESTAMP" in type_name:
+            ret_val = "CAST('" + str(value) + \
+                "' AS INTEGER)" if value else 'NULL'
+        elif "DECIMAL" in type_name:
+            ret_val = "CAST(" + str(value).replace(",", ".") + \
+                " AS REAL)" if value else 'NULL'
+        elif "INT" in type_name:
+            ret_val = str(value) if value else 'NULL'
+        elif "BOOL" in type_name:
+            if value:
+                ret_val = "1"
+            else:
+                ret_val = "0"
+        else:
+            ret_val = "'" + value + "'" if value else 'NULL'
+
+        # print("\n " + self.db_name + " = " + str(ret_val) + " | " + str(_val) + " | " + str(self.value))
+        return ret_val
+
     def select_all(
             self,
             ax_form,
@@ -110,7 +137,7 @@ class SqliteDialect(object):
                             logger.exception(
                                 f"Error in guids argument. Cant parse json")
                             raise
-               
+
                     guids_string = ", ".join(
                         "'" + item + "'" for item in guids_array)
                 guids_sql = f"OR guid IN ({guids_string})"
@@ -150,6 +177,78 @@ class SqliteDialect(object):
             logger.exception(f"Error executing SQL - select {form_db_name}")
             raise
 
+    def insert(self, form, to_state_name, new_guid):
+        """ Insert row into database and set state with AxForm field values"""
+        try:
+            fields_db_names = []
+
+            value_strings = []
+            for field in form.fields:
+                if field.needs_sql_update:
+                    fields_db_names.append(field.db_name)
+                    value_strings.append(
+                        self.get_value_sql(
+                            type_name=field.field_type.value_type,
+                            value=field.value
+                        )
+                    )
+
+            column_sql = ", ".join(fields_db_names)
+            values_sql = ", ".join(value_strings)
+
+            sql = (
+                f"INSERT INTO {form.db_name} "
+                f"(guid, axState, {column_sql}) "
+                f"VALUES ('{new_guid}', '{to_state_name}', {values_sql});"
+            )
+            result = ax_model.db_session.execute(sql)
+
+            last_guid_result = ax_model.db_session.execute(
+                f"SELECT guid FROM {form.db_name} WHERE rowid={result.lastrowid}"
+            ).fetchall()
+            last_guid = last_guid_result[0]['guid']
+
+            ax_model.db_session.flush()
+            return last_guid
+        except Exception:
+            logger.exception('Error executing SQL - insert')
+            raise
+
+    def update(self, form, to_state_name, row_guid):
+        """ Update database row based of AxForm fields values"""
+        try:
+            value_strings = []
+            for field in form.fields:
+                if field.needs_sql_update:
+                    current_value = self.get_value_sql(
+                        type_name=field.field_type.value_type,
+                        value=field.value
+                    )
+                    value_strings.append(f"{field.db_name}={current_value}")
+
+            values_sql = ", ".join(value_strings)
+            sql = (
+                f"UPDATE {form.db_name} SET axState='{to_state_name}', {values_sql} WHERE guid='{row_guid}' "
+            )
+            result = ax_model.db_session.execute(sql)
+            ax_model.db_session.flush()
+            return result
+        except Exception:
+            logger.exception('Error executing SQL - update')
+            raise
+
+    def delete(self, form, row_guid):
+        """ Update database row based of AxForm fields values"""
+        try:
+            sql = (
+                f"DELETE FROM {form.db_name} WHERE guid='{row_guid}' "
+            )
+            ax_model.db_session.execute(sql)
+            ax_model.db_session.flush()
+        except Exception:
+            logger.exception('Error executing SQL - delete')
+            raise
+
     def create_data_table(self, db_name: str) -> None:
         """Create table with system columns"""
         try:
@@ -159,6 +258,7 @@ class SqliteDialect(object):
                 axState VARCHAR NOT NULL
             );"""
             ax_model.db_session.execute(sql)
+            ax_model.db_session.flush()
         except Exception:
             logger.exception('Error executing SQL - create_data_table')
             raise
@@ -168,6 +268,7 @@ class SqliteDialect(object):
         try:
             sql = f'ALTER TABLE {old} RENAME TO {new};'
             ax_model.db_session.execute(sql)
+            ax_model.db_session.flush()
         except Exception:
             logger.exception('Error executing SQL - rename_table')
             raise
@@ -177,6 +278,7 @@ class SqliteDialect(object):
         try:
             sql = f'DROP TABLE {db_name};'
             ax_model.db_session.execute(sql)
+            ax_model.db_session.flush()
         except Exception:
             logger.exception('Error executing SQL - drop_table')
             raise
@@ -187,6 +289,7 @@ class SqliteDialect(object):
             dialect_type = self.get_type(type_name=type_name)
             sql = f"ALTER TABLE `{table}` ADD COLUMN {db_name} {dialect_type}"
             ax_model.db_session.execute(sql)
+            ax_model.db_session.flush()
         except Exception:
             logger.exception('Error executing SQL - add_column')
             raise
@@ -232,6 +335,7 @@ class SqliteDialect(object):
                 ax_model.db_session.rollback()
                 raise
 
+            ax_model.db_session.flush()
             return True
         except Exception:
             logger.exception('Error executing SQL - rename_column')
@@ -277,6 +381,7 @@ class SqliteDialect(object):
                 ax_model.db_session.rollback()
                 raise
 
+            ax_model.db_session.flush()
             return True
         except Exception:
             logger.exception('Error executing SQL - drop_column')

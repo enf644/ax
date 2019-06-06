@@ -11,10 +11,17 @@ from backend.misc import convert_column_to_string
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
 
 
+class Action(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
+    class Meta:  # pylint: disable=missing-docstring
+        model = AxAction
+        interfaces = (relay.Node, )
+
+
 class Form(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
     class Meta:  # pylint: disable=missing-docstring
         model = AxForm
         interfaces = (relay.Node, )
+    avalible_actions = graphene.List(Action)
 
 
 class FieldType(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
@@ -64,12 +71,6 @@ class Role(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
 class State(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
     class Meta:  # pylint: disable=missing-docstring
         model = AxState
-        interfaces = (relay.Node, )
-
-
-class Action(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
-    class Meta:  # pylint: disable=missing-docstring
-        model = AxAction
         interfaces = (relay.Node, )
 
 

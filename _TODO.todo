@@ -412,17 +412,29 @@ AX 20:
             ✔ Delete button column @done(19-06-05 14:30)
             ✔ Hint, required @done(19-06-05 15:01)
     ☐ ACTION ENGINE
-        ☐ Create actions
-        ☐ Change state action
-        ☐ Delete action
-        ☐ Run python code action
+        ✔ Display action buttons in grid and form @done(19-06-05 20:27)
+        ✔ Do action GQL mutation @done(19-06-06 19:27)
+            ✔ Insert actions @done(19-06-06 16:43)
+            ✔ Update actions @done(19-06-06 19:26)
+            ✔ Delete action @done(19-06-06 19:26)
+        ☐ Update form on action
+        ☐ Update grid on action (without websockets)
+        ☐ Run python code on action
             ☐ Try email
         ☐ Confirm text
         ☐ Close modal
         ☐ AxGrid update subscribtion. AxGrid updated on the fly.
+        ☐ AxForm update subscribtion. Message must apear.
+        ☐ Error -> state delete does not delete actions in workflow designer
+        ☐ Change icon for update
+        ☐ Run fields python code
+        ☐ Run 1toM python code
     ☐ COMPLEX FIELDS
-		☐ ax-files
-		☐ ax-crop-image
+        ☐ Database Image Crop
+        ☐ Filesystem Files
+        ☐ Numeration
+        ☐ Edit history (Logging) 
+        ☐ Comments
     ☐ TEST MILESTONE
         ☐ Cover everything with cypress tests
         ☐ Try pip installation
@@ -430,6 +442,8 @@ AX 20:
         ☐ ESTABLISH CI
             ☐ Each commit runs tests - installs from pip, runs cypress tests
             ☐ Start versionning
+            ☐ Publishes to google code 
+            ☐ Gae autodeploy
             ☐ Each new version comes with patch
     ☐ USERS
         ☐ GAuth
@@ -444,6 +458,9 @@ AX 20:
         ☐ Install application from yaml
         ☐ Load settings for existing forms from yaml - form, workflow, grids
         ☐ Git integration
+        ☐ Pages in application?
+        ☐ Application catalog
+        ☐ Install from git repository (pages use gitcdn)
     ☐ GLOBAL FROGS
         ☐ Different sorting and filtering for different types
             ☐ Server filter - must be loaded dynamicly
@@ -451,7 +468,7 @@ AX 20:
         ☐ Add clould logger for python and vue
         ☐ Product usage statistics
         ☐ LICENSING
-    ☐ ALL FIELDS
+    ☐ ALL FIELDS v1
         ☐ Identification
             ☐ GuId
             ☐ Numeration    `[COMPLEX]`
@@ -463,7 +480,7 @@ AX 20:
             ☐ Email
             ☐ Telephone number
         ☐ Number
-            ☐ Integer					
+            ✔ Integer @done(19-06-06 09:37)
             ☐ Decimal
             ☐ Int Slider
         ☐ Boolean
@@ -477,7 +494,7 @@ AX 20:
         ☐ Relationship
             ✔ 1:1 Inline @done(19-06-04 17:38)
             ✔ 1:M Inline @done(19-06-04 17:38)
-            ☐ 1:M Table				
+            ✔ 1:M Table @done(19-06-06 09:37)
         ☐ Date and Time
             ☐ Date
         ☐ List
@@ -499,14 +516,44 @@ AX 20:
         ☐ Object Control
             ☐ Edit history (Logging)    `[COMPLEX]`
         ☐ Communications
-            ☐ Comments
+            ☐ Comments  `[COMPLEX]`
     ☐ ACTION EXPERIENCE
         ☐ Message pop-up from python code
         ☐ Logging code 
         ☐ Code highlite and autocomplete
             ☐ Monaco language server, language client
             ☐ Code snippets
-    ☐ Role and user based server-filter
+    ☐ INSTALLATION
+    ☐ FEATURES
+        ☐ Admin home widgets
+        ☐ Role and user based server-filter
+    ☐ LICENSE GENERATION
+    ☐ TUTORIAL
+        ☐ Each page and field have help modal
+    ☐ LANDING
+        ☐ Ax pages site - beutiful landing
+    ☐ METRICS
+        ☐ Ax metrics
+        ☐ Landing metrics
+    ☐ START REACHING OUT
+        ☐ Indie hackers post - intro and ask how to maximise user reach
+        ☐ Friends - vs, facebook
+    ☐ SET MEDIA LIFECYCLE 
+        ☐ Research list of media - register in every media
+        ☐ Automate - write, translate, post, metrics
+        ☐ Set AX fetaures list
+        ☐ Set AX application request
+        ☐ Set media articles list
+        ☐ Set email list
+    ☐ SET ACCOUNTING
+        ☐ Самозанятый
+        ☐ Yandex.Kassa registration
+        ☐ Yandex.Kassa field
+        ☐ User registration app for marketplace
+        ☐ Patreon
+    ☐ START SCALING
+    
+
 
 
 BEFORE LAUNCH:
@@ -582,6 +629,9 @@ NEW FEATURES:
     ☐ Icons of roles in workflow constructor
     ☐ MtoM Create new record inside inline tom field? Added to table and added to field value
     ☐ Grid constructor - place * near required field in jstree
+    ☐ Call workflow actions from graphql. Dbname for action.
+    ☐ GraphQL samples for - form, grid, action
+    ☐ Custom additional form in action execution. Create form and set it as action input.
 
     
 MAYBE LATER:
@@ -861,8 +911,8 @@ ALL AX FIELDS:
         ☐ Stripe    `[COMPLEX]`
         ☐ ... check jotforms
 	☐ Relationship
-		☐ 1:1 Inline				
-		☐ 1:M Inline				
+		☐ 1:1 				
+		☐ 1:M 				
 		☐ 1:M Table				
 	☐ Date and Time
 		☐ Date

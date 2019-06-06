@@ -6,6 +6,7 @@
       :update_time='updateFormFlag'
       @update:tab='updateTab'
       @update:value='updateValue'
+      constructor_mode
       ref='form'
       v-if='dbName'
     ></ax-form>

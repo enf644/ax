@@ -87,9 +87,22 @@
               ></AxField>
 
               <v-flex xs12>
-                <v-btn :disabled='!formIsValid' @click='submitTest' small>
+                <v-btn :disabled='!formIsValid' @click='submitTest' small v-if='isConstructorMode'>
                   <i class='fas fa-vial'></i>
                   &nbsp; {{$t("form.test-from")}}
+                </v-btn>
+
+                <v-btn
+                  :disabled='!formIsValid'
+                  :key='action.guid'
+                  @click='doAction(action)'
+                  small
+                  v-for='action in this.actions'
+                  v-show='isConstructorMode == false'
+                >
+                  <i :class='getActionIconClass(action)'></i>
+                  &nbsp;
+                  {{ action.name }}
                 </v-btn>
                 <!-- <v-btn @click='openForm()' color='primary' outline>text</v-btn> -->
               </v-flex>
@@ -142,8 +155,10 @@ export default {
       default: null
     },
     guid: null,
+    action_guid: null,
     update_time: null,
-    opened_tab: null
+    opened_tab: null,
+    constructor_mode: null
   },
   data() {
     return {
@@ -180,16 +195,10 @@ export default {
     },
     formIsNotValid() {
       return !this.formIsValid;
+    },
+    isConstructorMode() {
+      return this.constructor_mode !== undefined;
     }
-    // getDrawerClass() {
-    //     let retClass = 'drawer'
-    //     if(drawerIsFloating) retClass += "drawer-floating";
-    //     if()
-    //     "drawer-floating": drawerIsFloating,
-    //         "drawer-hidden": drawerIsHidden
-
-    //       class='drawer'
-    // }
   },
   watch: {
     db_name(newValue) {
@@ -219,7 +228,9 @@ export default {
       return 'xs6';
     },
     updateValue() {
-      const result = {};
+      const result = {
+        guid: this.guid
+      };
       this.fields.forEach(field => {
         result[field.dbName] = field.value;
       });
@@ -313,14 +324,10 @@ export default {
                 }
               }
             }
-            actions {
-              edges {
-                node {
-                  guid
-                  name
-                  icon
-                }
-              }
+            avalibleActions {
+              guid
+              name
+              icon
             }
           }
         }
@@ -341,7 +348,13 @@ export default {
           this.name = currentFormData.name;
           this.dbName = currentFormData.dbName;
           this.icon = currentFormData.icon;
-          this.actions = currentFormData.actions.edges.map(edge => edge.node);
+          this.actions = currentFormData.avalibleActions;
+          if (this.action_guid) {
+            this.actions = this.actions.filter(
+              action => action.guid === this.action_guid
+            );
+          }
+
           const fields = currentFormData.fields.edges.map(edge => edge.node);
           this.tabs = [];
           this.fields = [];
@@ -367,7 +380,6 @@ export default {
         });
     },
     openForm() {
-      this.$log.info(' OPEN FORM');
       this.$modal.show(`sub-form-${this.modalGuid}`);
     },
     handleResize(force = false) {
@@ -444,6 +456,52 @@ export default {
         this.drawerIsHidden = true;
         this.overlayIsHidden = true;
       }
+    },
+    getActionIconClass(action) {
+      if (action.icon) return `fas fa-${action.icon}`;
+      return 'far fa-arrow-alt-circle-right';
+    },
+    doAction(action) {
+      this.isValid();
+      if (!this.formIsValid) return false;
+
+      const DO_ACTION = gql`
+        mutation(
+          $formGuid: String!
+          $rowGuid: String
+          $actionGuid: String!
+          $values: String
+        ) {
+          doAction(
+            formGuid: $formGuid
+            rowGuid: $rowGuid
+            actionGuid: $actionGuid
+            values: $values
+          ) {
+            ok
+          }
+        }
+      `;
+
+      apolloClient
+        .mutate({
+          mutation: DO_ACTION,
+          variables: {
+            formGuid: this.formGuid,
+            rowGuid: this.guid,
+            actionGuid: action.guid,
+            values: JSON.stringify(this.value)
+          }
+        })
+        .then(data => {
+          console.log(data);
+        })
+        .catch(error => {
+          this.$log.error(
+            `Error in AxGrid => loadData apollo client => ${error}`
+          );
+        });
+      return true;
     }
   }
 };

@@ -45,68 +45,23 @@ Headless CMS + Workflow engine + Web components + Pages = AX
 
 
 Who use Ax:
-    Personal productivity
-    Makers, hackers, developers
     Corporate worker
-    Executive
+    Makers, hackers, developers
+    Entrepreneurs
+    Personal productivity
 
+========= Week life cycle  =======================================================================================
 
-LIMITS
-    SQLite and Postgress
-    Only X fields
-    No Redis
-    No ActiveDirectory
-    Only English (Later - Russian, Chineese, Indian, Spanish. Media process?)
-    No inline-edit
-    No Caching
-    
+Each week
+    Develop
+        One feature
+        One field
+        One app (preferebly provided by direct sales)
+    Write 2 articles (write every day!!!)
+    Plan on writing 4 articles
+    Support - everyday
+    Direct sales - everyday    
 
-NEW DOMAINS
-    workflow.ax
-    draw.ax
-    make.ax
-    put.ax
-    apps.ax
-    ax.parts
-    ax.mx
-    getax.today
-    ax-workflow.com  <-----------
-
-
-
-======================================================================================================================================
-
-Idea on apps:
-    Copy of personal Sass productivity services for corporate:
-        Workflowy clone with addons:
-            Web sockets update and multiuser work
-            Edit history recording. Scroll timeline to see who did what. (maybe use git?)
-            Alt+start to start working on line
-            tags with colors
-            icons and emoji
-            permissions on every level
-            Inline ax forms as tags
-            Dynamo 
-        Trello
-    
-
-======================================================================================================================================
-
-В пользователях нужно учесть группу - суперпользователи. 
-	Они могут создавать и редактировать только свои объекты.
-	Таблица с распределением супер-пользователей по объектам
-	Какие группы имеют доступ к редактированию объекта
-	Как вариант - Админ дает доступ пользователю или группе на Папку в списке объектов.
-		Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные
-
-
-Инсталятор - спрашивает БД, схему для данных, схему для хранения пользователей
-	Должно быть задисейблено - Auth0, Cognito, Active Directory и т.д.
-
-
-Что нужно для Рекрера - 
-	Единая БД пользователей
-	Каждый клуб в отдельной таблице БД, чтобы можно было их разносить по серверам
 
 ========= Lead sources  ==========================================================================================
 
@@ -149,61 +104,6 @@ Lead sources
             https://blog.feedspot.com/software_development_blogs/ -> LIST
             YC news            
             Yandex Zen
-        Marketing news themes 
-            Introducing Ax. Installing Ax and Creating workflow application in 5 minutes.
-            Unique features
-                GraphQL
-                Python tasks
-                Wokflow based on d3.js
-                New features after launch:
-                    Scheduler feature
-                    Creating Ax-Fields
-                    Caching ax-forms in redis
-                    Upgrading procedure
-                    Add sentry logging
-                    System monitoring
-                    Event collecting - Graphite 
-                    Logging visualisation
-                    Integration of two ax instances. Shared workflow.
-                    Backup mechanism
-            Comparision with other software and services:
-                Sass -> Kissflow, Google App Maker, Zoho creator, Nintex, RunMyProcess, Airtable
-                On-premise -> Jira, PEGA , Apian , Microsoft SharePoint, IBM Lotus Notes
-                JotForms, Infinity Box, Wufoo, Formstack, and PerfectForms.
-            Instructions for running in diferent enviroments:
-                App engine detailed instruction
-                AWS
-                Heroku
-                Docker
-            Deck as standalone tool
-            Building Sass business ontop of Ax
-                Billing users inside Ax!!!
-            Overview of ax-fields
-            Ax technology stack
-            Ax benchmark - speed, size
-            1$ implementation - CRM, HelpDesk, Invoices ect
-            New integration
-            New Ax-Field
-            Usage story
-                robot automation
-                3d printer automation
-                garden automation
-                race registration
-            Recuring posts - Yearly post calendar with recuring types -
-                once per year - statistics
-                once per month - top 5 iteresting use-cases
-                once per month - insane Usage
-                    - form inside Gmail
-                    - controlling 3d printer with workflow
-                    - controlling robot with workflow
-                    - using Ax throw console from arduino
-                    - calling actions as service, throw GQL. Creating recors, making actions
-                    - creating new tables throw GQL
-                    - Checking gmail throw action
-            Online- school teaching how to use AX - additional business
-            Personal uses:
-                Wedding
-                Event registration
     ADS
         Popular service copy. 
             Creating good Ax-marketplace applicaiton. 
@@ -218,6 +118,101 @@ Lead sources
     SERVICES
         https://optinmonster.com/
         justreachout
+    SCALE:
+        Languages
+        Saas
+        VPS Partners
+        Google apps marketplace
+        Windows store
+        Sub sass services
+        WSS clone
+        Online school
+        Consulting - go to every tender (clone thoughtbot model)
+
+
+
+-----------------------------
+
+Post rules:
+    Post must be useful for reader
+    Post must be beutiful - gifs, illustrations
+    Contains invite for direct sales - app building
+    Contains patreon link
+    Contains link for other articles
+    Contains invite to vote for next feature, field, app
+
+
+Posts queue:
+    Application for user registration and payment
+    Application for media life cycle
+    Chrome extension for Chrome - form in gmail
+    Ax as headless cms
+    Top features overview and comparision
+    Photo studio application for leonid
+    Why i decided to go with sertain design - Form have tabs, Field permissions, State as string, python code as action
+    Whu i decided to go with sertain technology - python, sanic, all libraries
+
+
+
+Marketing news themes 
+    Introducing Ax. Installing Ax and Creating workflow application in 5 minutes.
+    Unique features
+        GraphQL
+        Python tasks
+        Wokflow based on d3.js
+        New features after launch:
+            Scheduler feature
+            Creating Ax-Fields
+            Caching ax-forms in redis
+            Upgrading procedure
+            Add sentry logging
+            System monitoring
+            Event collecting - Graphite 
+            Logging visualisation
+            Integration of two ax instances. Shared workflow.
+            Backup mechanism
+    Comparision with other software and services:
+        Sass -> Kissflow, Google App Maker, Zoho creator, Nintex, RunMyProcess, Airtable
+        On-premise -> Jira, PEGA , Apian , Microsoft SharePoint, IBM Lotus Notes
+        JotForms, Infinity Box, Wufoo, Formstack, and PerfectForms.
+    Instructions for running in diferent enviroments:
+        App engine detailed instruction
+        AWS
+        Heroku
+        Docker
+    Deck as standalone tool
+    Building Sass business ontop of Ax
+        Billing users inside Ax!!!
+    Overview of ax-fields
+    Ax technology stack
+    Ax benchmark - speed, size
+    1$ implementation - CRM, HelpDesk, Invoices ect
+    New integration
+    New Ax-Field
+    Usage story
+        robot automation
+        3d printer automation
+        garden automation
+        race registration
+    Recuring posts - Yearly post calendar with recuring types -
+        once per year - statistics
+        once per month - top 5 iteresting use-cases
+        once per month - insane Usage
+            - form inside Gmail
+            - controlling 3d printer with workflow
+            - controlling robot with workflow
+            - using Ax throw console from arduino
+            - calling actions as service, throw GQL. Creating recors, making actions
+            - creating new tables throw GQL
+            - Checking gmail throw action
+    Online- school teaching how to use AX - additional business
+    Personal uses:
+        Wedding
+        Event registration
+
+
+------------------------------
+
 
 
 Global Plan
@@ -252,10 +247,12 @@ Need aquire 200 users -
 Growing points
     Scale 
         Scale with integrations - insert Ax into something
-        Scale with 1$ apps - create apps, run ads
+        Scale with apps - create apps, run ads
         Scale with Sass services build ontop of Ax
     Marketing team    
         Offer to hosting providers
+        SEO
+        Marketing guru
     Support team
         Team is the same that develops apps.
         Team members talks with clients over phone.
@@ -275,7 +272,21 @@ Ax have multiple use-cases
     entrepreneurs
     developers
 
+======================================================================================================================================
 
+Idea on apps:
+    Copy of personal Sass productivity services for corporate:
+        Workflowy clone with addons:
+            Web sockets update and multiuser work
+            Edit history recording. Scroll timeline to see who did what. (maybe use git?)
+            Alt+start to start working on line
+            tags with colors
+            icons and emoji
+            permissions on every level
+            Inline ax forms as tags
+            Dynamo 
+        Trello
+    
 ==============================================================================================================================
 
 Releasing new version of Ax
@@ -287,6 +298,24 @@ Updading Ax
     alembic changes database with migration scripts
 
 
+======================================================================================================================================
+
+В пользователях нужно учесть группу - суперпользователи. 
+	Они могут создавать и редактировать только свои объекты.
+	Таблица с распределением супер-пользователей по объектам
+	Какие группы имеют доступ к редактированию объекта
+	Как вариант - Админ дает доступ пользователю или группе на Папку в списке объектов.
+		Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные
+
+
+Инсталятор - спрашивает БД, схему для данных, схему для хранения пользователей
+	Должно быть задисейблено - Auth0, Cognito, Active Directory и т.д.
+
+
+Что нужно для Рекрера - 
+	Единая БД пользователей
+	Каждый клуб в отдельной таблице БД, чтобы можно было их разносить по серверам
+    
 =================================
 
 
@@ -443,6 +472,18 @@ BaseException
 
 
 ===========================================================================
+
+
+NEW DOMAINS
+    workflow.ax
+    draw.ax
+    make.ax
+    put.ax
+    apps.ax
+    ax.parts
+    ax.mx
+    getax.today
+    ax-workflow.com  <-----------
 
 
 

@@ -17,6 +17,27 @@ from backend.schemas.types import Form, Field, PositionInput, \
 import ujson as json
 
 
+def get_actions(form, current_state=None):
+    """ get actions for current state """
+    ret_actions = []
+    state_guid = None
+
+    if current_state:
+        for state in form.states:
+            if state.name == current_state:
+                state_guid = state.guid
+    else:
+        for state in form.states:
+            if state.is_start:
+                state_guid = state.guid
+
+    for action in form.actions:
+        if action.from_state_guid == state_guid:
+            ret_actions.append(action)
+
+    return ret_actions
+
+
 class CreateTab(graphene.Mutation):
     """ Creates AxField wich is tab """
     class Arguments:  # pylint: disable=missing-docstring
@@ -412,7 +433,7 @@ class FormQuery(graphene.ObjectType):
 
         query = Form.get_query(info=info)
         ax_form = query.filter(AxForm.db_name == db_name).first()
-
+        current_state = None
         if row_guid is not None:
             # TODO get list of fields that user have permission
             allowed_fields = []
@@ -426,12 +447,21 @@ class FormQuery(graphene.ObjectType):
                 row_guid=row_guid)
 
             if not result:
+                ax_form.avalible_actions = get_actions(
+                    form=ax_form, current_state=None)
                 return ax_form
+
+            current_state = result[0]['axState']
 
             # populate each AxField with data
             for field in ax_form.fields:
                 if field.db_name in allowed_fields:
                     field.value = result[0][field.db_name]
+
+        ax_form.avalible_actions = get_actions(
+            form=ax_form,
+            current_state=current_state
+        )
 
         # TODO: filter actions, filter fields based on state and user
         return ax_form
