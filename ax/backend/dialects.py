@@ -55,7 +55,6 @@ class SqliteDialect(object):
     def get_type(self, type_name) -> str:
         """Get dialect specific type"""
         sqlite_types = {
-            'VIRTUAL': 'VIRTUAL',
             'TEXT': 'TEXT',
             'VARCHAR(255)': 'TEXT',
             'INT': 'INTEGER',
@@ -69,6 +68,7 @@ class SqliteDialect(object):
         return sqlite_types[type_name]
 
     def get_value_sql(self, type_name, value=None):
+        """ get string to be placed inside SQL """
         ret_val = None
 
         if "VARCHAR" in type_name:
@@ -92,7 +92,6 @@ class SqliteDialect(object):
         else:
             ret_val = "'" + value + "'" if value else 'NULL'
 
-        # print("\n " + self.db_name + " = " + str(ret_val) + " | " + str(_val) + " | " + str(self.value))
         return ret_val
 
     def select_all(
@@ -117,7 +116,9 @@ class SqliteDialect(object):
             quicksearch_sql = ''
             if quicksearch:
                 sql_params['quicksearch'] = quicksearch
-                quicksearch_sql = f"AND axLabel LIKE ('%' || :quicksearch || '%') "
+                quicksearch_sql = (
+                    f"AND axLabel LIKE ('%' || :quicksearch || '%') "
+                )
 
             serverfilter_sql = ''
             if server_filter and server_filter["params"]:
@@ -208,7 +209,7 @@ class SqliteDialect(object):
             ).fetchall()
             last_guid = last_guid_result[0]['guid']
 
-            ax_model.db_session.flush()
+            ax_model.db_session.commit()
             return last_guid
         except Exception:
             logger.exception('Error executing SQL - insert')
@@ -228,10 +229,12 @@ class SqliteDialect(object):
 
             values_sql = ", ".join(value_strings)
             sql = (
-                f"UPDATE {form.db_name} SET axState='{to_state_name}', {values_sql} WHERE guid='{row_guid}' "
+                f"UPDATE {form.db_name} "
+                f"SET axState='{to_state_name}', {values_sql} "
+                f"WHERE guid='{row_guid}' "
             )
             result = ax_model.db_session.execute(sql)
-            ax_model.db_session.flush()
+            ax_model.db_session.commit()
             return result
         except Exception:
             logger.exception('Error executing SQL - update')
@@ -244,7 +247,7 @@ class SqliteDialect(object):
                 f"DELETE FROM {form.db_name} WHERE guid='{row_guid}' "
             )
             ax_model.db_session.execute(sql)
-            ax_model.db_session.flush()
+            ax_model.db_session.commit()
         except Exception:
             logger.exception('Error executing SQL - delete')
             raise
@@ -258,7 +261,7 @@ class SqliteDialect(object):
                 axState VARCHAR NOT NULL
             );"""
             ax_model.db_session.execute(sql)
-            ax_model.db_session.flush()
+            ax_model.db_session.commit()
         except Exception:
             logger.exception('Error executing SQL - create_data_table')
             raise
@@ -268,7 +271,7 @@ class SqliteDialect(object):
         try:
             sql = f'ALTER TABLE {old} RENAME TO {new};'
             ax_model.db_session.execute(sql)
-            ax_model.db_session.flush()
+            ax_model.db_session.commit()
         except Exception:
             logger.exception('Error executing SQL - rename_table')
             raise
@@ -278,7 +281,7 @@ class SqliteDialect(object):
         try:
             sql = f'DROP TABLE {db_name};'
             ax_model.db_session.execute(sql)
-            ax_model.db_session.flush()
+            ax_model.db_session.commit()
         except Exception:
             logger.exception('Error executing SQL - drop_table')
             raise
@@ -289,7 +292,7 @@ class SqliteDialect(object):
             dialect_type = self.get_type(type_name=type_name)
             sql = f"ALTER TABLE `{table}` ADD COLUMN {db_name} {dialect_type}"
             ax_model.db_session.execute(sql)
-            ax_model.db_session.flush()
+            ax_model.db_session.commit()
         except Exception:
             logger.exception('Error executing SQL - add_column')
             raise
@@ -335,7 +338,7 @@ class SqliteDialect(object):
                 ax_model.db_session.rollback()
                 raise
 
-            ax_model.db_session.flush()
+            ax_model.db_session.commit()
             return True
         except Exception:
             logger.exception('Error executing SQL - rename_column')
@@ -381,7 +384,7 @@ class SqliteDialect(object):
                 ax_model.db_session.rollback()
                 raise
 
-            ax_model.db_session.flush()
+            ax_model.db_session.commit()
             return True
         except Exception:
             logger.exception('Error executing SQL - drop_column')
@@ -397,7 +400,6 @@ class PorstgreDialect(object):
     def get_type(self, type_name):
         """Get dialect specific type"""
         postgre_types = {
-            'VIRTUAL': 'VIRTUAL',
             'TEXT': 'TEXT',
             'VARCHAR(255)': 'VARCHAR(255)',
             'INT': 'INT',
@@ -480,7 +482,6 @@ class MysqlDialect(object):
     def get_type(self, type_name):
         """Get dialect specific type"""
         mysql_types = {
-            'VIRTUAL': 'VIRTUAL',
             'TEXT': 'TEXT',
             'VARCHAR(255)': 'VARCHAR(255)',
             'INT': 'INT',

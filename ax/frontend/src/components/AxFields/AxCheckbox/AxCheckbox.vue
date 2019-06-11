@@ -11,6 +11,11 @@ export default {
     tag: null,
     optionsJson: null,
     value: null
+  },
+  watch: {
+    value(newValue) {
+      console.log(newValue);
+    }
   }
 };
 </script>

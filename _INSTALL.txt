@@ -86,7 +86,7 @@ https://github.com/vuejs/awesome-vue
 http://google.github.io/styleguide/pyguide.html
 
 
-
+ws://127.0.0.1:8081/api/subscriptions
 
 <ax-grid settings="" >
     <ax-field-string-grid-cell settings="" />

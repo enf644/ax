@@ -449,10 +449,15 @@ const actions = {
           name: newGrid.name,
           dbName: newGrid.dbName,
           position: newGrid.position,
-          isDefaultView: newGrid.isDefaultView
+          isDefaultView: newGrid.isDefaultView,
+          formGuid: context.state.formGuid
         };
         context.commit('updateGrid', newGrid);
         context.commit('form/updateGrid', shortGrid, { root: true });
+        context.commit('home/updateGrid', shortGrid, { root: true });
+
+        if (payload.updateNeeded) context.commit('setUpdateTime', Date.now());
+
         if (redirectNeeded) {
           const url = `/admin/${context.state.formDbName}/grids/${currentDbName}`;
           context.commit('home/setRedirectNeededUrl', url, { root: true });

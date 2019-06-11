@@ -1,6 +1,6 @@
 <template>
   <v-app class='ax-grid-app' id='ax-grid'>
-    <v-sheet class='sheet' elevation='5' light ref='sheet'>
+    <v-sheet :class='sheetClass' elevation='5' light ref='sheet'>
       <div class='header'>
         <div class='grid-title' v-show='titleEnabled'>
           <i :class='`fas fa-${this.formIcon}`'></i>
@@ -44,7 +44,13 @@
         <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
           <i class='fas fa-times close-ico'></i>
         </v-btn>
-        <AxForm :action_guid='selectedActionGuid' :db_name='form' :guid='selectedGuid'></AxForm>
+        <AxForm
+          :action_guid='selectedActionGuid'
+          :db_name='form'
+          :guid='selectedGuid'
+          @close='updateAndClose'
+          @updated='updateGrid'
+        ></AxForm>
       </v-card>
     </modal>
   </v-app>
@@ -189,6 +195,10 @@ export default {
     }
   },
   computed: {
+    sheetClass() {
+      if (this.options && this.options.enableFlatMode) return 'sheet-flat';
+      return 'sheet';
+    },
     viewDbName() {
       if (this.isDefaultView) return this.form;
       return this.form + this.grid;
@@ -252,7 +262,10 @@ export default {
   watch: {
     update_time(newValue, oldValue) {
       if (oldValue && this.gridObj) {
-        this.gridObj.gridOptions.api.destroy();
+        if (this.gridObj.gridOptions && this.gridObj.gridOptions.api) {
+          this.gridObj.gridOptions.api.destroy();
+        }
+        this.gridInitialized = false;
         this.loadOptions(this.form, this.grid);
       }
     },
@@ -267,6 +280,70 @@ export default {
     this.loadOptions(this.form, this.grid);
   },
   methods: {
+    updateAndClose(guid) {
+      if (!this.options.enableSubscription) {
+        this.loadData();
+        setTimeout(() => {
+          this.highliteRow(guid);
+        }, 100);
+      }
+      this.closeModal();
+    },
+    updateGrid(guid) {
+      if (!this.options.enableSubscription) {
+        this.loadData();
+        setTimeout(() => {
+          this.highliteRow(guid);
+        }, 100);
+      }
+    },
+    subscribeToActions() {
+      const ACTION_SUBSCRIPTION_QUERY = gql`
+        subscription($formDbName: String!, $rowGuid: String) {
+          actionNotify(formDbName: $formDbName, rowGuid: $rowGuid) {
+            guid
+            dbName
+            rowGuid
+          }
+        }
+      `;
+
+      apolloClient
+        .subscribe({
+          query: ACTION_SUBSCRIPTION_QUERY,
+          variables: {
+            formDbName: this.form
+          }
+        })
+        .subscribe(
+          data => {
+            this.loadData();
+            setTimeout(() => {
+              this.highliteRow(data.data.actionNotify.rowGuid);
+            }, 100);
+            // logger.info(`Action subscribtion data recieved: ${data}`);
+          },
+          {
+            error(error) {
+              logger.error(`ERRROR in GQL subscribeToActions => ${error}`);
+            }
+          }
+        );
+    },
+    highliteRow(guid) {
+      const rowNode = this.gridObj.gridOptions.api.getRowNode(guid);
+
+      const newData = { ...rowNode.data };
+      newData.isHighlited = true;
+      rowNode.setData(newData);
+
+      setTimeout(() => {
+        const node = this.gridObj.gridOptions.api.getRowNode(guid);
+        const oldData = { ...node.data };
+        oldData.isHighlited = false;
+        node.setData(oldData);
+      }, 1000);
+    },
     loadOptions(formDbName, gridDbName) {
       const GET_GRID_DATA = gql`
         query(
@@ -351,6 +428,8 @@ export default {
             : null;
           this.actions = data.data.actionsAvalible;
 
+          if (this.options.enableSubscription) this.subscribeToActions();
+
           this.loadData();
         })
         .catch(error => {
@@ -387,14 +466,20 @@ export default {
         .query({
           query: dataQuery,
           variables: {
-            updateTime: this.update_time,
+            updateTime: Date.now(),
             quicksearch: impossibleGuid,
             guids: this.guidsString
           }
         })
         .then(data => {
           this.rowData = data.data[this.viewDbName];
-          this.initAgGrid();
+          if (!this.gridInitialized) this.initAgGrid();
+          else {
+            const filterModel = this.gridObj.gridOptions.api.getFilterModel();
+            this.gridObj.gridOptions.api.setRowData(this.rowData);
+            this.gridObj.gridOptions.api.setFilterModel(filterModel);
+          }
+          // this.gridObj.gridOptions.api.setRowData(this.rowData);
         })
         .catch(error => {
           logger.error(`Error in AxGrid => loadData apollo client => ${error}`);
@@ -410,7 +495,8 @@ export default {
           },
           columnDefs: this.columnDefs,
           rowData: this.rowData,
-          rowSelection: 'multiple'
+          rowSelection: 'multiple',
+          getRowNodeId: data => data.guid
         };
         gridOptions.onRowClicked = event => {
           this.openForm(event.data.guid);
@@ -430,6 +516,10 @@ export default {
         if (this.options.enableFlatMode) {
           this.gridObj.gridOptions.api.setDomLayout('print');
         }
+
+        this.gridObj.gridOptions.rowClassRules = {
+          'ax-highlited-row': params => params.data.isHighlited === true
+        };
 
         this.gridObj.gridOptions.onColumnResized = event => {
           const fieldDbName = event.column.colId;
@@ -461,8 +551,9 @@ export default {
           };
           if (this.gridInitialized) this.$emit('modify', eventData);
         };
+        this.gridInitialized = true;
+
         setTimeout(() => {
-          this.gridInitialized = true;
           if (this.isTomMode) {
             this.gridObj.gridOptions.suppressRowClickSelection = true;
             this.doPreselect(this.preselect);
@@ -539,6 +630,9 @@ export default {
 .sheet {
   width: 100%;
   height: 100%;
+}
+.sheet-flat {
+  width: 100%;
 }
 .ax-grid-app {
   height: 100%;

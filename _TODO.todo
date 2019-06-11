@@ -417,18 +417,26 @@ AX 20:
             ✔ Insert actions @done(19-06-06 16:43)
             ✔ Update actions @done(19-06-06 19:26)
             ✔ Delete action @done(19-06-06 19:26)
-        ☐ Update form on action
-        ☐ Update grid on action (without websockets)
+        ✔ Error -> create 1to1, change grid name, come back to 1to1 settings - grid name did not change @done(19-06-07 19:20)
+            ✔ Update all relation fields options on grid or form rename @done(19-06-07 19:20)
+        ✔ Update form on action @done(19-06-07 21:29)
+        ✔ Update grid on action (without websockets) @done(19-06-07 21:40)
+        ✔ Close modal @done(19-06-07 21:40)
+        ✔ Confirm text @done(19-06-09 13:37)
+        ✔ Error -> state delete does not delete actions in workflow designer @done(19-06-09 13:55)
+        ✔ All state. actions from all state. @done(19-06-09 16:19)
+        ✔ Error -> Table in flat mode displayed wrong @done(19-06-09 17:14)
+        ✔ Change default icon for update @done(19-06-10 16:27)
+        ✔ AxGrid update subscribtion. AxGrid updated on the fly. @done(19-06-11 11:31)
+            ✔ Grid is subscribed to doAction. If recieved -> will reload data. @done(19-06-11 11:31)
+            ✔ Option in grid constructor @done(19-06-11 11:31)
+        ✔ AxForm update subscribtion. Message must apear. @done(19-06-11 13:25)
+            ✔ Form is subscribed to doAction. If recieved -> checks guid. @done(19-06-11 13:25)
         ☐ Run python code on action
             ☐ Try email
-        ☐ Confirm text
-        ☐ Close modal
-        ☐ AxGrid update subscribtion. AxGrid updated on the fly.
-        ☐ AxForm update subscribtion. Message must apear.
-        ☐ Error -> state delete does not delete actions in workflow designer
-        ☐ Change icon for update
         ☐ Run fields python code
         ☐ Run 1toM python code
+        ☐ Relation forms (1to1 1tom) must be avalivle via GQL query
     ☐ COMPLEX FIELDS
         ☐ Database Image Crop
         ☐ Filesystem Files
@@ -467,14 +475,13 @@ AX 20:
             ☐ Grid filter - must be loaded dynamicly
         ☐ Add clould logger for python and vue
         ☐ Product usage statistics
-        ☐ LICENSING
     ☐ ALL FIELDS v1
         ☐ Identification
-            ☐ GuId
-            ☐ Numeration    `[COMPLEX]`
+            ☐ GuId  `[VIRTUAL]`
+            ☐ Numeration    `[COMPLEX]` `[VIRTUAL]`
         ☐ Decoration
-            ☐ Header
-            ☐ Text
+            ☐ Header    `[VIRTUAL]`
+            ☐ Text  `[VIRTUAL]`
         ☐ String
             ✔ String @done(19-06-04 17:38)
             ☐ Email
@@ -485,7 +492,7 @@ AX 20:
             ☐ Int Slider
         ☐ Boolean
             ☐ Checkbox
-            ✔ Switch @done(19-06-04 17:38)
+            ☐ Switch
             ☐ 2D radio survey
         ☐ Payment
             ☐ Paypal    `[COMPLEX]`
@@ -498,7 +505,7 @@ AX 20:
         ☐ Date and Time
             ☐ Date
         ☐ List
-            ☐ Select					
+            ✔ Choise @done(19-06-07 21:39)
             ☐ Radio
             ☐ Tags input
         ☐ Text
@@ -612,6 +619,9 @@ NEW FROGS TODOS:
     ✔ AxFrom - size transition caouses a ton of resize events that are captured by handleResize @done(19-04-17 09:37)
     ☐ Paging in AxGrid
     ☐ Close icon in form values preview
+    ✔ Error -> if you click fast enoth - setRedirectUrl action does not work @done(19-06-07 16:55)
+    ☐ Every gql query error must be visible for user - popup or error toast
+    ☐ Hints for every grid constructor option
 
 
 NEW FEATURES:
@@ -632,6 +642,7 @@ NEW FEATURES:
     ☐ Call workflow actions from graphql. Dbname for action.
     ☐ GraphQL samples for - form, grid, action
     ☐ Custom additional form in action execution. Create form and set it as action input.
+    ☐ Toasts in ax-grid and ax-form without admin (idie)
 
     
 MAYBE LATER:
@@ -893,7 +904,9 @@ ALL AX FIELDS:
 		☐ Numeration    `[COMPLEX]`
 	☐ Decoration
 		☐ Header
-		☐ Text
+        ☐ Text
+        ☐ Icon column
+        ☐ Color column
 	☐ String
 		☐ Simple String	
 		☐ Email
@@ -957,7 +970,8 @@ ALL AX FIELDS:
 		☐ Ajax request field    `[COMPLEX]`
 	☐ Object Control
 		☐ Edit history (Logging)    `[COMPLEX]`
-		☐ Detailed edit history (Version control)    `[COMPLEX]`
+        ☐ Detailed edit history (Version control)    `[COMPLEX]`
+        ☐ Position drag
     ☐ Communications
         ☐ Comments
 		☐ Google Comments    `[COMPLEX]`

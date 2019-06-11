@@ -4,8 +4,8 @@ from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from backend.model import AxForm, AxField, AxFieldType, AxGrid, AxColumn, \
-    AxUser, AxGroup2Users, AxRole, AxState, AxAction, AxAction2Role, AxState2Role, \
-    AxRoleFieldPermission, AxRole2Users, GUID
+    AxUser, AxGroup2Users, AxRole, AxState, AxAction, AxAction2Role, \
+    AxState2Role, AxRoleFieldPermission, AxRole2Users, GUID
 from backend.misc import convert_column_to_string
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
@@ -21,6 +21,7 @@ class Form(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
     class Meta:  # pylint: disable=missing-docstring
         model = AxForm
         interfaces = (relay.Node, )
+    row_guid = graphene.String()
     avalible_actions = graphene.List(Action)
 
 

@@ -15,8 +15,8 @@
       item-text='axLabel'
       item-value='guid'
       no-filter
-      v-if='options.grid'
       v-model='currentValue'
+      v-show='!this.settingsError'
     >
       <template v-slot:selection='{ item, selected }'>
         <v-chip @click='openFormModal()' @input='clearValue()' class='chip' close>
@@ -36,7 +36,7 @@
     <v-alert
       :value='true'
       type='warning'
-      v-if='!this.options.grid'
+      v-show='this.settingsError'
     >{{$t("common.no-field-settings-error", {name: this.name})}}</v-alert>
 
     <modal :name='`tom-form-${this.modalGuid}`' adaptive height='auto' scrollable width='70%'>
@@ -92,7 +92,8 @@ export default {
     search: null,
     axItems: [],
     formIcon: null,
-    modalGuid: null
+    modalGuid: null,
+    gqlError: false
   }),
   components: { AxForm, AxGrid },
   computed: {
@@ -103,6 +104,11 @@ export default {
     hideNoData() {
       if (this.search && this.search.length >= 2) return false;
       return true;
+    },
+    settingsError() {
+      if (!this.options.grid) return true;
+      if (this.gqlError) return true;
+      return false;
     }
   },
   watch: {
@@ -161,9 +167,9 @@ export default {
       const GRID_DATA = gql`
         query ($updateTime: String, $quicksearch: String, $guids: String, $dbName: String!) {
           ${this.viewDbName} (
-            updateTime: $updateTime, 
+            updateTime: $updateTime,
             quicksearch: $quicksearch,
-            guids: $guids            
+            guids: $guids
           ) {
               guid
               axLabel
@@ -171,7 +177,7 @@ export default {
           form (dbName: $dbName) {
               name
               icon
-          }          
+          }
         }
       `;
 
@@ -190,6 +196,7 @@ export default {
           this.formIcon = data.data.form.icon;
         })
         .catch(error => {
+          this.gqlError = true;
           this.$log.error(
             `Error in Ax1to1 => doQuicksearch apollo client => ${error}`
           );

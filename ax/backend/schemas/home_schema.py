@@ -23,6 +23,23 @@ from backend.schemas.types import Form, PositionInput
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
 
 
+
+def tom_sync_form(old_form_db_name, new_form_db_name):
+    """ find all relation AxFields
+    for each - check if options contain old form and old grid. If so - replace
+    """
+    relation_fields = ax_model.db_session.query(AxField).filter(
+        AxField.field_type_tag.in_(('Ax1to1', 'Ax1tom', 'Ax1tomTable'))
+    ).all()
+    for field in relation_fields:
+        if 'form' in field.options.keys() and 'grid' in field.options.keys():
+            if field.options['form'] == old_form_db_name:
+                new_options = field.options
+                new_options['form'] = new_form_db_name
+                field.options_json = json.dumps(new_options)
+                ax_model.db_session.commit()
+                
+
 def is_db_name_avalible(_db_name) -> bool:
     """Check if table is already exists in database"""
     try:
@@ -322,7 +339,11 @@ class UpdateForm(graphene.Mutation):
             ax_form = ax_model.db_session.query(AxForm).filter(
                 AxForm.guid == uuid.UUID(args.get('guid'))
             ).first()
+            old_form_db_name = ax_form.db_name
             db_name_changed = None
+            tom_sync_needed = False
+            schema_reload_needed = False
+
             if str(args.get('db_name')) != str(ax_form.db_name):
                 db_name_changed = args.get('db_name')
                 if is_db_name_avalible(_db_name=args.get('db_name')) is False:
@@ -336,12 +357,22 @@ class UpdateForm(graphene.Mutation):
                     ax_dialects.dialect.rename_table(
                         old=ax_form.db_name,
                         new=args.get('db_name'))
+                    tom_sync_needed = True
+                    schema_reload_needed = True
 
             ax_form.name = args.get('name')
             ax_form.db_name = args.get('db_name')
             ax_form.icon = args.get('icon')
             ax_form.tom_label = args.get('tom_label')
             ax_model.db_session.commit()
+
+            if schema_reload_needed:
+                ax_schema.init_schema()
+
+            if tom_sync_needed:
+                tom_sync_form(
+                    old_form_db_name=old_form_db_name,
+                    new_form_db_name=ax_form.db_name)
 
             ok = True
             return UpdateForm(
@@ -544,10 +575,14 @@ class ChangeFormsPositions(graphene.Mutation):
 
 class HomeQuery(graphene.ObjectType):
     """AxForm queryes"""
-    all_forms = graphene.List(Form)
+    all_forms = graphene.List(
+        Form, update_time=graphene.Argument(
+            type=graphene.String, required=False)
+    )
 
-    async def resolve_all_forms(self, info):
+    async def resolve_all_forms(self, info, update_time):
         """Get all users"""
+        del update_time
         try:
             query = Form.get_query(info)  # SQLAlchemy query
             form_list = query.all()

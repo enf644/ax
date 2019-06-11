@@ -50,6 +50,14 @@
     ></v-switch>
 
     <v-switch
+      :label='this.$t("grids.options-subscription")'
+      @change='saveOptions'
+      class='options-switcher'
+      cy-data='options-subscription'
+      v-model='changedOptions.enableSubscription'
+    ></v-switch>
+
+    <v-switch
       :label='this.$t("grids.options-columns-resize")'
       @change='saveOptions'
       class='options-switcher'
@@ -183,13 +191,15 @@ export default {
     saveOptions() {
       if (this.$store.state.grids.loadingDone) {
         this.$store.commit('grids/combineOptions', this.changedOptions);
-        this.$store.dispatch('grids/updateGrid', {}).then(() => {
-          const msg = this.$t('grids.grid-updated');
-          this.$store.commit('grids/setUpdateTime', Date.now());
-          this.$dialog.message.success(
-            `<i class="fas fa-columns"></i> &nbsp ${msg}`
-          );
-        });
+        this.$store
+          .dispatch('grids/updateGrid', { updateNeeded: true })
+          .then(() => {
+            const msg = this.$t('grids.grid-updated');
+            this.$store.commit('grids/setUpdateTime', Date.now());
+            this.$dialog.message.success(
+              `<i class="fas fa-columns"></i> &nbsp ${msg}`
+            );
+          });
       }
     },
     createColumn(e, data) {

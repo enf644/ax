@@ -4,8 +4,8 @@ import logger from '../../logger';
 import i18n from '../../locale.js';
 
 const GET_ALL_FORMS = gql`
-    query {
-      allForms {
+    query ($updateTime: String) {
+      allForms (updateTime: $updateTime) {
         guid,
         name,
         dbName,
@@ -221,13 +221,41 @@ const mutations = {
   },
   addGrid(state, grid) {
     state.forms.forEach(form => {
-      console.log(grid);
       if (form.guid === grid.formGuid) {
         form.grids.edges.push({
           node: grid
         });
       }
     });
+  },
+  deleteGrid(state, deleted) {
+    let formIndex = null;
+    for (let i = 0; i < state.forms.length; i += 1) {
+      if (state.forms[i].guid === grid.formGuid) {
+        formIndex = i;
+      }
+    }
+    state.forms[formIndex].grids.edges = [
+      ...state.forms[formIndex].grids.edges.filter(edge => edge.node.guid !== deleted)
+    ];
+  },
+  updateGrid(state, grid) {
+    for (let i = 0; i < state.forms.length; i += 1) {
+      if (state.forms[i].guid === grid.formGuid) {
+        state.forms[i].grids.edges = [
+          ...state.forms[i].grids.edges.filter(edge => edge.node.guid !== grid.guid),
+          { node: grid }
+        ];
+
+        if (grid.isDefaultView) {
+          for (let x = 0; x < state.forms[i].grids.edges.length; x += 1) {
+            if (state.forms[i].grids.edges[x].node.guid !== grid.guid) {
+              state.forms[i].grids.edges[x].node.isDefaultView = false;
+            }
+          }
+        }
+      }
+    }
   }
 };
 
@@ -273,7 +301,9 @@ const actions = {
   getAllForms({ commit }) {
     apolloClient.query({
       query: GET_ALL_FORMS,
-      variables: {}
+      variables: {
+        updateTime: Date.now()
+      }
     })
       .then(data => {
         commit('setForms', data.data.allForms);

@@ -308,10 +308,6 @@ a {
     opacity: 1;
 }
 
-.dragging {
-    /*fill: #CCCCCC;*/
-    /*transition: fill 1s;*/
-}
 
 .new-action-arrow {
     stroke-width: 1.5px;
@@ -504,6 +500,13 @@ a {
 
 .ax-grid-app .application--wrap {
     min-height: 300px;
+}
+
+.ax-highlited-row {
+    background: #FFEE58;
+    -webkit-transition: background-color 600ms linear;
+    -ms-transition: background-color 600ms linear;
+    transition: background-color 600ms linear;
 }
 
 .v--modal-overlay.scrollable .v--modal-box {

@@ -86,6 +86,18 @@
                 v-show='isFieldVisible(field)'
               ></AxField>
 
+              <transition enter-active-class='animated fadeIn'>
+                <v-alert :value='true' type='warning' v-show='showSubscribtionWarning'>
+                  {{$t("form.record-modifyed-warning")}}
+                  &nbsp;
+                  <v-btn @click='reloadData' small>
+                    <i class='fas fa-sync-alt'></i>
+                    &nbsp;
+                    {{$t("form.reload-data")}}
+                  </v-btn>
+                </v-alert>
+              </transition>
+
               <v-flex xs12>
                 <v-btn :disabled='!formIsValid' @click='submitTest' small v-if='isConstructorMode'>
                   <i class='fas fa-vial'></i>
@@ -140,6 +152,7 @@ import apolloClient from '../apollo';
 import AxField from '@/components/AxField.vue';
 import gql from 'graphql-tag';
 import uuid4 from 'uuid4';
+// import { settings } from 'cluster';
 
 export default {
   name: 'AxForm',
@@ -182,10 +195,16 @@ export default {
       currentWidth: null,
       isMobile: false,
       formIsLoaded: false,
-      modalGuid: null
+      modalGuid: null,
+      insertedGuid: null,
+      showSubscribtionWarning: false
     };
   },
   computed: {
+    currentRowGuid() {
+      if (this.guid) return this.guid;
+      return this.insertedGuid;
+    },
     drawerAnimationClass() {
       if (this.formIsLoaded) return 'drawer-animation';
       return 'not-exist';
@@ -202,10 +221,12 @@ export default {
   },
   watch: {
     db_name(newValue) {
-      if (newValue) this.loadData(newValue, this.guid);
+      if (newValue) this.loadData(newValue, this.currentRowGuid);
     },
     update_time(newValue) {
-      if (newValue && this.db_name) this.loadData(this.db_name, this.guid);
+      if (newValue && this.db_name) {
+        this.loadData(this.db_name, this.currentRowGuid);
+      }
     },
     tabs(newValue, oldValue) {
       if (oldValue) {
@@ -220,16 +241,22 @@ export default {
     this.modalGuid = uuid4();
   },
   mounted() {
-    if (this.db_name) this.loadData(this.db_name, this.guid);
+    if (this.db_name) this.loadData(this.db_name, this.currentRowGuid);
   },
   methods: {
+    reloadData() {
+      setTimeout(() => {
+        this.loadData(this.db_name, this.currentRowGuid);
+        this.showSubscribtionWarning = false;
+      }, 1000);
+    },
     getWidthClass(field) {
       if (field.isWholeRow || this.isMobile) return 'xs12';
       return 'xs6';
     },
     updateValue() {
       const result = {
-        guid: this.guid
+        guid: this.currentRowGuid
       };
       this.fields.forEach(field => {
         result[field.dbName] = field.value;
@@ -328,6 +355,10 @@ export default {
               guid
               name
               icon
+              confirmText
+              closeModal
+              fromStateGuid
+              toStateGuid
             }
           }
         }
@@ -349,7 +380,7 @@ export default {
           this.dbName = currentFormData.dbName;
           this.icon = currentFormData.icon;
           this.actions = currentFormData.avalibleActions;
-          if (this.action_guid) {
+          if (this.action_guid && !this.insertedGuid) {
             this.actions = this.actions.filter(
               action => action.guid === this.action_guid
             );
@@ -367,6 +398,7 @@ export default {
           if (this.opened_tab) this.activeTab = this.opened_tab;
           else this.activeTab = this.tabs[0].guid;
           this.updateValue();
+          this.subscribeToActions();
 
           setTimeout(() => {
             this.formIsLoaded = true;
@@ -459,11 +491,27 @@ export default {
     },
     getActionIconClass(action) {
       if (action.icon) return `fas fa-${action.icon}`;
+      if (action.toStateGuid === action.fromStateGuid) return 'fas fa-redo';
       return 'far fa-arrow-alt-circle-right';
     },
-    doAction(action) {
+    async doAction(action) {
       this.isValid();
       if (!this.formIsValid) return false;
+
+      if (action.confirmText) {
+        const comfirmed = await this.$dialog.confirm({
+          text: action.confirmText,
+          actions: {
+            false: this.$t('common.confirm-no'),
+            true: {
+              text: this.$t('common.confirm-yes'),
+              color: 'red'
+            }
+          }
+        });
+
+        if (!comfirmed) return false;
+      }
 
       const DO_ACTION = gql`
         mutation(
@@ -478,6 +526,11 @@ export default {
             actionGuid: $actionGuid
             values: $values
           ) {
+            form {
+              guid
+              dbName
+            }
+            newGuid
             ok
           }
         }
@@ -488,20 +541,64 @@ export default {
           mutation: DO_ACTION,
           variables: {
             formGuid: this.formGuid,
-            rowGuid: this.guid,
+            rowGuid: this.currentRowGuid,
             actionGuid: action.guid,
             values: JSON.stringify(this.value)
           }
         })
         .then(data => {
-          console.log(data);
+          let retGuid = this.guid;
+          if (!this.guid) {
+            this.insertedGuid = data.data.doAction.newGuid;
+            retGuid = this.insertedGuid;
+          }
+
+          if (action.closeModal) this.$emit('close', retGuid);
+          else {
+            setTimeout(() => {
+              this.loadData(this.db_name, this.currentRowGuid);
+              this.$emit('updated', retGuid);
+            }, 100);
+          }
         })
         .catch(error => {
           this.$log.error(
-            `Error in AxGrid => loadData apollo client => ${error}`
+            `Error in AxGrid => doAction apollo client => ${error}`
           );
         });
       return true;
+    },
+    subscribeToActions() {
+      const ACTION_SUBSCRIPTION_QUERY = gql`
+        subscription($formDbName: String!, $rowGuid: String) {
+          actionNotify(formDbName: $formDbName, rowGuid: $rowGuid) {
+            guid
+            dbName
+            rowGuid
+          }
+        }
+      `;
+
+      apolloClient
+        .subscribe({
+          query: ACTION_SUBSCRIPTION_QUERY,
+          variables: {
+            formDbName: this.dbName,
+            rowGuid: this.guid
+          }
+        })
+        .subscribe(
+          () => {
+            setTimeout(() => {
+              this.showSubscribtionWarning = true;
+            }, 1000);
+          },
+          {
+            error(error) {
+              this.$log.error(`ERRROR in GQL subscribeToActions => ${error}`);
+            }
+          }
+        );
     }
   }
 };

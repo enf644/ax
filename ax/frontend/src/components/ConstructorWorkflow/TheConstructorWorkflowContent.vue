@@ -1402,7 +1402,11 @@ export default {
             this.$dialog.message.success(
               `<i class="fas fa-trash-alt"></i> &nbsp ${msg}`
             );
-            d3.select(`#d3_state_g_${guid}`).remove();
+            setTimeout(() => {
+              d3.select(`#d3_state_g_${guid}`).remove();
+              d3.selectAll('.d3_action_g').remove();
+              this.redrawActions();
+            }, 50);
           });
       }
     },

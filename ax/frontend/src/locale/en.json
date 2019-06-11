@@ -100,7 +100,9 @@
         "is-whole-row": "Field takes whole row",
         "is-required": "Field is required",
         "required-text-label": "Custom required text",
-        "hint-setting-label": "Hint for entering value for this field"
+        "hint-setting-label": "Hint for entering value for this field",
+        "record-modifyed-warning": "WARNING! Current record was modifyed by another user. Do you want to load new data?",
+        "reload-data": "Reload data"
     },
     "grids": {
         "add-column-toast": "Column added",
@@ -112,6 +114,7 @@
         "options-quick-search": "Quick search",
         "options-title": "Show title",
         "options-flat-mode": "Flat mode",
+        "options-subscription": "Actions subscribtion",
         "options-columns-resize": "Columns resize",
         "options-filtering": "Filtering",
         "options-soring": "Sorting",
@@ -145,6 +148,7 @@
             "update-state-btn": "Update state settings",
             "delete-state-btn": "Delete state",
             "state-name-required": "State name is required",
+            "state-name-hint": "WARNING! The state of created records will not be renamed! Think of workflow to migrate existing rows or change rows state manualy in database. ",
             "update-state-toast": "State updated",
             "delete-state-toast": "State deleted",
             "new-state-dummy": "New state",
@@ -171,7 +175,10 @@
             "delete-action-toast": "State deleted",
             "settings-roles-list": "Roles that can perform current action",
             "icon-btn": "Change icon",
-            "code-header": "Actions python code"
+            "code-header": "Actions python code",
+            "close-modal-name": "Close modal on action",
+            "confirm-name": "Confirmation text",
+            "confirm-hint": "If not empy, the action will be performed only after comfirmation"
         },
         "role": {
             "roles-list-header": "Workflow roles",

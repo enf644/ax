@@ -270,6 +270,7 @@ const SET_STATE_PERMISSION = gql`
   }
 `;
 
+
 const mutations = {
   setWorkflowData(state, data) {
     if (data) {
@@ -279,7 +280,6 @@ const mutations = {
       state.states = data.states ? data.states.edges.map(edge => edge.node) : null;
       state.actions = data.actions ? data.actions.edges.map(edge => edge.node) : null;
       state.permissions = data.permissions ? data.permissions.edges.map(edge => edge.node) : null;
-      console.log(state.actions);
     } else {
       state.formGuid = null;
       state.formDbName = null;
@@ -307,6 +307,8 @@ const mutations = {
   },
   deleteState(state, guid) {
     state.states = [...state.states.filter(element => element.guid !== guid)];
+    state.actions = [...state.actions
+      .filter(element => element.fromStateGuid !== guid && element.toStateGuid !== guid)];
   },
   addAction(state, action) {
     state.actions.push(action);

@@ -3,6 +3,7 @@ Contains class structure of Ax storage.
 """
 import sys
 import uuid
+import ujson as json
 from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -147,7 +148,7 @@ class AxForm(Base):
         """Only AxFields that are database columns"""
         db_fields = []
         for field in self.fields:
-            if field.is_tab is False and field.field_type.value_type != "VIRTUAL":
+            if field.is_tab is False and field.field_type.is_virtual is False:
                 db_fields.append(field)
         return db_fields
 
@@ -184,6 +185,7 @@ class AxFieldType(Base):
     comparator = Column(String(255))
     icon = Column(String(255))
     is_group = Column(Boolean, unique=False, default=False)
+    is_virtual = Column(Boolean, unique=False, default=False)
     is_inline_editable = Column(Boolean, unique=False, default=False)
     is_backend_available = Column(Boolean, unique=False, default=False)
     is_setting_avalible = Column(Boolean, unique=False, default=False)
@@ -200,6 +202,7 @@ class AxFieldType(Base):
                  parent="",
                  icon="",
                  comparator="",
+                 is_virtual=False,
                  is_inline_editable=False,
                  is_backend_available=False,
                  is_setting_avalible=False,
@@ -218,6 +221,7 @@ class AxFieldType(Base):
         self.is_group = is_group
         self.comparator = comparator
         self.icon = icon
+        self.is_virtual = is_virtual
         self.is_inline_editable = is_inline_editable
         self.is_backend_available = is_backend_available
         self.is_setting_avalible = is_setting_avalible
@@ -251,10 +255,12 @@ class AxField(Base):
     @property
     def is_virtual(self):
         """Is current fieldtype is Virtual (calculated field)"""
-        if self.field_type.value_type == "VIRTUAL":
-            return True
-        else:
-            return False
+        return self.field_type.is_virtual
+
+    @property
+    def options(self):
+        """ return parsed options_json """
+        return json.loads(self.options_json)
 
 
 class Ax1tomReference(Base):

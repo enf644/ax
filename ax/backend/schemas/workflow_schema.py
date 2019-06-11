@@ -1,21 +1,49 @@
 """ GQL Chema for Workflow manipulation """
 import uuid
 import copy
+import asyncio
 import graphene
+import aiopubsub
 from loguru import logger
 import ujson as json
 
-from backend.model import GUID, AxForm, AxField, AxGrid, AxAction, AxState, \
-    AxRole, AxRole2Users, AxRoleFieldPermission, AxState2Role, AxAction2Role, \
-    AxColumn, Ax1tomReference
+from backend.model import AxForm, AxField, AxAction, AxState, \
+    AxRole, AxRoleFieldPermission, AxState2Role, AxAction2Role
+#  GUID, AxGrid, AxColumn, AxRole2Users, Ax1tomReference
 import backend.model as ax_model
-import backend.schema as ax_schema
+# import backend.schema as ax_schema
 import backend.dialects as ax_dialects
+# import backend.cache as ax_cache
+import backend.pubsub as ax_pubsub
 
 # import backend.cache as ax_cache # TODO use cache!
-from backend.schemas.types import Grid, Column, State, Action, PositionInput, \
+from backend.schemas.types import  State, Action, \
     State2Role, Action2Role, RoleFieldPermission, Role, Form
 # import ujson as json
+
+def get_actions(form, current_state=None):
+    """ get actions for current state """
+    ret_actions = []
+    state_guid = None
+    all_state_guid = None
+
+    for state in form.states:
+        if current_state:
+            if state.name == current_state:
+                state_guid = state.guid
+        else:
+            if state.is_start:
+                state_guid = state.guid
+        if state.is_all:
+            all_state_guid = state.guid
+
+    for action in form.actions:
+        if action.from_state_guid == state_guid:
+            ret_actions.append(action)
+        if current_state and action.from_state_guid == all_state_guid:
+            ret_actions.append(action)
+    return ret_actions
+
 
 
 class CreateState(graphene.Mutation):
@@ -236,8 +264,8 @@ class UpdateAction(graphene.Mutation):
                 ax_action.code = args.get('code')
             if args.get('confirm_text'):
                 ax_action.confirm_text = args.get('confirm_text')
-            if args.get('close_modal'):
-                ax_action.close_modal = args.get('close_modal')
+
+            ax_action.close_modal = args.get('close_modal')
             if args.get('icon'):
                 ax_action.icon = args.get('icon')
             if args.get('radius') is not None:
@@ -527,7 +555,11 @@ class DeleteRoleFromAction(graphene.Mutation):
             ax_model.db_session.commit()
 
             ok = True
-            return DeleteRoleFromAction(deleted=deleted, ok=ok, role_guid=role_guid, action_guid=action_guid)
+            return DeleteRoleFromAction(
+                deleted=deleted,
+                ok=ok,
+                role_guid=role_guid,
+                action_guid=action_guid)
         except Exception:
             logger.exception('Error in gql mutation - DeleteRoleFromState.')
             raise
@@ -615,7 +647,10 @@ class DoAction(graphene.Mutation):
         action_guid = graphene.String()
         values = graphene.String()
 
+    form = graphene.Field(Form)
+    new_guid = graphene.String()
     ok = graphene.Boolean()
+
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         try:
@@ -635,8 +670,8 @@ class DoAction(graphene.Mutation):
                 AxForm.guid == uuid.UUID(args.get('form_guid'))
             ).first()
             fields_names = [field.db_name for field in tobe_form.db_fields]
-            
-            # 0. Get before_form        
+
+            # 0. Get before_form
             before_form = None
             if row_guid:
                 before_form = copy.deepcopy(tobe_form)
@@ -650,22 +685,23 @@ class DoAction(graphene.Mutation):
                         'Error in DoAction. Cant find row for action')
 
                 before_form.current_state_name = before_result[0]['axState']
-                if before_form.current_state_name != ax_action.from_state.name:
+                if before_form.current_state_name != ax_action.from_state.name \
+                and ax_action.from_state.is_all is False:
                     raise Exception('Error in DoAction. Performed \
                     action does not fit axState')
 
                 # populate each AxField of before_form with old data
                 for field in before_form.db_fields:
-                    field.value = before_result[0][field.db_name]                   
+                    field.value = before_result[0][field.db_name]
 
             # 1. Assemble tobe_object
             for field in tobe_form.db_fields:
                 if field.db_name in values.keys():
                     field.value = values[field.db_name]
                     field.needs_sql_update = True
-         
-            # 2. Run before_update from field.py for each field. Rewrite field_value
-            # 3. Run python action, rewrite tobe_object (not implemented) #TODO - 
+
+            # 2. Run before_update from field.py for each field.
+            # 3. Run python action, rewrite tobe_object (not implemented) #TODO
             # 4. Make update or insert or delete query
 
             if ax_action.from_state.is_start:
@@ -678,7 +714,7 @@ class DoAction(graphene.Mutation):
                 ax_dialects.dialect.delete(
                     form=tobe_form,
                     row_guid=row_guid
-                )                
+                )
             else:
                 ax_dialects.dialect.update(
                     form=tobe_form,
@@ -686,13 +722,53 @@ class DoAction(graphene.Mutation):
                     row_guid=row_guid
                 )
 
-            # 5. Run after_update from field.py for each field. Rewrite after_object
+            # 5. Run after_update from field.py for each field.
 
+            # 6. Fire all subscribtions
+            subscribtion_form = AxForm()
+            subscribtion_form.guid = tobe_form.guid
+            subscribtion_form.icon = tobe_form.icon
+            subscribtion_form.db_name = tobe_form.db_name
+            subscribtion_form.row_guid = row_guid if row_guid else new_guid
+
+            ax_pubsub.publisher.publish(
+                aiopubsub.Key('do_action'), subscribtion_form)
+
+            # tobe_form.guid = tobe_form.row_guid
             ok = True
-            return DoAction(ok=ok)
+            return DoAction(form=tobe_form, new_guid=tobe_form.row_guid, ok=ok)
         except Exception:
             logger.exception('Error in gql mutation - DoAction.')
             raise
+
+
+
+class WorkflowSubscription(graphene.ObjectType):
+    """GraphQL subscriptions"""
+    action_notify = graphene.Field(
+        Form,
+        form_db_name=graphene.Argument(type=graphene.String, required=True),
+        row_guid=graphene.Argument(type=graphene.String, required=False))
+
+
+    async def resolve_action_notify(self, info, form_db_name, row_guid=None):
+        """Subscribe to adding new user"""
+        del info
+        try:
+            subscriber = aiopubsub.Subscriber(
+                ax_pubsub.hub, 'action_notify_subscriber')
+            subscriber.subscribe(aiopubsub.Key('do_action'))
+            while True:
+                key, payload = await subscriber.consume()
+                del key
+                if payload.db_name == form_db_name:
+                    if row_guid is None or row_guid == payload.row_guid:
+                        yield payload
+        except asyncio.CancelledError:
+            await subscriber.remove_all_listeners()
+
+
+
 
 class WorkflowQuery(graphene.ObjectType):
     """Query all data of AxGrid and related classes"""
@@ -718,21 +794,12 @@ class WorkflowQuery(graphene.ObjectType):
         """ get AxActions for current state """
         # TODO: Add permissions based on roles and current user
         try:
-            del update_time
-            query = Action.get_query(info=info)
+            del update_time, info
             ax_form = ax_model.db_session.query(AxForm).filter(
                 AxForm.db_name == form_db_name
             ).first()
+            ax_actions = get_actions(form=ax_form, current_state=current_state)
 
-            ax_state = None
-            for state in ax_form.states:
-                if (state.name == current_state) or \
-                (current_state is None and state.is_start):
-                    ax_state = state
-
-            ax_actions = query.filter(
-                AxAction.from_state_guid == ax_state.guid
-            ).all()
             return ax_actions
         except Exception:
             logger.exception('Error in gql query - resolve_actions_avalible.')

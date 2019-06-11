@@ -46,12 +46,17 @@ export default {
       }
     },
     redirectNeededUrl(newValue) {
-      this.$router.push({ path: newValue });
+      if (newValue) {
+        this.$router.push({ path: newValue });
+        this.$store.commit('home/setRedirectNeededUrl', null);
+      }
     }
   },
   created() {
     if (!this.$store.state.home.isFormsLoaded) {
-      this.$store.dispatch('home/getAllForms');
+      this.$store.dispatch('home/getAllForms', {
+        updateTime: Date.now()
+      });
       this.$store.dispatch('form/getFieldTypes');
       if (this.$route.params.db_name) {
         this.$store.dispatch('form/getFormData', {

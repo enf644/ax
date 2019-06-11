@@ -7,6 +7,7 @@
     <br>
     <v-form @submit.prevent='updateState' ref='form' v-model='valid'>
       <v-text-field
+        :hint='$t("workflow.state.state-name-hint")'
         :label='$t("workflow.state.state-name")'
         :rules='nameRules'
         @input='resetNameValid'

@@ -52,6 +52,9 @@ export default {
           this.$refs.thisField.isValid();
         }, 10);
       }
+    },
+    value(newValue) {
+      this.currentValue = newValue;
     }
   },
   created() {

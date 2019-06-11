@@ -11,7 +11,8 @@ from backend.schemas.users_schema import UsersQuery
 from backend.schemas.users_schema import UsersMutations, UsersSubscription
 from backend.schemas.home_schema import HomeQuery, HomeMutations
 from backend.schemas.form_schema import FormQuery, FormMutations
-from backend.schemas.workflow_schema import WorkflowQuery, WorkflowMutations
+from backend.schemas.workflow_schema import WorkflowQuery, WorkflowMutations, \
+    WorkflowSubscription
 from backend.schemas.grids_schema import GridsQuery, GridsMutations
 from backend.schemas.fields_schema import FieldsQuery, FieldsMutations
 from backend.schemas.types import Form, FieldType, Field, Grid, \
@@ -80,7 +81,7 @@ class Mutations(HomeMutations, FormMutations, UsersMutations, GridsMutations,
     """Combines all schemas mutations"""
 
 
-class Subscription(UsersSubscription, graphene.ObjectType):
+class Subscription(UsersSubscription, WorkflowSubscription, graphene.ObjectType):
     """Combines all schemas subscription"""
 
 
@@ -148,7 +149,9 @@ def init_schema():
         ax_forms = ax_model.db_session.query(AxForm).all()
         for form in ax_forms:
             for grid in form.grids:
-                class_name = form.db_name.capitalize() + grid.db_name
+                capital_form_db_name = form.db_name[0].upper(
+                ) + form.db_name[1:]
+                class_name = capital_form_db_name + grid.db_name
                 class_fields = {}
                 class_fields['guid'] = graphene.String()
                 class_fields['axNum'] = graphene.Int()
@@ -172,7 +175,8 @@ def init_schema():
                 all_types.append(graph_class)
 
                 if grid.is_default_view is True:
-                    default_class_name = form.db_name.capitalize()
+                    default_class_name = form.db_name[0].upper(
+                    ) + form.db_name[1:]
 
                     default_graph_class = type(
                         default_class_name,

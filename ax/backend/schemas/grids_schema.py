@@ -4,13 +4,32 @@ import graphene
 from loguru import logger
 import ujson as json
 
-from backend.model import AxForm, AxGrid, AxColumn
+from backend.model import AxForm, AxGrid, AxColumn, AxField
 import backend.model as ax_model
 import backend.schema as ax_schema
 
 # import backend.cache as ax_cache # TODO use cache!
 from backend.schemas.types import Grid, Column, PositionInput
 # import ujson as json
+
+
+def tom_sync_grid(form_db_name, old_db_name, new_db_name):
+    """ find all relation AxFields
+    for each - check if options contain old form and old grid. If so - replace
+    """
+    relation_fields = ax_model.db_session.query(AxField).filter(
+        AxField.field_type_tag.in_(('Ax1to1', 'Ax1tom', 'Ax1tomTable'))
+    ).all()
+    for field in relation_fields:
+        if 'form' in field.options.keys() and 'grid' in field.options.keys():
+            if field.options['grid'] == old_db_name and \
+                    field.options['form'] == form_db_name:
+
+                new_options = field.options
+                new_options['grid'] = new_db_name
+
+                field.options_json = json.dumps(new_options)
+                ax_model.db_session.commit()
 
 
 class CreateColumn(graphene.Mutation):
@@ -232,10 +251,23 @@ class DeleteGrid(graphene.Mutation):
             ax_grid = ax_model.db_session.query(AxGrid).filter(
                 AxGrid.guid == uuid.UUID(guid)
             ).first()
+            form_db_name = ax_grid.form.name
+            old_grid_db_name = ax_grid.db_name
+            default_db_name = None
+
+            for grid in ax_grid.form.grids:
+                if grid.is_default_view:
+                    default_db_name = grid.db_name
+
             ax_model.db_session.delete(ax_grid)
             ax_model.db_session.commit()
 
             ax_schema.init_schema()
+
+            tom_sync_grid(
+                form_db_name=form_db_name,
+                old_db_name=old_grid_db_name,
+                new_db_name=default_db_name)
 
             ok = True
             return DeleteGrid(deleted=guid, ok=ok)
@@ -265,10 +297,12 @@ class UpdateGrid(graphene.Mutation):
             options_json = args.get('options_json')
             is_default_view = args.get('is_default_view')
             schema_reload_needed = False
+            tom_sync_needed = False
 
             ax_grid = ax_model.db_session.query(AxGrid).filter(
                 AxGrid.guid == uuid.UUID(guid)
             ).first()
+            old_db_name = ax_grid.db_name
 
             if name:
                 ax_grid.name = name
@@ -276,6 +310,8 @@ class UpdateGrid(graphene.Mutation):
             if db_name:
                 ax_grid.db_name = db_name
                 schema_reload_needed = True
+                if old_db_name != db_name:
+                    tom_sync_needed = True
 
             if options_json:
                 ax_grid.options_json = options_json
@@ -296,6 +332,12 @@ class UpdateGrid(graphene.Mutation):
 
             if schema_reload_needed:
                 ax_schema.init_schema()
+
+            if tom_sync_needed:
+                tom_sync_grid(
+                    form_db_name=ax_grid.form.db_name,
+                    old_db_name=old_db_name,
+                    new_db_name=ax_grid.db_name)
 
             ok = True
             return UpdateGrid(grid=ax_grid, ok=ok)
@@ -335,6 +377,12 @@ class GridsQuery(graphene.ObjectType):
         query = Grid.get_query(info=info)
         grid = query.filter(AxGrid.form_guid == ax_form.guid).filter(
             AxGrid.db_name == grid_db_name).first()
+
+        # if field is_virtual - we must switch current dbName with field_type.default_db_name
+        for column in grid.columns:
+            if column.field.field_type.is_virtual:
+                column.field.db_name = column.field.field_type.default_db_name
+
         return grid
 
     async def resolve_grids_list(self, info, form_db_name):

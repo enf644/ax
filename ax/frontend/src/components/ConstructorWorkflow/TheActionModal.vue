@@ -41,6 +41,16 @@
 
       <br>
 
+      <v-textarea
+        :hint='$t("workflow.action.confirm-hint")'
+        :label='$t("workflow.action.confirm-name")'
+        auto-grow
+        v-model='confirmText'
+      ></v-textarea>
+
+      <v-switch :label='$t("workflow.action.close-modal-name")' v-model='closeModal'></v-switch>
+
+      <br>
       <div class='actions'>
         <v-btn @click='updateAction' data-cy='update-action-btn' small>
           <i class='fas fa-pencil-alt'></i>

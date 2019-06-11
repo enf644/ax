@@ -118,6 +118,9 @@ Lead sources
     SERVICES
         https://optinmonster.com/
         justreachout
+    QUESTIONS AND FORUMS
+        Quora - workflow, headeless cms ect
+        Stack overflow
     SCALE:
         Languages
         Saas
@@ -146,6 +149,7 @@ Posts queue:
     Application for user registration and payment
     Application for media life cycle
     Chrome extension for Chrome - form in gmail
+    Application for race registration
     Ax as headless cms
     Top features overview and comparision
     Photo studio application for leonid
@@ -234,14 +238,17 @@ Landing ideas
 Pricing
     Free
         Up to 4 users
-    Standard - 10$ per user
-    Enterprise - 25$ per user
+    Standard - 20$ per user
+    Enterprise - 45$ per user
         Ag-grid enterprice
         Redis queing
         Active directory / Google groups
 
-Need aquire 200 users - 
-40 x 5 - minimal sales.
+
+
+
+Need aquire 100 users - 
+20 x 5 - minimal sales.
 
 
 Growing points
@@ -286,6 +293,8 @@ Idea on apps:
             Inline ax forms as tags
             Dynamo 
         Trello
+        Instagram planning - plannthat clone
+        Simple wiki - Tettra clone
     
 ==============================================================================================================================
 
