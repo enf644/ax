@@ -14,6 +14,7 @@
         "true": "True",
         "false": "False",
         "confirm": "Confirm",
+        "ok": "Ok",
         "no-field-settings-error": "[{name}] - Settings error"
     },
     "home": {
@@ -178,7 +179,8 @@
             "code-header": "Actions python code",
             "close-modal-name": "Close modal on action",
             "confirm-name": "Confirmation text",
-            "confirm-hint": "If not empy, the action will be performed only after comfirmation"
+            "confirm-hint": "If not empy, the action will be performed only after comfirmation",
+            "action-error": "{error_class} at line {line_number} of [{action_name}] action: {detail}"
         },
         "role": {
             "roles-list-header": "Workflow roles",

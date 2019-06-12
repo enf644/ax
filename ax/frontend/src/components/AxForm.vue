@@ -531,6 +531,7 @@ export default {
               dbName
             }
             newGuid
+            messages
             ok
           }
         }
@@ -552,14 +553,13 @@ export default {
             this.insertedGuid = data.data.doAction.newGuid;
             retGuid = this.insertedGuid;
           }
+          const messages = JSON.parse(data.data.doAction.messages);
 
-          if (action.closeModal) this.$emit('close', retGuid);
-          else {
-            setTimeout(() => {
-              this.loadData(this.db_name, this.currentRowGuid);
-              this.$emit('updated', retGuid);
-            }, 100);
-          }
+          this.showMessagesAndEmit({
+            messages,
+            retGuid,
+            closeModal: action.closeModal
+          });
         })
         .catch(error => {
           this.$log.error(
@@ -567,6 +567,44 @@ export default {
           );
         });
       return true;
+    },
+    async showMessagesAndEmit(actionResult) {
+      let res = false;
+      if (actionResult.messages.error) {
+        res = await this.$dialog.error({
+          text: actionResult.messages.error,
+          persistent: false
+        });
+      } else if (actionResult.messages.info) {
+        res = await this.$dialog.warning({
+          text: actionResult.messages.info,
+          persistent: false,
+          actions: {
+            true: this.$t('common.ok')
+          }
+        });
+      } else if (actionResult.messages.exception) {
+        const msg = this.$t('workflow.action.action-error', {
+          error_class: actionResult.messages.exception.error_class,
+          line_number: actionResult.messages.exception.line_number,
+          action_name: actionResult.messages.exception.action_name,
+          detail: actionResult.messages.exception.detail
+        });
+        res = await this.$dialog.error({
+          text: msg,
+          persistent: false
+        });
+      } else res = true;
+
+      if (res) {
+        if (actionResult.closeModal) this.$emit('close', actionResult.retGuid);
+        else {
+          setTimeout(() => {
+            this.loadData(this.db_name, this.currentRowGuid);
+            this.$emit('updated', actionResult.retGuid);
+          }, 100);
+        }
+      }
     },
     subscribeToActions() {
       const ACTION_SUBSCRIPTION_QUERY = gql`

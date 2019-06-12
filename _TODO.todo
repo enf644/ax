@@ -174,8 +174,8 @@ REFACTORING ROUND ONE:
 
 =========================================================================================================                                
             
-AX 20:
-	☐ ADMIN INDEX
+AX 0.2:
+	✔ ADMIN INDEX @done(19-06-12 10:11)
 		✔ Полная структура навигации с всеми компонентами @done(19-02-15 14:53)
 		✔ from-constructor-drawer
         ✔ Form tree @done(19-03-28 11:10)
@@ -333,7 +333,7 @@ AX 20:
             ✔ When less then 3 fields in AxForm - they do not flex @done(19-05-14 09:21)
             ✔ Problem in column positions @done(19-05-14 12:16)
             ✔ Remove media columns from grid constructor @done(19-05-14 12:49)
-    ☐ WORKFLOW
+    ✔ WORKFLOW @done(19-06-11 13:37)
         ✔ Insert D3 sample and make it work @done(19-05-15 20:09)
         ✔ Create default workflow on form creation @done(19-05-16 14:13)
         ✔ Change sample - switch ids to guids @done(19-05-16 15:07)
@@ -432,8 +432,17 @@ AX 20:
             ✔ Option in grid constructor @done(19-06-11 11:31)
         ✔ AxForm update subscribtion. Message must apear. @done(19-06-11 13:25)
             ✔ Form is subscribed to doAction. If recieved -> checks guid. @done(19-06-11 13:25)
-        ☐ Run python code on action
-            ☐ Try email
+        ✔ Run python code on action @done(19-06-12 10:12)
+            ✔ Hello world @done(19-06-11 14:15)
+            ✔ Item is avalible in action @done(19-06-11 14:15)
+            ✔ Message from python action @done(19-06-11 18:36)
+                ✔ Info @done(19-06-11 18:36)
+                ✔ Error @done(19-06-11 18:36)
+            ✔ python action can modify item data @done(19-06-11 21:07)
+            ✔ python action can abort action execution @done(19-06-11 21:44)
+            ✔ Test api @done(19-06-12 10:12)
+        ☐ Error -> if form not closed - subscribtion popup appears. Throw modal guid.
+        ☐ Feature -> ctrl+s in code editor saves action without closing
         ☐ Run fields python code
         ☐ Run 1toM python code
         ☐ Relation forms (1to1 1tom) must be avalivle via GQL query
@@ -524,12 +533,6 @@ AX 20:
             ☐ Edit history (Logging)    `[COMPLEX]`
         ☐ Communications
             ☐ Comments  `[COMPLEX]`
-    ☐ ACTION EXPERIENCE
-        ☐ Message pop-up from python code
-        ☐ Logging code 
-        ☐ Code highlite and autocomplete
-            ☐ Monaco language server, language client
-            ☐ Code snippets
     ☐ INSTALLATION
     ☐ FEATURES
         ☐ Admin home widgets
@@ -558,8 +561,17 @@ AX 20:
         ☐ Yandex.Kassa field
         ☐ User registration app for marketplace
         ☐ Patreon
-    ☐ START SCALING
-    
+    ☐ START SCALING AND IMPROVING
+
+
+AX 0.3:
+    ☐ ACTION EXPERIENCE
+        ☐ Logging code 
+        ☐ Code highlite and autocomplete
+            ☐ Monaco language server, language client
+            ☐ Code snippets
+        ☐ Think of ст, фт, пси - how to with Ax. How to update existing application?
+
 
 
 
