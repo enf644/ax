@@ -2,9 +2,9 @@
 Contains class structure of Ax storage.
 """
 import sys
-import uuid
-import ujson as json
 from pathlib import Path
+import uuid
+from loguru import logger
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
@@ -12,7 +12,7 @@ from sqlalchemy import Text, String, CHAR, Float, Unicode, Boolean, Integer
 from sqlalchemy import TypeDecorator, Column, LargeBinary
 from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
-from loguru import logger
+import ujson as json
 import backend.misc as ax_misc
 
 
@@ -140,6 +140,7 @@ class AxForm(Base):
     from_state_name = ""
     from_state_object = None
     avalible_actions = None
+    modal_guid = None
     permissions = relationship(
         "AxRoleFieldPermission", cascade="all, delete-orphan")
 
@@ -261,17 +262,6 @@ class AxField(Base):
     def options(self):
         """ return parsed options_json """
         return json.loads(self.options_json)
-
-
-class Ax1tomReference(Base):
-    """Stores 1 to M fields relation"""
-    __tablename__ = '_ax_mtom_references'
-    guid = Column(GUID(), primary_key=True,
-                  default=uuid.uuid4, unique=True, nullable=False)
-    form_guid = Column(GUID(), ForeignKey('_ax_forms.guid'))
-    field_guid = Column(GUID(), ForeignKey('_ax_fields.guid'))
-    row_guid = Column(GUID())
-    child_guid = Column(GUID())
 
 
 class AxGrid(Base):
@@ -429,3 +419,13 @@ class AxRoleFieldPermission(Base):
     field = relationship("AxField")
     read = Column(Boolean, unique=False, default=False)
     edit = Column(Boolean, unique=False, default=False)
+
+class Ax1tomReference(Base):
+    """Stores 1 to M fields relation"""
+    __tablename__ = '_ax_mtom_references'
+    guid = Column(GUID(), primary_key=True,
+                  default=uuid.uuid4, unique=True, nullable=False)
+    form_guid = Column(GUID(), ForeignKey('_ax_forms.guid'))
+    field_guid = Column(GUID(), ForeignKey('_ax_fields.guid'))
+    row_guid = Column(GUID())
+    child_guid = Column(GUID())

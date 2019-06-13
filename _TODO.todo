@@ -441,18 +441,26 @@ AX 0.2:
             ✔ python action can modify item data @done(19-06-11 21:07)
             ✔ python action can abort action execution @done(19-06-11 21:44)
             ✔ Test api @done(19-06-12 10:12)
-        ☐ Error -> if form not closed - subscribtion popup appears. Throw modal guid.
-        ☐ Feature -> ctrl+s in code editor saves action without closing
-        ☐ Run fields python code
-        ☐ Run 1toM python code
+        ✔ Error -> if form not closed - subscribtion popup appears. Throw modal guid. @done(19-06-12 11:19)
+        ✔ Run fields python code @done(19-06-12 16:43)
+        ✔ Error -> 1tom field saved incorrectly if updated multiple times @done(19-06-12 21:38)
+        ✔ Run 1toM python code @done(19-06-13 11:42)
+            ✔ Make select with left join @done(19-06-13 11:42)
+        ☐ 1tomTable -> how to delete items??
+        ☐ Delete of dict items for tom field??
+        ☐ On each item deletion -> check if refernce table have this item
+        ☐ Try 1to1, 1tom to self!
+        ☐ Error -> actions in form preview
+        ☐ Error -> delete and subscription not working
         ☐ Relation forms (1to1 1tom) must be avalivle via GQL query
     ☐ COMPLEX FIELDS
         ☐ Database Image Crop
         ☐ Filesystem Files
         ☐ Numeration
-        ☐ Edit history (Logging) 
+        ☐ Edit history (Logging)
         ☐ Comments
     ☐ TEST MILESTONE
+        ☐ Comment every def and gql method like ax_misc
         ☐ Cover everything with cypress tests
         ☐ Try pip installation
         ☐ Try app engine installation
@@ -537,6 +545,7 @@ AX 0.2:
     ☐ FEATURES
         ☐ Admin home widgets
         ☐ Role and user based server-filter
+        ☐ Default name field. 1tomLabel = {name}
     ☐ LICENSE GENERATION
     ☐ TUTORIAL
         ☐ Each page and field have help modal
@@ -566,6 +575,8 @@ AX 0.2:
 
 AX 0.3:
     ☐ ACTION EXPERIENCE
+        ☐ Feature -> ctrl+s in code editor saves action without closing
+        ☐ Feature -> full screen code mode ctrl+enter
         ☐ Logging code 
         ☐ Code highlite and autocomplete
             ☐ Monaco language server, language client

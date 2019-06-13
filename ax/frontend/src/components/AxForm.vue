@@ -391,6 +391,13 @@ export default {
           this.fields = [];
           fields.forEach(field => {
             const thisField = field;
+            if (
+              !field.isTab
+              && field.value
+              && field.fieldType.valueType === 'JSON'
+            ) {
+              thisField.value = JSON.parse(field.value);
+            }
             if (field.isRequired) thisField.name = `${field.name} *`;
             if (field.isTab) this.tabs.push(thisField);
             else this.fields.push(thisField);
@@ -519,12 +526,14 @@ export default {
           $rowGuid: String
           $actionGuid: String!
           $values: String
+          $modalGuid: String
         ) {
           doAction(
             formGuid: $formGuid
             rowGuid: $rowGuid
             actionGuid: $actionGuid
             values: $values
+            modalGuid: $modalGuid
           ) {
             form {
               guid
@@ -544,7 +553,8 @@ export default {
             formGuid: this.formGuid,
             rowGuid: this.currentRowGuid,
             actionGuid: action.guid,
-            values: JSON.stringify(this.value)
+            values: JSON.stringify(this.value),
+            modalGuid: this.modalGuid
           }
         })
         .then(data => {
@@ -575,14 +585,6 @@ export default {
           text: actionResult.messages.error,
           persistent: false
         });
-      } else if (actionResult.messages.info) {
-        res = await this.$dialog.warning({
-          text: actionResult.messages.info,
-          persistent: false,
-          actions: {
-            true: this.$t('common.ok')
-          }
-        });
       } else if (actionResult.messages.exception) {
         const msg = this.$t('workflow.action.action-error', {
           error_class: actionResult.messages.exception.error_class,
@@ -593,6 +595,14 @@ export default {
         res = await this.$dialog.error({
           text: msg,
           persistent: false
+        });
+      } else if (actionResult.messages.info) {
+        res = await this.$dialog.warning({
+          text: actionResult.messages.info,
+          persistent: false,
+          actions: {
+            true: this.$t('common.ok')
+          }
         });
       } else res = true;
 
@@ -613,6 +623,7 @@ export default {
             guid
             dbName
             rowGuid
+            modalGuid
           }
         }
       `;
@@ -626,10 +637,12 @@ export default {
           }
         })
         .subscribe(
-          () => {
-            setTimeout(() => {
-              this.showSubscribtionWarning = true;
-            }, 1000);
+          data => {
+            if (data.data.actionNotify.modalGuid !== this.modalGuid) {
+              setTimeout(() => {
+                this.showSubscribtionWarning = true;
+              }, 1000);
+            }
           },
           {
             error(error) {

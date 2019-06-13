@@ -114,17 +114,24 @@ export default {
   },
   watch: {
     currentValue(newValue) {
-      this.$emit('update:value', newValue);
+      if (newValue !== this.value) {
+        this.$emit('update:value', newValue);
+      }
     },
     search(newValue) {
       if (newValue && newValue !== this.select) this.doQuicksearch();
+    },
+    value(newValue, oldValue) {
+      this.currentValue = newValue;
+      this.updateTime = Date.now();
     }
   },
   created() {
-    this.currentValue = this.value;
-    if (this.currentValue) this.loadData();
+    if (this.value) {
+      this.currentValue = this.value;
+      this.updateTime = Date.now();
+    }
     this.modalGuid = uuid4();
-    this.updateTime = Date.now();
   },
   methods: {
     openFormModal(item) {

@@ -27,7 +27,7 @@
         </v-chip>
       </template>
 
-      <template v-slot:append>
+      <template v-slot:append-outer>
         <v-btn @click='openGridModal' icon>
           <i class='fas fa-link'></i>
         </v-btn>

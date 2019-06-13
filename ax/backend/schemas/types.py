@@ -22,6 +22,7 @@ class Form(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
         model = AxForm
         interfaces = (relay.Node, )
     row_guid = graphene.String()
+    modal_guid = graphene.String()
     avalible_actions = graphene.List(Action)
 
 

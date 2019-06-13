@@ -1,4 +1,7 @@
 """ GQL Chema for Workflow manipulation """
+import os
+import imp
+import sys
 import uuid
 import copy
 import asyncio
@@ -12,69 +15,16 @@ import ujson as json
 
 from backend.model import AxForm, AxField, AxAction, AxState, \
     AxRole, AxRoleFieldPermission, AxState2Role, AxAction2Role
-#  GUID, AxGrid, AxColumn, AxRole2Users, Ax1tomReference
 import backend.model as ax_model
-# import backend.schema as ax_schema
 import backend.dialects as ax_dialects
-# import backend.cache as ax_cache
 import backend.pubsub as ax_pubsub
+import backend.misc as ax_misc
 
 # import backend.cache as ax_cache # TODO use cache!
 from backend.schemas.types import  State, Action, \
     State2Role, Action2Role, RoleFieldPermission, Role, Form
-# import ujson as json
 
-class InterpreterError(Exception):
-    """ Class for AxAction python code errors """
-
-
-def do_exec(cmd, globalz=None, localz=None, action_name='Anon'):
-    """ executes python commands form AxAction.code """
-    try:
-        exec(str(cmd), globalz, localz)
-        return {
-            "info": localz['ax_message'] if 'ax_message' in localz else None,
-            "error": localz['ax_error'] if 'ax_error' in localz else None,
-            "item": localz['item'],
-            "exception": None,
-            "abort": localz['ax_abort'] if 'ax_abort' in localz else None
-        }
-    except SyntaxError as err:
-        error_class = err.__class__.__name__
-        detail = err.args[0]
-        line_number = err.lineno
-        return {
-            "info": None,
-            "item": None,
-            "error": None,
-            "exception": {
-                "error_class": error_class,
-                "line_number": line_number,
-                "action_name": action_name,
-                "detail": detail
-            },
-            "abort": True
-        }
-
-    except Exception as err:
-        error_class = err.__class__.__name__
-        detail = err.args[0]
-        # cl, exc, tb = sys.exc_info()
-        line_number = traceback.extract_tb(tb)[-1][1]
-        del tb
-        return {
-            "info": None,
-            "item": None,
-            "error": None,
-            "exception": {
-                "error_class": error_class,
-                "line_number": line_number,
-                "action_name": action_name,
-                "detail": detail
-            },
-            "abort": True
-        }
-
+import backend.fields.Ax1tom as AxFieldAx1tom
 
 def get_actions(form, current_state=None):
     """ get actions for current state """
@@ -694,6 +644,92 @@ class SetStatePermission(graphene.Mutation):
             logger.exception('Error in gql mutation - SetStatePermission.')
             raise
 
+
+
+class InterpreterError(Exception):
+    """ Class for AxAction python code errors """
+
+
+def do_exec(cmd, globalz=None, localz=None, action_name='Anon'):
+    """ executes python commands form AxAction.code """
+    try:
+        exec(str(cmd), globalz, localz)
+        ret_data = {
+            "info": localz['ax_message'] if 'ax_message' in localz else None,
+            "error": localz['ax_error'] if 'ax_error' in localz else None,
+            "item": localz['item'],
+            "exception": None,
+            "abort": localz['ax_abort'] if 'ax_abort' in localz else None
+        }
+        return ret_data
+    except SyntaxError as err:
+        error_class = err.__class__.__name__
+        detail = err.args[0]
+        line_number = err.lineno
+        ret_data = {
+            "info": None,
+            "item": None,
+            "error": None,
+            "exception": {
+                "error_class": error_class,
+                "line_number": line_number,
+                "action_name": action_name,
+                "detail": detail
+            },
+            "abort": True
+        }
+        return ret_data
+    except Exception as err:
+        error_class = err.__class__.__name__
+        detail = err.args[0]
+        cl, exc, tb = sys.exc_info()
+        line_number = traceback.extract_tb(tb)[-1][1]
+        del tb
+        ret_data = {
+            "info": None,
+            "item": None,
+            "error": None,
+            "exception": {
+                "error_class": error_class,
+                "line_number": line_number,
+                "action_name": action_name,
+                "detail": detail
+            },
+            "abort": True
+        }
+        return ret_data
+
+
+def run_before_or_after_update(field, action, before_form, tobe_form, current_user, run_after=False):
+    """ Runs fields backend code """
+    tag = field.field_type.tag
+    # ax_misc.path()
+    field_py_file_path = f"backend/fields/{tag}.py"
+
+    if os.path.exists(ax_misc.path(field_py_file_path)):
+        # field_py = imp.load_source(f"AxCode{tag}", field_py_file_path)
+        # field_py = __import__(f'backend.fields.{tag}')  
+        field_py = globals()[f'AxField{tag}']
+
+        if run_after:
+            new_value = field_py.after_update(
+                field=field,
+                before_form=before_form,
+                tobe_form=tobe_form,
+                action=action,
+                current_user=current_user)
+            return new_value
+        else:
+            new_value = field_py.before_update(
+                field=field,
+                before_form=before_form,
+                tobe_form=tobe_form,
+                action=action,
+                current_user=current_user)
+            return new_value
+    return field.value
+
+
 class DoAction(graphene.Mutation):
     """ Performs Action or row """
     class Arguments:  # pylint: disable=missing-docstring
@@ -701,10 +737,12 @@ class DoAction(graphene.Mutation):
         form_guid = graphene.String()
         action_guid = graphene.String()
         values = graphene.String()
+        modal_guid = graphene.String(required=False, default_value=None) 
 
     form = graphene.Field(Form)
     new_guid = graphene.String()
     messages = graphene.String()
+    modal_guid = graphene.String()
     ok = graphene.Boolean()
 
 
@@ -714,7 +752,9 @@ class DoAction(graphene.Mutation):
             values_string = args.get('values')
             values = json.loads(values_string)
             row_guid = args.get('row_guid')
+            modal_guid = args.get('modal_guid')
             new_guid = uuid.uuid4()
+            current_user = None #TODO: implement users
             actual_guid = new_guid
             if row_guid:
                 actual_guid = row_guid
@@ -754,12 +794,24 @@ class DoAction(graphene.Mutation):
                     field.value = before_result[0][field.db_name]
 
             # 1. Assemble tobe_object
+            tobe_form.row_guid = actual_guid
             for field in tobe_form.db_fields:
                 if field.db_name in values.keys():
                     field.value = values[field.db_name]
                     field.needs_sql_update = True
 
-            # 2. Run before_update from field.py for each field.
+            # 2. Run before_update for each field.
+            for field in tobe_form.db_fields:
+                if field.field_type.is_backend_available:
+                    field.value = run_before_or_after_update(
+                        field=field,
+                        action=ax_action,
+                        before_form=before_form,
+                        tobe_form=tobe_form,
+                        current_user=current_user,
+                        run_after=False)
+
+
             # 3. Run python action, rewrite tobe_object (not implemented)
             messages = None
             messages_json = None
@@ -772,26 +824,11 @@ class DoAction(graphene.Mutation):
                 item['guid'] = actual_guid
                 item['ax_from_state'] = ax_action.from_state.name
                 item['ax_to_state'] = ax_action.to_state.name
-                for field in tobe_form.fields:
+                for field in tobe_form.db_fields:
                     item[field.db_name] = field.value
                 safe_dict['item'] = item
 
-                try:
-                    code_result = do_exec(ax_action.code, globals(), safe_dict)
-                except InterpreterError as err:
-                    logger.error(
-                        f"Error executing [{ax_action.name}] "
-                        f"action python code:" + str(err))
-                    return (
-                        f"Error executing [{ax_action.name}] "
-                        f"action python code:" + str(err))
-
-                new_item = code_result['item']
-
-                for field in tobe_form.db_fields:
-                    if field.db_name in new_item.keys():
-                        field.value = new_item[field.db_name]
-                        field.needs_sql_update = True
+                code_result = do_exec(ax_action.code, globals(), safe_dict)
 
                 messages = {
                     "exception": code_result["exception"],
@@ -800,16 +837,26 @@ class DoAction(graphene.Mutation):
                 }
                 messages_json = json.dumps(messages)
 
-                if code_result['abort']:
+                if code_result['abort'] or code_result["exception"]:
                     return DoAction(
                         form=before_form,
                         new_guid=None,
                         messages=messages_json,
+                        modal_guid=modal_guid,
                         ok=False)
+
+                # update fields with values recieved from actions python
+                new_item = code_result['item']
+                for field in tobe_form.db_fields:
+                    if field.db_name in new_item.keys():
+                        field.value = new_item[field.db_name]
+                        field.needs_sql_update = True
+
+
             # 4. Make update or insert or delete query
 
             if ax_action.from_state.is_start:
-                tobe_form.row_guid = ax_dialects.dialect.insert(
+                ax_dialects.dialect.insert(
                     form=tobe_form,
                     to_state_name=ax_action.to_state.name,
                     new_guid=new_guid
@@ -829,14 +876,15 @@ class DoAction(graphene.Mutation):
             # 5. Run after_update from field.py for each field.
 
             # 6. Fire all subscribtions
-            subscribtion_form = AxForm()
-            subscribtion_form.guid = tobe_form.guid
-            subscribtion_form.icon = tobe_form.icon
-            subscribtion_form.db_name = tobe_form.db_name
-            subscribtion_form.row_guid = row_guid if row_guid else new_guid
+            subscription_form = AxForm()
+            subscription_form.guid = tobe_form.guid
+            subscription_form.icon = tobe_form.icon
+            subscription_form.db_name = tobe_form.db_name
+            subscription_form.row_guid = tobe_form.row_guid
+            subscription_form.modal_guid = modal_guid
 
             ax_pubsub.publisher.publish(
-                aiopubsub.Key('do_action'), subscribtion_form)
+                aiopubsub.Key('do_action'), subscription_form)
 
             # tobe_form.guid = tobe_form.row_guid
             ok = True
@@ -844,6 +892,7 @@ class DoAction(graphene.Mutation):
                 form=tobe_form,
                 new_guid=tobe_form.row_guid,
                 messages=messages_json,
+                modal_guid=modal_guid,
                 ok=ok)
         except Exception:
             logger.exception('Error in gql mutation - DoAction.')

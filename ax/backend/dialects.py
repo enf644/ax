@@ -63,7 +63,8 @@ class SqliteDialect(object):
             'GUID': 'TEXT',
             'JSON': 'TEXT',
             'TIMESTAMP': 'INTEGER',
-            'BLOB': 'BLOB'
+            'BLOB': 'BLOB',
+            'JSON': 'TEXT'
         }
         return sqlite_types[type_name]
 
@@ -89,6 +90,9 @@ class SqliteDialect(object):
                 ret_val = "1"
             else:
                 ret_val = "0"
+        elif "JSON" in type_name:
+            new_string = json.dumps(value)
+            ret_val = f"'{new_string}'"
         else:
             ret_val = "'" + value + "'" if value else 'NULL'
 
@@ -197,10 +201,12 @@ class SqliteDialect(object):
             column_sql = ", ".join(fields_db_names)
             values_sql = ", ".join(value_strings)
 
+            striped_new_guid = str(new_guid).replace('-', '')
+
             sql = (
                 f"INSERT INTO {form.db_name} "
                 f"(guid, axState, {column_sql}) "
-                f"VALUES ('{new_guid}', '{to_state_name}', {values_sql});"
+                f"VALUES ('{striped_new_guid}', '{to_state_name}', {values_sql});"
             )
             result = ax_model.db_session.execute(sql)
 

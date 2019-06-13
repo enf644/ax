@@ -15,6 +15,7 @@
       item-text='axLabel'
       item-value='guid'
       multiple
+      ref='tom_autocomplete'
       v-if='options.grid'
       v-model='currentValue'
     >
@@ -27,8 +28,8 @@
         </v-chip>
       </template>
 
-      <template v-slot:append>
-        <v-btn @click='openGridModal' icon>
+      <template v-slot:append-outer>
+        <v-btn @click.prevent='openGridModal' icon>
           <i class='fas fa-link'></i>
         </v-btn>
       </template>
@@ -83,7 +84,10 @@ export default {
     dbName: null,
     tag: null,
     options: null,
-    value: null,
+    value: {
+      type: Array,
+      default: null
+    },
     isRequired: null
   },
   data: () => ({
@@ -116,15 +120,22 @@ export default {
   },
   watch: {
     currentValue(newValue) {
-      this.$emit('update:value', newValue);
+      if (newValue !== this.value) {
+        this.$emit('update:value', newValue);
+      }
     },
     search(newValue) {
       if (newValue && newValue !== this.select) this.doQuicksearch();
+    },
+    value(newValue, oldValue) {
+      this.currentValue = newValue;
     }
   },
   created() {
-    this.currentValue = this.value;
-    if (this.currentValue) this.loadData();
+    if (this.value) {
+      this.currentValue = this.value;
+      this.loadData();
+    }
     this.modalGuid = uuid4();
   },
   methods: {

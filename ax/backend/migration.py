@@ -244,6 +244,7 @@ def create_field_types() -> None:
             default_db_name="toMany",
             position=2,
             value_type="JSON",
+            is_backend_available=True,
             is_inline_editable=True,
             icon="link"))
         ax_model.db_session.add(AxFieldType(
@@ -253,6 +254,7 @@ def create_field_types() -> None:
             default_db_name="toManyTable",
             position=3,
             value_type="JSON",
+            is_backend_available=True,
             is_inline_editable=True,
             icon="link"))
 
@@ -321,6 +323,7 @@ def create_field_types() -> None:
             position=1,
             default_db_name="files",
             value_type="JSON",
+            is_backend_available=True,
             icon="file"))
 
         # Users
@@ -334,6 +337,7 @@ def create_field_types() -> None:
             parent="group-files",
             position=1,
             default_db_name="users",
+            is_backend_available=True,
             value_type="JSON",
             icon="user"))
 
