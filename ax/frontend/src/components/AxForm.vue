@@ -427,7 +427,6 @@ export default {
         && this.currentWidth === this.$el.clientWidth
         && !force
       ) {
-        // console.log('prevent');
         return false;
       }
 
@@ -449,7 +448,6 @@ export default {
         this.drawerIsFloating = false;
         this.drawerIsHidden = true;
         this.overlayIsHidden = true;
-        // console.log('no tabs');
         return true;
       }
 
@@ -460,7 +458,6 @@ export default {
         this.drawerIsFloating = true;
         this.drawerIsHidden = true;
         this.overlayIsHidden = true;
-        // console.log('small');
         return true;
       }
 
@@ -471,14 +468,8 @@ export default {
         this.drawerIsFloating = false;
         this.drawerIsHidden = false;
         this.overlayIsHidden = true;
-        // console.log('big');
         return true;
       }
-      // console.log(
-      //   `nothing -> this.drawerIsFloating=${
-      //     this.drawerIsFloating
-      //   } this.currentWidth=${this.currentWidth}`
-      // );
       return false;
     },
     toggleDrawer() {
@@ -579,41 +570,46 @@ export default {
       return true;
     },
     async showMessagesAndEmit(actionResult) {
-      let res = false;
-      if (actionResult.messages.error) {
-        res = await this.$dialog.error({
-          text: actionResult.messages.error,
-          persistent: false
-        });
-      } else if (actionResult.messages.exception) {
-        const msg = this.$t('workflow.action.action-error', {
-          error_class: actionResult.messages.exception.error_class,
-          line_number: actionResult.messages.exception.line_number,
-          action_name: actionResult.messages.exception.action_name,
-          detail: actionResult.messages.exception.detail
-        });
-        res = await this.$dialog.error({
-          text: msg,
-          persistent: false
-        });
-      } else if (actionResult.messages.info) {
-        res = await this.$dialog.warning({
-          text: actionResult.messages.info,
-          persistent: false,
-          actions: {
-            true: this.$t('common.ok')
-          }
-        });
-      } else res = true;
+      try {
+        let res = false;
+        if (actionResult.messages && actionResult.messages.error) {
+          res = await this.$dialog.error({
+            text: actionResult.messages.error,
+            persistent: false
+          });
+        } else if (actionResult.messages && actionResult.messages.exception) {
+          const msg = this.$t('workflow.action.action-error', {
+            error_class: actionResult.messages.exception.error_class,
+            line_number: actionResult.messages.exception.line_number,
+            action_name: actionResult.messages.exception.action_name,
+            detail: actionResult.messages.exception.detail
+          });
+          res = await this.$dialog.error({
+            text: msg,
+            persistent: false
+          });
+        } else if (actionResult.messages && actionResult.messages.info) {
+          res = await this.$dialog.warning({
+            text: actionResult.messages.info,
+            persistent: false,
+            actions: {
+              true: this.$t('common.ok')
+            }
+          });
+        } else res = true;
 
-      if (res) {
-        if (actionResult.closeModal) this.$emit('close', actionResult.retGuid);
-        else {
-          setTimeout(() => {
-            this.loadData(this.db_name, this.currentRowGuid);
-            this.$emit('updated', actionResult.retGuid);
-          }, 100);
+        if (res) {
+          if (actionResult.closeModal) {
+            this.$emit('close', actionResult.retGuid);
+          } else {
+            setTimeout(() => {
+              this.loadData(this.db_name, this.currentRowGuid);
+              this.$emit('updated', actionResult.retGuid);
+            }, 100);
+          }
         }
+      } catch (err) {
+        this.$log.error(`Vue error in AxForm -> showMessagesAndEmit: ${err}`);
       }
     },
     subscribeToActions() {

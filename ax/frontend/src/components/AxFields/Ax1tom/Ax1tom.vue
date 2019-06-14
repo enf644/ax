@@ -20,7 +20,7 @@
       v-model='currentValue'
     >
       <template v-slot:selection='{ item, selected }'>
-        <v-chip @click='openFormModal(item)' @input='clearValue(item)' class='chip' close>
+        <v-chip @click.stop='openFormModal(item)' @input='clearValue(item)' class='chip' close>
           <v-avatar class='grey'>
             <i :class='`ax-chip-icon fas fa-${formIcon}`'></i>
           </v-avatar>
@@ -28,8 +28,8 @@
         </v-chip>
       </template>
 
-      <template v-slot:append-outer>
-        <v-btn @click.prevent='openGridModal' icon>
+      <template v-slot:append>
+        <v-btn @click.stop='openGridModal' icon>
           <i class='fas fa-link'></i>
         </v-btn>
       </template>
@@ -127,7 +127,7 @@ export default {
     search(newValue) {
       if (newValue && newValue !== this.select) this.doQuicksearch();
     },
-    value(newValue, oldValue) {
+    value(newValue) {
       this.currentValue = newValue;
     }
   },
@@ -218,6 +218,15 @@ export default {
         .then(data => {
           this.axItems = data.data[this.viewDbName];
           this.formIcon = data.data.form.icon;
+
+          // We re-create values incase some of items were deleted or permission was denied.
+          const checkedValues = [];
+          this.axItems.forEach(element => {
+            if (this.currentValue.includes(element.guid)) {
+              checkedValues.push(element.guid);
+            }
+          });
+          this.currentValue = [...checkedValues];
         })
         .catch(error => {
           this.$log.error(

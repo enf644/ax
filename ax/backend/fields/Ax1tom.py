@@ -1,9 +1,11 @@
+"""Fields functions - before, after / insert, update, delete
+"""
 import uuid
 import backend.model as ax_model
 from backend.model import Ax1tomReference
 
 
-def before_update(field, before_form, tobe_form, action, current_user):
+def after_update(field, before_form, tobe_form, action, current_user):
     """Python code runs for field before update
     WARNING! do not use ax_model.db_session.commit() here!
 
@@ -21,10 +23,9 @@ def before_update(field, before_form, tobe_form, action, current_user):
         LEFT JOIN Countrey ON Countrey.guid = ref.child_guid;
 
     Returns:
-        Object: Returns updated value of current field
-    """
-
-    print(f"{field.db_name} == {field.value}")
+        Object: Returns updated value of current field"""
+    del before_form, action, current_user
+    print(f"Ax1tom action code => {field.value}")
 
     ax_model.db_session.query(Ax1tomReference).filter(
         Ax1tomReference.field_guid == field.guid
@@ -41,13 +42,4 @@ def before_update(field, before_form, tobe_form, action, current_user):
             new_tom.child_guid = uuid.UUID(str(child_guid))
             ax_model.db_session.add(new_tom)
 
-    # ax_model.db_session.commit()
-
     return field.value
-
-
-def after_update(field, before_form, tobe_form, action, current_user):
-    return field.value
-    # """ Code executed before database update
-    #     WARNING! do not use ax_model.db_session.commit() here!
-    # """

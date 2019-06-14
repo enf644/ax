@@ -13,6 +13,7 @@
         :title='name'
         :update_time='updateTime'
         @openSelectDialog='openGridModal()'
+        @tomRemove='clearValue'
         cy-data='tomTableGrid'
         tom_inline_mode
       ></AxGrid>
@@ -121,7 +122,7 @@ export default {
     search(newValue) {
       if (newValue && newValue !== this.select) this.doQuicksearch();
     },
-    value(newValue, oldValue) {
+    value(newValue) {
       this.currentValue = newValue;
       this.updateTime = Date.now();
     }
@@ -129,15 +130,15 @@ export default {
   created() {
     if (this.value) {
       this.currentValue = this.value;
-      this.updateTime = Date.now();
     }
+    this.updateTime = Date.now();
     this.modalGuid = uuid4();
   },
   methods: {
     openFormModal(item) {
       if (
-        this.options.enableFormModal
-        || this.options.enableFormModal === undefined
+        this.options.enableFormModal ||
+        this.options.enableFormModal === undefined
       ) {
         this.activeItemGuid = item.guid;
         this.$modal.show(`tom-form-${this.modalGuid}`);
@@ -151,10 +152,11 @@ export default {
       this.$modal.hide(`tom-form-${this.modalGuid}`);
       this.$modal.hide(`tom-grid-${this.modalGuid}`);
     },
-    clearValue(axItem) {
+    clearValue(guidToRemove) {
       this.currentValue = [
-        ...this.currentValue.filter(guid => guid !== axItem.guid)
+        ...this.currentValue.filter(guid => guid !== guidToRemove)
       ];
+      this.updateTime = Date.now();
     },
     isValid() {
       this.search = null;

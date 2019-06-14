@@ -167,8 +167,7 @@ export default {
               props: ['options_json']
             });
 
-            renderer = params => `<${kebabName} 
-                options_json='hello'>${params.value}</${kebabName}>`;
+            renderer = params => `<${kebabName}>${params.value}</${kebabName}>`;
           } else {
             renderer = params => params.value;
           }
@@ -187,9 +186,30 @@ export default {
 
           firstRun = false;
         });
+        if (this.tom_inline_mode !== undefined) {
+          const tomRenderer = params => {
+            const eDiv = document.createElement('div');
+            eDiv.innerHTML = "<i class='fas fa-trash-alt tom-remove'></i>";
+            const eButton = eDiv.querySelectorAll('.tom-remove')[0];
+
+            eButton.addEventListener('click', () => {
+              this.$emit('tomRemove', params.value);
+            });
+            return eDiv;
+          };
+
+          columnDefs.push({
+            colId: 'tom_delete',
+            headerName: '',
+            field: 'guid',
+            width: 50,
+            cellRenderer: tomRenderer
+          });
+        }
+
         return columnDefs;
       } catch (error) {
-        this.$log.error(`Error in AxGrid, columnDefs => ${error}`);
+        logger.error(`Error in AxGrid, columnDefs => ${error}`);
         return null;
       }
     }
@@ -211,6 +231,7 @@ export default {
       if (!this.options) return false;
       if (this.to1_mode !== undefined) return false;
       if (this.tom_mode !== undefined) return false;
+      if (this.tom_inline_mode !== undefined) return false;
       return this.options.enableActions;
     },
     titleEnabled() {
@@ -320,7 +341,7 @@ export default {
             this.loadData();
             setTimeout(() => {
               this.highliteRow(data.data.actionNotify.rowGuid);
-            }, 100);
+            }, 500);
             // logger.info(`Action subscribtion data recieved: ${data}`);
           },
           {
@@ -332,17 +353,20 @@ export default {
     },
     highliteRow(guid) {
       const rowNode = this.gridObj.gridOptions.api.getRowNode(guid);
+      if (rowNode) {
+        const newData = { ...rowNode.data };
+        newData.isHighlited = true;
+        rowNode.setData(newData);
 
-      const newData = { ...rowNode.data };
-      newData.isHighlited = true;
-      rowNode.setData(newData);
-
-      setTimeout(() => {
-        const node = this.gridObj.gridOptions.api.getRowNode(guid);
-        const oldData = { ...node.data };
-        oldData.isHighlited = false;
-        node.setData(oldData);
-      }, 1000);
+        setTimeout(() => {
+          const node = this.gridObj.gridOptions.api.getRowNode(guid);
+          if (node) {
+            const oldData = { ...node.data };
+            oldData.isHighlited = false;
+            node.setData(oldData);
+          }
+        }, 200);
+      }
     },
     loadOptions(formDbName, gridDbName) {
       const GET_GRID_DATA = gql`
@@ -429,7 +453,6 @@ export default {
           this.actions = data.data.actionsAvalible;
 
           if (this.options.enableSubscription) this.subscribeToActions();
-
           this.loadData();
         })
         .catch(error => {
@@ -494,12 +517,18 @@ export default {
             filter: this.options.enableFiltering
           },
           columnDefs: this.columnDefs,
+          suppressScrollOnNewData: true,
           rowData: this.rowData,
           rowSelection: 'multiple',
           getRowNodeId: data => data.guid
         };
-        gridOptions.onRowClicked = event => {
-          this.openForm(event.data.guid);
+        // gridOptions.onRowClicked = event => {
+        //   this.openForm(event.data.guid);
+        // };
+        gridOptions.onCellClicked = event => {
+          if (event.column.colId !== 'tom_delete') {
+            this.openForm(event.data.guid);
+          }
         };
         gridOptions.onRowSelected = event => this.rowSelected(event);
         gridOptions.rowHeight = this.options.rowHeight;
@@ -560,7 +589,7 @@ export default {
           }
         }, 50);
       } catch (e) {
-        this.$log.error(`ERROR initiating AG grid => ${e}`);
+        logger.error(`ERROR initiating AG grid => ${e}`);
       }
     },
     rowSelected(event) {

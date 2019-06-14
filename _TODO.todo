@@ -411,7 +411,7 @@ AX 0.2:
             ✔ Select button @done(19-06-05 14:30)
             ✔ Delete button column @done(19-06-05 14:30)
             ✔ Hint, required @done(19-06-05 15:01)
-    ☐ ACTION ENGINE
+    ✔ ACTION ENGINE @done(19-06-14 10:10)
         ✔ Display action buttons in grid and form @done(19-06-05 20:27)
         ✔ Do action GQL mutation @done(19-06-06 19:27)
             ✔ Insert actions @done(19-06-06 16:43)
@@ -446,13 +446,11 @@ AX 0.2:
         ✔ Error -> 1tom field saved incorrectly if updated multiple times @done(19-06-12 21:38)
         ✔ Run 1toM python code @done(19-06-13 11:42)
             ✔ Make select with left join @done(19-06-13 11:42)
-        ☐ 1tomTable -> how to delete items??
-        ☐ Delete of dict items for tom field??
-        ☐ On each item deletion -> check if refernce table have this item
-        ☐ Try 1to1, 1tom to self!
-        ☐ Error -> actions in form preview
-        ☐ Error -> delete and subscription not working
-        ☐ Relation forms (1to1 1tom) must be avalivle via GQL query
+        ✔ Delete of dict items for tom field?? @done(19-06-13 17:03)
+        ✔ Error -> actions in form preview and 1tomTable @done(19-06-13 18:25)
+        ✔ Try 1to1, 1tom to self! @done(19-06-13 22:44)
+        ✔ Error -> scroll is disturbed in AxGird after subscription update @done(19-06-13 22:47)
+        ✔ 1tomTable -> item delete button @done(19-06-14 09:54)
     ☐ COMPLEX FIELDS
         ☐ Database Image Crop
         ☐ Filesystem Files
@@ -461,6 +459,7 @@ AX 0.2:
         ☐ Comments
     ☐ TEST MILESTONE
         ☐ Comment every def and gql method like ax_misc
+        ☐ Try catch for every vue method
         ☐ Cover everything with cypress tests
         ☐ Try pip installation
         ☐ Try app engine installation
@@ -546,6 +545,7 @@ AX 0.2:
         ☐ Admin home widgets
         ☐ Role and user based server-filter
         ☐ Default name field. 1tomLabel = {name}
+        ☐ Every modal must be moved a litle bit
     ☐ LICENSE GENERATION
     ☐ TUTORIAL
         ☐ Each page and field have help modal
@@ -577,6 +577,7 @@ AX 0.3:
     ☐ ACTION EXPERIENCE
         ☐ Feature -> ctrl+s in code editor saves action without closing
         ☐ Feature -> full screen code mode ctrl+enter
+        ☐ Feature -> Relation forms (1to1 1tom) must be avalivle via GQL query - https://github.com/graphql-python/graphene/issues/798
         ☐ Logging code 
         ☐ Code highlite and autocomplete
             ☐ Monaco language server, language client

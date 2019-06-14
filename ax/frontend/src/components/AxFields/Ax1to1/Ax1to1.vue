@@ -19,7 +19,7 @@
       v-show='!this.settingsError'
     >
       <template v-slot:selection='{ item, selected }'>
-        <v-chip @click='openFormModal()' @input='clearValue()' class='chip' close>
+        <v-chip @click.stop='openFormModal()' @input='clearValue()' class='chip' close>
           <v-avatar class='grey'>
             <i :class='`ax-chip-icon fas fa-${formIcon}`'></i>
           </v-avatar>
@@ -27,8 +27,8 @@
         </v-chip>
       </template>
 
-      <template v-slot:append-outer>
-        <v-btn @click='openGridModal' icon>
+      <template v-slot:append>
+        <v-btn @click.stop='openGridModal' icon>
           <i class='fas fa-link'></i>
         </v-btn>
       </template>

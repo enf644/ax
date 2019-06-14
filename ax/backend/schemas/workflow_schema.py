@@ -1,6 +1,5 @@
 """ GQL Chema for Workflow manipulation """
 import os
-import imp
 import sys
 import uuid
 import copy
@@ -25,6 +24,8 @@ from backend.schemas.types import  State, Action, \
     State2Role, Action2Role, RoleFieldPermission, Role, Form
 
 import backend.fields.Ax1tom as AxFieldAx1tom
+import backend.fields.Ax1tomTable as AxFieldAx1tomTable
+
 
 def get_actions(form, current_state=None):
     """ get actions for current state """
@@ -650,10 +651,20 @@ class InterpreterError(Exception):
     """ Class for AxAction python code errors """
 
 
-def do_exec(cmd, globalz=None, localz=None, action_name='Anon'):
+def do_exec(action, form):
     """ executes python commands form AxAction.code """
+    localz = dict()
+    localz['ax_obj'] = form
+    item = DotMap()
+    item['guid'] = form.row_guid
+    item['ax_from_state'] = action.from_state.name
+    item['ax_to_state'] = action.to_state.name
+    for field in form.db_fields:
+        item[field.db_name] = field.value
+    localz['item'] = item
+
     try:
-        exec(str(cmd), globalz, localz)
+        exec(str(action.code), globals(), localz)
         ret_data = {
             "info": localz['ax_message'] if 'ax_message' in localz else None,
             "error": localz['ax_error'] if 'ax_error' in localz else None,
@@ -673,7 +684,7 @@ def do_exec(cmd, globalz=None, localz=None, action_name='Anon'):
             "exception": {
                 "error_class": error_class,
                 "line_number": line_number,
-                "action_name": action_name,
+                "action_name": action.name,
                 "detail": detail
             },
             "abort": True
@@ -683,6 +694,7 @@ def do_exec(cmd, globalz=None, localz=None, action_name='Anon'):
         error_class = err.__class__.__name__
         detail = err.args[0]
         cl, exc, tb = sys.exc_info()
+        del cl, exc
         line_number = traceback.extract_tb(tb)[-1][1]
         del tb
         ret_data = {
@@ -692,7 +704,7 @@ def do_exec(cmd, globalz=None, localz=None, action_name='Anon'):
             "exception": {
                 "error_class": error_class,
                 "line_number": line_number,
-                "action_name": action_name,
+                "action_name": action.name,
                 "detail": detail
             },
             "abort": True
@@ -700,27 +712,75 @@ def do_exec(cmd, globalz=None, localz=None, action_name='Anon'):
         return ret_data
 
 
-def run_before_or_after_update(field, action, before_form, tobe_form, current_user, run_after=False):
-    """ Runs fields backend code """
+def get_before_form(row_guid, form_guid, ax_action):
+    """Constructs before_form AxForm object and populate fields with
+    values of specific row. AxForm.fields[0].value
+
+    Args:
+        row_guid (str): guid of specific row
+        form_guid (str): guid of AxForm
+        ax_action (AxAction): AxAction wich is currently happening
+
+    Returns:
+       before_object (AxForm), tobe_object(AxForm): before_object is AxForm
+       with field values of specific row. tobe_row is dummy for future
+       population"""
+    tobe_form = ax_model.db_session.query(AxForm).filter(
+        AxForm.guid == uuid.UUID(form_guid)
+    ).first()
+
+    fields_names = [field.db_name for field in tobe_form.db_fields]
+    before_form = None
+    if row_guid:
+        before_form = copy.deepcopy(tobe_form)
+        before_result = ax_dialects.dialect.select_one(
+            form_db_name=tobe_form.db_name,
+            fields_list=fields_names,
+            row_guid=row_guid)
+
+        if not before_result:
+            raise Exception(
+                'Error in DoAction. Cant find row for action')
+
+        before_form.current_state_name = before_result[0]['axState']
+        if before_form.current_state_name != ax_action.from_state.name \
+        and ax_action.from_state.is_all is False:
+            raise Exception('Error in DoAction. Performed \
+            action does not fit axState')
+
+        # populate each AxField of before_form with old data
+        for field in before_form.db_fields:
+            field.value = before_result[0][field.db_name]
+
+        return before_form, tobe_form
+
+
+def run_field_backend(field, action, before_form, tobe_form, current_user,\
+    when='before', query_type='update'):
+    """Some field types need backend execution on insert/update/delete
+
+    Args:
+        field (AxField): contains current .value of updated field
+        action (AxAction): Just for info
+        before_form (AxForm): Just for info
+        tobe_form (AxForm): Just for info
+        current_user (AxUser): Just for info
+        when (str, optional): Can be 'before' or 'after'. Defaults to 'before'.
+        query_type (str, optional): Can be 'insert', 'update', 'delete'.
+        Defaults to 'update'.
+
+    Returns:
+        [type]: Returns new field value
+    """
     tag = field.field_type.tag
-    # ax_misc.path()
     field_py_file_path = f"backend/fields/{tag}.py"
+    function_name = f"{when}_{query_type}"
 
     if os.path.exists(ax_misc.path(field_py_file_path)):
-        # field_py = imp.load_source(f"AxCode{tag}", field_py_file_path)
-        # field_py = __import__(f'backend.fields.{tag}')  
         field_py = globals()[f'AxField{tag}']
-
-        if run_after:
-            new_value = field_py.after_update(
-                field=field,
-                before_form=before_form,
-                tobe_form=tobe_form,
-                action=action,
-                current_user=current_user)
-            return new_value
-        else:
-            new_value = field_py.before_update(
+        if field_py and hasattr(field_py, function_name):
+            method_to_call = getattr(field_py, function_name)
+            new_value = method_to_call(
                 field=field,
                 before_form=before_form,
                 tobe_form=tobe_form,
@@ -737,7 +797,7 @@ class DoAction(graphene.Mutation):
         form_guid = graphene.String()
         action_guid = graphene.String()
         values = graphene.String()
-        modal_guid = graphene.String(required=False, default_value=None) 
+        modal_guid = graphene.String(required=False, default_value=None)
 
     form = graphene.Field(Form)
     new_guid = graphene.String()
@@ -753,90 +813,63 @@ class DoAction(graphene.Mutation):
             values = json.loads(values_string)
             row_guid = args.get('row_guid')
             modal_guid = args.get('modal_guid')
+            form_guid = args.get('form_guid')
             new_guid = uuid.uuid4()
             current_user = None #TODO: implement users
             actual_guid = new_guid
             if row_guid:
                 actual_guid = row_guid
 
-            # 0. Get AxForm and AxAction
-            # TODO check permissions and modify values (remove forbidden fields)
+
+            # 1. Get AxAction and query_type
             ax_action = ax_model.db_session.query(AxAction).filter(
                 AxAction.guid == uuid.UUID(args.get('action_guid'))
             ).first()
 
-            tobe_form = ax_model.db_session.query(AxForm).filter(
-                AxForm.guid == uuid.UUID(args.get('form_guid'))
-            ).first()
-            fields_names = [field.db_name for field in tobe_form.db_fields]
+            query_type = 'update'
+            if ax_action.from_state.is_start:
+                query_type = 'insert'
+            elif ax_action.to_state.is_deleted:
+                query_type = 'delete'
 
-            # 0. Get before_form
-            before_form = None
-            if row_guid:
-                before_form = copy.deepcopy(tobe_form)
-                before_result = ax_dialects.dialect.select_one(
-                    form_db_name=tobe_form.db_name,
-                    fields_list=fields_names,
-                    row_guid=row_guid)
 
-                if not before_result:
-                    raise Exception(
-                        'Error in DoAction. Cant find row for action')
+            # 2. Get before_form
+            before_form, tobe_form = get_before_form(
+                row_guid=row_guid,
+                form_guid=form_guid,
+                ax_action=ax_action)
 
-                before_form.current_state_name = before_result[0]['axState']
-                if before_form.current_state_name != ax_action.from_state.name \
-                and ax_action.from_state.is_all is False:
-                    raise Exception('Error in DoAction. Performed \
-                    action does not fit axState')
-
-                # populate each AxField of before_form with old data
-                for field in before_form.db_fields:
-                    field.value = before_result[0][field.db_name]
-
-            # 1. Assemble tobe_object
+            # 3. Assemble tobe_object
             tobe_form.row_guid = actual_guid
             for field in tobe_form.db_fields:
                 if field.db_name in values.keys():
                     field.value = values[field.db_name]
                     field.needs_sql_update = True
 
-            # 2. Run before_update for each field.
+            # 4. Run before backend code for each field.
             for field in tobe_form.db_fields:
                 if field.field_type.is_backend_available:
-                    field.value = run_before_or_after_update(
+                    field.value = run_field_backend(
+                        when='before',
+                        query_type=query_type,
                         field=field,
                         action=ax_action,
                         before_form=before_form,
                         tobe_form=tobe_form,
-                        current_user=current_user,
-                        run_after=False)
+                        current_user=current_user)
 
 
-            # 3. Run python action, rewrite tobe_object (not implemented)
+            # 5. Run python action, rewrite tobe_object (not implemented)
             messages = None
             messages_json = None
             if ax_action.code:
-                safe_list = []
-                safe_dict = dict(
-                    [(k, locals().get(k, None)) for k in safe_list])
-                safe_dict['ax_obj'] = tobe_form
-                item = DotMap()
-                item['guid'] = actual_guid
-                item['ax_from_state'] = ax_action.from_state.name
-                item['ax_to_state'] = ax_action.to_state.name
-                for field in tobe_form.db_fields:
-                    item[field.db_name] = field.value
-                safe_dict['item'] = item
-
-                code_result = do_exec(ax_action.code, globals(), safe_dict)
-
+                code_result = do_exec(action=ax_action, form=tobe_form)
                 messages = {
                     "exception": code_result["exception"],
                     "error": code_result["error"],
                     "info": code_result["info"]
                 }
                 messages_json = json.dumps(messages)
-
                 if code_result['abort'] or code_result["exception"]:
                     return DoAction(
                         form=before_form,
@@ -844,7 +877,6 @@ class DoAction(graphene.Mutation):
                         messages=messages_json,
                         modal_guid=modal_guid,
                         ok=False)
-
                 # update fields with values recieved from actions python
                 new_item = code_result['item']
                 for field in tobe_form.db_fields:
@@ -853,15 +885,15 @@ class DoAction(graphene.Mutation):
                         field.needs_sql_update = True
 
 
-            # 4. Make update or insert or delete query
-
-            if ax_action.from_state.is_start:
+            # 6. Make update or insert or delete query #COMMIT HERE
+            after_form = copy.deepcopy(tobe_form)
+            if query_type == 'insert':
                 ax_dialects.dialect.insert(
                     form=tobe_form,
                     to_state_name=ax_action.to_state.name,
                     new_guid=new_guid
                 )
-            elif ax_action.to_state.is_deleted:
+            elif query_type == 'delete':
                 ax_dialects.dialect.delete(
                     form=tobe_form,
                     row_guid=row_guid
@@ -873,9 +905,19 @@ class DoAction(graphene.Mutation):
                     row_guid=row_guid
                 )
 
-            # 5. Run after_update from field.py for each field.
+            # 7. Run after backend code for each field.
+            for field in after_form.db_fields:
+                if field.field_type.is_backend_available:
+                    field.value = run_field_backend(
+                        when='after',
+                        query_type=query_type,
+                        field=field,
+                        action=ax_action,
+                        before_form=before_form,
+                        tobe_form=after_form,
+                        current_user=current_user)
 
-            # 6. Fire all subscribtions
+            # 8. Fire all subscribtions
             subscription_form = AxForm()
             subscription_form.guid = tobe_form.guid
             subscription_form.icon = tobe_form.icon
@@ -886,7 +928,6 @@ class DoAction(graphene.Mutation):
             ax_pubsub.publisher.publish(
                 aiopubsub.Key('do_action'), subscription_form)
 
-            # tobe_form.guid = tobe_form.row_guid
             ok = True
             return DoAction(
                 form=tobe_form,

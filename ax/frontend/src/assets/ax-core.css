@@ -521,3 +521,7 @@ a {
 .v--modal-overlay {
     z-index: 200 !important;
 }
+
+.tom-remove {
+    cursor: pointer;
+}
