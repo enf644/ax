@@ -1,10 +1,13 @@
-"""Initiate SQL dialects"""
+"""
+All SQL queries are generated throw this module.
+sea init_dialects
+"""
 import sys
 import sqlite3
 import uuid
 import re
-from loguru import logger
 import ujson as json
+from loguru import logger
 import backend.model as ax_model
 from backend.model import AxForm
 
@@ -61,42 +64,33 @@ class SqliteDialect(object):
             'DECIMAL(65,2)': 'REAL',
             'BOOL': 'NUMERIC',
             'GUID': 'TEXT',
-            'JSON': 'TEXT',
             'TIMESTAMP': 'INTEGER',
             'BLOB': 'BLOB',
             'JSON': 'TEXT'
         }
         return sqlite_types[type_name]
 
-    def get_value_sql(self, type_name, value=None):
+    def get_value_sql(self, type_name, db_name):
         """ get string to be placed inside SQL """
         ret_val = None
-
-        if "VARCHAR" in type_name:
-            ret_val = "'" + value + "'" if value else 'NULL'
-        elif "TEXT" in type_name:
-            # val = re.escape(val).replace("\_", "_").replace("\%", "%")
-            ret_val = "'" + value + "'" if value else 'NULL'
-        elif "TIMESTAMP" in type_name:
-            ret_val = "CAST('" + str(value) + \
-                "' AS INTEGER)" if value else 'NULL'
+        if "TIMESTAMP" in type_name:
+            ret_val = f"CAST(:{db_name} AS INTEGER)"
         elif "DECIMAL" in type_name:
-            ret_val = "CAST(" + str(value).replace(",", ".") + \
-                " AS REAL)" if value else 'NULL'
-        elif "INT" in type_name:
-            ret_val = str(value) if value else 'NULL'
-        elif "BOOL" in type_name:
-            if value:
-                ret_val = "1"
-            else:
-                ret_val = "0"
-        elif "JSON" in type_name:
-            new_string = json.dumps(value)
-            ret_val = f"'{new_string}'"
+            ret_val = f"CAST(:{db_name} AS REAL)"
         else:
-            ret_val = "'" + value + "'" if value else 'NULL'
-
+            ret_val = f":{db_name}"
         return ret_val
+
+    def get_value_param(self, type_name, value=None):
+        """ get string to be placed inside SQL """
+        ret_param = None
+        if "DECIMAL" in type_name:
+            ret_param = str(value).replace(",", ".") if value else None
+        elif "JSON" in type_name:
+            ret_param = json.dumps(value) if value else None
+        else:
+            ret_param = value if value else None
+        return ret_param
 
     def select_all(
             self,
@@ -186,6 +180,10 @@ class SqliteDialect(object):
         """ Insert row into database and set state with AxForm field values"""
         try:
             fields_db_names = []
+            query_params = {
+                "axState": to_state_name,
+                "row_guid": str(new_guid).replace('-', ''),
+            }
 
             value_strings = []
             for field in form.fields:
@@ -194,21 +192,23 @@ class SqliteDialect(object):
                     value_strings.append(
                         self.get_value_sql(
                             type_name=field.field_type.value_type,
-                            value=field.value
+                            db_name=field.db_name
                         )
+                    )
+                    query_params[field.db_name] = self.get_value_param(
+                        type_name=field.field_type.value_type,
+                        value=field.value
                     )
 
             column_sql = ", ".join(fields_db_names)
             values_sql = ", ".join(value_strings)
 
-            striped_new_guid = str(new_guid).replace('-', '')
-
             sql = (
                 f"INSERT INTO {form.db_name} "
                 f"(guid, axState, {column_sql}) "
-                f"VALUES ('{striped_new_guid}', '{to_state_name}', {values_sql});"
+                f"VALUES (:row_guid, :axState, {values_sql});"
             )
-            result = ax_model.db_session.execute(sql)
+            result = ax_model.db_session.execute(sql, query_params)
 
             last_guid_result = ax_model.db_session.execute(
                 f"SELECT guid FROM {form.db_name} WHERE rowid={result.lastrowid}"
@@ -225,21 +225,29 @@ class SqliteDialect(object):
         """ Update database row based of AxForm fields values"""
         try:
             value_strings = []
+            query_params = {
+                "axState": to_state_name,
+                "row_guid": row_guid
+            }
             for field in form.fields:
                 if field.needs_sql_update:
-                    current_value = self.get_value_sql(
+                    current_valu_str = self.get_value_sql(
+                        type_name=field.field_type.value_type,
+                        db_name=field.db_name
+                    )
+                    value_strings.append(f"{field.db_name}={current_valu_str}")
+                    query_params[field.db_name] = self.get_value_param(
                         type_name=field.field_type.value_type,
                         value=field.value
                     )
-                    value_strings.append(f"{field.db_name}={current_value}")
 
             values_sql = ", ".join(value_strings)
             sql = (
                 f"UPDATE {form.db_name} "
-                f"SET axState='{to_state_name}', {values_sql} "
-                f"WHERE guid='{row_guid}' "
+                f"SET axState=:axState, {values_sql} "
+                f"WHERE guid=:row_guid "
             )
-            result = ax_model.db_session.execute(sql)
+            result = ax_model.db_session.execute(sql, query_params)
             ax_model.db_session.commit()
             return result
         except Exception:

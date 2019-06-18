@@ -89,15 +89,23 @@ def make_resolver(db_name, type_class):
     """ Dynamicly create resolver for GrapQL query based on
         db_name - db_name of AxForm + db_name of AxGrid.
         or only db_name of AxForm for default view grid
+
+        Example:
+        db_name=MyUberFormGridOne 
+        MyUberForm is form name
+        GridOne is grid name
+
     """
 
     def resolver(self, info, update_time=None, quicksearch=None, guids=None):
         del self, info, update_time
 
+        # Find AxForm with name that db_name is started with
         ax_form = ax_model.db_session.query(AxForm).filter(
             literal(db_name).startswith(AxForm.db_name)
         ).first()
 
+        # iterate all grids to know, what grid to use
         ax_grid = {}
         default_grid = {}
         for grid in ax_form.grids:
@@ -149,6 +157,7 @@ def init_schema():
         ax_forms = ax_model.db_session.query(AxForm).all()
         for form in ax_forms:
             for grid in form.grids:
+                # For each grid we create Graphene field with name FormGrid
                 capital_form_db_name = form.db_name[0].upper(
                 ) + form.db_name[1:]
                 class_name = capital_form_db_name + grid.db_name
@@ -159,11 +168,13 @@ def init_schema():
                 class_fields['axLabel'] = graphene.String()
                 class_fields['axIcon'] = graphene.String()
 
+                # Add fields for each field of AxForm
                 for field in form.db_fields:
                     field_type = type_dictionary[field.field_type.value_type]
                     # TODO maybe add label as description?
                     class_fields[field.db_name] = field_type()
 
+                # Create graphene class and append class dict
                 graph_class = type(
                     class_name,
                     (graphene.ObjectType,),
@@ -174,6 +185,8 @@ def init_schema():
                 type_classes[class_name] = graph_class
                 all_types.append(graph_class)
 
+                # if grid is default view we add enother class with name Form
+                # without Grid name
                 if grid.is_default_view is True:
                     default_class_name = form.db_name[0].upper(
                     ) + form.db_name[1:]
@@ -189,6 +202,7 @@ def init_schema():
                     all_types.append(default_graph_class)
 
         # Dynamicly crate resolvers for each typeClass
+        # Iterate throw created classes and create resolver for each
         dynamic_fields = {}
         for key, type_class in type_classes.items():
             dynamic_fields[key] = graphene.List(

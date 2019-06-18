@@ -25,6 +25,7 @@ from backend.schemas.types import  State, Action, \
 
 import backend.fields.Ax1tom as AxFieldAx1tom
 import backend.fields.Ax1tomTable as AxFieldAx1tomTable
+import backend.fields.AxChangelog as AxFieldAxChangelog
 
 
 def get_actions(form, current_state=None):
@@ -56,6 +57,8 @@ class CreateState(graphene.Mutation):
     """Create AxState"""
     class Arguments:  # pylint: disable=missing-docstring
         name = graphene.String()
+        # update argument is default self-action name. As it is different for locales it
+        # is passed from UI
         update = graphene.String(required=False, default_value=None)
         form_guid = graphene.String()
         x = graphene.Float()
@@ -78,6 +81,7 @@ class CreateState(graphene.Mutation):
             ax_model.db_session.add(new_state)
             ax_model.db_session.commit()
 
+            # Create default self-action
             update_action = None
             if args.get('update'):
                 update_action = AxAction()
@@ -96,6 +100,7 @@ class CreateState(graphene.Mutation):
                 AxRole.is_admin.is_(True)
             ).first()
 
+            # Add permissions for default admin role
             permissions = []
             if admin_role:
                 state2role = AxState2Role()
@@ -729,10 +734,8 @@ def get_before_form(row_guid, form_guid, ax_action):
         AxForm.guid == uuid.UUID(form_guid)
     ).first()
 
-    fields_names = [field.db_name for field in tobe_form.db_fields]
-    before_form = None
     if row_guid:
-        before_form = copy.deepcopy(tobe_form)
+        fields_names = [field.db_name for field in tobe_form.db_fields]
         before_result = ax_dialects.dialect.select_one(
             form_db_name=tobe_form.db_name,
             fields_list=fields_names,
@@ -742,17 +745,21 @@ def get_before_form(row_guid, form_guid, ax_action):
             raise Exception(
                 'Error in DoAction. Cant find row for action')
 
-        before_form.current_state_name = before_result[0]['axState']
-        if before_form.current_state_name != ax_action.from_state.name \
+        tobe_form.current_state_name = before_result[0]['axState']
+        if tobe_form.current_state_name != ax_action.from_state.name \
         and ax_action.from_state.is_all is False:
             raise Exception('Error in DoAction. Performed \
             action does not fit axState')
 
         # populate each AxField of before_form with old data
-        for field in before_form.db_fields:
-            field.value = before_result[0][field.db_name]
+        for field in tobe_form.db_fields:
+            if field.db_name in before_result[0].keys():
+                field.value = before_result[0][field.db_name]
+                if field.value and field.field_type.value_type == 'JSON':
+                    field.value = json.loads(field.value)
 
-        return before_form, tobe_form
+    before_form = copy.deepcopy(tobe_form)
+    return before_form, tobe_form
 
 
 def run_field_backend(field, action, before_form, tobe_form, current_user,\
@@ -844,6 +851,8 @@ class DoAction(graphene.Mutation):
             for field in tobe_form.db_fields:
                 if field.db_name in values.keys():
                     field.value = values[field.db_name]
+                    field.needs_sql_update = True
+                if field.field_type.is_updated_always:
                     field.needs_sql_update = True
 
             # 4. Run before backend code for each field.

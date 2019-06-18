@@ -41,6 +41,4 @@ def before_update(field, before_form, tobe_form, action, current_user):
             new_tom.child_guid = uuid.UUID(str(child_guid))
             ax_model.db_session.add(new_tom)
 
-    # ax_model.db_session.commit()
-
     return field.value

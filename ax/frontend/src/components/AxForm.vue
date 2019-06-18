@@ -189,7 +189,14 @@ export default {
       currentTabGuid: null,
       tabFields: [],
       activeTab: null,
-      value: null,
+      secureValue: null,
+      get value() {
+        return this.secureValue;
+      },
+      // eslint-disable-next-line vue/no-dupe-keys
+      set value(value) {
+        this.secureValue = value;
+      },
       formIsValid: true,
       errorsCount: 0,
       currentWidth: null,
@@ -259,7 +266,9 @@ export default {
         guid: this.currentRowGuid
       };
       this.fields.forEach(field => {
-        result[field.dbName] = field.value;
+        if (!field.fieldType.isVirtual && !field.fieldType.isReadonly) {
+          result[field.dbName] = field.value;
+        }
       });
       this.value = result;
       this.$emit('update:value', result);
@@ -341,6 +350,8 @@ export default {
                     tag
                     icon
                     valueType
+                    isVirtual
+                    isReadonly
                   }
                   isTab
                   isRequired
@@ -551,7 +562,7 @@ export default {
         .then(data => {
           let retGuid = this.guid;
           if (!this.guid) {
-            this.insertedGuid = data.data.doAction.newGuid;
+            this.insertedGuid = data.data.doAction.newGuid.replace(/-/g, '');
             retGuid = this.insertedGuid;
           }
           const messages = JSON.parse(data.data.doAction.messages);

@@ -1,4 +1,7 @@
-"""Module for database migration using Alembic"""
+"""
+Module for database migration using Alembic
+create_field_types contains default values for AxFieldType table
+"""
 import os
 import sys
 from loguru import logger
@@ -84,8 +87,10 @@ def create_field_types() -> None:
             parent="group-id",
             default_db_name="axNum",
             position=2,
-            is_virtual=True,
+            is_readonly=True,
+            is_backend_available=True,
             is_columnn_avalible=True,
+            is_updated_always=True,
             comparator="number",
             icon="sort-numeric-up"))
 
@@ -108,8 +113,9 @@ def create_field_types() -> None:
             position=4,
             default_db_name="changelog",
             is_columnn_avalible=True,
-            value_type="TEXT",
+            value_type="JSON",
             is_backend_available=True,
+            is_readonly=True,
             is_updated_always=True,
             is_always_whole_row=True,
             icon="code-branch"))
@@ -235,7 +241,7 @@ def create_field_types() -> None:
             default_db_name="toOne",
             position=1,
             value_type="GUID",
-            is_inline_editable=True,
+            is_inline_editable=False,
             icon="link"))
         ax_model.db_session.add(AxFieldType(
             tag="Ax1tom",
@@ -245,7 +251,7 @@ def create_field_types() -> None:
             position=2,
             value_type="JSON",
             is_backend_available=True,
-            is_inline_editable=True,
+            is_inline_editable=False,
             icon="link"))
         ax_model.db_session.add(AxFieldType(
             tag="Ax1tomTable",
@@ -308,6 +314,7 @@ def create_field_types() -> None:
             parent="group-images",
             position=4,
             default_db_name="cropImage",
+            is_backend_available=True,
             value_type="VARCHAR(255)",
             icon="image"))
 
@@ -354,6 +361,7 @@ def create_field_types() -> None:
             default_db_name="comments",
             value_type="JSON",
             is_always_whole_row=True,
+            is_backend_available=True,
             icon="comments"))
 
         ax_model.db_session.commit()

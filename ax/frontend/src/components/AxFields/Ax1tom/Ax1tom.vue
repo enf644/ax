@@ -222,7 +222,7 @@ export default {
           // We re-create values incase some of items were deleted or permission was denied.
           const checkedValues = [];
           this.axItems.forEach(element => {
-            if (this.currentValue.includes(element.guid)) {
+            if (this.currentValue && this.currentValue.includes(element.guid)) {
               checkedValues.push(element.guid);
             }
           });
@@ -230,7 +230,7 @@ export default {
         })
         .catch(error => {
           this.$log.error(
-            `Error in Ax1to1 => loadData apollo client => ${error}`
+            `Error in Ax1tom => loadData apollo client => ${error}`
           );
         });
 

@@ -1,0 +1,60 @@
+<template>
+  <div>
+    <h3>{{name}}</h3>
+    <div :key='item.timestamp' class='changelog-row' v-for='item in currentValue'>
+      {{ $d(getDate(item.timestamp), 'normal') }} : [AnonUser] :
+      <b>{{ item.action.name }}</b>
+      -> {{getModifiedFields(item)}}
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'AxChangelog',
+  props: {
+    name: null,
+    dbName: null,
+    tag: null,
+    options: null,
+    value: null,
+    isRequired: null
+  },
+  data: () => ({
+    currentValue: null,
+    errors: []
+  }),
+  watch: {
+    value(newValue) {
+      this.currentValue = newValue;
+      if (!newValue) this.currentValue = [];
+    }
+  },
+  created() {
+    this.currentValue = this.value;
+    if (!this.value) this.currentValue = [];
+  },
+  methods: {
+    isValid() {
+      return true;
+    },
+    getDate(timestamp) {
+      const dt = new Date(timestamp * 1000);
+      return dt;
+    },
+    getModifiedFields(item) {
+      const fieldNames = [];
+      item.changed_fields.forEach(field => {
+        fieldNames.push(field.name);
+      });
+      return fieldNames.join(', ');
+    }
+  }
+};
+</script>
+
+<style scoped>
+.changelog-row {
+  padding-top: 5px;
+}
+</style>

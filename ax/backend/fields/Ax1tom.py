@@ -25,7 +25,6 @@ def after_update(field, before_form, tobe_form, action, current_user):
     Returns:
         Object: Returns updated value of current field"""
     del before_form, action, current_user
-    print(f"Ax1tom action code => {field.value}")
 
     ax_model.db_session.query(Ax1tomReference).filter(
         Ax1tomReference.field_guid == field.guid

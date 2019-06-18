@@ -15,7 +15,8 @@
         "false": "False",
         "confirm": "Confirm",
         "ok": "Ok",
-        "no-field-settings-error": "[{name}] - Settings error"
+        "no-field-settings-error": "[{name}] - Settings error",
+        "no-column": "Column not supported for [{name}] field type"
     },
     "home": {
         "ax-forms": "Ax Forms",

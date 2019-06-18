@@ -186,7 +186,11 @@ class AxFieldType(Base):
     comparator = Column(String(255))
     icon = Column(String(255))
     is_group = Column(Boolean, unique=False, default=False)
+    # virtual meens that field is calculated, not stored in database
     is_virtual = Column(Boolean, unique=False, default=False)
+    # readonly meens that field is set by backend or action.
+    # Data does not come from form.
+    is_readonly = Column(Boolean, unique=False, default=False)
     is_inline_editable = Column(Boolean, unique=False, default=False)
     is_backend_available = Column(Boolean, unique=False, default=False)
     is_setting_avalible = Column(Boolean, unique=False, default=False)
@@ -204,6 +208,7 @@ class AxFieldType(Base):
                  icon="",
                  comparator="",
                  is_virtual=False,
+                 is_readonly=False,
                  is_inline_editable=False,
                  is_backend_available=False,
                  is_setting_avalible=False,
@@ -223,6 +228,7 @@ class AxFieldType(Base):
         self.comparator = comparator
         self.icon = icon
         self.is_virtual = is_virtual
+        self.is_readonly = is_readonly
         self.is_inline_editable = is_inline_editable
         self.is_backend_available = is_backend_available
         self.is_setting_avalible = is_setting_avalible
@@ -402,6 +408,7 @@ class AxAction(Base):
     close_modal = Column(Boolean, unique=False, default=True)
     icon = Column(String(255))
     radius = Column(Float)
+    messages = None
 
 
 class AxRoleFieldPermission(Base):
@@ -419,6 +426,7 @@ class AxRoleFieldPermission(Base):
     field = relationship("AxField")
     read = Column(Boolean, unique=False, default=False)
     edit = Column(Boolean, unique=False, default=False)
+
 
 class Ax1tomReference(Base):
     """Stores 1 to M fields relation"""
