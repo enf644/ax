@@ -4,8 +4,12 @@
     <div :key='item.timestamp' class='changelog-row' v-for='item in currentValue'>
       {{ $d(getDate(item.timestamp), 'normal') }} : [AnonUser] :
       <b>{{ item.action.name }}</b>
-      -> {{getModifiedFields(item)}}
+      &nbsp;
+      <i class='fas fa-arrow-right'></i>
+      &nbsp;
+      <span v-html='getModifiedFields(item)'></span>
     </div>
+    <b v-if='this.currentValue.length == 0'>{{$t("types.AxChangelog.no-records")}}</b>
   </div>
 </template>
 
@@ -47,7 +51,9 @@ export default {
       item.changed_fields.forEach(field => {
         fieldNames.push(field.name);
       });
-      return fieldNames.join(', ');
+      if (fieldNames.length > 0) return fieldNames.join(', ');
+
+      return '<i class="far fa-window-close"></i>';
     }
   }
 };

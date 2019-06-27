@@ -1,7 +1,10 @@
 """Scheduler using APScheduller"""
+import os
 import sys
+import time
+import shutil
 from datetime import datetime, timedelta
-import pytz
+# import pytz
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.executors.asyncio import AsyncIOExecutor
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
@@ -19,8 +22,23 @@ async def prn_job(message):
     return False
 
 
+async def clear_tmp_files():
+    """ delete all files from /uploads/tmp folder wich is expired """
+    tmp_folder = ax_misc.path('uploads/tmp')
+    for root, dirs, _ in os.walk(tmp_folder):
+        del root
+        for dir_name in dirs:
+            dir_to_check = os.path.join(tmp_folder, dir_name)
+            seconds = time.time() - os.path.getmtime(dir_to_check)
+            minutes = int(seconds) / 60  # 120 minutes
+            if minutes > 120:
+                shutil.rmtree(dir_to_check)
+
+
 def init_scheduler():
     """Initiate scheduller"""
+    # https://apscheduler.readthedocs.io/en/latest/modules/schedulers/base.html#apscheduler.schedulers.base.BaseScheduler.add_job
+
     # TODO UTC must match timezone from config
     try:
         jobstores = {
@@ -50,6 +68,10 @@ def init_scheduler():
             args=['SCHEDULER WORKS'],
             id='prn_job'
         )
+
+        # Job cleaning /uploads/tmp folder. deletes files that are expired
+        this.scheduler.add_job(clear_tmp_files, trigger='cron', minute='30')
+
     except Exception:
         logger.exception('Error initiating scheduler module. ')
         raise

@@ -88,6 +88,7 @@ def init_ax():
     # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
     CORS(app, automatic_options=True)  # TODO limit CORS to api folder
 
+    app.static('/uploads', str(ax_misc.path('uploads')))
     app.static('/static', str(ax_misc.path('dist/static')))
     app.static('/stats', str(ax_misc.path('dist/stats.html')))
     app.static('/test_webpack', str(ax_misc.path('dist/test.html')))
@@ -105,27 +106,27 @@ def init_ax():
         ax_routes.init_graphql_view()
         # _app.add_route(ax_routes.graphql_view, '/api/graphql')
 
-    ax_routes.init_routes(app)
+    ax_routes.init_routes(app=app)
     ax_dialects.init_dialects(os.environ.get('AX_DB_DIALECT') or 'sqlite')
 
 
 ax_logo = """
-                                                           
-                                           .               
-                                          .(               
-       ..                                 /(#              
-       ...           --- AX ---          ,/((////.         
-       ...,,                             ***(/////,        
-     ****,,,*/                          (****((///*        
-      ****///////                   ./(((#***/((/*,,,.     
-      ,/**////////((((/,      ,(((((((((/((**,.,..         
-        ####(///((((((((((((#((((((((((////* ..            
-          ##(((((((((((((##((((((((((((///,                
-             .#(((((((  ##(((((((((((((///                 
-                       ###(###/      /(///                 
-                      #####           (//,                 
-                      ##(#            (//                  
-                                                           
+
+                                           .
+                                          .(
+       ..                                 /(#
+       ...           --- AX ---          ,/((////.
+       ...,,                             ***(/////,
+     ****,,,*/                          (****((///*
+      ****///////                   ./(((#***/((/*,,,.
+      ,/**////////((((/,      ,(((((((((/((**,.,..
+        # (///((((((((((((#((((((((((////* ..
+          # (((((((((((((##((((((((((((///,
+             .#(((((((  ##(((((((((((((///
+                       # (###/      /(///
+                      # (//,
+                      # (#            (//
+
 """
 
 

@@ -2,10 +2,13 @@
   <v-flex :xs12='isWholeRow' class='ax-field'>
     <component
       :dbName='dbName'
+      :fieldGuid='fieldGuid'
+      :formGuid='formGuid'
       :is='component'
       :isRequired='isRequired'
       :name='name'
       :options='options'
+      :rowGuid='rowGuid'
       :value.sync='currentValue'
       ref='thisField'
     ></component>
@@ -24,7 +27,10 @@ export default {
     optionsJson: null,
     value: null,
     isRequired: null,
-    isWholeRow: null
+    isWholeRow: null,
+    formGuid: null,
+    rowGuid: null,
+    fieldGuid: null
   },
   data: () => ({
     options: null,

@@ -231,7 +231,8 @@
             "name": "Current State"
         },
         "AxChangelog": {
-            "name": "Changelog"
+            "name": "Changelog",
+            "no-records": "No records"
         },
         "AxString": {
             "name": "String",
@@ -305,7 +306,15 @@
             "name": "Image Crop"
         },
         "AxFiles": {
-            "name": "Disk files"
+            "name": "Filesystem files",
+            "upload-btn": "Upload files",
+            "settings-max-size-label": "Maximum file size, bytes",
+            "settings-max-size-hint": "1MB = 1000000, 1GB = 1000000000",
+            "settings-max-number-label": "Maximum number of files",
+            "settings-min-number-label": "Minimum number of files",
+            "settings-types-label": "Allowed file types",
+            "settings-types-hint": "Example: ['image/*', '.jpg', '.jpeg', '.png', '.gif']",
+            "settings-enable-webcam-label": "Enable Webcam (works if SSL is enabled)"
         },
         "AxUsers": {
             "name": "Users"

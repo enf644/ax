@@ -3,22 +3,26 @@
 import os
 import sys
 import asyncio
+import uuid
+
+from pathlib import Path
 from sanic import response
-# from sanic.views import HTTPMethodView
 from loguru import logger
+import ujson as json
 from graphql_ws.websockets_lib import WsLibSubscriptionServer
 from sanic_graphql import GraphQLView
 from graphql.execution.executors.asyncio import AsyncioExecutor
 import aiopubsub
+# from python_resumable import Uploader
 
 import backend.cache as ax_cache
 import backend.schema as ax_schema
-# import backend.model as ax_model
-# import backend.dialects as ax_dialects
 import backend.misc as ax_misc
 import backend.pubsub as ax_pubsub
-# import sqlite3
-
+from backend.tus import tus_bp
+import backend.model as ax_model
+from backend.model import AxForm
+import backend.schemas.form_schema as form_schema
 
 this = sys.modules[__name__]
 
@@ -26,7 +30,8 @@ loop = None
 app = None
 graphql_view = None
 dummy_view = None
-test_schema = 'WTF'
+tmp_path = None
+uploads_path = None
 
 
 class AxGraphQLView(GraphQLView):
@@ -43,49 +48,70 @@ class AxGraphQLView(GraphQLView):
         return GraphQLView.format_error(error)
 
 
-# class DummyView(HTTPMethodView):
-#     schema = None
-
-#     def __init__(self, **kwargs):
-#         for key, value in kwargs.items():
-#             if hasattr(self, key):
-#                 setattr(self, key, value)
-
-#     def get(self, request, *args, **kwargs):
-#         return response.text(f'I am get method with {self.schema}')
-
-
-# class AxDummyView(DummyView):
-#     updated_schema = None
-
-    # async def set_schema(self, key, message):
-    #     print(f"Hello from pubsub - {message}")
-    #     self.updated_schema = message
-    #     # super().schema = message
-    #     super().__init__(schema=self.updated_schema)
-
-    # def __init__(self, **kwargs):
-        # subscriber = aiopubsub.Subscriber(ax_pubsub.hub, 'dummy_subscriber')
-        # subscriber.add_async_listener(
-        #     aiopubsub.Key('dummy_test'), self.set_schema)
-
-        # self.updated_schema = this.test_schema + " with Ax!"
-        # super().__init__(schema=self.updated_schema)
-
-
 def init_graphql_view():  # pylint: disable=unused-variable
     """Initiate graphql"""
     this.graphql_view = AxGraphQLView.as_view()
     this.app.add_route(this.graphql_view, '/api/graphql')
 
-    # dummy_view = AxDummyView.as_view(schema=this.test_schema)
-    # this.app.add_route(dummy_view, '/api/help')
-
 
 def init_routes(app):
     """Innitiate all Ax routes"""
     try:
+        this.uploads_path = ax_misc.path('uploads/tmp')
+        if not os.path.exists(this.uploads_path):
+            os.makedirs(this.uploads_path)
+
+        # Add tus upload blueprint
+        app.blueprint(tus_bp)
         subscription_server = WsLibSubscriptionServer(ax_schema.schema)
+
+        @app.route('/api/file/<form_guid>/<row_guid>/<field_guid>/<file_guid>', methods=['GET'])
+        async def file_viewer(request, form_guid, row_guid, field_guid, file_guid):  # pylint: disable=unused-variable
+            uploads_dir = ax_misc.path('uploads')
+
+            # if row_guid is null -> display from /tmp without permissions
+            if not row_guid or row_guid == 'null':
+                tmp_dir = os.path.join(uploads_dir, 'tmp', file_guid)
+                file_name = os.listdir(tmp_dir)[0]
+                tmp_path = os.path.join(tmp_dir, file_name)
+                return await response.file(tmp_path)
+
+            # get AxForm with row values
+            ax_form = ax_model.db_session.query(AxForm).filter(
+                AxForm.guid == uuid.UUID(form_guid)
+            ).first()
+
+            ax_form = form_schema.set_form_values(
+                ax_form=ax_form, row_guid=row_guid)
+
+            # Get values from row, field
+            field_values = None
+            for field in ax_form.fields:
+                if field.guid == uuid.UUID(field_guid):
+                    if field.value:
+                        field_values = json.loads(field.value)
+
+            # Find requested file in value
+            the_file = None
+            for file in field_values:
+                if file['guid'] == file_guid:
+                    the_file = file
+
+            if not the_file:
+                return response.text("", status=404)
+
+            # if file exists -> return file
+            row_guid_str = str(uuid.UUID(row_guid))
+            file_path = os.path.join(
+                uploads_dir,
+                'form_files',
+                form_guid,
+                row_guid_str,
+                the_file['guid'],
+                the_file['name'])
+            if not os.path.lexists(file_path):
+                return response.text("", status=404)
+            return await response.file(file_path)
 
         @app.route('/<path:path>')
         def index(request, path):  # pylint: disable=unused-variable

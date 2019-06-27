@@ -10,6 +10,7 @@ from backend.model import AxForm, AxField, AxFieldType, \
 
 import backend.model as ax_model
 # import backend.cache as ax_cache # TODO use cache!
+import backend.misc as ax_misc
 import backend.dialects as ax_dialects
 import backend.schema as ax_schema
 
@@ -17,6 +18,30 @@ from backend.schemas.types import Form, Field, PositionInput, \
     RoleFieldPermission
 import backend.schemas.workflow_schema as workflow_schema
 import ujson as json
+
+
+def set_form_values(ax_form, row_guid):
+    """ Sets AxForm fields values + state """
+    # TODO get list of fields that user have permission
+    allowed_fields = []
+    for field in ax_form.db_fields:
+        allowed_fields.append(field.db_name)
+
+    result = ax_dialects.dialect.select_one(
+        form_db_name=ax_form.db_name,
+        fields_list=allowed_fields,
+        row_guid=row_guid)
+
+    if result:
+        ax_form.current_state_name = result[0]['axState']
+        # populate each AxField with data
+        for field in ax_form.fields:
+            if field.db_name in allowed_fields:
+                field.value = result[0][field.db_name]
+            if field.is_tab is False and field.is_virtual:
+                field.value = result[0][field.field_type.default_db_name]
+
+    return ax_form
 
 
 class CreateTab(graphene.Mutation):
@@ -414,41 +439,16 @@ class FormQuery(graphene.ObjectType):
 
         query = Form.get_query(info=info)
         ax_form = query.filter(AxForm.db_name == db_name).first()
-        # form_copy = copy.deepcopy(the_ax_form)
-        current_state = None
+
         if row_guid is not None:
-            # TODO get list of fields that user have permission
-            allowed_fields = []
-            for field in ax_form.db_fields:
-                allowed_fields.append(field.db_name)
-
-            # select * from table
-            result = ax_dialects.dialect.select_one(
-                form_db_name=ax_form.db_name,
-                fields_list=allowed_fields,
-                row_guid=row_guid)
-
-            if not result:
-                ax_form.avalible_actions = workflow_schema.get_actions(
-                    form=ax_form, current_state=None)
-                return ax_form
-
-            current_state = result[0]['axState']
-
-            # populate each AxField with data
-            for field in ax_form.fields:
-                if field.db_name in allowed_fields:
-                    field.value = result[0][field.db_name]
-                if field.is_tab is False and field.is_virtual:
-                    field.value = result[0][field.field_type.default_db_name]
+            ax_form = set_form_values(ax_form=ax_form, row_guid=row_guid)
 
         ax_form.avalible_actions = workflow_schema.get_actions(
             form=ax_form,
-            current_state=current_state
+            current_state=ax_form.current_state_name
         )
 
         ax_model.db_session.flush()
-        # TODO: filter actions, filter fields based on state and user
         return ax_form
 
 

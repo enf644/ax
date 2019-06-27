@@ -26,10 +26,12 @@ from backend.schemas.types import  State, Action, \
 import backend.fields.Ax1tom as AxFieldAx1tom
 import backend.fields.Ax1tomTable as AxFieldAx1tomTable
 import backend.fields.AxChangelog as AxFieldAxChangelog
+import backend.fields.AxFiles as AxFieldAxFiles
 
 
 def get_actions(form, current_state=None):
     """ get actions for current state """
+    # TODO: filter actions, filter fields based on state and user
     ret_actions = []
     state_guid = None
     all_state_guid = None

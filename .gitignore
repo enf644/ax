@@ -3,6 +3,7 @@
 /.venv
 /.vscode
 /dist
+/uploads
 /ax/dist
 /build
 /backend/py_libs
@@ -14,3 +15,4 @@ package-lock.json
 *.db-journal
 *.pyc
 *.log
+stats.html

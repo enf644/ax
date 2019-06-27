@@ -42,3 +42,19 @@ def after_update(field, before_form, tobe_form, action, current_user):
             ax_model.db_session.add(new_tom)
 
     return field.value
+
+
+def after_insert(field, before_form, tobe_form, action, current_user):
+    """ Do the same as after_update """
+    return after_update(field, before_form, tobe_form, action, current_user)
+
+
+def after_delete(field, before_form, tobe_form, action, current_user):
+    """ Delete all Ax1tomReference """
+    del before_form, action, current_user
+    ax_model.db_session.query(Ax1tomReference).filter(
+        Ax1tomReference.field_guid == field.guid
+    ).filter(
+        Ax1tomReference.row_guid == uuid.UUID(str(tobe_form.row_guid))
+    ).delete()
+    return field.value

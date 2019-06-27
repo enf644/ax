@@ -1,5 +1,7 @@
 """Describes schemas for AxForm manipulation in admin home"""
 import uuid
+import os
+import shutil
 import graphene
 from loguru import logger
 # from graphene import relay
@@ -16,12 +18,12 @@ import backend.model as ax_model
 import backend.cache as ax_cache
 import backend.dialects as ax_dialects
 import backend.schema as ax_schema
+import backend.misc as ax_misc
 from backend.schemas.types import Form, PositionInput
 # import backend.routes as ax_routes
 
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
-
 
 
 def tom_sync_form(old_form_db_name, new_form_db_name):
@@ -38,7 +40,7 @@ def tom_sync_form(old_form_db_name, new_form_db_name):
                 new_options['form'] = new_form_db_name
                 field.options_json = json.dumps(new_options)
                 ax_model.db_session.commit()
-                
+
 
 def is_db_name_avalible(_db_name) -> bool:
     """Check if table is already exists in database"""
@@ -407,6 +409,9 @@ class DeleteForm(graphene.Mutation):
 
             # s.execute("SET FOREIGN_KEY_CHECKS=0;")
 
+            # Remove objects connected to form - Ax1tomReference, AxRole2Users,
+            # AxState2Role, AxAction2Role, AxRoleFieldPermission, AxRole,
+            # AxAction, AxState, AxColumn, AxGrid, AxField
             Ax1tomReference.query.filter(
                 Ax1tomReference.form_guid == ax_form.guid).delete()
 
@@ -444,6 +449,13 @@ class DeleteForm(graphene.Mutation):
 
             query = Form.get_query(info)  # SQLAlchemy query
             form_list = query.all()
+
+            # Remove all uploaded files for this form
+            uploads_path = ax_misc.path('uploads/form_files')
+            form_folder = os.path.join(uploads_path, str(ax_form.guid))
+            if os.path.exists(form_folder) is True:
+                shutil.rmtree(form_folder)
+
             ok = True
             return DeleteForm(forms=form_list, ok=ok)
         except Exception:

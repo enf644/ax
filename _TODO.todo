@@ -454,22 +454,41 @@ AX 0.2:
     ☐ COMPLEX FIELDS
         ✔ Edit history (Logging) @done(19-06-18 10:39)
         ✔ Error -> On insert - wrong behaiver. new guid set wrong. tom fields are emtyed. @done(19-06-18 10:39)
-        ☐ Filesystem Files
-            ☐ File upload module. It uploads any allowed file and saves it on disk. Returns path to file, url to file and its guid
-                ☐ Scheduller is set to delete this file in 1 day
-                ☐ On after update - field deletes scheduled job or writes file to database or uploads it to some service
-                ☐ File is saved on disk using its guid
-                ☐ Metadata and initial file name is stored in database. AxFileReferences.
-                ☐ Files are avalible via script wich checks for permissions
+        ✔ Filesystem Files @done(19-06-27 21:47)
+            ✔ Python uploader @done(19-06-26 14:47)
+                ✔ Files saved to /tmp/guid/file-name.jpg @done(19-06-25 10:30)
+            ✔ AxFiles.vue @done(19-06-27 19:15)
+                ✔ File data stored as json - [{guid, name, metadata, size}] @done(19-06-26 10:41)
+                ✔ List of files displayed with icons @done(19-06-26 11:19)
+                ✔ Remove items @done(19-06-26 11:33)
+                ✔ Field is reqired @done(19-06-27 19:15)
+            ✔ AxFilesSettings @done(19-06-27 18:49)
+                ✔ maxFileSize @done(19-06-27 18:11)
+                ✔ maxNumberOfFiles @done(19-06-27 18:11)
+                ✔ minNumberOfFiles @done(19-06-27 18:11)
+                ✔ allowedFileTypes @done(19-06-27 18:11)
+                ✔ Allow webcam @done(19-06-27 18:49)
+            ✔ AxFiles.py @done(19-06-26 14:47)
+                ✔ after insert and update - Files are moved to /form-guid/row-guid/file-guid/file-name.jpg @done(19-06-26 13:59)
+                    ✔ Deletes all files that are not in json @done(19-06-26 13:59)
+                ✔ after delete - remove all files @done(19-06-26 14:36)
+                ✔ if form removed - remove all files @done(19-06-26 14:47)
+            ✔ File viewer @done(19-06-27 13:51)
+            ✔ Scheduler @done(19-06-27 21:46)
+                ✔ Every hour scheduller is fired, it runs throw /tmp dir and finds directories that must be deleted (modified date > expiration date) @done(19-06-27 21:46)
         ☐ Database Image Crop
+            ☐ thumbnails created dynamicly, once for guid, on view
+            ☐ https://fengyuanchen.github.io/cropper.js/
+            ☐ https://foliotek.github.io/Croppie/
+            ☐ https://github.com/jofftiquez/vue-croppie
         ☐ Numeration
-        ☐ Comments 
+        ☐ Comments
     ☐ TEST MILESTONE
         ☐ Comment every def and gql method like ax_misc
         ☐ Try catch for every vue method
-        ☐ Cover everything with cypress tests
         ☐ Try pip installation
         ☐ Try app engine installation
+        ☐ Cover everything with cypress tests
         ☐ ESTABLISH CI
             ☐ Each commit runs tests - installs from pip, runs cypress tests
             ☐ Start versionning
@@ -478,11 +497,14 @@ AX 0.2:
             ☐ Each new version comes with patch
     ☐ USERS
         ☐ GAuth
-        ☐ GraphQL authorisation
-        ☐ Every GQL mutation needs permissions
         ☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
             ☐ Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные
         ☐ Roles modal - add users
+    ☐ PERMISSION SYSTEM
+        ☐ GraphQL authorisation
+        ☐ Every GQL mutation needs permissions
+        ☐ AxForm fields permissions
+        ☐ Action permissions
     ☐ PAGES DESIGNER
 	☐ MARKETPLACE
 		☐ Dump application to yaml
@@ -534,11 +556,14 @@ AX 0.2:
         ☐ Text
             ☐ Simple text				
             ☐ WYSIWYG
-            ☐ BB Code
+            ☐ Markdown editor
             ☐ Code highlite
+        ☐ Team work
+            ☐ Approval path
         ☐ Images
-            ☐ Database Images   `[COMPLEX]`
+            ☐ Public filesystem Images   `[COMPLEX]`
             ☐ Database Image Crop   `[COMPLEX]`
+            ☐ Webcam
         ☐ Files
             ☐ Filesystem Files  `[COMPLEX]`
         ☐ Users
@@ -653,6 +678,8 @@ NEW FROGS TODOS:
     ✔ Error -> if you click fast enoth - setRedirectUrl action does not work @done(19-06-07 16:55)
     ☐ Every gql query error must be visible for user - popup or error toast
     ☐ Hints for every grid constructor option
+    ☐ SSL - apollo, uppy, other ! `[IMPORTANT]`
+    ☐ if field removed - remove all files from /uploads/from_files
 
 
 NEW FEATURES:
@@ -674,6 +701,8 @@ NEW FEATURES:
     ☐ GraphQL samples for - form, grid, action
     ☐ Custom additional form in action execution. Create form and set it as action input.
     ☐ Toasts in ax-grid and ax-form without admin (idie)
+    ☐ Tus upload -> concationation
+    ☐ Tus upload -> checksum
 
     
 MAYBE LATER:

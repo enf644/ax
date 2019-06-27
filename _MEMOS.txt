@@ -1,21 +1,4 @@
 
--- SQLite
-INSERT INTO `Cars` (guid, model, manufacturer, type, price)
-VALUES ('8d45940a-bc59-4730-9664-162479480a8d', 'Cherokee', 'Jeep', 'Fastback', 500000);
-
-INSERT INTO `Cars` (guid, model, manufacturer, type, price)
-VALUES ('82ea292c-3e56-4a09-971f-d382443af7c8', 'Defender 4', 'Land Rover', 'Fastback', 1500000);
-
-INSERT INTO `Cars` (guid, model, manufacturer, type, price)
-VALUES ('3e82897d-a63d-461d-8653-efa39c3d0f6b', 'Macan', 'Porshe', 'Fastback', 2500000);
-
-INSERT INTO `Cars` (guid, model, manufacturer, type, price)
-VALUES ('6c542cbd-d958-44ed-a45f-8c490fcffd18', 'Continental GT', 'Bentley', 'Fastback', 12000000);
-
-INSERT INTO `Cars` (guid, model, manufacturer, type, price)
-VALUES ('17517c97-945a-4dd5-9656-1770a0a0326d', 'GTR', 'Nissan', 'Fastback', 3000000);
-
-
 THINK ABOUT
     Подумать над шрифтом Segoi UI
     ☐ https://swagger.io/
@@ -102,6 +85,7 @@ Lead sources
         Media maybe
             https://dzone.com/
             https://blog.feedspot.com/software_development_blogs/ -> LIST
+            https://stackshare.io/posts/top-developer-tools-2017
             YC news            
             Yandex Zen
     ADS
@@ -155,6 +139,7 @@ Posts queue:
     Photo studio application for leonid
     Why i decided to go with sertain design - Form have tabs, Field permissions, State as string, python code as action
     Whu i decided to go with sertain technology - python, sanic, all libraries
+    Uploading large files in ax
 
 
 
