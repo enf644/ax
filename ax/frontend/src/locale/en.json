@@ -302,8 +302,16 @@
         "AxRadio": {
             "name": "Radio"
         },
-        "AxCropImage": {
-            "name": "Image Crop"
+        "AxImageCropDb": {
+            "name": "Image Crop",
+            "placeholder": "Choose image",
+            "upload-btn": "Upload image",
+            "clear-image": "clear image",
+            "upload-not-finished": "Upload is not finished",
+            "settings-width": "Image width",
+            "settings-height": "Image height",
+            "settings-border-radius": "Border radius",
+            "settings-is-round": "Is round image"
         },
         "AxFiles": {
             "name": "Filesystem files",

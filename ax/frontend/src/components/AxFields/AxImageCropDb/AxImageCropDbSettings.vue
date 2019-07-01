@@ -3,43 +3,33 @@
     <v-layout row wrap>
       <v-flex xs6>
         <v-text-field
-          :label='locale("types.AxFiles.settings-min-number-label")'
+          :label='locale("types.AxImageCropDb.settings-width")'
           type='number'
-          v-model='changedOptions.minNumberOfFiles'
+          v-model='changedOptions.width'
         ></v-text-field>
       </v-flex>
       <v-flex offset-xs1 xs5>
         <v-text-field
-          :label='locale("types.AxFiles.settings-max-number-label")'
+          :label='locale("types.AxImageCropDb.settings-height")'
           type='number'
-          v-model='changedOptions.maxNumberOfFiles'
+          v-model='changedOptions.height'
         ></v-text-field>
       </v-flex>
       <v-flex xs6>
         <v-text-field
-          :hint='locale("types.AxFiles.settings-max-size-hint")'
-          :label='locale("types.AxFiles.settings-max-size-label")'
+          :label='locale("types.AxImageCropDb.settings-border-radius")'
           persistent-hint
           settings-max-size-hint
           type='number'
-          v-model='changedOptions.maxFileSize'
+          v-model='changedOptions.borderRadius'
         ></v-text-field>
       </v-flex>
       <v-flex offset-xs1 xs5>
         <v-switch
-          :label='this.$t("types.AxFiles.settings-enable-webcam-label")'
-          cy-data='settings-enableModal'
-          v-model='changedOptions.enableWebcam'
+          :label='this.$t("types.AxImageCropDb.settings-is-round")'
+          v-model='changedOptions.isRound'
         ></v-switch>
       </v-flex>
-      <br>
-      <v-text-field
-        :hint='locale("types.AxFiles.settings-types-hint")'
-        :label='locale("types.AxFiles.settings-types-label")'
-        persistent-hint
-        type='number'
-        v-model='changedOptions.allowedFileTypes'
-      ></v-text-field>
     </v-layout>
   </AxFieldSettings>
 </template>
@@ -50,7 +40,7 @@ import AxFieldSettings from '@/components/AxFieldSettings.vue';
 import i18n from '../../../locale.js';
 
 export default {
-  name: 'AxFilesSettings',
+  name: 'AxImageCropDbSettings',
   components: { AxFieldSettings },
   props: {
     guid: null,
@@ -61,12 +51,8 @@ export default {
   }),
   created() {
     this.changedOptions = this.options;
-    if (
-      this.changedOptions.enableWebcam == null
-      || this.changedOptions.enableWebcam === undefined
-    ) {
-      this.changedOptions.enableWebcam = true;
-    }
+    if (!this.changedOptions.width) this.changedOptions.width = 200;
+    if (!this.changedOptions.height) this.changedOptions.height = 200;
   },
   methods: {
     locale(key) {

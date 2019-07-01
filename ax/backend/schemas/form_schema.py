@@ -1,7 +1,6 @@
 """Defines Form Scheme and all mutations"""
 
 import uuid
-import copy
 import graphene
 from loguru import logger
 
@@ -9,8 +8,6 @@ from backend.model import AxForm, AxField, AxFieldType, \
     AxRoleFieldPermission, AxColumn, AxRole
 
 import backend.model as ax_model
-# import backend.cache as ax_cache # TODO use cache!
-import backend.misc as ax_misc
 import backend.dialects as ax_dialects
 import backend.schema as ax_schema
 
@@ -25,7 +22,7 @@ def set_form_values(ax_form, row_guid):
     # TODO get list of fields that user have permission
     allowed_fields = []
     for field in ax_form.db_fields:
-        allowed_fields.append(field.db_name)
+        allowed_fields.append(field)
 
     result = ax_dialects.dialect.select_one(
         form_db_name=ax_form.db_name,
@@ -36,7 +33,7 @@ def set_form_values(ax_form, row_guid):
         ax_form.current_state_name = result[0]['axState']
         # populate each AxField with data
         for field in ax_form.fields:
-            if field.db_name in allowed_fields:
+            if field in allowed_fields:
                 field.value = result[0][field.db_name]
             if field.is_tab is False and field.is_virtual:
                 field.value = result[0][field.field_type.default_db_name]

@@ -3,7 +3,7 @@
 /.venv
 /.vscode
 /dist
-/uploads
+uploads
 /ax/dist
 /build
 /backend/py_libs

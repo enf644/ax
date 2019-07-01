@@ -27,6 +27,7 @@ import backend.fields.Ax1tom as AxFieldAx1tom
 import backend.fields.Ax1tomTable as AxFieldAx1tomTable
 import backend.fields.AxChangelog as AxFieldAxChangelog
 import backend.fields.AxFiles as AxFieldAxFiles
+import backend.fields.AxImageCropDb as AxFieldAxImageCropDb
 
 
 def get_actions(form, current_state=None):
@@ -59,7 +60,8 @@ class CreateState(graphene.Mutation):
     """Create AxState"""
     class Arguments:  # pylint: disable=missing-docstring
         name = graphene.String()
-        # update argument is default self-action name. As it is different for locales it
+        # update argument is default self-action name.
+        # As it is different for locales it
         # is passed from UI
         update = graphene.String(required=False, default_value=None)
         form_guid = graphene.String()
@@ -737,7 +739,7 @@ def get_before_form(row_guid, form_guid, ax_action):
     ).first()
 
     if row_guid:
-        fields_names = [field.db_name for field in tobe_form.db_fields]
+        fields_names = [field for field in tobe_form.db_fields]
         before_result = ax_dialects.dialect.select_one(
             form_db_name=tobe_form.db_name,
             fields_list=fields_names,

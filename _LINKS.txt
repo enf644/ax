@@ -81,6 +81,15 @@ NOTIFICATIONS AND TOAST
     https://github.com/yariksav/vuetify-dialog <-- CHOISE
     
 
+
+CROP PLUGINS
+    https://fengyuanchen.github.io/cropper.js/
+    https://foliotek.github.io/Croppie/     
+    https://github.com/jofftiquez/vue-croppie
+    https://zhanziyang.github.io/vue-croppa/#/demos     <-- choise
+
+
+
 INTERNALIZATION
     Vue components
         https://github.com/Polyconseil/vue-gettext  -> CHOISE

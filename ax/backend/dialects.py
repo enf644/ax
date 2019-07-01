@@ -6,8 +6,8 @@ import sys
 import sqlite3
 import uuid
 import re
-import ujson as json
 from loguru import logger
+import ujson as json
 import backend.model as ax_model
 from backend.model import AxForm
 
@@ -17,7 +17,21 @@ dialect = None
 
 
 def get_tom_sql(form_db_name, form_name, tom_label, fields):
-    """ Constructs sql string form select query resulting to-M-label of row"""
+    """    '{{name}} {{surname}}' -> 'Mikhail Marenov'
+    Each form have 1toM label option. It could be '{{name}} {{surname}}'
+    This function custructs SELECT statement string that will return
+    'Mikhail Marenov' string as result. Where 'Mikhail' is from 'name' column
+    and 'Marenov' from 'surname' column
+
+    Args:
+        form_db_name (str): db_name of form. Same as table name.
+        form_name (str): Name of form. Used to replace {{ax_form_name}}
+        tom_label (str): Tom label option of AxForm
+        fields (List(AxField)): List of all AxFields of current form
+
+    Returns:
+        str: SQL statement to be placed in SELECT statement
+    """
     tags = re.findall("{{(.*?)}}", tom_label)
     true_tags = []
     for field in fields:
@@ -70,8 +84,37 @@ class SqliteDialect(object):
         }
         return sqlite_types[type_name]
 
+    def get_select_sql(self, type_name, db_name):
+        """Some value types need a transformation inside SQL Select statement.
+
+        Args:
+            type_name (str): value of AxField.AxFieldType.value_type, like INT
+            db_name (str): AxField.db_name, the column name of table
+
+        Returns:
+            str: SQL statement to be placed in select section
+                SET <db_name>=<this function>
+        """
+        ret_val = None
+        if "BLOB" in type_name:
+            ret_val = f"LENGTH({db_name}) as {db_name}"
+        else:
+            ret_val = db_name
+        return ret_val
+
     def get_value_sql(self, type_name, db_name):
-        """ get string to be placed inside SQL """
+        """Some value types need a cast inside SQL.
+        Like [UPDATE <table> SET <field>=<this function>]
+        It uses param names same as db_name, like :surname
+
+        Args:
+            type_name (str): value of AxFieldType.value_type, like INT
+            db_name (str): AxField.db_name, the column name of table
+
+        Returns:
+            str: SQL statement to be placed in value section
+                SET <db_name>=<this function>
+        """
         ret_val = None
         if "TIMESTAMP" in type_name:
             ret_val = f"CAST(:{db_name} AS INTEGER)"
@@ -82,7 +125,16 @@ class SqliteDialect(object):
         return ret_val
 
     def get_value_param(self, type_name, value=None):
-        """ get string to be placed inside SQL """
+        """ Some value types needs to convert field value before submiting
+        to SQL.
+
+        Args:
+            type_name (str): value of AxFieldType.value_type, like INT
+            value (object, optional): Value of field. Defaults to None.
+
+        Returns:
+            object: initial value of converted value if needed by field type
+        """
         ret_param = None
         if "DECIMAL" in type_name:
             ret_param = str(value).replace(",", ".") if value else None
@@ -159,10 +211,21 @@ class SqliteDialect(object):
             raise
 
     def select_one(self, form_db_name, fields_list, row_guid):
-        """ Select fields from table for one row """
+        """Select fields from table for one row
+
+        Args:
+            form_db_name (str): AxForm.db_name - table name of current form
+            fields_list (List(AxField)): Fields that must be selected.
+            row_guid (str): String of row guid
+
+        Returns:
+            List(Dict(column_name: value)): result of SQL query
+        """
         try:
             fields_string = 'guid, axState, axNum'
-            for field_name in fields_list:
+            for field in fields_list:
+                field_name = self.get_select_sql(
+                    field.field_type.value_type, field.db_name)
                 fields_string += f", {field_name}"
 
             sql = (f"SELECT {fields_string} "
@@ -173,7 +236,36 @@ class SqliteDialect(object):
             return result
             # names = [row[0] for row in result]
         except Exception:
-            logger.exception(f"Error executing SQL - select {form_db_name}")
+            logger.exception(f"Error executing SQL - select_one {form_db_name}")
+            raise
+
+
+
+    def select_field(self, form_db_name, field_db_name, row_guid):
+        """Gets value of single field from SQL. Used in file viewer.
+        See routes.py
+
+        Args:
+            form_db_name (str): AxForm.db_name - table name of current form
+            fields_db_name (str): Db name of field
+            row_guid (str): String of row guid
+
+        Returns:
+            List(Dict(column_name: value)): result of SQL query
+        """
+        try:
+            row_guid_stripped = row_guid.replace('-','')
+            ret_value = None
+            sql = (f"SELECT {field_db_name} "
+                   f"FROM {form_db_name} "
+                   f"WHERE guid='{row_guid_stripped}'"
+                   )
+            result = ax_model.db_session.execute(sql).fetchall()
+            if result:
+                ret_value = result[0][field_db_name]
+            return ret_value
+        except Exception:
+            logger.exception(f"Error executing SQL - select_field {form_db_name}")
             raise
 
     def insert(self, form, to_state_name, new_guid):

@@ -310,7 +310,7 @@ def create_field_types() -> None:
             position=10,
             icon="image"))
         ax_model.db_session.add(AxFieldType(
-            tag="AxCropImage",
+            tag="AxImageCropDb",
             parent="group-images",
             position=4,
             default_db_name="cropImage",

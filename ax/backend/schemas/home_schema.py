@@ -451,7 +451,7 @@ class DeleteForm(graphene.Mutation):
             form_list = query.all()
 
             # Remove all uploaded files for this form
-            uploads_path = ax_misc.path('uploads/form_files')
+            uploads_path = ax_misc.path('uploads/form_row_field_file')
             form_folder = os.path.join(uploads_path, str(ax_form.guid))
             if os.path.exists(form_folder) is True:
                 shutil.rmtree(form_folder)

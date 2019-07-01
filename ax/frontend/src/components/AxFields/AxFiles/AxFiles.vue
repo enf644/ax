@@ -15,7 +15,7 @@
       {{ file.name }}
     </v-chip>
 
-    <v-btn flat id='uppyBtn' small>
+    <v-btn :id='btnId' flat small>
       <i class='fas fa-upload'></i>
       &nbsp;
       {{$t("types.AxFiles.upload-btn")}}
@@ -25,11 +25,13 @@
     <transition enter-active-class='animated shake' leave-active-class='animated fadeOut'>
       <span class='required-error' v-show='errorString'>{{errorString}}</span>
     </transition>
+    <span class='hint' v-show='this.options.hint'>{{this.options.hint}} &nbsp;</span>
   </div>
 </template>
 
 <script>
 import i18n from '../../../locale.js';
+import uuid4 from 'uuid4';
 import { getAxHost } from '../../../misc';
 import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
@@ -57,9 +59,13 @@ export default {
   data: () => ({
     currentValue: null,
     errors: [],
-    uppy: null
+    uppy: null,
+    modalGuid: null
   }),
   computed: {
+    btnId() {
+      return `btn-${this.modalGuid}`;
+    },
     errorString() {
       if (this.errors.length > 0) return this.errors.join('. ');
       return false;
@@ -84,6 +90,7 @@ export default {
     }
   },
   created() {
+    this.modalGuid = uuid4();
     this.currentValue = this.value;
   },
   mounted() {
@@ -113,7 +120,7 @@ export default {
         endpoint: `http://${getAxHost()}/api/upload`
       });
       this.uppy.use(Dashboard, {
-        trigger: '#uppyBtn',
+        trigger: `#${this.btnId}`,
         inline: false,
         target: 'body',
         showProgressDetails: true,
@@ -156,6 +163,7 @@ export default {
       });
     },
     isValid() {
+      this.errors = [];
       if (this.requiredIsValid()) return true;
       return false;
     },
@@ -167,7 +175,6 @@ export default {
           this.errors.push(msg);
           return false;
         }
-        this.errors = [];
         return true;
       }
       return true;
@@ -207,8 +214,14 @@ export default {
   margin-top: '5px' !important;
   color: #b71c1c;
   font-size: 12px;
+  margin-right: 15px;
 }
 .hr-error {
   border-color: #b71c1c;
+}
+.hint {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 12px;
+  margin-top: '5px' !important;
 }
 </style>

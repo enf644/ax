@@ -476,11 +476,28 @@ AX 0.2:
             ✔ File viewer @done(19-06-27 13:51)
             ✔ Scheduler @done(19-06-27 21:46)
                 ✔ Every hour scheduller is fired, it runs throw /tmp dir and finds directories that must be deleted (modified date > expiration date) @done(19-06-27 21:46)
-        ☐ Database Image Crop
-            ☐ thumbnails created dynamicly, once for guid, on view
-            ☐ https://fengyuanchen.github.io/cropper.js/
-            ☐ https://foliotek.github.io/Croppie/
-            ☐ https://github.com/jofftiquez/vue-croppie
+            ✔ Error -> add hint @done(19-07-01 00:22)
+        ✔ Database Image Crop @done(19-07-01 15:08)
+            ✔ File uploader @done(19-07-01 15:08)
+                ✔ AxImageCropDb, inline uppy, @done(19-06-30 11:40)
+                ✔ After select -> hide uppy, show cropper @done(19-06-30 11:40)
+                ✔ Feed selected file to cropper, even if webcam @done(19-06-30 11:40)
+            ✔ Image crop @done(19-07-01 15:08)
+                ✔ Upload cropped image to tmp @done(19-06-30 18:58)
+                ✔ before_update -> put image data to field. Read file, @done(19-06-30 23:26)
+                ✔ BLOB type in dialect. Does not returned on select. WHERE LENGTH(blob_column) IS NOT NULL @done(19-06-30 23:26)
+                ✔ If upload not finished - show error. cant submit form. @done(19-07-01 00:12)
+                ✔ Required @done(19-07-01 00:12)
+                ✔ Hint @done(19-07-01 00:22)
+                ✔ If image is less then 100px -> show only icon, increase zoom speed @done(19-07-01 13:47)
+            ✔ View @done(19-07-01 15:08)
+                ✔ thumbnails created dynamicly, once for guid, on view @done(19-06-30 23:26)
+            ✔ Delete @done(19-06-30 23:26)
+            ✔ Settings @done(19-07-01 15:08)
+                ✔ Width @done(19-07-01 01:00)
+                ✔ Height @done(19-07-01 01:00)
+                ✔ Border radius @done(19-07-01 13:47)
+                ✔ Is circle @done(19-07-01 13:47)
         ☐ Numeration
         ☐ Comments
     ☐ TEST MILESTONE

@@ -5,14 +5,13 @@ import sys
 import asyncio
 import uuid
 
-from pathlib import Path
 from sanic import response
 from loguru import logger
-import ujson as json
+import aiopubsub
 from graphql_ws.websockets_lib import WsLibSubscriptionServer
 from sanic_graphql import GraphQLView
 from graphql.execution.executors.asyncio import AsyncioExecutor
-import aiopubsub
+import ujson as json
 # from python_resumable import Uploader
 
 import backend.cache as ax_cache
@@ -21,8 +20,9 @@ import backend.misc as ax_misc
 import backend.pubsub as ax_pubsub
 from backend.tus import tus_bp
 import backend.model as ax_model
-from backend.model import AxForm
+from backend.model import AxForm, AxField
 import backend.schemas.form_schema as form_schema
+import backend.dialects as ax_dialects
 
 this = sys.modules[__name__]
 
@@ -65,22 +65,43 @@ def init_routes(app):
         app.blueprint(tus_bp)
         subscription_server = WsLibSubscriptionServer(ax_schema.schema)
 
+        @app.route('/api/file/<form_guid>/<row_guid>/<field_guid>', methods=['GET'])
+        async def db_file_viewer(request, form_guid, row_guid, field_guid):  # pylint: disable=unused-variable
+            del request, form_guid
+            safe_row_guid = str(uuid.UUID(str(row_guid)))
+            ax_field = ax_model.db_session.query(AxField).filter(
+                AxField.guid == uuid.UUID(field_guid)
+            ).first()
+
+            field_value = ax_dialects.dialect.select_field(
+                form_db_name=ax_field.form.db_name,
+                field_db_name=ax_field.db_name,
+                row_guid=safe_row_guid)
+
+            # Get values from row, field
+            # field_value = None
+            # for field in ax_form.fields:
+            #     if field.guid == uuid.UUID(field_guid):
+            #         if field.value:
+            #             field_value = field.value
+            return response.raw(field_value, content_type='application/octet-stream')
+
         @app.route('/api/file/<form_guid>/<row_guid>/<field_guid>/<file_guid>', methods=['GET'])
         async def file_viewer(request, form_guid, row_guid, field_guid, file_guid):  # pylint: disable=unused-variable
+            del request
             uploads_dir = ax_misc.path('uploads')
 
             # if row_guid is null -> display from /tmp without permissions
             if not row_guid or row_guid == 'null':
                 tmp_dir = os.path.join(uploads_dir, 'tmp', file_guid)
                 file_name = os.listdir(tmp_dir)[0]
-                tmp_path = os.path.join(tmp_dir, file_name)
-                return await response.file(tmp_path)
+                temp_path = os.path.join(tmp_dir, file_name)
+                return await response.file(temp_path)
 
             # get AxForm with row values
             ax_form = ax_model.db_session.query(AxForm).filter(
                 AxForm.guid == uuid.UUID(form_guid)
             ).first()
-
             ax_form = form_schema.set_form_values(
                 ax_form=ax_form, row_guid=row_guid)
 
@@ -104,9 +125,10 @@ def init_routes(app):
             row_guid_str = str(uuid.UUID(row_guid))
             file_path = os.path.join(
                 uploads_dir,
-                'form_files',
+                'form_row_field_file',
                 form_guid,
                 row_guid_str,
+                field_guid,
                 the_file['guid'],
                 the_file['name'])
             if not os.path.lexists(file_path):
