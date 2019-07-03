@@ -25,8 +25,8 @@ const ColumnFragment = gql`
 `;
 
 const GET_GRID_DATA = gql`
-  query ($formDbName: String!, $gridDbName: String!) {
-    grid (formDbName: $formDbName, gridDbName: $gridDbName) {
+  query ($formDbName: String!, $gridDbName: String!, $updateTime: String) {
+    grid (formDbName: $formDbName, gridDbName: $gridDbName, updateTime: $updateTime) {
       guid,
       name,
       dbName,
@@ -179,6 +179,9 @@ const mutations = {
   },
   deleteColumn(state, deleted) {
     state.columns = [...state.columns.filter(element => element.guid !== deleted)];
+  },
+  deleteField(state, deleted) {
+    state.columns = [...state.columns.filter(element => element.field.guid !== deleted)];
   },
   setUpdateTime(state, time) {
     state.updateTime = time;

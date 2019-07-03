@@ -23,11 +23,12 @@ import backend.misc as ax_misc
 from backend.schemas.types import  State, Action, \
     State2Role, Action2Role, RoleFieldPermission, Role, Form
 
-import backend.fields.Ax1tom as AxFieldAx1tom
-import backend.fields.Ax1tomTable as AxFieldAx1tomTable
-import backend.fields.AxChangelog as AxFieldAxChangelog
-import backend.fields.AxFiles as AxFieldAxFiles
-import backend.fields.AxImageCropDb as AxFieldAxImageCropDb
+import backend.fields.Ax1tom as AxFieldAx1tom   # pylint: disable=unused-import
+import backend.fields.Ax1tomTable as AxFieldAx1tomTable # pylint: disable=unused-import
+import backend.fields.AxChangelog as AxFieldAxChangelog # pylint: disable=unused-import
+import backend.fields.AxFiles as AxFieldAxFiles # pylint: disable=unused-import
+import backend.fields.AxImageCropDb as AxFieldAxImageCropDb # pylint: disable=unused-import
+import backend.fields.AxNum as AxFieldAxNum # pylint: disable=unused-import
 
 
 def get_actions(form, current_state=None):
@@ -673,7 +674,7 @@ def do_exec(action, form):
     localz['item'] = item
 
     try:
-        exec(str(action.code), globals(), localz)
+        exec(str(action.code), globals(), localz)   # pylint: disable=exec-used
         ret_data = {
             "info": localz['ax_message'] if 'ax_message' in localz else None,
             "error": localz['ax_error'] if 'ax_error' in localz else None,
@@ -699,7 +700,7 @@ def do_exec(action, form):
             "abort": True
         }
         return ret_data
-    except Exception as err:
+    except Exception as err:    # pylint: disable=broad-except
         error_class = err.__class__.__name__
         detail = err.args[0]
         cl, exc, tb = sys.exc_info()
@@ -741,7 +742,7 @@ def get_before_form(row_guid, form_guid, ax_action):
     if row_guid:
         fields_names = [field for field in tobe_form.db_fields]
         before_result = ax_dialects.dialect.select_one(
-            form_db_name=tobe_form.db_name,
+            form=tobe_form,
             fields_list=fields_names,
             row_guid=row_guid)
 
@@ -750,6 +751,8 @@ def get_before_form(row_guid, form_guid, ax_action):
                 'Error in DoAction. Cant find row for action')
 
         tobe_form.current_state_name = before_result[0]['axState']
+        tobe_form.row_guid = before_result[0]['guid']
+
         if tobe_form.current_state_name != ax_action.from_state.name \
         and ax_action.from_state.is_all is False:
             raise Exception('Error in DoAction. Performed \
@@ -827,10 +830,6 @@ class DoAction(graphene.Mutation):
             form_guid = args.get('form_guid')
             new_guid = uuid.uuid4()
             current_user = None #TODO: implement users
-            actual_guid = new_guid
-            if row_guid:
-                actual_guid = row_guid
-
 
             # 1. Get AxAction and query_type
             ax_action = ax_model.db_session.query(AxAction).filter(
@@ -851,7 +850,8 @@ class DoAction(graphene.Mutation):
                 ax_action=ax_action)
 
             # 3. Assemble tobe_object
-            tobe_form.row_guid = actual_guid
+            if not tobe_form.row_guid:
+                tobe_form.row_guid = new_guid
             for field in tobe_form.db_fields:
                 if field.db_name in values.keys():
                     field.value = values[field.db_name]
@@ -860,7 +860,7 @@ class DoAction(graphene.Mutation):
                     field.needs_sql_update = True
 
             # 4. Run before backend code for each field.
-            for field in tobe_form.db_fields:
+            for field in tobe_form.no_tab_fields:
                 if field.field_type.is_backend_available:
                     field.value = run_field_backend(
                         when='before',
@@ -899,6 +899,7 @@ class DoAction(graphene.Mutation):
 
 
             # 6. Make update or insert or delete query #COMMIT HERE
+            return_guid = tobe_form.row_guid
             after_form = copy.deepcopy(tobe_form)
             if query_type == 'insert':
                 ax_dialects.dialect.insert(
@@ -909,17 +910,18 @@ class DoAction(graphene.Mutation):
             elif query_type == 'delete':
                 ax_dialects.dialect.delete(
                     form=tobe_form,
-                    row_guid=row_guid
+                    row_guid=tobe_form.row_guid
                 )
+                return_guid = None
             else:
                 ax_dialects.dialect.update(
                     form=tobe_form,
                     to_state_name=ax_action.to_state.name,
-                    row_guid=row_guid
+                    row_guid=tobe_form.row_guid
                 )
 
             # 7. Run after backend code for each field.
-            for field in after_form.db_fields:
+            for field in after_form.no_tab_fields:
                 if field.field_type.is_backend_available:
                     field.value = run_field_backend(
                         when='after',
@@ -944,7 +946,7 @@ class DoAction(graphene.Mutation):
             ok = True
             return DoAction(
                 form=tobe_form,
-                new_guid=tobe_form.row_guid,
+                new_guid=return_guid,
                 messages=messages_json,
                 modal_guid=modal_guid,
                 ok=ok)

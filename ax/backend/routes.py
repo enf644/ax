@@ -72,18 +72,10 @@ def init_routes(app):
             ax_field = ax_model.db_session.query(AxField).filter(
                 AxField.guid == uuid.UUID(field_guid)
             ).first()
-
             field_value = ax_dialects.dialect.select_field(
                 form_db_name=ax_field.form.db_name,
                 field_db_name=ax_field.db_name,
                 row_guid=safe_row_guid)
-
-            # Get values from row, field
-            # field_value = None
-            # for field in ax_form.fields:
-            #     if field.guid == uuid.UUID(field_guid):
-            #         if field.value:
-            #             field_value = field.value
             return response.raw(field_value, content_type='application/octet-stream')
 
         @app.route('/api/file/<form_guid>/<row_guid>/<field_guid>/<file_guid>', methods=['GET'])

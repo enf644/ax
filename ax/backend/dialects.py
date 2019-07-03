@@ -10,6 +10,7 @@ from loguru import logger
 import ujson as json
 import backend.model as ax_model
 from backend.model import AxForm
+import backend.misc as ax_misc
 
 this = sys.modules[__name__]
 dialect_name = None
@@ -210,18 +211,25 @@ class SqliteDialect(object):
                 f"Error executing SQL - quicksearch {ax_form.db_name}")
             raise
 
-    def select_one(self, form_db_name, fields_list, row_guid):
+    def select_one(self, form, fields_list, row_guid):
         """Select fields from table for one row
 
         Args:
-            form_db_name (str): AxForm.db_name - table name of current form
+            form (AxForm): Current form
             fields_list (List(AxField)): Fields that must be selected.
             row_guid (str): String of row guid
+            num_fields (List(AxField)): AxNum fields. If not empy, row will
+                be searched by guid and every AxNum
 
         Returns:
             List(Dict(column_name: value)): result of SQL query
         """
         try:
+            form_db_name = form.db_name
+            num_fields = []
+            for field in form.db_fields:
+                if field.field_type.tag == 'AxNum':
+                    num_fields.append(field)
             fields_string = 'guid, axState, axNum'
             for field in fields_list:
                 field_name = self.get_select_sql(
@@ -230,9 +238,16 @@ class SqliteDialect(object):
 
             sql = (f"SELECT {fields_string} "
                    f"FROM {form_db_name} "
-                   f"WHERE guid='{row_guid}'"
+                   f"WHERE guid=:row_guid"
                    )
-            result = ax_model.db_session.execute(sql).fetchall()
+            if num_fields:
+                for num_field in num_fields:
+                    sql += f" OR {num_field.db_name}=:row_guid"
+            guid_or_num = str(row_guid)
+            if ax_misc.string_is_guid(guid_or_num):
+                guid_or_num = guid_or_num.replace('-', '')
+            query_params = {"row_guid": guid_or_num}
+            result = ax_model.db_session.execute(sql, query_params).fetchall()
             return result
             # names = [row[0] for row in result]
         except Exception:
@@ -254,7 +269,7 @@ class SqliteDialect(object):
             List(Dict(column_name: value)): result of SQL query
         """
         try:
-            row_guid_stripped = row_guid.replace('-','')
+            row_guid_stripped = row_guid.replace('-', '')
             ret_value = None
             sql = (f"SELECT {field_db_name} "
                    f"FROM {form_db_name} "
@@ -265,7 +280,8 @@ class SqliteDialect(object):
                 ret_value = result[0][field_db_name]
             return ret_value
         except Exception:
-            logger.exception(f"Error executing SQL - select_field {form_db_name}")
+            logger.exception(
+                f"Error executing SQL - select_field {form_db_name}")
             raise
 
     def insert(self, form, to_state_name, new_guid):
@@ -303,7 +319,8 @@ class SqliteDialect(object):
             result = ax_model.db_session.execute(sql, query_params)
 
             last_guid_result = ax_model.db_session.execute(
-                f"SELECT guid FROM {form.db_name} WHERE rowid={result.lastrowid}"
+                f"SELECT guid FROM {form.db_name} "
+                f"WHERE rowid={result.lastrowid}"
             ).fetchall()
             last_guid = last_guid_result[0]['guid']
 
@@ -363,7 +380,6 @@ class SqliteDialect(object):
         try:
             sql = f"""CREATE TABLE {db_name} (
                 guid VARCHAR PRIMARY KEY,
-                axNum INTEGER NOT NULL,
                 axState VARCHAR NOT NULL
             );"""
             ax_model.db_session.execute(sql)

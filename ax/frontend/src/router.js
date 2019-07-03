@@ -12,6 +12,8 @@ const PagesDesigner = () => import(/* webpackChunkName: "ax-admin" */ './views/P
 const UsersManager = () => import(/* webpackChunkName: "ax-admin" */ './views/UsersManager.vue');
 const UsersGroup = () => import(/* webpackChunkName: "ax-admin" */ './views/UsersGroup.vue');
 
+const FormView = () => import(/* webpackChunkName: "ax-form" */ './views/FormView.vue');
+
 Vue.use(Router);
 
 export default new Router({
@@ -63,6 +65,16 @@ export default new Router({
           component: PagesDesigner
         }
       ]
+    },
+    {
+      path: '/form/:db_name',
+      name: 'form-view',
+      component: FormView
+    },
+    {
+      path: '/form/:db_name/:num_guid',
+      name: 'form-view-guid',
+      component: FormView
     },
     {
       path: '/test',

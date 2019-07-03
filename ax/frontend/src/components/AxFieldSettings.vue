@@ -13,6 +13,7 @@
             cy-data='is-required-input'
             v-if='showRequired'
             v-model='isRequired'
+            v-show='isNotVirtual'
           ></v-switch>
         </v-flex>
         <v-flex offset-xs2 xs5>
@@ -30,6 +31,7 @@
             cy-data='required'
             v-if='showRequiredText'
             v-model='reuiredText'
+            v-show='isNotVirtual'
           ></v-text-field>
         </v-flex>
         <v-flex xs12>
@@ -38,6 +40,7 @@
             cy-data='hint'
             v-if='showHint'
             v-model='hint'
+            v-show='isNotVirtual'
           ></v-text-field>
         </v-flex>
       </v-layout>
@@ -63,8 +66,9 @@ import store from '../store';
 export default {
   name: 'AxFieldSettings',
   props: {
-    guid: null,
+    guid: null, // this is AxField guid
     options: null, // this is passed from field settings component
+    privateOptions: null, // this is passed from field settings component
     showHint: {
       type: Boolean,
       default: true
@@ -104,6 +108,11 @@ export default {
       options.required_text = this.reuiredText;
       options.hint = this.hint;
       return options;
+    },
+    isNotVirtual() {
+      if (this.field && this.field.fieldType.isVirtual) return false;
+      if (this.field && this.field.fieldType.isReadonly) return false;
+      return true;
     }
   },
   watch: {},
@@ -137,6 +146,7 @@ export default {
         payload.isRequired = this.isRequired;
         payload.isWholeRow = this.isWholeRow;
         payload.optionsJson = JSON.stringify(this.addedOptions);
+        payload.privateOptionsJson = JSON.stringify(this.privateOptions);
         store.dispatch('form/updateField', payload);
         this.$emit('closed');
       }

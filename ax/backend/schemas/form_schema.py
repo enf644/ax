@@ -25,12 +25,13 @@ def set_form_values(ax_form, row_guid):
         allowed_fields.append(field)
 
     result = ax_dialects.dialect.select_one(
-        form_db_name=ax_form.db_name,
+        form=ax_form,
         fields_list=allowed_fields,
         row_guid=row_guid)
 
     if result:
         ax_form.current_state_name = result[0]['axState']
+        ax_form.row_guid = result[0]['guid']
         # populate each AxField with data
         for field in ax_form.fields:
             if field in allowed_fields:
@@ -251,6 +252,7 @@ class UpdateField(graphene.Mutation):
         is_required = graphene.Boolean()
         is_whole_row = graphene.Boolean()
         options_json = graphene.JSONString()
+        private_options_json = graphene.JSONString()
 
     ok = graphene.Boolean()
     field = graphene.Field(Field)
@@ -264,6 +266,7 @@ class UpdateField(graphene.Mutation):
             is_required = args.get('is_required')
             is_whole_row = args.get('is_whole_row')
             options_json = args.get('options_json')
+            private_options_json = args.get('private_options_json')
 
             schema_needs_update = False
 
@@ -296,6 +299,10 @@ class UpdateField(graphene.Mutation):
 
             if options_json:
                 ax_field.options_json = json.dumps(options_json)
+
+            if private_options_json:
+                ax_field.private_options_json = json.dumps(
+                    private_options_json)
 
             if is_required is not None:
                 ax_field.is_required = is_required
@@ -430,7 +437,8 @@ class FormQuery(graphene.ObjectType):
         query = Form.get_query(info=info)
         return query.filter(AxForm.db_name == db_name).first()
 
-    async def resolve_form_data(self, info, db_name=None, row_guid=None, update_time=None):
+    async def resolve_form_data(
+        self, info, db_name=None, row_guid=None, update_time=None):
         """Get AxForm by db_name and row guid"""
         del update_time
 

@@ -3,6 +3,7 @@
 
 import os
 import sys
+import uuid
 from pathlib import Path
 from datetime import datetime
 import graphene
@@ -99,3 +100,16 @@ def convert_column_to_string(type, column, registry=None):  # pylint: disable=re
         description=graphene_sqlalchemy.converter.get_column_doc(column),
         required=not(graphene_sqlalchemy.converter.is_column_nullable(column))
     )
+
+
+def string_is_guid(string_guid):
+    """Checks if string is valid guid can be
+     302a4299736e4ef384fca9f400e84b24 or 302a4299-736e-4ef3-84fc-a9f400e84b24
+
+    Returns:
+        [str]: version of uuid or None
+    """
+    try:
+        return uuid.UUID(string_guid).version
+    except ValueError:
+        return None

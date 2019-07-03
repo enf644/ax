@@ -90,6 +90,13 @@ CROP PLUGINS
 
 
 
+COMMENTS PLUGINS
+    https://github.com/synergixe/vue-commentbox
+    https://github.com/alijaya/vue-disqus-embed - external
+    https://github.com/TugayYaldiz/vue-comment-grid - strange
+    https://aroc.github.io/side-comments-demo/ - think about!!!
+
+
 INTERNALIZATION
     Vue components
         https://github.com/Polyconseil/vue-gettext  -> CHOISE

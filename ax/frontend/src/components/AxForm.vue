@@ -6,6 +6,7 @@
       elevation='5'
       light
       ref='sheet'
+      v-if='!this.guidNotFound'
       v-show='formIsLoaded'
     >
       <v-layout align-space-between class='form-layout' justify-start row>
@@ -74,6 +75,7 @@
                 :class='getWidthClass(field)'
                 :dbName='field.dbName'
                 :fieldGuid='field.guid'
+                :formDbName='db_name'
                 :formGuid='formGuid'
                 :isRequired='field.isRequired'
                 :isWholeRow='field.isWholeRow'
@@ -126,6 +128,13 @@
         </div>
       </v-layout>
     </v-sheet>
+    <div v-if='this.guidNotFound'>
+      <h1 class='not-found'>
+        <i class='far fa-sad-cry'></i>
+        &nbsp;
+        {{$t("form.guid-not-found", {num: this.guid})}}
+      </h1>
+    </div>
     <!-- </transition> -->
     <modal adaptive height='auto' name='test-value' scrollable width='50%'>
       <v-card class='test-value'>
@@ -170,7 +179,8 @@ export default {
       type: String,
       default: null
     },
-    guid: null,
+    guid: null, // CAN BE guid OR AxNum
+    row: null,
     action_guid: null,
     update_time: null,
     opened_tab: null,
@@ -183,6 +193,7 @@ export default {
       overlayIsHidden: true,
       dialogIsOpen: false,
       formGuid: null,
+      rowGuid: null,
       name: null,
       dbName: null,
       icon: null,
@@ -207,11 +218,13 @@ export default {
       formIsLoaded: false,
       modalGuid: null,
       insertedGuid: null,
-      showSubscribtionWarning: false
+      showSubscribtionWarning: false,
+      guidNotFound: false
     };
   },
   computed: {
     currentRowGuid() {
+      if (this.rowGuid) return this.rowGuid;
       if (this.guid) return this.guid;
       return this.insertedGuid;
     },
@@ -342,6 +355,7 @@ export default {
             dbName
             parent
             icon
+            rowGuid
             fields {
               edges {
                 node {
@@ -389,6 +403,7 @@ export default {
         })
         .then(data => {
           const currentFormData = data.data.formData;
+          this.rowGuid = currentFormData.rowGuid;
           this.formGuid = currentFormData.guid;
           this.name = currentFormData.name;
           this.dbName = currentFormData.dbName;
@@ -399,6 +414,9 @@ export default {
               action => action.guid === this.action_guid
             );
           }
+
+          this.guidNotFound = false;
+          if (this.guid && !currentFormData.rowGuid) this.guidNotFound = true;
 
           const fields = currentFormData.fields.edges.map(edge => edge.node);
           this.tabs = [];
@@ -563,9 +581,12 @@ export default {
           }
         })
         .then(data => {
+          const dataRowGuid = data.data.doAction.newGuid;
+          if (!dataRowGuid) this.guidNotFound = true;
+
           let retGuid = this.guid;
-          if (!this.guid) {
-            this.insertedGuid = data.data.doAction.newGuid.replace(/-/g, '');
+          if (!this.guid && dataRowGuid) {
+            this.insertedGuid = dataRowGuid.replace(/-/g, '');
             retGuid = this.insertedGuid;
           }
           const messages = JSON.parse(data.data.doAction.messages);
@@ -575,6 +596,10 @@ export default {
             retGuid,
             closeModal: action.closeModal
           });
+          const msg = this.$t('form.action-ok-toast', { action: action.name });
+          this.$dialog.message.success(
+            `<i class="far fa-arrow-alt-circle-right"></i> &nbsp ${msg}`
+          );
         })
         .catch(error => {
           this.$log.error(
@@ -773,5 +798,13 @@ export default {
   font-size: 13px;
   color: white;
   border-radius: 15px;
+}
+.not-found {
+  top: 50%;
+  position: absolute;
+  left: 30%;
+}
+.not-found i {
+  font-size: 3em;
 }
 </style>

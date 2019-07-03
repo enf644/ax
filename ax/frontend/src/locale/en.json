@@ -104,7 +104,9 @@
         "required-text-label": "Custom required text",
         "hint-setting-label": "Hint for entering value for this field",
         "record-modifyed-warning": "WARNING! Current record was modifyed by another user. Do you want to load new data?",
-        "reload-data": "Reload data"
+        "reload-data": "Reload data",
+        "guid-not-found": "[{num}] not found",
+        "action-ok-toast": "Action [{action}] performed"
     },
     "grids": {
         "add-column-toast": "Column added",
@@ -225,7 +227,13 @@
             "name": "Guid"
         },
         "AxNum": {
-            "name": "Register number"
+            "name": "Registration number",
+            "link-tooltip": "Copy url of this form",
+            "settings-algorithm": "Numeration algorithm",
+            "settings-string-comparator": "Sort field as string",
+            "settings-number-comparator": "Sort field as number",
+            "settings-counter-key": "Counter key",
+            "settings-counter-hint": "Change this if you want to use custom counter within multiple forms."
         },
         "AxState": {
             "name": "Current State"

@@ -86,12 +86,10 @@ def create_field_types() -> None:
             tag='AxNum',
             parent="group-id",
             default_db_name="axNum",
+            value_type="VARCHAR(255)",
             position=2,
             is_readonly=True,
             is_backend_available=True,
-            is_columnn_avalible=True,
-            is_updated_always=True,
-            comparator="number",
             icon="sort-numeric-up"))
 
         # Process controll

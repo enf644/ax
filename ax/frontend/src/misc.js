@@ -11,10 +11,14 @@ export function getAxHost() {
   return axHost;
 }
 
+export function getAxProtocol() {
+  return 'http';
+}
+
 
 export function debounce(callback, limit) {
   let wait = false;
-  return function () {
+  return () => {
     if (!wait) {
       callback.call();
       wait = true;
@@ -23,6 +27,11 @@ export function debounce(callback, limit) {
       }, limit);
     }
   };
+}
+
+export function isGuid(strGuid) {
+  const regexGuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return regexGuid.test(strGuid);
 }
 
 export function getVersion() {

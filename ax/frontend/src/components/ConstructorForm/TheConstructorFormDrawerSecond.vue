@@ -15,6 +15,7 @@
           :guid='settingsGuid'
           :is='component'
           :options='settingsOptions'
+          :privateOptions='privateOptions'
           @closed='closeSettings()'
           v-if='component'
         />
@@ -37,7 +38,8 @@ export default {
     treeInitialized: false,
     component: null,
     settingsGuid: null,
-    settingsOptions: null
+    settingsOptions: null,
+    privateOptions: null
   }),
   computed: {
     fields() {
@@ -92,13 +94,16 @@ export default {
       this.settingsGuid = field.guid;
 
       let options = null;
+      let privateOptions = null;
       try {
         options = JSON.parse(field.optionsJson);
+        privateOptions = JSON.parse(field.privateOptionsJson);
       } catch {
         this.$log.error(`Unable to parse options json for ${field.dbName}`);
       }
 
       this.settingsOptions = options;
+      this.privateOptions = privateOptions;
       const ftag = field.fieldType.tag;
 
       import(`@/components/AxFields/${ftag}/${ftag}Settings.vue`)

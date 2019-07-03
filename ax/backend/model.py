@@ -108,6 +108,16 @@ class AxAlembicVersion(Base):
     version_num = Column(String(255), primary_key=True)
 
 
+class AxMetric(Base):
+    """Stores varius key/values.
+    1 - counters for AxNum field"""
+    __tablename__ = '_ax_metrics'
+    guid = Column(GUID(), primary_key=True,
+                  default=uuid.uuid4, unique=True, nullable=False)
+    key = Column(String(255), unique=True, nullable=False)
+    value = Column(String(255))
+
+
 class AxSchedulerJob(Base):
     """Table and metadata for apscheduler."""
     __tablename__ = '_ax_scheduler_jobs'
@@ -153,6 +163,15 @@ class AxForm(Base):
                 db_fields.append(field)
         return db_fields
 
+    @property
+    def no_tab_fields(self):
+        """Only AxFields that are database columns"""
+        db_fields = []
+        for field in self.fields:
+            if field.is_tab is False:
+                db_fields.append(field)
+        return db_fields
+
     def get_row_data(self):
         """Set current AxForm to match specific row in database table"""
         return "GET ROW DATA"
@@ -187,9 +206,10 @@ class AxFieldType(Base):
     icon = Column(String(255))
     is_group = Column(Boolean, unique=False, default=False)
     # virtual meens that field is calculated, not stored in database
+    # DB column is not created
     is_virtual = Column(Boolean, unique=False, default=False)
     # readonly meens that field is set by backend or action.
-    # Data does not come from form.
+    # DB column is created but data does not come from form.
     is_readonly = Column(Boolean, unique=False, default=False)
     is_inline_editable = Column(Boolean, unique=False, default=False)
     is_backend_available = Column(Boolean, unique=False, default=False)
@@ -248,7 +268,7 @@ class AxField(Base):
     db_name = Column(String(255))
     position = Column(Integer())
     options_json = Column(String(2000))
-    # value_type = Column(String(255)) TODO Check if needed
+    private_options_json = Column(Text(convert_unicode=True))
     field_type_tag = Column(String(64), ForeignKey('_ax_field_types.tag'))
     field_type = relationship("AxFieldType")
     is_tab = Column(Boolean, unique=False, default=False)
@@ -315,8 +335,8 @@ class AxUser(Base):
     __tablename__ = '_ax_users'
     guid = Column(GUID(), primary_key=True,
                   default=uuid.uuid4, unique=True, nullable=False)
-    name = Column(Text)
-    email = Column(Text)
+    name = Column(String(255))
+    email = Column(String(255))
     password = Column(String(255))
     is_group = Column(Boolean, unique=False, default=False)
     is_admin = Column(Boolean, unique=False, default=False)

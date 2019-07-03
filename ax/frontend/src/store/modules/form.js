@@ -14,15 +14,18 @@ const FieldFragment = gql`
       tag,
       icon,
       valueType,
-      isInlineEditable,
+    isInlineEditable,
       isBackendAvailable,
       isUpdatedAlways,
-      isAlwaysWholeRow
+      isAlwaysWholeRow,
+      isVirtual,
+      isReadonly
     },
     isTab,
     isRequired,
     isWholeRow,
     optionsJson,
+    privateOptionsJson,
     parent
   }
 `;
@@ -179,8 +182,8 @@ const CREATE_FIELD = gql`
 `;
 
 const UPDATE_FIELD = gql`
-  mutation ($guid: String!, $name: String, $dbName: String, $isRequired: Boolean, $isWholeRow: Boolean, $optionsJson: JSONString ) {
-    updateField(guid: $guid, name: $name, dbName: $dbName, isRequired: $isRequired, isWholeRow: $isWholeRow, optionsJson: $optionsJson) {
+  mutation ($guid: String!, $name: String, $dbName: String, $isRequired: Boolean, $isWholeRow: Boolean, $optionsJson: JSONString, $privateOptionsJson: JSONString ) {
+    updateField(guid: $guid, name: $name, dbName: $dbName, isRequired: $isRequired, isWholeRow: $isWholeRow, optionsJson: $optionsJson, privateOptionsJson: $privateOptionsJson) {
       field {
         ...FieldFragment
       },
@@ -573,7 +576,8 @@ const actions = {
         dbName: payload.dbName,
         isRequired: payload.isRequired,
         isWholeRow: payload.isWholeRow,
-        optionsJson: payload.optionsJson
+        optionsJson: payload.optionsJson,
+        privateOptionsJson: payload.privateOptionsJson
       }
     })
       .then(data => {
@@ -596,6 +600,7 @@ const actions = {
       .then(data => {
         const deletedGuid = data.data.deleteField.deleted;
         context.commit('deleteField', deletedGuid);
+        context.commit('grids/deleteField', deletedGuid, { root: true });
       })
       .catch(error => {
         logger.error(`Error in deleteField apollo client => ${error}`);

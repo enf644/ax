@@ -498,14 +498,30 @@ AX 0.2:
                 ✔ Height @done(19-07-01 01:00)
                 ✔ Border radius @done(19-07-01 13:47)
                 ✔ Is circle @done(19-07-01 13:47)
-        ☐ Numeration
-        ☐ Comments
+        ✔ Numeration @done(19-07-03 18:11)
+            ✔ AxField @done(19-07-03 12:23)
+                ✔ Copy link button @done(19-07-03 12:23)
+            ✔ AxSettings @done(19-07-03 11:17)
+                ✔ AxNumSettings @done(19-07-02 13:48)
+                ✔ run python code before_insert @done(19-07-02 19:40)
+                ✔ Key must be not null @done(19-07-03 11:17)
+            ✔ _ax_metrics stores counter with 'key'. It can be db_name, guid. This values are accesible in AxNum python code. @done(19-07-02 20:25)
+                ✔ guid, key [ax_counter_123-123-123-123-312], value @done(19-07-02 20:25)
+            ✔ FormViewer @done(19-07-03 11:18)
+                ✔ Component + route @done(19-07-03 09:07)
+            ✔ AxForm is accessed by url using AxNum and guid @done(19-07-03 17:48)
+                ✔ Guid params takes guid AND axNum @done(19-07-03 10:03)
+                ✔ AxForm - If row not found -> display empty message @done(19-07-03 16:00)
+                ✔ AxForm - after delete -> display empty message @done(19-07-03 17:38)
+                ✔ After action -> display toast in standalone form @done(19-07-03 17:48)
+            ✔ Error -> Delete field, column in grid stays @done(19-07-03 18:11)
     ☐ TEST MILESTONE
         ☐ Comment every def and gql method like ax_misc
         ☐ Try catch for every vue method
         ☐ Try pip installation
         ☐ Try app engine installation
         ☐ Cover everything with cypress tests
+        ☐ Fix ALL pylint and jslint errors, warnings and info
         ☐ ESTABLISH CI
             ☐ Each commit runs tests - installs from pip, runs cypress tests
             ☐ Start versionning
@@ -539,11 +555,11 @@ AX 0.2:
         ☐ Product usage statistics
     ☐ ALL FIELDS v1
         ☐ Identification
-            ☐ GuId  `[VIRTUAL]`
-            ☐ Numeration    `[COMPLEX]` `[VIRTUAL]`
+            ☐ GuId
+            ☐ Numeration *
         ☐ Decoration
-            ☐ Header    `[VIRTUAL]`
-            ☐ Text  `[VIRTUAL]`
+            ☐ Header
+            ☐ Text
         ☐ String
             ✔ String @done(19-06-04 17:38)
             ☐ Email
@@ -557,8 +573,9 @@ AX 0.2:
             ☐ Switch
             ☐ 2D radio survey
         ☐ Payment
-            ☐ Paypal    `[COMPLEX]`
-            ☐ Stripe    `[COMPLEX]`
+            ☐ Yandex *
+            ☐ Paypal *
+            ☐ Stripe *
             ☐ ... check jotforms
         ☐ Relationship
             ✔ 1:1 Inline @done(19-06-04 17:38)
@@ -578,26 +595,28 @@ AX 0.2:
         ☐ Team work
             ☐ Approval path
         ☐ Images
-            ☐ Public filesystem Images   `[COMPLEX]`
-            ☐ Database Image Crop   `[COMPLEX]`
+            ☐ Public filesystem Images *
+            ✔ Database Image Crop  @done(19-07-01 15:18)
             ☐ Webcam
         ☐ Files
-            ☐ Filesystem Files  `[COMPLEX]`
+            ✔ Filesystem Files *
         ☐ Users
-            ☐ Users    `[COMPLEX]`
+            ☐ Users *
         ☐ Object Control
-            ☐ Edit history (Logging)    `[COMPLEX]`
+            ✔ Edit history (Logging) @done(19-07-02 10:38)
         ☐ Communications
-            ☐ Comments  `[COMPLEX]`
+            ☐ Comments *
     ☐ INSTALLATION
     ☐ FEATURES
+        ☐ 1toM in graphql dynamic schema `IMPORTANT`
         ☐ Admin home widgets
         ☐ Role and user based server-filter
         ☐ Default name field. 1tomLabel = {name}
         ☐ Every modal must be moved a litle bit
     ☐ LICENSE GENERATION
+        ☐ If not licensed - put watermark with logo and link everywhere
     ☐ TUTORIAL
-        ☐ Each page and field have help modal
+        ☐ Each page and field have help modal with gifs
     ☐ LANDING
         ☐ Ax pages site - beutiful landing
     ☐ METRICS
@@ -697,6 +716,8 @@ NEW FROGS TODOS:
     ☐ Hints for every grid constructor option
     ☐ SSL - apollo, uppy, other ! `[IMPORTANT]`
     ☐ if field removed - remove all files from /uploads/from_files
+    ✔ If field is virtual of readonly - hide hint and required settings @done(19-07-02 12:39)
+    ☐ Some fields can be added only once to form - AxNum, AxChangelog
 
 
 NEW FEATURES:

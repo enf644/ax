@@ -3,6 +3,7 @@
     <component
       :dbName='dbName'
       :fieldGuid='fieldGuid'
+      :formDbName='formDbName'
       :formGuid='formGuid'
       :is='component'
       :isRequired='isRequired'
@@ -30,7 +31,8 @@ export default {
     isWholeRow: null,
     formGuid: null,
     rowGuid: null,
-    fieldGuid: null
+    fieldGuid: null,
+    formDbName: null
   },
   data: () => ({
     options: null,
