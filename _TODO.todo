@@ -451,7 +451,7 @@ AX 0.2:
         ✔ Try 1to1, 1tom to self! @done(19-06-13 22:44)
         ✔ Error -> scroll is disturbed in AxGird after subscription update @done(19-06-13 22:47)
         ✔ 1tomTable -> item delete button @done(19-06-14 09:54)
-    ☐ COMPLEX FIELDS
+    ✔ COMPLEX FIELDS @done(19-07-04 10:24)
         ✔ Edit history (Logging) @done(19-06-18 10:39)
         ✔ Error -> On insert - wrong behaiver. new guid set wrong. tom fields are emtyed. @done(19-06-18 10:39)
         ✔ Filesystem Files @done(19-06-27 21:47)
@@ -516,18 +516,18 @@ AX 0.2:
                 ✔ After action -> display toast in standalone form @done(19-07-03 17:48)
             ✔ Error -> Delete field, column in grid stays @done(19-07-03 18:11)
     ☐ TEST MILESTONE
-        ☐ Comment every def and gql method like ax_misc
+        ✔ Comment every def and gql method like ax_misc @done(19-07-05 10:24)
         ☐ Try catch for every vue method
+        ☐ Fix ALL pylint and jslint errors, warnings and info
         ☐ Try pip installation
         ☐ Try app engine installation
-        ☐ Cover everything with cypress tests
-        ☐ Fix ALL pylint and jslint errors, warnings and info
-        ☐ ESTABLISH CI
-            ☐ Each commit runs tests - installs from pip, runs cypress tests
-            ☐ Start versionning
-            ☐ Publishes to google code 
-            ☐ Gae autodeploy
-            ☐ Each new version comes with patch
+    ☐ CYPRESS TESTS FOR ALL        
+    ☐ ESTABLISH CI
+        ☐ Each commit runs tests - installs from pip, runs cypress tests
+        ☐ Start versionning
+        ☐ Publishes to google code 
+        ☐ Gae autodeploy
+        ☐ Each new version comes with patch
     ☐ USERS
         ☐ GAuth
         ☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
@@ -579,9 +579,12 @@ AX 0.2:
             ☐ ... check jotforms
         ☐ Relationship
             ✔ 1:1 Inline @done(19-06-04 17:38)
+                ☐ AxColumn
             ✔ 1:M Inline @done(19-06-04 17:38)
+                ☐ AxColumn
             ✔ 1:M Table @done(19-06-06 09:37)
-        ☐ Date and Time
+                ☐ AxColumn
+            ☐ Date and Time
             ☐ Date
         ☐ List
             ✔ Choise @done(19-06-07 21:39)

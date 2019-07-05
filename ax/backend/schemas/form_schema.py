@@ -1,24 +1,33 @@
-"""Defines Form Scheme and all mutations"""
+"""This is part of GraphQL schema (Mutaions, Queryes, Subscriptions).
+Defines manipulation with form AxForm.
+All mutations are used in form constructor - create/update/delete for Tab, Field
+Query form_data is used in AxForm.vue as main form query.
+"""
 
 import uuid
 import graphene
 from loguru import logger
-
 from backend.model import AxForm, AxField, AxFieldType, \
     AxRoleFieldPermission, AxColumn, AxRole
-
 import backend.model as ax_model
 import backend.dialects as ax_dialects
 import backend.schema as ax_schema
-
 from backend.schemas.types import Form, Field, PositionInput, \
     RoleFieldPermission
-import backend.schemas.workflow_schema as workflow_schema
+import backend.schemas.action_schema as action_schema
 import ujson as json
 
 
 def set_form_values(ax_form, row_guid):
-    """ Sets AxForm fields values + state """
+    """ Select row from DB and set AxForm.fields values, state and rowGuid
+
+    Args:
+        ax_form (AxForm): empty AxForm, without field values
+        row_guid (str): Guid or AxNum of row
+
+    Returns:
+        AxForm: Form with field values
+    """
     # TODO get list of fields that user have permission
     allowed_fields = []
     for field in ax_form.db_fields:
@@ -80,8 +89,8 @@ class CreateTab(graphene.Mutation):
 class UpdateTab(graphene.Mutation):
     """ Updates AxField witch is tab """
     class Arguments:  # pylint: disable=missing-docstring
-        guid = graphene.String()
-        name = graphene.String()
+        guid = graphene.String()    # AxField guid
+        name = graphene.String()    # new name
 
     ok = graphene.Boolean()
     field = graphene.Field(Field)
@@ -132,7 +141,23 @@ class DeleteTab(graphene.Mutation):
 
 
 class CreateField(graphene.Mutation):
-    """ Creates AxField """
+    """ Creates AxField
+
+    Arguments:
+        form_guid (str): Guid of AxForm
+        name (str): Name of new field. Default from en.json
+        tag (str): Tag of created field type. Example - AxNum or AxString
+        positions (List(PositionInput)): List of positions for all fields
+            of form. When field added, we must change position of all fields
+            that are lower then inserted.
+        position (int): Position of created field
+        parent (str): Guid of tab (AxField) wich is parent to current field
+
+    Returns:
+        field: Created AxField
+        permissions: Default admin permissions that were created. Used to
+            update vuex store of workflow constructor.
+    """
     class Arguments:  # pylint: disable=missing-docstring
         form_guid = graphene.String()
         name = graphene.String()
@@ -168,6 +193,7 @@ class CreateField(graphene.Mutation):
                 AxForm.guid == uuid.UUID(form_guid)
             ).first()
 
+            # If db table already have {db_name} column -> add digit to db_name
             while name_is_checked is False:
                 error_flag = False
                 if cur_num > 1:
@@ -207,6 +233,7 @@ class CreateField(graphene.Mutation):
 
             ax_model.db_session.commit()
 
+            # Update positions of all fields that are lower then created field
             for field in ax_form.fields:
                 for pos in positions:
                     if field.guid == uuid.UUID(pos.guid):
@@ -234,7 +261,7 @@ class CreateField(graphene.Mutation):
                 permissions.append(perm)
 
             ax_model.db_session.commit()
-            ax_schema.init_schema()
+            ax_schema.init_schema()  # re-create GQL schema
 
             ok = True
             return CreateField(field=ax_field, permissions=permissions, ok=ok)
@@ -244,7 +271,23 @@ class CreateField(graphene.Mutation):
 
 
 class UpdateField(graphene.Mutation):
-    """ Updates AxField """
+    """ Updates AxField
+
+    Arguments:
+        guid (str): Guid of AxField that needs update
+        name (str): New field name
+        db_name (str): New db_name of field
+        is_required (bool): Is field required
+        is_whole_row (bool): Is field always displayed in whole row
+        options_json (JSONString): Json wich is transformed to dict by graphene.
+            Contains public field options that are passed to vue
+        private_options_json (JSONString): Contains options that are visible
+            only in python backend actions. Not visible in Vue.
+
+    Returns:
+        field (AxField): Created field
+
+    """
     class Arguments:  # pylint: disable=missing-docstring
         guid = graphene.String()
         name = graphene.String()
@@ -280,7 +323,8 @@ class UpdateField(graphene.Mutation):
             if db_name:
                 db_name_error = False
                 for field in ax_field.form.fields:
-                    if field.db_name == db_name and field.guid != uuid.UUID(guid):
+                    if field.db_name == db_name and (
+                            field.guid != uuid.UUID(guid)):
                         db_name_error = True
 
                 if db_name_error:
@@ -316,7 +360,7 @@ class UpdateField(graphene.Mutation):
             ax_model.db_session.commit()
 
             if schema_needs_update:
-                ax_schema.init_schema()
+                ax_schema.init_schema()  # re-create GQL schema
 
             ok = True
             return CreateTab(field=ax_field, ok=ok)
@@ -355,7 +399,7 @@ class DeleteField(graphene.Mutation):
 
             ax_model.db_session.delete(ax_field)
             ax_model.db_session.commit()
-            ax_schema.init_schema()
+            ax_schema.init_schema()  # re-create GQL schema
 
             ok = True
             return DeleteField(deleted=guid, ok=ok)
@@ -365,10 +409,10 @@ class DeleteField(graphene.Mutation):
 
 
 class ChangeFieldsPositions(graphene.Mutation):
-    """Change position and parent of fields"""
+    """Change position and parent of multiple fields"""
     class Arguments:  # pylint: disable=missing-docstring
         form_guid = graphene.String()
-        positions = graphene.List(PositionInput)
+        positions = graphene.List(PositionInput)  # positions of all fields
 
     ok = graphene.Boolean()
     fields = graphene.List(Field)
@@ -419,28 +463,33 @@ class FormQuery(graphene.ObjectType):
         update_time=graphene.Argument(type=graphene.String, required=False)
     )
 
-    # async def resolve_all_fields(self, info, form_field):
-    #     """Get all fields of form"""
-    #     del info
-    #     try:
-    #         field_list = ax_model.db_session.query(AxField).filter(
-    #             AxField.form_guid == uuid.UUID(form_field)
-    #         ).all()
-    #         return field_list
-    #     except Exception:
-    #         logger.exception('Error in GQL query - resolve_fields.')
-    #         raise
-
     async def resolve_form(self, info, db_name=None, update_time=None):
-        """Get AxForm by db_name"""
+        """ Get AxForm by db_name
+
+        Args:
+            db_name (str, optional): AxForm db_name. Defaults to None.
+            update_time (str, optional): Used to disable gql caching.
+
+        Returns:
+            AxForm: AxForm
+        """
         del update_time
         query = Form.get_query(info=info)
         return query.filter(AxForm.db_name == db_name).first()
 
     async def resolve_form_data(
-        self, info, db_name=None, row_guid=None, update_time=None):
-        """Get AxForm by db_name and row guid"""
-        del update_time
+            self, info, db_name=None, row_guid=None, update_time=None):
+        """ Get AxForm by db_name and row guid
+
+        Args:
+            db_name (str, optional): AxForm db_name. Defaults to None.
+            row_guid (str, optional): Guid of table row or AxNum value.
+            update_time (str, optional): Used to disable gql caching.
+
+        Returns:
+            AxForm: Form with field values, avaluble actions, state, row_guid
+        """
+        del update_time  # used to disable gql caching
 
         query = Form.get_query(info=info)
         ax_form = query.filter(AxForm.db_name == db_name).first()
@@ -448,7 +497,7 @@ class FormQuery(graphene.ObjectType):
         if row_guid is not None:
             ax_form = set_form_values(ax_form=ax_form, row_guid=row_guid)
 
-        ax_form.avalible_actions = workflow_schema.get_actions(
+        ax_form.avalible_actions = action_schema.get_actions(
             form=ax_form,
             current_state=ax_form.current_state_name
         )

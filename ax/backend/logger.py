@@ -5,12 +5,16 @@ from loguru import logger
 import backend.misc as ax_misc
 
 
-def init_logger(
-    logs_filename: str,
-    logs_absolute_path: str,
-    logs_level: str
-):
-    """Initiate loguru"""
+def init_logger(logs_filename: str, logs_absolute_path: str, logs_level: str):
+    """Initiate loguru
+
+    Args:
+        logs_filename (str): Desired name of log file. If None, only console is
+            used.
+        logs_absolute_path (str): Path where log file must be created. If None -
+            the /backend/logs folder will be used
+        logs_level (str): What log level to use INFO/ERROR/DEBUG. Default ERROR
+    """
     config = {
         "handlers": [
             {
@@ -24,6 +28,7 @@ def init_logger(
     }
 
     try:
+        # If log_filename set in app.yaml, then we must write log file
         if logs_filename is not None:
             log_path = ax_misc.path('backend/logs/' + logs_filename)
             if logs_absolute_path is not None:

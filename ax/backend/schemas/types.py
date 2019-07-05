@@ -1,4 +1,10 @@
-""" Describe all static GraphQL types """
+""" Describes all static GraphQL types
+Create GQL type for each SqlAlchemy model. All SqlAlchemy columns are created by
+graphene. But if we need additional params, we need to discribe them.
+Example - AxForm have row_guid param wich is not Column. To use this param
+in GQL query we must discribe row_guid again in Form type.
+
+"""
 import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType

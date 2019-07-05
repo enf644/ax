@@ -13,7 +13,7 @@
         class='placeholder-text'
       >
         <i class='up-ico far fa-images'></i>
-        <br>
+        <br />
         {{$t("types.AxImageCropDb.placeholder")}}
       </div>
     </div>
@@ -48,7 +48,7 @@
         v-model='croppaData'
       ></croppa>
       <div>
-        <v-btn @click='doUpload' flat>
+        <v-btn @click='doUpload' class='upload-btn' flat>
           <i class='fas fa-upload'></i>
           &nbsp;
           {{$t("types.AxImageCropDb.upload-btn")}}
@@ -60,15 +60,15 @@
     </div>
 
     <div v-show='valueIsVisible'>
-      <img :src='valueSrc' :style='{width: this.width + "px", height: this.height + "px"}'>
-      <br>
+      <img :src='valueSrc' :style='{width: this.width + "px", height: this.height + "px"}' />
+      <br />
       <v-btn @click='clearValue' flat small>
         <i class='far fa-trash-alt'></i>
         &nbsp; {{$t("types.AxImageCropDb.clear-image")}}
       </v-btn>
     </div>
 
-    <hr :class='errorClass'>
+    <hr :class='errorClass' />
     <transition enter-active-class='animated shake' leave-active-class='animated fadeOut'>
       <span class='required-error' v-show='errorString'>{{errorString}}</span>
     </transition>
@@ -85,8 +85,9 @@ import { getAxHost } from '../../../misc';
 import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
 import getClassNameForExtension from 'font-awesome-filetypes';
+// prettier-ignore
 import {
- Webcam, Tus, Core, Dashboard 
+  Webcam, Tus, Core, Dashboard
 } from 'uppy';
 
 import 'vue-croppa/dist/vue-croppa.css';
@@ -153,9 +154,7 @@ export default {
     },
     valueSrc() {
       if (this.currentValue && typeof this.currentValue === 'object') {
-        return `/api/file/${this.formGuid}/null/${this.fieldGuid}/${
-          this.currentValue.guid
-        }`;
+        return `/api/file/${this.formGuid}/null/${this.fieldGuid}/${this.currentValue.guid}`;
       }
       if (this.currentValue) {
         return `/api/file/${this.formGuid}/${this.rowGuid}/${this.fieldGuid}`;
@@ -411,5 +410,8 @@ export default {
   color: rgba(0, 0, 0, 0.54);
   font-size: 12px;
   margin-top: '5px' !important;
+}
+.upload-btn {
+  color: #f44336;
 }
 </style>

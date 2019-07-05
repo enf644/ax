@@ -12,7 +12,7 @@
       persistent-hint
       v-model='changedPrivateOptions.counterKey'
     ></v-text-field>
-    <br>
+    <br />
     {{locale("types.AxNum.settings-algorithm")}}:
     <monaco-editor
       class='editor'
@@ -64,8 +64,7 @@ export default {
     if (!this.changedPrivateOptions.algorithm) {
       this.changedPrivateOptions.algorithm = 'if not ax_counter:';
       this.changedPrivateOptions.algorithm += '\n    ax_counter=1';
-      this.changedPrivateOptions.algorithm += '\nax_num=f"MTS{ax_num}"';
-      this.changedPrivateOptions.algorithm += '\nprint(ax_num)';
+      this.changedPrivateOptions.algorithm += '\nax_num=f"{ax_num}"';
       this.changedPrivateOptions.algorithm
         += '\nax_counter=str(int(ax_counter) + 1)';
     }

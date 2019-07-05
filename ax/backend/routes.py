@@ -54,7 +54,7 @@ def init_graphql_view():  # pylint: disable=unused-variable
     this.app.add_route(this.graphql_view, '/api/graphql')
 
 
-def init_routes(app):
+def init_routes(sanic_app):
     """Innitiate all Ax routes"""
     try:
         this.uploads_path = ax_misc.path('uploads/tmp')
@@ -62,11 +62,15 @@ def init_routes(app):
             os.makedirs(this.uploads_path)
 
         # Add tus upload blueprint
-        app.blueprint(tus_bp)
+        sanic_app.blueprint(tus_bp)
+        # Add web-socket subscription server
         subscription_server = WsLibSubscriptionServer(ax_schema.schema)
 
-        @app.route('/api/file/<form_guid>/<row_guid>/<field_guid>', methods=['GET'])
+        @sanic_app.route(
+            '/api/file/<form_guid>/<row_guid>/<field_guid>', methods=['GET'])
         async def db_file_viewer(request, form_guid, row_guid, field_guid):  # pylint: disable=unused-variable
+            """ Used to display files that are stored in database.
+                Used in fields like AxImageCropDb"""
             del request, form_guid
             safe_row_guid = str(uuid.UUID(str(row_guid)))
             ax_field = ax_model.db_session.query(AxField).filter(
@@ -76,10 +80,16 @@ def init_routes(app):
                 form_db_name=ax_field.form.db_name,
                 field_db_name=ax_field.db_name,
                 row_guid=safe_row_guid)
-            return response.raw(field_value, content_type='application/octet-stream')
+            return response.raw(
+                field_value, content_type='application/octet-stream')
 
-        @app.route('/api/file/<form_guid>/<row_guid>/<field_guid>/<file_guid>', methods=['GET'])
-        async def file_viewer(request, form_guid, row_guid, field_guid, file_guid):  # pylint: disable=unused-variable
+        @sanic_app.route(
+            '/api/file/<form_guid>/<row_guid>/<field_guid>/<file_guid>',
+            methods=['GET'])
+        async def file_viewer(  # pylint: disable=unused-variable
+                request, form_guid, row_guid, field_guid, file_guid):
+            """ Used to display files uploaded and stored on disk.
+                Displays temp files too. Used in all fields with upload"""
             del request
             uploads_dir = ax_misc.path('uploads')
 
@@ -127,16 +137,20 @@ def init_routes(app):
                 return response.text("", status=404)
             return await response.file(file_path)
 
-        @app.route('/<path:path>')
+        @sanic_app.route('/<path:path>')
         def index(request, path):  # pylint: disable=unused-variable
-            """Catch all requests"""
+            """ This is MAIN ROUTE. (except other routes listed in this module).
+                All requests are directed to Vue single page app. After that Vue
+                handles routing."""
             del request, path
             absolute_path = ax_misc.path('dist/index.html')
             return response.html(open(absolute_path).read())
 
-        @app.route('/draw_ax')
+        @sanic_app.route('/draw_ax')
         async def draw_ax(request):  # pylint: disable=unused-variable
-            """Outputs bundle.js with right headers"""
+            """ Outputs bundle.js. Used when Ax web-components
+                are inputed somewhere. Users can use this url for <script> tag
+                """
             del request
             absolute_path = ax_misc.path('dist/static/js/ax-bundle.js')
             return await response.file(
@@ -146,7 +160,7 @@ def init_routes(app):
                 }
             )
 
-        @app.websocket('/api/subscriptions', subprotocols=['graphql-ws'])
+        @sanic_app.websocket('/api/subscriptions', subprotocols=['graphql-ws'])
         async def subscriptions(request, web_socket):  # pylint: disable=unused-variable
             """Web socket route for graphql subscriptions"""
             del request
@@ -158,19 +172,7 @@ def init_routes(app):
                 pass
                 # logger.exception('Socket error')
 
-        @app.route("/install")
-        async def install(request):  # pylint: disable=unused-variable
-            """Initial install view"""
-            del request
-
-        @app.route('/api/hello')
-        async def hello(request):  # pylint: disable=unused-variable
-            """Test function"""
-            object_id = request.raw_args['object_id']
-            ret_str = 'Ajax object_id = ' + object_id
-            return response.text(ret_str)
-
-        @app.route('/api/test')
+        @sanic_app.route('/api/test')
         async def test(request):  # pylint: disable=unused-variable
             """Test function"""
             del request
@@ -179,17 +181,17 @@ def init_routes(app):
                 aiopubsub.Key('dummy_test'), this.test_schema)
             return response.text(this.test_schema)
 
-        @app.route('/api/set')
+        @sanic_app.route('/api/set')
         async def cache_set(request):  # pylint: disable=unused-variable
-            """Test function"""
+            """Cache Test function"""
             del request
             obj = ['one', 'two', 'three']
             await ax_cache.cache.set('user_list', obj)
             return response.text('Cache SET' + str(obj))
 
-        @app.route('/api/get')
+        @sanic_app.route('/api/get')
         async def cache_get(request):  # pylint: disable=unused-variable
-            """Test function"""
+            """Cache Test function"""
             del request
             obj = await ax_cache.cache.get('user_list')
             ret_str = 'READ cache == ' + \

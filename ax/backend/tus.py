@@ -1,4 +1,5 @@
-""" Sanic blue print for tus protocol - resumable uploads """
+""" Sanic blueprint for tus protocol - resumable uploads.
+Google for TUS protocol fo more info """
 
 import os
 import sys

@@ -1,15 +1,13 @@
-"""Describes schemas for AxForm manipulation in admin home"""
+"""Describes schema for AxForm manipulation in admin home
+Create/update/delete of Form, Folder """
 import uuid
 import os
 import shutil
 import graphene
 from loguru import logger
-# from graphene import relay
-# from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from sqlalchemy import MetaData
 import ujson as json
-
 from backend.misc import convert_column_to_string  # TODO check if needed
 from backend.model import GUID, AxForm, AxField, AxGrid, AxAction, AxState, \
     AxRole, AxRole2Users, AxRoleFieldPermission, AxState2Role, AxAction2Role, \
@@ -20,15 +18,19 @@ import backend.dialects as ax_dialects
 import backend.schema as ax_schema
 import backend.misc as ax_misc
 from backend.schemas.types import Form, PositionInput
-# import backend.routes as ax_routes
-
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
 
 
 def tom_sync_form(old_form_db_name, new_form_db_name):
-    """ find all relation AxFields
-    for each - check if options contain old form and old grid. If so - replace
+    """ Relation fields such as Ax1to1, Ax1tom and Ax1tomTable are using
+    options_json to store db_name of related form. If form db_name is changed,
+    the Json's in every relation field must be updated.
+    For each relation field - check if options contain old form name and update.
+
+    Args:
+        old_form_db_name (str): Old db_name of form
+        new_form_db_name (str): New db_name of form
     """
     relation_fields = ax_model.db_session.query(AxField).filter(
         AxField.field_type_tag.in_(('Ax1to1', 'Ax1tom', 'Ax1tomTable'))
@@ -43,7 +45,7 @@ def tom_sync_form(old_form_db_name, new_form_db_name):
 
 
 def is_db_name_avalible(_db_name) -> bool:
-    """Check if table is already exists in database"""
+    """Check if table with name '_db_name' is already exists in database"""
     try:
         meta = MetaData()
         meta.reflect(bind=ax_model.engine)
@@ -70,7 +72,7 @@ def create_ax_form(_name: str, _db_name: str) -> object:
         ax_form.name = _name
         ax_form.db_name = _db_name
         ax_form.tom_label = "{{ax_form_name}} - {{ax_num}}"
-        ax_form.icon = "dice-d6"
+        ax_form.icon = "dice-d6"  # TODO: move default icon to Vue
         ax_model.db_session.add(ax_form)
         ax_model.db_session.commit()
         return ax_form
@@ -124,7 +126,8 @@ def create_default_grid(ax_form, name):
         raise
 
 
-def create_default_states(ax_form, default_start, default_state, default_all, default_deleted):
+def create_default_states(
+        ax_form, default_start, default_state, default_all, default_deleted):
     """Creates default AxStates"""
     try:
         start = AxState()
@@ -170,7 +173,9 @@ def create_default_states(ax_form, default_start, default_state, default_all, de
         raise
 
 
-def create_default_actions(ax_form, states, default_create, default_delete, default_update, delete_confirm):
+def create_default_actions(
+        ax_form, states, default_create, default_delete,
+        default_update, delete_confirm):
     """Creates default AxActions"""
     try:
         create = AxAction()

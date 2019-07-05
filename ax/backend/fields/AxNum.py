@@ -1,5 +1,4 @@
-"""Fields functions - before, after / insert, update, delete
-"""
+"""AxNum field type functions - before, after / insert, update, delete"""
 import sys
 import traceback
 import ujson as json
@@ -9,7 +8,7 @@ import backend.model as ax_model
 
 def before_insert(field, before_form, tobe_form, action, current_user):
     """
-    Executes python code from field options
+    Executes python code from AxField.private_options
 
     WARNING! do not use ax_model.db_session.commit() here!
     Returns:

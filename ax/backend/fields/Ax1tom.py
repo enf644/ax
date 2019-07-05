@@ -1,5 +1,4 @@
-"""Fields functions - before, after / insert, update, delete
-"""
+"""Ax1tom field type functions - before, after / insert, update, delete"""
 import uuid
 import backend.model as ax_model
 from backend.model import Ax1tomReference
@@ -11,8 +10,10 @@ def after_update(field, before_form, tobe_form, action, current_user):
 
     Args:
         field (AxField): Current field. Is used for value and guid.
-        before_form (AxForm): form with values of initial row. Used only for info. Modification is pointles.
-        tobe_form (AxForm): form that will be used for database query. You can modify other fields here.
+        before_form (AxForm): form with values of initial row.
+            Used only for info. Modification is pointles.
+        tobe_form (AxForm): form that will be used for database query.
+            You can modify other fields here.
         action (AxAction): Performed action
         current_user (AxUser): Current user
 

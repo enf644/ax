@@ -132,25 +132,29 @@ class AxForm(Base):
     guid = Column(GUID(), primary_key=True,
                   default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String(255))
-    db_name = Column(String(255))
-    parent = Column(GUID())
-    position = Column(Integer())
+    db_name = Column(String(255))   # Must be PascalCase. It is used to create
+    # database tables and graphql schema
+    parent = Column(GUID())  # Parent form. Used for visual tree in AdminHome
+    position = Column(Integer())  # Position in tree
     fields = relationship(
         "AxField", order_by="AxField.position", cascade="all, delete-orphan")
     grids = relationship("AxGrid", order_by="AxGrid.position")
     states = relationship("AxState", cascade="all, delete-orphan")
     actions = relationship("AxAction", cascade="all, delete-orphan")
     roles = relationship("AxRole", cascade="all, delete-orphan")
-    tom_label = Column(String(255))
-    icon = Column(String(255))
-    is_folder = Column(Boolean, unique=False, default=False)
-    row_guid = None
+    tom_label = Column(String(255))  # Used for displaying rows in relation
+    # fields. {{name}} will result in
+    # displaying name field as form chip
+    icon = Column(String(255))  # font-awesome key
+    is_folder = Column(Boolean, unique=False, default=False)  # Used in tree
+    row_guid = None  # Stores current row guid.
     current_state_name = ""
     current_state_object = None
     from_state_name = ""
     from_state_object = None
     avalible_actions = None
-    modal_guid = None
+    modal_guid = None   # Used in web-socket subscriptions to determin if
+    # currrent form needs to notify on action
     permissions = relationship(
         "AxRoleFieldPermission", cascade="all, delete-orphan")
 
@@ -176,46 +180,44 @@ class AxForm(Base):
         """Set current AxForm to match specific row in database table"""
         return "GET ROW DATA"
 
-# class AxFormData():
-#     """Dummy for each AxForm instance"""
-#     guid = Column(GUID(), primary_key=True,
-#                   default=uuid.uuid4, unique=True, nullable=False)
-#     ax_num = Column(Integer())
-#     ax_state = Column(String(255))
-
-
-# def get_form_data_table(_db_name):
-#     """Returns dummy for new AxForm db table"""
-#     classname = "AxForm_" + _db_name
-#     result_table = type(classname, (Base, AxFormData),
-#                         {'__tablename__': _db_name})
-#     return result_table
-
 
 class AxFieldType(Base):
     """List of avalible ax field types"""
     __tablename__ = '_ax_field_types'
+    # Same as vue component. Like AxNum, AxString
     tag = Column(String(64), primary_key=True, unique=True)
     name = Column(String(255))
-    parent = Column(String(64))
-    position = Column(Integer())
-    default_name = Column(String(255))
+    parent = Column(String(64))  # Used in tree. Parent is always group.
+    position = Column(Integer())  # Used in tree.
+    default_name = Column(String(255))  # Comes from locale
     default_db_name = Column(String(255))
+    # TEXT/INY/DECIMAL... Used by dialect.py
     value_type = Column(String(255))
-    comparator = Column(String(255))
-    icon = Column(String(255))
-    is_group = Column(Boolean, unique=False, default=False)
+    # to determin how to store current field
+    comparator = Column(String(255))    # string/number Used in AxGrid to know
+    # how to sort current fields columns
+
+    icon = Column(String(255))  # font-awesome key
+    is_group = Column(Boolean, unique=False,
+                      default=False)  # Used in types tree
     # virtual meens that field is calculated, not stored in database
     # DB column is not created
     is_virtual = Column(Boolean, unique=False, default=False)
     # readonly meens that field is set by backend or action.
     # DB column is created but data does not come from form.
     is_readonly = Column(Boolean, unique=False, default=False)
+    # True if field type have custom ag-grid column and have inline edit
     is_inline_editable = Column(Boolean, unique=False, default=False)
+    # True if field have backend python code. Wich is executed before/after
+    # insert/update/delete. Check backend/fields/ for more info
     is_backend_available = Column(Boolean, unique=False, default=False)
-    is_setting_avalible = Column(Boolean, unique=False, default=False)
+    # True if field type have custom ag-grid column
     is_columnn_avalible = Column(Boolean, unique=False, default=False)
+    # True meens that this field is updated even if was not modified in form.
+    # from/after backend code of field is executed on every action
+    # Example - Changelog must be updated always, on every action
     is_updated_always = Column(Boolean, unique=False, default=False)
+    # True meens that current field type always must be displayed as whole row
     is_always_whole_row = Column(Boolean, unique=False, default=False)
 
     def __init__(self,
@@ -231,7 +233,6 @@ class AxFieldType(Base):
                  is_readonly=False,
                  is_inline_editable=False,
                  is_backend_available=False,
-                 is_setting_avalible=False,
                  is_columnn_avalible=False,
                  is_updated_always=False,
                  is_group=False,
@@ -251,7 +252,6 @@ class AxFieldType(Base):
         self.is_readonly = is_readonly
         self.is_inline_editable = is_inline_editable
         self.is_backend_available = is_backend_available
-        self.is_setting_avalible = is_setting_avalible
         self.is_columnn_avalible = is_columnn_avalible
         self.is_updated_always = is_updated_always
         self.is_always_whole_row = is_always_whole_row
@@ -265,19 +265,24 @@ class AxField(Base):
     form_guid = Column(GUID(), ForeignKey('_ax_forms.guid'))
     form = relationship("AxForm")
     name = Column(String(255))
-    db_name = Column(String(255))
-    position = Column(Integer())
-    options_json = Column(String(2000))
+    db_name = Column(String(255))   # Must be camelCase. It used to create
+    # database table columns and GQL fields
+    position = Column(Integer())  # tree position
+    options_json = Column(String(2000))  # Stores JSON with params used by Vue
+    # component. It is passed to UI
+    # Stores JSON that is used only in python actions. AxAction code or fields
+    # before/after methods
     private_options_json = Column(Text(convert_unicode=True))
     field_type_tag = Column(String(64), ForeignKey('_ax_field_types.tag'))
     field_type = relationship("AxFieldType")
+    # True if current field is form tab
     is_tab = Column(Boolean, unique=False, default=False)
     is_required = Column(Boolean, unique=False, default=False)
     is_whole_row = Column(Boolean, unique=False, default=False)
     parent = Column(GUID())
     value = None
     is_readonly = False
-    needs_sql_update = False
+    needs_sql_update = False  # Flag that current field must be updated in DB
 
     @property
     def is_virtual(self):
@@ -296,9 +301,12 @@ class AxGrid(Base):
     guid = Column(GUID(), primary_key=True,
                   default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String(255))
+    # Must be PascalCase, used in GQL schema Types
     db_name = Column(String(255))
-    position = Column(Integer())
-    options_json = Column(String(2000))
+    position = Column(Integer())    # Position in tree
+    options_json = Column(String(2000))  # JSON key/value see
+    # TheConstructorGridsDrawerSecond.vue
+    # Columns widths stored here too
     form_guid = Column(GUID(), ForeignKey('_ax_forms.guid'))
     form = relationship("AxForm")
     is_default_view = Column(Boolean)
@@ -311,14 +319,14 @@ class AxColumn(Base):
     __tablename__ = '_ax_columns'
     guid = Column(GUID(), primary_key=True,
                   default=uuid.uuid4, unique=True, nullable=False)
-    position = Column(Integer())
-    options_json = Column(String(2000))
+    position = Column(Integer())    # Position in grid and in tree
+    options_json = Column(String(2000))  # Currently not used
     field_guid = Column(GUID(), ForeignKey('_ax_fields.guid'))
     field = relationship("AxField")
     grid_guid = Column(GUID(), ForeignKey('_ax_grids.guid'))
     grid = relationship("AxGrid")
-    column_type = Column(String(50))
-    aggregation_type = Column(String(50), nullable=True)
+    column_type = Column(String(50))  # Not used. Was used for responsive grid
+    aggregation_type = Column(String(50), nullable=True) # Not used yet.
 
 
 class AxGroup2Users(Base):
@@ -372,7 +380,7 @@ class AxRole(Base):
     form_guid = Column(GUID(), ForeignKey('_ax_forms.guid'))
     form = relationship("AxForm")
     users = relationship("AxUser", secondary='_ax_role2user')
-    icon = Column(String(255))
+    icon = Column(String(255)) # font-awesome key
     is_admin = Column(Boolean, unique=False, default=False)
 
 
@@ -423,12 +431,16 @@ class AxAction(Base):
     to_state_guid = Column(GUID(), ForeignKey('_ax_states.guid'))
     from_state = relationship('AxState', foreign_keys=[from_state_guid])
     to_state = relationship('AxState', foreign_keys=[to_state_guid])
+    # Python code that is executed on this action. Sea action_schema.py
     code = Column(Text(convert_unicode=True))
+    # If not None, the user will be see prompt before action is executed
     confirm_text = Column(String(255))
+    # If True, the form will be closed after this action
     close_modal = Column(Boolean, unique=False, default=True)
-    icon = Column(String(255))
-    radius = Column(Float)
-    messages = None
+    icon = Column(String(255)) # font-awesome key
+    radius = Column(Float) # used in d3 worklfow constructor
+    messages = None # Used to store messages and exceptions got from code
+                    # Execution
 
 
 class AxRoleFieldPermission(Base):

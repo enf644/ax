@@ -1,5 +1,10 @@
 """Ax GraphQL schema
-Combines all Ax GraphQL schemas to one
+1. Combines all mutations, queryes and subscribtions from schemas folder.
+    Creates static part of schema from them.
+2. Creates dynamic part of schema. For each AxGrid the dynamic schema is created
+    Schema contains all fields of form. Rows are filtered using AxGris server
+    filter. The name of schema is FormName+GridName. If grid is default, the
+    additional schema is created, named FormName.
 """
 import sys
 import graphene
@@ -11,8 +16,9 @@ from backend.schemas.users_schema import UsersQuery
 from backend.schemas.users_schema import UsersMutations, UsersSubscription
 from backend.schemas.home_schema import HomeQuery, HomeMutations
 from backend.schemas.form_schema import FormQuery, FormMutations
-from backend.schemas.workflow_schema import WorkflowQuery, WorkflowMutations, \
-    WorkflowSubscription
+from backend.schemas.workflow_schema import WorkflowMutations
+from backend.schemas.action_schema import ActionQuery, ActionMutations, \
+    ActionSubscription
 from backend.schemas.grids_schema import GridsQuery, GridsMutations
 from backend.schemas.fields_schema import FieldsQuery, FieldsMutations
 from backend.schemas.types import Form, FieldType, Field, Grid, \
@@ -27,7 +33,7 @@ import backend.dialects as ax_dialects
 this = sys.modules[__name__]
 schema = None
 
-
+#  Dict used to determin what graphene type to use for AxFieldType.value_type
 type_dictionary = {
     'text': graphene.String,
     'TEXT': graphene.String,
@@ -41,6 +47,7 @@ type_dictionary = {
     'BLOB': graphene.String
 }
 
+# Static GQL types. Are same as SqlAlchemy model.
 gql_types = [
     Form,
     FieldType,
@@ -61,7 +68,7 @@ gql_types = [
 
 
 class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery,
-            WorkflowQuery, FieldsQuery, graphene.ObjectType):
+            ActionQuery, FieldsQuery, graphene.ObjectType):
     """Combines all schemas queryes"""
     forms = SQLAlchemyConnectionField(Form)
     field_types = SQLAlchemyConnectionField(FieldType)
@@ -77,11 +84,12 @@ class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery,
 
 
 class Mutations(HomeMutations, FormMutations, UsersMutations, GridsMutations,
-                WorkflowMutations, FieldsMutations, graphene.ObjectType):
+                WorkflowMutations, FieldsMutations, ActionMutations,
+                graphene.ObjectType):
     """Combines all schemas mutations"""
 
 
-class Subscription(UsersSubscription, WorkflowSubscription, graphene.ObjectType):
+class Subscription(UsersSubscription, ActionSubscription, graphene.ObjectType):
     """Combines all schemas subscription"""
 
 
@@ -91,7 +99,7 @@ def make_resolver(db_name, type_class):
         or only db_name of AxForm for default view grid
 
         Example:
-        db_name=MyUberFormGridOne 
+        db_name=MyUberFormGridOne
         MyUberForm is form name
         GridOne is grid name
 
@@ -147,12 +155,13 @@ def make_resolver(db_name, type_class):
 
 
 def init_schema():
-    """Initiate GQL schema"""
+    """Initiate GQL schema. Create dynamic part of schema and combine it with
+    static part take from schemas folder"""
     try:
         # Create typeClass based on each AxForm
         this.schema = None
         type_classes = {}
-        all_types = gql_types.copy()
+        all_types = gql_types.copy()  # Add dynamic types to GQL schema
 
         ax_forms = ax_model.db_session.query(AxForm).all()
         for form in ax_forms:
@@ -217,6 +226,7 @@ def init_schema():
 
             dynamic_fields['resolve_%s' % key] = make_resolver(key, type_class)
 
+        # Combine static schema query and dynamic query
         DynamicQuery = type('DynamicQuery', (Query,), dynamic_fields)
 
         this.schema = graphene.Schema(

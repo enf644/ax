@@ -1,5 +1,4 @@
-"""Fields functions - before, after / insert, update, delete
-"""
+"""AxChangelog field type functions - before, after / insert, update, delete"""
 import time
 
 

@@ -1,5 +1,4 @@
-"""Fields functions - before, after / insert, update, delete
-"""
+"""AxFiles field type functions - before, after / insert, update, delete"""
 import os
 import uuid
 import shutil

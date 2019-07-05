@@ -1,6 +1,13 @@
 """
 Module for database migration using Alembic
-create_field_types contains default values for AxFieldType table
+It checks if database is accesible.
+Creates sqlite database if needed.
+Checks if database have SqlAlchemy tables. If not - it creates tables.
+    When tables are created, they are filled with default values.
+    Such as AxFieldType are filled with field types.
+Checks that current Database schema fits SqlAlchemy schema. If it is not,
+    it tryes to upgrade it by running alembic migration scripts.
+
 """
 import os
 import sys

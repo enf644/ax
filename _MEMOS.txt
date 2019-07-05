@@ -9,6 +9,7 @@ THINK ABOUT
     ☐ Make app to autoupgrade DB with alembic according to latest upgrade script
     dev_appserver.py
 
+// prettier-ignore
 
 How to use Ax:
     Headless CMS

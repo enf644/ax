@@ -145,13 +145,24 @@ class SqliteDialect(object):
             ret_param = value if value else None
         return ret_param
 
-    def select_all(
-            self,
-            ax_form,
-            quicksearch=None,
-            server_filter=None,
-            guids=None):
-        """ Select fields from table """
+    def select_all(self, ax_form, quicksearch=None, server_filter=None,
+                   guids=None):
+        """ Select * from table
+
+        Args:
+            ax_form (AxForm): Current AxForm
+            quicksearch (str, optional): Search string from AxGrid.vue
+            server_filter (Dict, optional): Dicts with current grid server-
+            filter. Constructed by query builder javascript plugin:
+                sql (str): Sql expression with params, like 'price > :price'
+                params (str): Sql params of query. lile {'price': 20000}
+            guids (str, optional): JSON containing list of guids, that must be
+                selected. Used in 1tom fields. Where you need to display only
+                selected guids.
+
+        Returns:
+            List(Dict): Result of SqlAlchemy query. List of rows
+        """
         try:
             sql_params = {}
 
@@ -194,7 +205,7 @@ class SqliteDialect(object):
                         "'" + item + "'" for item in guids_array)
                 guids_sql = f"OR guid IN ({guids_string})"
             sql = (
-                f"SELECT guid, axState, axNum, {fields_sql}"
+                f"SELECT guid, axState, {fields_sql}"
                 f", {tom_name} as axLabel FROM {ax_form.db_name}"
                 f" WHERE (1=1 {quicksearch_sql} {serverfilter_sql}) {guids_sql}"
             )
@@ -230,7 +241,7 @@ class SqliteDialect(object):
             for field in form.db_fields:
                 if field.field_type.tag == 'AxNum':
                     num_fields.append(field)
-            fields_string = 'guid, axState, axNum'
+            fields_string = 'guid, axState'
             for field in fields_list:
                 field_name = self.get_select_sql(
                     field.field_type.value_type, field.db_name)
@@ -285,7 +296,16 @@ class SqliteDialect(object):
             raise
 
     def insert(self, form, to_state_name, new_guid):
-        """ Insert row into database and set state with AxForm field values"""
+        """ Insert row into database and set state with AxForm field values
+
+        Args:
+            form (AxForm): Current form with filled field values.
+            to_state_name (str): Name of form state that must be set
+            new_guid (str): Guid that must be used to create record.
+
+        Returns:
+            str: Guid of created row
+        """
         try:
             fields_db_names = []
             query_params = {
@@ -331,7 +351,16 @@ class SqliteDialect(object):
             raise
 
     def update(self, form, to_state_name, row_guid):
-        """ Update database row based of AxForm fields values"""
+        """Update database row based of AxForm fields values
+
+        Args:
+            form (AxForm): Current form with filled field values.
+            to_state_name (str): Name of form state that must be set
+            row_guid (str): Guid of updated row
+
+        Returns:
+            SqlAlchemy result: Contains nothing. Not used.
+        """
         try:
             value_strings = []
             query_params = {
@@ -364,7 +393,7 @@ class SqliteDialect(object):
             raise
 
     def delete(self, form, row_guid):
-        """ Update database row based of AxForm fields values"""
+        """ Delete row of table of form"""
         try:
             sql = (
                 f"DELETE FROM {form.db_name} WHERE guid='{row_guid}' "
@@ -428,20 +457,22 @@ class SqliteDialect(object):
                 AxForm.db_name == table
             ).first()
 
+            drop_tmp = f"DROP TABLE IF EXISTS _ax_tmp"
+
             create_tmp = (
                 f"CREATE TABLE _ax_tmp ("
                 f"guid VARCHAR, "
-                f"axNum INTEGER, "
                 f"axState VARCHAR"
             )
             for field in ax_form.db_fields:
-                db_name = field.db_name if field.db_name != old_name else new_name
+                db_name = field.db_name if (
+                    field.db_name != old_name) else new_name
                 db_type = self.get_type(field.field_type.value_type)
                 create_tmp += f", {db_name}  {db_type}"
 
             create_tmp += ');'
 
-            copy_data = 'INSERT INTO _ax_tmp SELECT guid, axNum, axState'
+            copy_data = 'INSERT INTO _ax_tmp SELECT guid, axState'
             for field in ax_form.db_fields:
                 copy_data += f", {field.db_name}"
             copy_data += f" FROM {ax_form.db_name};"
@@ -451,6 +482,7 @@ class SqliteDialect(object):
             rename_tmp = f'ALTER TABLE _ax_tmp RENAME TO {ax_form.db_name};'
 
             try:
+                ax_model.db_session.execute(drop_tmp)
                 ax_model.db_session.execute(create_tmp)
                 ax_model.db_session.execute(copy_data)
                 ax_model.db_session.execute(drop_old)
@@ -474,10 +506,10 @@ class SqliteDialect(object):
                 AxForm.db_name == table
             ).first()
 
+            drop_tmp = f"DROP TABLE IF EXISTS _ax_tmp"
             create_tmp = (
                 f"CREATE TABLE _ax_tmp ("
                 f"guid VARCHAR, "
-                f"axNum INTEGER, "
                 f"axState VARCHAR"
             )
             for field in ax_form.db_fields:
@@ -486,7 +518,7 @@ class SqliteDialect(object):
                     create_tmp += f", {field.db_name}  {db_type}"
             create_tmp += ');'
 
-            copy_data = 'INSERT INTO _ax_tmp SELECT guid, axNum, axState'
+            copy_data = 'INSERT INTO _ax_tmp SELECT guid, axState'
             for field in ax_form.db_fields:
                 if field.db_name != column:
                     copy_data += f", {field.db_name}"
@@ -497,6 +529,7 @@ class SqliteDialect(object):
             rename_tmp = f'ALTER TABLE _ax_tmp RENAME TO {ax_form.db_name};'
 
             try:
+                ax_model.db_session.execute(drop_tmp)
                 ax_model.db_session.execute(create_tmp)
                 ax_model.db_session.execute(copy_data)
                 ax_model.db_session.execute(drop_old)
@@ -539,7 +572,6 @@ class PorstgreDialect(object):
         try:
             sql = f"""CREATE TABLE {db_name} (
                 guid UUID PRIMARY KEY,
-                axNum INTEGER NOT NULL,
                 axState VARCHAR NOT NULL
             );"""
             ax_model.db_session.execute(sql)
@@ -621,7 +653,6 @@ class MysqlDialect(object):
         try:
             sql = f"""CREATE TABLE {db_name} (
                 guid VARCHAR(64) PRIMARY KEY,
-                axNum INT NOT NULL,
                 axState VARCHAR(255) NOT NULL
             );"""
             ax_model.db_session.execute(sql)

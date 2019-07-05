@@ -1,7 +1,6 @@
-"""Fields functions - before, after / insert, update, delete
+"""AxImageCropDb field type functions - before, after / insert, update, delete
 """
 import os
-import uuid
 import shutil
 import backend.misc as ax_misc
 
@@ -13,7 +12,7 @@ def before_update(field, before_form, tobe_form, action, current_user):
     WARNING! do not use ax_model.db_session.commit() here!
     Returns:
         Object: Returns updated value of current field"""
-    del before_form, action, current_user
+    del before_form, action, current_user, tobe_form
     file = field.value
 
     # value contaiins tmp file dict

@@ -1,19 +1,11 @@
-"""Defines Fields Scheme and all mutations"""
+"""This is part of GraphQL schema (Mutaions, Queryes, Subscriptions).
+Defines Fields Scheme and all mutations.
+Will be used for mutations used in field_types"""
 
-import asyncio
 import graphene
-# from graphene import relay
-from graphene_sqlalchemy import SQLAlchemyConnectionField
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
-import aiopubsub
-from loguru import logger
-
 from backend.misc import convert_column_to_string
-from backend.model import AxUser, GUID
-import backend.model as ax_model
-import backend.cache as ax_cache
-import backend.pubsub as ax_pubsub
-from backend.schemas.types import User
+from backend.model import GUID
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
 
@@ -32,7 +24,6 @@ class MutationExample(graphene.Mutation):
 
 class FieldsQuery(graphene.ObjectType):
     """AxUser queryes"""
-    pass
 
 
 class FieldsMutations(graphene.ObjectType):

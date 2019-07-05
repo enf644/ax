@@ -1,4 +1,4 @@
-"""Pubsub module"""
+"""Pubsub module. Google aiopubsub for move info """
 
 import sys
 import aiopubsub

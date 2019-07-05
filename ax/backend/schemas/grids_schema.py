@@ -1,4 +1,8 @@
-""" GQL Chema for AxGrid and AxColumn manipulation """
+""" This is part of GraphQL schema (Mutaions, Queryes, Subscriptions).
+Defines manipulation with Grids - create/update/delete of AxGrid and AxColumn
+Mutation and queryes used only by constructor. AxGrid uses dynamic GQL schema.
+Sea schema.py for more info.
+"""
 import uuid
 import graphene
 from loguru import logger
@@ -10,12 +14,18 @@ import backend.schema as ax_schema
 
 # import backend.cache as ax_cache # TODO use cache!
 from backend.schemas.types import Grid, Column, PositionInput
-# import ujson as json
 
 
 def tom_sync_grid(form_db_name, old_db_name, new_db_name):
-    """ find all relation AxFields
-    for each - check if options contain old form and old grid. If so - replace
+    """ Relation fields such as Ax1to1, Ax1tom and Ax1tomTable are using
+    options_json to store db_name of grid used. If grid db_name is changed,
+    the Json's in every relation field must be updated.
+    For each relation field - check if options contain old form and old grid.
+
+    Args:
+        form_db_name (str): Current form db_name
+        old_db_name (str): Old db_name of grid
+        new_db_name (str): New db_name of grid
     """
     relation_fields = ax_model.db_session.query(AxField).filter(
         AxField.field_type_tag.in_(('Ax1to1', 'Ax1tom', 'Ax1tomTable'))
@@ -33,7 +43,18 @@ def tom_sync_grid(form_db_name, old_db_name, new_db_name):
 
 
 class CreateColumn(graphene.Mutation):
-    """ Creates AxColumn """
+    """ Creates AxColumn
+
+    Arguments:
+        grid_guid (str): Guid of AxGrid
+        field_guid (str): Guid of AxField
+        column_type (str): Not used!. Was used for responsive grid. #TODO delete
+        position (int): Position of column in grid
+        positions (List(PositionInput)): Position of other columns in grid
+
+    Returns:
+        column (AxColumn): Created grid column
+    """
     class Arguments:  # pylint: disable=missing-docstring
         grid_guid = graphene.String()
         field_guid = graphene.String()
@@ -277,7 +298,7 @@ class DeleteGrid(graphene.Mutation):
 
 
 class UpdateGrid(graphene.Mutation):
-    """ Creates AxGrid """
+    """ Update AxGrid """
     class Arguments:  # pylint: disable=missing-docstring
         guid = graphene.String()
         name = graphene.String()
@@ -318,8 +339,8 @@ class UpdateGrid(graphene.Mutation):
 
             if is_default_view:
                 all_grids = ax_model.db_session.query(AxGrid).filter(
-                    AxGrid.form_guid == ax_grid.form_guid and
-                    AxGrid.guid != ax_grid.guid
+                    AxGrid.form_guid == ax_grid.form_guid
+                    and AxGrid.guid != ax_grid.guid
                 ).all()
 
                 for grid in all_grids:
@@ -354,21 +375,14 @@ class GridsQuery(graphene.ObjectType):
         grid_db_name=graphene.Argument(type=graphene.String, required=True),
         update_time=graphene.Argument(type=graphene.String, required=False)
     )
-
-    # grid_data = graphene.Field(
-    #     Grid,
-    #     form_db_name=graphene.Argument(type=graphene.String, required=True),
-    #     grid_db_name=graphene.Argument(type=graphene.String, required=True),
-    #     update_time=graphene.Argument(type=graphene.String, required=False)
-    # )
-
     grids_list = graphene.List(
         Grid,
         form_db_name=graphene.Argument(type=graphene.String, required=True)
     )
 
-    async def resolve_grid(self, info, form_db_name, grid_db_name, update_time=None):
-        """Get AxGrid"""
+    async def resolve_grid(
+            self, info, form_db_name, grid_db_name, update_time=None):
+        """Get AxGrid by form db_name and grid db_name"""
         del update_time
         ax_form = ax_model.db_session.query(AxForm).filter(
             AxForm.db_name == form_db_name
@@ -378,7 +392,8 @@ class GridsQuery(graphene.ObjectType):
         grid = query.filter(AxGrid.form_guid == ax_form.guid).filter(
             AxGrid.db_name == grid_db_name).first()
 
-        # if field is_virtual - we must switch current dbName with field_type.default_db_name
+        # if field is_virtual - we must switch current dbName with
+        # field_type.default_db_name
         for column in grid.columns:
             if column.field.field_type.is_virtual:
                 column.field.db_name = column.field.field_type.default_db_name
@@ -386,7 +401,7 @@ class GridsQuery(graphene.ObjectType):
         return grid
 
     async def resolve_grids_list(self, info, form_db_name):
-        """Gets list of all AxGrid of form """
+        """Gets list of all AxGrid's of form """
 
         ax_form = ax_model.db_session.query(AxForm).filter(
             AxForm.db_name == form_db_name
