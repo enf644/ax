@@ -12,7 +12,7 @@ THINK ABOUT
 
 
 // prettier-ignore
-gcloud debug source gen-repo-info-file --output-directory="./"
+
 
 How to use Ax:
     Headless CMS

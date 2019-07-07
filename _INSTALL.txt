@@ -33,8 +33,10 @@ Delete py_libs:
     sudo rm -r *
 
 ========== APP ENGINE ==============
+-- run in /ax/ax folder
 gcloud app deploy
 gcloud app browse
+gcloud debug source gen-repo-info-file --output-directory="./"
 
 
 ============ FRONTEND ==============
