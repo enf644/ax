@@ -22,7 +22,7 @@ export default {
     }
   },
   watch: {
-    fieldTypes(newValue, oldValue) {
+    fieldTypes() {
       if (this.treeInitialized) {
         const tree = $(this.$refs.tree).jstree(true);
         tree.settings.core.data = this.$store.getters['form/typesTreeData'];
@@ -48,7 +48,7 @@ export default {
         .jstree({
           core: {
             data: jsTreeData,
-            // eslint-disable-next-line camelcase
+            // eslint-disable-next-line camelcase, no-unused-vars
             check_callback(operation, node, node_parent, node_position, more) {
               return false;
             }

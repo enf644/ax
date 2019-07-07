@@ -1,4 +1,4 @@
-"""Setup Ax for pip"""
+"""Setup Ax for pipy"""
 
 import pathlib
 import yaml

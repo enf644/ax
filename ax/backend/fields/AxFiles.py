@@ -7,7 +7,7 @@ import backend.misc as ax_misc
 
 def after_update(field, before_form, tobe_form, action, current_user):
     """
-    Moves uploaded files from /uploads/tmp/<file_guid>/<file_name> folder to
+    Moves uploaded files from /tmp/<file_guid>/<file_name> folder to
     /uploads/form_row_field_file/<form_guid>/<row_guid>/<file_guid>/<file_name>
     WARNING! do not use ax_model.db_session.commit() here!
     Returns:
@@ -21,7 +21,7 @@ def after_update(field, before_form, tobe_form, action, current_user):
     if field.value:
         for file in field.value:
             value_guids.append(file['guid'])
-            tmp_folder = ax_misc.path(f"uploads/tmp/{file['guid']}")
+            tmp_folder = ax_misc.path(f"tmp/{file['guid']}")
             tmp_path = os.path.join(tmp_folder, file['name'])
             dist_folder = ax_misc.path(
                 f"uploads/form_row_field_file/"

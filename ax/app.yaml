@@ -11,13 +11,13 @@ entrypoint: gunicorn main:app --bind 0.0.0.0:8080 --worker-class sanic.worker.Gu
 # entrypoint: python main.py
 
 handlers:
-  - url: /static
-    static_dir: dist/static/
-  - url: /.*
-    script: auto
+- url: /static
+  static_dir: dist/static/
+- url: /.*
+  script: auto
 
 env_variables:
-  AX_VERSION: 0.0.11
+  AX_VERSION: 0.1.0
   # AX_HOST: 0.0.0.0 #  default = 127.0.0.1
   # AX_PORT: "8085" #  default = 8080
   # AX_SANIC_DEBUG: true #  default=false
@@ -38,5 +38,7 @@ env_variables:
   # AX_DB_PASSWORD:
   # AX_DB_DATABASE:
   # AX_DB_SQLITE_FILENAME: "my_ax.db" #  default='ax_sqlite.db
-  # AX_DB_SQLITE_ABSOLUTE_PATH: "/db" #  default=None
+  AX_DB_SQLITE_ABSOLUTE_PATH: "/tmp" #  default=None
   AX_LOCALE: ru # default=en
+  AX_TMP_ABSOLUTE_PATH: '/tmp' #'D:\Projects\tmp'
+  AX_UPLOADS_ABSOLUTE_PATH: '/tmp/uploads'

@@ -46,8 +46,13 @@ def path(_path: str = '') -> str:
     """
     if this.root_path is None:
         this.root_path = Path(__file__).resolve().parent.parent
-        logger.debug('File path = {root}', root=Path(__file__))
+        # logger.debug('File path = {root}', root=Path(__file__))
     return root_path / _path
+
+
+def server_is_app_engine() -> bool:
+    """Is Sanic is running on Google App Engine Standard"""
+    return os.getenv("GAE_VERSION", "") or None
 
 
 def load_configuration() -> None:
@@ -75,7 +80,7 @@ def load_configuration() -> None:
 
     if not os.path.isfile(app_yaml):
         raise FileNotFoundError('Configuration failed, app.yaml not found')
-    if not os.getenv("SERVER_SOFTWARE", "").startswith("Google App Engine"):
+    if not server_is_app_engine():
         with open(app_yaml, 'r') as stream:
             try:
                 yaml_vars = yaml.safe_load(stream)

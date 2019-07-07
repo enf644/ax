@@ -11,6 +11,7 @@ Options:
   --port=<port>   Port of ax web application (default: 8080).
 
 """
+
 import os
 import sys
 from pathlib import Path
@@ -65,25 +66,40 @@ def init_model():
 
 def init_ax():
     """Initiate all modules of Ax"""
-    ax_misc.load_configuration()  # Load settings from app.yaml to os.environ
+
+    # Load settings from app.yaml to os.environ
+    ax_misc.load_configuration()
+    # Misc functions used throw all application. Nothing specific.
     ax_misc.init_misc(
         timezone_name=str(os.environ.get('AX_TIMEZONE') or 'UTC')
     )
+    # Logger (loguru) used in all modules - console + file + sentry
     ax_logger.init_logger(
         logs_filename=os.environ.get('AX_LOGS_FILENAME') or None,
         logs_absolute_path=os.environ.get('AX_LOGS_ABSOLUTE_PATH') or None,
         logs_level=os.environ.get('AX_LOGS_LEVEL') or 'ERROR'
-    )  # Initiate logger - console + file + sentry
+    )
+
+    for item, value in os.environ.items():
+        logger.info('ENV: {}: {}'.format(item, value))
+
+    # Initiate SqlAlchemy. Made with separate function for alembic.
+    # It initiates database connection on migration.
     init_model()
+    # Init cache module (aiocache). It is not yet used.
     ax_cache.init_cache(
         mode=str(os.environ.get('AX_CACHE_MODE') or 'default'),
         redis_endpoint=str(os.environ.get('AX_REDIS_ENDPOINT') or '127.0.0.1'),
         redis_port=int(os.environ.get('AX_REDIS_ENDPOINT') or 6379),
         redis_timeout=int(os.environ.get('AX_REDIS_ENDPOINT') or 1),
-    )  # Initiate aiocache
-    ax_pubsub.init_pubsub()  # Initiate pubsub.
-    ax_migration.init_migration()  # Check if database schema needs update
-    ax_schema.init_schema()  # Initiate gql schema.  Depends on cache and pubsub
+    )
+    # Initiate pub-sub module. Used for web-socket subscriptions.
+    # Notification on workflow action
+    ax_pubsub.init_pubsub()
+    # Check if database schema needs update
+    ax_migration.init_migration()
+    # Initiate gql schema.  Depends on cache and pubsub
+    ax_schema.init_schema()
 
     # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
     CORS(app, automatic_options=True)  # TODO limit CORS to api folder
@@ -95,18 +111,24 @@ def init_ax():
 
     @app.listener('before_server_start')
     async def initialize_scheduler(_app, _loop):  # pylint: disable=unused-variable
-        """Initiate scheduler"""
+        """Initiate scheduler. It used for cron-like jobs"""
         ax_scheduler.init_scheduler()
 
     @app.listener('before_server_start')
     def save_loop(_app, _loop):  # pylint: disable=unused-variable
-        """Initiate graphql"""
+        """Initiate graphene graphql server"""
         ax_routes.loop = _loop
         ax_routes.app = _app
         ax_routes.init_graphql_view()
         # _app.add_route(ax_routes.graphql_view, '/api/graphql')
 
-    ax_routes.init_routes(sanic_app=app)
+    # Initiate all sanic server routes
+    ax_routes.init_routes(
+        sanic_app=app,
+        tmp_absolute_path=os.environ.get('AX_TMP_ABSOLUTE_PATH') or None,
+        uploads_absolute_path=os.environ.get(
+            'AX_UPLOADS_ABSOLUTE_PATH') or None)
+    # Initiate SQL dialects module. Different SQL queries for differents DBs
     ax_dialects.init_dialects(os.environ.get('AX_DB_DIALECT') or 'sqlite')
 
 
@@ -132,6 +154,12 @@ ax_logo = """
 
 def main():
     """Main function"""
+    try:
+        import googleclouddebugger
+        googleclouddebugger.enable()
+    except ImportError:
+        pass
+
     arguments = docopt(__doc__)
 
     host = str(os.environ.get('AX_HOST') or '127.0.0.1')

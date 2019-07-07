@@ -1,6 +1,6 @@
 """Scheduler using APScheduller
 1 - Test scheduler Job - 5 sec after sanic start
-2 - Clean /uploads/tmp folder - every 30 mins
+2 - Clean /tmp folder - every 30 mins
 """
 import os
 import sys
@@ -25,8 +25,8 @@ async def prn_job(message):
 
 
 async def clear_tmp_files():
-    """ Delete all files from /uploads/tmp folder wich is expired """
-    tmp_folder = ax_misc.path('uploads/tmp')
+    """ Delete all files from /tmp folder wich is expired """
+    tmp_folder = ax_misc.path('tmp')
     for root, dirs, _ in os.walk(tmp_folder):
         del root
         for dir_name in dirs:

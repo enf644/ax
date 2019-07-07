@@ -3,6 +3,7 @@
 import os
 import sys
 import asyncio
+from pathlib import Path
 import uuid
 
 from sanic import response
@@ -30,8 +31,8 @@ loop = None
 app = None
 graphql_view = None
 dummy_view = None
-tmp_path = None
-uploads_path = None
+tmp_root_dir = None
+uploads_root_dir = None
 
 
 class AxGraphQLView(GraphQLView):
@@ -54,14 +55,37 @@ def init_graphql_view():  # pylint: disable=unused-variable
     this.app.add_route(this.graphql_view, '/api/graphql')
 
 
-def init_routes(sanic_app):
+def init_routes(sanic_app, tmp_absolute_path, uploads_absolute_path):
     """Innitiate all Ax routes"""
     try:
-        this.uploads_path = ax_misc.path('uploads/tmp')
-        if not os.path.exists(this.uploads_path):
-            os.makedirs(this.uploads_path)
+        try:
+            this.uploads_root_dir = ax_misc.path('uploads')
+            if uploads_absolute_path is not None:
+                this.uploads_root_dir = str(Path(uploads_absolute_path))
+            if not ax_misc.server_is_app_engine():
+                if not os.path.exists(this.uploads_root_dir):
+                    logger.info('------- TRY CREATE UPLOAD DIR -----')
+                    # os.makedirs(this.uploads_root_dir)
+        except Exception:
+            logger.exception(
+                'Uploads folder does not exists and Ax cant create it')
+            raise
+
+        try:
+            this.tmp_root_dir = ax_misc.path('tmp')
+            if tmp_absolute_path is not None:
+                this.tmp_root_dir = str(Path(tmp_absolute_path))
+            if not os.path.exists(this.tmp_root_dir):
+                if not ax_misc.server_is_app_engine():
+                    logger.info('------- TRY CREATE TMP DIR -----')
+                    # os.makedirs(this.tmp_root_dir)
+        except Exception:
+            logger.exception(
+                'Tmp folder does not exists and Ax cant create it')
+            raise
 
         # Add tus upload blueprint
+        tus_bp.upload_folder = this.tmp_root_dir
         sanic_app.blueprint(tus_bp)
         # Add web-socket subscription server
         subscription_server = WsLibSubscriptionServer(ax_schema.schema)
@@ -91,11 +115,10 @@ def init_routes(sanic_app):
             """ Used to display files uploaded and stored on disk.
                 Displays temp files too. Used in all fields with upload"""
             del request
-            uploads_dir = ax_misc.path('uploads')
 
             # if row_guid is null -> display from /tmp without permissions
             if not row_guid or row_guid == 'null':
-                tmp_dir = os.path.join(uploads_dir, 'tmp', file_guid)
+                tmp_dir = os.path.join(this.tmp_root_dir, file_guid)
                 file_name = os.listdir(tmp_dir)[0]
                 temp_path = os.path.join(tmp_dir, file_name)
                 return await response.file(temp_path)
@@ -126,7 +149,7 @@ def init_routes(sanic_app):
             # if file exists -> return file
             row_guid_str = str(uuid.UUID(row_guid))
             file_path = os.path.join(
-                uploads_dir,
+                this.uploads_root_dir,
                 'form_row_field_file',
                 form_guid,
                 row_guid_str,

@@ -1,4 +1,5 @@
-"""Create new version of Ax
+"""Create new version of Ax.
+Custom script that automate building new version of Ax.
 
 Usage:
   publish_version.py [--major] [--minor] [--no-front]
@@ -58,6 +59,8 @@ def bump_version(is_major: bool = False, is_minor: bool = False):
     try:
         this.app_yaml_path = Path(
             __file__).parent.resolve() / 'ax' / 'app.yaml'
+        if not is_major and not is_minor:
+            is_minor = True
 
         with open(this.app_yaml_path) as yaml_file:
             this.app_yaml = yaml.load(yaml_file)

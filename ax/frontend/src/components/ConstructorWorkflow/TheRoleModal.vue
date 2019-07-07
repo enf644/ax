@@ -4,7 +4,7 @@
     <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
       <i class='fas fa-times close-ico'></i>
     </v-btn>
-    <br>
+    <br />
     <v-form @submit.prevent='updateRole' ref='form' v-model='valid'>
       <v-text-field
         :label='$t("workflow.role.role-name")'
@@ -15,7 +15,7 @@
         v-model='name'
       />
     </v-form>
-    <br>
+    <br />
 
     <div class='actions'>
       <v-btn @click='updateRole' data-cy='update-role-btn' small>
@@ -72,7 +72,7 @@ export default {
         });
       }
     },
-    async deleteRole(e) {
+    async deleteRole() {
       const res = await this.$dialog.confirm({
         text: this.$t('workflow.role.role-delete-confirm', { name: this.name }),
         actions: {

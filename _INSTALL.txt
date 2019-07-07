@@ -32,6 +32,11 @@ Delete py_libs:
     cd py_libs
     sudo rm -r *
 
+========== APP ENGINE ==============
+gcloud app deploy
+gcloud app browse
+
+
 ============ FRONTEND ==============
 First:
     cd frontend

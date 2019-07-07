@@ -517,11 +517,17 @@ AX 0.2:
             ✔ Error -> Delete field, column in grid stays @done(19-07-03 18:11)
     ☐ TEST MILESTONE
         ✔ Comment every def and gql method like ax_misc @done(19-07-05 10:24)
-        ☐ Try catch for every vue method
-        ☐ Fix ALL pylint and jslint errors, warnings and info
-        ☐ Try pip installation
-        ☐ Try app engine installation
-    ☐ CYPRESS TESTS FOR ALL        
+        ✘ Try catch for every vue method @cancelled(19-07-05 11:23)
+        ✔ Fix ALL pylint and jslint errors, warnings and info @done(19-07-05 11:54)
+        ✔ Try pip installation (without alembic migration) @done(19-07-05 13:40)
+        ✔ Try app engine installation @done(19-07-07 13:34)
+            ✔ Uploads dir must be taken from app.yaml @done(19-07-07 13:34)
+        ☐ Errors
+            ☐ What if database already exists?
+            ☐ Action drag on update action??
+            ☐ If new record form closed - it must be reset
+            ☐ Check if app have access to uploads dir.
+    ☐ CYPRESS TESTS FOR ALL
     ☐ ESTABLISH CI
         ☐ Each commit runs tests - installs from pip, runs cypress tests
         ☐ Start versionning
@@ -579,11 +585,11 @@ AX 0.2:
             ☐ ... check jotforms
         ☐ Relationship
             ✔ 1:1 Inline @done(19-06-04 17:38)
-                ☐ AxColumn
+                ☐ Add grid column
             ✔ 1:M Inline @done(19-06-04 17:38)
-                ☐ AxColumn
+                ☐ Add grid column
             ✔ 1:M Table @done(19-06-06 09:37)
-                ☐ AxColumn
+                ☐ Add grid column
             ☐ Date and Time
             ☐ Date
         ☐ List
@@ -600,6 +606,7 @@ AX 0.2:
         ☐ Images
             ☐ Public filesystem Images *
             ✔ Database Image Crop  @done(19-07-01 15:18)
+                ☐ Add grid column
             ☐ Webcam
         ☐ Files
             ✔ Filesystem Files *

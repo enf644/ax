@@ -1,6 +1,7 @@
 const Visualizer = require('webpack-visualizer-plugin');
 const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin');
 const MonocoEditorPlugin = require('monaco-editor-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
   outputDir: './../dist',
@@ -12,7 +13,6 @@ module.exports = {
     disableHostCheck: true,
     proxy: {
       '/api': {
-        target_temp: 'http://axy-20-enf644.c9users.io',
         target: 'http://127.0.0.1:8080',
         secure: false
       }
@@ -30,7 +30,8 @@ module.exports = {
       },
       optimization: {
         splitChunks: false,
-        minimize: true
+        minimize: true,
+        minimizer: [new TerserPlugin()]
       },
       module: {
         rules: []

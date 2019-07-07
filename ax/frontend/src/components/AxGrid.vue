@@ -159,9 +159,12 @@ export default {
 
           let renderer = null;
           if (column.field.fieldType.isColumnnAvalible) {
-            columnPromise = () => import(`@/components/AxFields/${camelName}/${camelName}Column.vue`).then(
-                m => m.default
-              );
+            // prettier-ignore
+            columnPromise = () => import(
+              `@/components/AxFields/${camelName}/${camelName}Column.vue`
+            ).then(
+              m => m.default
+            );
 
             Vue.customElement(kebabName, columnPromise, {
               props: ['options_json']

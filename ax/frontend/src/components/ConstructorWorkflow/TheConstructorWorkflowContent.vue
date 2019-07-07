@@ -16,7 +16,7 @@
         <i class='fas fa-columns'></i>
       </v-btn>
     </div>-->
-    <resize-observer @notify='debounceResize'/>
+    <resize-observer @notify='debounceResize' />
 
     <modal adaptive height='auto' name='update-state' scrollable width='1000px'>
       <TheStateModal
@@ -110,7 +110,6 @@ export default {
     hightlightedRole(newValue) {
       if (newValue) {
         const states2lite = [];
-        const highlightStart = false;
         this.$store.state.workflow.states.forEach(state => {
           state.roles.edges.forEach(edge => {
             if (edge.node.guid === newValue.guid) states2lite.push(state);
@@ -332,9 +331,7 @@ export default {
         .append('g')
         .attr(
           'transform',
-          `translate(${this.containerMargin.left},${
-            this.containerMargin.right
-          })`
+          `translate(${this.containerMargin.left},${this.containerMargin.right})`
         )
         .call(this.zoom)
         .call(
@@ -674,17 +671,13 @@ export default {
 
     redrawStates() {
       this.d3States = this.d3States.data(this.axStates, d => d.guid);
-
-      // console.log(this.axStates);
-      // console.log(this.d3States);
-
       this.d3States
         .enter()
         .filter(d => {
           const element = document.getElementById(`d3_rect_${d.guid}`);
-          const isNewElement =            element === null
+          // prettier-ignore
+          const isNewElement = element === null
             && (d.isStart === false && d.isDeleted === false && d.isAll === false);
-          // console.log(isNewElement);
           return isNewElement;
         })
         .append('g')
@@ -811,10 +804,11 @@ export default {
       this.d3States
         .enter()
         .filter(
+          // prettier-ignore
           d => !!(
-              !document.getElementById(`d3_rect_${d.guid}`)
+            !document.getElementById(`d3_rect_${d.guid}`)
               && d.isStart === true
-            )
+          )
         )
         .append('g')
         .attr('transform', d => `translate(${[d.x, d.y]})`) // starting position of state group
@@ -837,13 +831,13 @@ export default {
               this.stateMouseDownTimestamp = new Date();
               this.newActionFromId = data.guid;
             })
-            .on('dragover', data => {
+            .on('dragover', () => {
               // Allow drop
               d3.event.preventDefault();
               const currentRect = d3.select('#d3_start');
               currentRect.classed('d3_dragover', true);
             })
-            .on('dragleave', data => {
+            .on('dragleave', () => {
               const currentRect = d3.select('#d3_start');
               currentRect.classed('d3_dragover', false);
             })
@@ -883,9 +877,10 @@ export default {
       this.d3States
         .enter()
         .filter(
+          // prettier-ignore
           d => !!(
-              !document.getElementById(`d3_rect_${d.guid}`) && d.isAll === true
-            )
+            !document.getElementById(`d3_rect_${d.guid}`) && d.isAll === true
+          )
         )
         .append('g')
         .attr('transform', d => `translate(${[d.x, d.y]})`) // starting position of state group
@@ -928,10 +923,11 @@ export default {
       this.d3States
         .enter()
         .filter(
+          // prettier-ignore
           d => !!(
-              !document.getElementById(`d3_rect_${d.guid}`)
+            !document.getElementById(`d3_rect_${d.guid}`)
               && d.isDeleted === true
-            )
+          )
         )
         .append('g')
         .attr('transform', d => `translate(${[d.x, d.y]})`) // starting position of state group
@@ -1048,7 +1044,8 @@ export default {
     linkArcGenerator(d) {
       const sourceD = this.axStates.find(el => el.guid === d.fromStateGuid);
       const sourceObj = document.getElementById(`d3_rect_${d.fromStateGuid}`);
-      const sourceIsState =        sourceD.isStart === false
+      // prettier-ignore
+      const sourceIsState = sourceD.isStart === false
         && sourceD.isDeleted === false
         && sourceD.isAll === false;
       const sourceCenter = {
@@ -1070,7 +1067,8 @@ export default {
 
       const targetD = this.axStates.find(el => el.guid === d.toStateGuid);
       const targetObj = document.getElementById(`d3_rect_${d.toStateGuid}`);
-      const targetIsState =        targetD.isStart === false
+      // prettier-ignore
+      const targetIsState = targetD.isStart === false
         && targetD.isDeleted === false
         && targetD.isAll === false;
       const targetCenter = {
@@ -1091,9 +1089,7 @@ export default {
       targetCenter.max_y = targetCenter.y + targetCenter.h / 2 - 5;
 
       const sweetPoints = this.getCollisionPoints(sourceCenter, targetCenter);
-      const straightLine = `M${sweetPoints.x1},${sweetPoints.y1} ${
-        sweetPoints.x2
-      },${sweetPoints.y2}`;
+      const straightLine = `M${sweetPoints.x1},${sweetPoints.y1} ${sweetPoints.x2},${sweetPoints.y2}`;
       let retLine = straightLine;
 
       if (d.radius !== 0) {
@@ -1132,10 +1128,12 @@ export default {
 
         // P1=2P(0.5)−0.5P0−0.5P2
         // https://math.stackexchange.com/questions/1666026/find-the-control-point-of-quadratic-bezier-curve-having-only-the-end-points
-        controlPoint.x =          mouseDistancePoint.x * 2
+        // prettier-ignore
+        controlPoint.x = mouseDistancePoint.x * 2
           - sourceCenter.x / 2
           - targetSweetPoint.x / 2;
-        controlPoint.y =          mouseDistancePoint.y * 2
+        // prettier-ignore
+        controlPoint.y = mouseDistancePoint.y * 2
           - sourceCenter.y / 2
           - targetSweetPoint.y / 2;
 
@@ -1145,9 +1143,7 @@ export default {
 
         // eslint-disable-next-line max-len
         // M50,50 Q50,100 100,100 == Curve from 50,50 to 100,100 with Quadratic Bezier Curve to point 50,100
-        const curvedLine = `M${sourceCenter.x},${sourceCenter.y}Q${
-          controlPoint.x
-        },${controlPoint.y} ${sweetPoints.x2},${sweetPoints.y2}`;
+        const curvedLine = `M${sourceCenter.x},${sourceCenter.y}Q${controlPoint.x},${controlPoint.y} ${sweetPoints.x2},${sweetPoints.y2}`;
 
         retLine = curvedLine;
       }
@@ -1189,7 +1185,8 @@ export default {
       // assert minX <= maxX;
       // assert minY <= maxY;
       if (validate && (minX < x && x < maxX) && (minY < y && y < maxY)) {
-        const msg =          `Point ${[x, y]}cannot be inside `
+        // prettier-ignore
+        const msg = `Point ${[x, y]}cannot be inside `
           + `the rectangle: ${[minX, minY]} - ${[maxX, maxY]}.`;
         this.$log.error(msg);
         return false;
@@ -1224,7 +1221,7 @@ export default {
       }
 
       // edge case when finding midpoint intersection: m = 0/0 = NaN
-      if (x === midX && y === midY) console.log('ERROR');
+      // if (x === midX && y === midY) console.log('ERROR');
 
       // Should never happen :) If it does, please tell me!
       // throw `Cannot find intersection for ${[x, y]} inside rectangle ${[
@@ -1550,8 +1547,9 @@ export default {
     isLeft(lineFrom, lineTo, _point) {
       // if value > 0, p2 is on the left side of the line.
       // if value = 0, p2 is on the same line.
-      // if value < 0, p2 is on the right side of the line.
-      const value =        (lineTo.x - lineFrom.x) * (_point.y - lineFrom.y)
+      // if value < 0, p2 is on the right side of the line.\
+      // prettier-ignore
+      const value = (lineTo.x - lineFrom.x) * (_point.y - lineFrom.y)
         - (_point.x - lineFrom.x) * (lineTo.y - lineFrom.y);
       if (value > 0) return true;
       return false;
@@ -1579,8 +1577,8 @@ export default {
       if (l2 === 0) {
         return Math.sqrt(this.getDistanceSquared(_point, lineStart));
       }
-
-      const t =        ((_point.x - lineStart.x) * (lineEnd.x - lineStart.x)
+      // prettier-ignore
+      const t = ((_point.x - lineStart.x) * (lineEnd.x - lineStart.x)
           + (_point.y - lineStart.y) * (lineEnd.y - lineStart.y))
         / l2;
       if (t < 0) {

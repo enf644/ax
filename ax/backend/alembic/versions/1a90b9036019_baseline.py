@@ -1,12 +1,13 @@
 """baseline
 
-Revision ID: 166f2b7658b4
+Revision ID: 1a90b9036019
 Revises: 
-Create Date: 2019-03-13 17:30:13.638591
+Create Date: 2019-07-05 12:58:06.728379
 
 """
 import sys
 from alembic import op
+import sqlalchemy as sa
 from pathlib import Path
 
 root_path = Path(__file__).resolve().parent.parent.parent.parent
@@ -17,7 +18,7 @@ import backend.model
 
 
 # revision identifiers, used by Alembic.
-revision = '166f2b7658b4'
+revision = '1a90b9036019'
 down_revision = None
 branch_labels = None
 depends_on = None

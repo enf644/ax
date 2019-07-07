@@ -5,7 +5,7 @@ import { HttpLink } from 'apollo-link-http';
 import { getMainDefinition } from 'apollo-utilities';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { getAxHost } from './misc';
-import logger from './logger';
+// import logger from './logger';
 
 const axHost = getAxHost();
 

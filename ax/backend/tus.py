@@ -10,10 +10,11 @@ from sanic import response
 from sanic import Blueprint
 from loguru import logger
 import ujson as json
+import backend.misc as ax_misc
 
 this = sys.modules[__name__]
 tus_bp = Blueprint('sanic_tus')
-upload_folder = os.path.join('uploads', 'tmp')
+upload_folder = ax_misc.path('tmp')
 upload_url = 'upload'
 tus_api_version = '1.0.0'
 tus_api_version_supported = '1.0.0'
@@ -84,6 +85,7 @@ async def tus_file_upload(request):
         return response.text(msg, status=413)  # REQUEST_ENTITY_TOO_LARGE
 
     file_guid = str(uuid.uuid4())
+    print('-----------------' + str(this.upload_folder))
     content_dir = os.path.join(this.upload_folder, file_guid)
     os.makedirs(content_dir)
 

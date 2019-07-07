@@ -229,15 +229,11 @@ const mutations = {
     });
   },
   deleteGrid(state, deleted) {
-    let formIndex = null;
     for (let i = 0; i < state.forms.length; i += 1) {
-      if (state.forms[i].guid === grid.formGuid) {
-        formIndex = i;
-      }
+      state.forms[i].grids.edges = [
+        ...state.forms[i].grids.edges.filter(edge => edge.node.guid !== deleted)
+      ];
     }
-    state.forms[formIndex].grids.edges = [
-      ...state.forms[formIndex].grids.edges.filter(edge => edge.node.guid !== deleted)
-    ];
   },
   updateGrid(state, grid) {
     for (let i = 0; i < state.forms.length; i += 1) {

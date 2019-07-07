@@ -13,8 +13,8 @@ export default {
     value: null
   },
   watch: {
-    value(newValue) {
-      console.log(newValue);
+    value() {
+      // console.log(newValue);
     }
   }
 };

@@ -8,8 +8,11 @@ THINK ABOUT
     ☐ Active directory - python
     ☐ Make app to autoupgrade DB with alembic according to latest upgrade script
     dev_appserver.py
+    Ax - rapid automation tool
+
 
 // prettier-ignore
+gcloud debug source gen-repo-info-file --output-directory="./"
 
 How to use Ax:
     Headless CMS

@@ -1,7 +1,7 @@
 <template>
   <div>
     <span class='label'>{{name}}</span>
-    <br>
+    <br />
     <v-chip
       :key='file.guid'
       @click='openFile(file.guid)'
@@ -21,7 +21,7 @@
       {{$t("types.AxFiles.upload-btn")}}
     </v-btn>
 
-    <hr :class='errorClass'>
+    <hr :class='errorClass' />
     <transition enter-active-class='animated shake' leave-active-class='animated fadeOut'>
       <span class='required-error' v-show='errorString'>{{errorString}}</span>
     </transition>
@@ -36,9 +36,9 @@ import { getAxHost } from '../../../misc';
 import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
 import getClassNameForExtension from 'font-awesome-filetypes';
-
+// prettier-ignore
 import {
- Core, Dashboard, Webcam, Tus 
+  Core, Dashboard, Webcam, Tus
 } from 'uppy';
 
 const _ = require('lodash');
