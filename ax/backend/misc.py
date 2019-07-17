@@ -15,10 +15,37 @@ from loguru import logger
 this = sys.modules[__name__]
 root_path = None
 timezone = None
+tmp_root_dir = None
+uploads_root_dir = None
 
 
-def init_misc(timezone_name: str) -> None:
+def init_misc(timezone_name, tmp_absolute_path, uploads_absolute_path) -> None:
     """Inititate time_zone, root_path"""
+
+    try:
+        this.uploads_root_dir = path('uploads')
+        if uploads_absolute_path is not None:
+            this.uploads_root_dir = str(Path(uploads_absolute_path))
+        if not server_is_app_engine():
+            if not os.path.exists(this.uploads_root_dir):
+                os.makedirs(this.uploads_root_dir)
+    except Exception:
+        logger.exception(
+            'Uploads folder does not exist and Ax cant create it')
+        raise
+
+    try:
+        this.tmp_root_dir = path('tmp')
+        if tmp_absolute_path is not None:
+            this.tmp_root_dir = str(Path(tmp_absolute_path))
+        if not os.path.exists(this.tmp_root_dir):
+            if not server_is_app_engine():
+                os.makedirs(this.tmp_root_dir)
+    except Exception:
+        logger.exception(
+            'Tmp folder does not exist and Ax cant create it')
+        raise
+
     if timezone_name not in pytz.common_timezones:
         logger.error(
             'Timezone {tz} not valid. Falling back to UTC.', tz=timezone_name)
@@ -52,7 +79,7 @@ def path(_path: str = '') -> str:
 
 def server_is_app_engine() -> bool:
     """Is Sanic is running on Google App Engine Standard"""
-    return os.getenv("GAE_VERSION", "") or None
+    return os.getenv("GAE_VERSION") or None
 
 
 def load_configuration() -> None:

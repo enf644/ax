@@ -4,16 +4,30 @@
     <v-btn :ripple='false' @click='closeThisModal' class='close' color='black' flat icon>
       <i class='fas fa-times close-ico'></i>
     </v-btn>
-    <br>
+    <br />
     <v-form @submit.prevent='updateAction' ref='form' v-model='valid'>
-      <v-text-field
-        :label='$t("workflow.action.action-name")'
-        data-cy='action-name'
-        ref='nameField'
-        required
-        v-model='name'
-      />
-      <br>
+      <v-layout row wrap>
+        <v-flex xs6>
+          <v-text-field
+            :label='$t("workflow.action.action-name")'
+            :rules='nameRules'
+            data-cy='action-name'
+            ref='nameField'
+            required
+            v-model='name'
+          />
+        </v-flex>
+        <v-flex offset-xs1 xs5>
+          <v-text-field
+            :hint='$t("workflow.action.action-db-hint")'
+            :label='$t("workflow.action.action-db-name")'
+            :rules='dbNameRules'
+            data-cy='action-db-name'
+            v-model='dbName'
+          />
+        </v-flex>
+      </v-layout>
+      <br />
       <h3>{{$t("workflow.action.settings-roles-list")}}:</h3>
       <v-chip :key='role.guid' @input='removeRole(role)' close v-for='role in axRoles'>
         <v-avatar :style='{ background: role.color }'>
@@ -22,24 +36,30 @@
         {{ role.name }}
       </v-chip>
 
-      <br>
+      <br />
 
       <modal adaptive height='auto' name='action-icon' scrollable width='800px'>
-        <TheIconPicker :icon='icon' @choosed='ChangeIconAndCloseModal'/>
+        <TheIconPicker :icon='icon' @choosed='ChangeIconAndCloseModal' />
       </modal>
 
-      <br>
+      <br />
       <h3>{{$t("workflow.action.code-header")}}:</h3>
-      <monaco-editor
-        class='editor'
-        cy-data='code-editor'
-        language='python'
-        ref='editor'
-        theme='vs-dark'
-        v-model='code'
-      ></monaco-editor>
+      <div id='monacoDock'>
+        <div :class='monacoWrapperClass' id='monacoWrapper'>
+          <monaco-editor
+            :options='monacoOptions'
+            @editorDidMount='initMonaco'
+            class='editor'
+            cy-data='code-editor'
+            language='python'
+            ref='editor'
+            theme='vs-dark'
+            v-model='code'
+          ></monaco-editor>
+        </div>
+      </div>
 
-      <br>
+      <br />
 
       <v-textarea
         :hint='$t("workflow.action.confirm-hint")'
@@ -50,7 +70,7 @@
 
       <v-switch :label='$t("workflow.action.close-modal-name")' v-model='closeModal'></v-switch>
 
-      <br>
+      <br />
       <div class='actions'>
         <v-btn @click='updateAction' data-cy='update-action-btn' small>
           <i class='fas fa-pencil-alt'></i>
@@ -74,6 +94,7 @@
 <script>
 import TheIconPicker from '@/components/AdminHome/TheIconPicker.vue';
 import MonacoEditor from 'vue-monaco';
+import * as monaco from 'monaco-editor';
 
 export default {
   name: 'TheActionModal',
@@ -85,6 +106,7 @@ export default {
     return {
       name: '',
       code: '',
+      monacoOptions: null,
       confirmText: null,
       closeModal: null,
       icon: null,
@@ -93,10 +115,21 @@ export default {
       nameRules: [
         v => !!v || this.$t('workflow.action.action-name-required'),
         v => v.length <= 255 || this.$t('common.lenght-error', { num: 255 })
-      ]
+      ],
+      dbName: '',
+      dbNameRules: [
+        v => v.length <= 127 || this.$t('common.lenght-error', { num: 127 }),
+        v => /^([a-z0-9]+)*([A-Z][a-z0-9]*)*$/.test(v)
+          || this.$t('workflow.action.db-name-error')
+      ],
+      fullScreenMode: false
     };
   },
   computed: {
+    monacoWrapperClass() {
+      if (this.fullScreenMode) return 'monacoWrapperFullScreen';
+      return 'monacoWrapper';
+    },
     currentAction() {
       return this.$store.state.workflow.actions.find(
         element => element.guid === this.guid
@@ -136,6 +169,12 @@ export default {
     }
   },
   mounted() {
+    // https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ieditorconstructionoptions.html
+    this.monacoOptions = {
+      automaticLayout: true,
+      rulers: [80]
+    };
+
     if (this.guid) {
       this.$refs.nameField.focus();
       this.$store.dispatch('workflow/getActionData', {
@@ -146,16 +185,39 @@ export default {
     }
   },
   methods: {
+    initMonaco(editor) {
+      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
+        this.updateAction(false);
+      });
+      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
+        if (!this.fullScreenMode) {
+          this.fullScreenMode = true;
+          document.body.appendChild(document.getElementById('monacoWrapper'));
+          setTimeout(() => {
+            editor.layout();
+          }, 100);
+        } else {
+          this.fullScreenMode = false;
+          const dock = document.getElementById('monacoDock');
+          dock.appendChild(document.getElementById('monacoWrapper'));
+          setTimeout(() => {
+            editor.layout();
+          }, 100);
+        }
+      });
+    },
     getData(actions) {
       const actionData = actions.find(element => element.guid === this.guid);
       if (actionData) {
         this.name = actionData.name;
+        this.dbName = actionData.dbName;
         this.code = actionData.code;
         this.confirmText = actionData.confirmText;
         this.closeModal = actionData.closeModal;
         this.icon = actionData.icon;
 
         if (!this.code) this.code = '';
+        if (!this.dbName) this.dbName = '';
       }
     },
     openIconPicker() {
@@ -184,11 +246,12 @@ export default {
         );
       });
     },
-    updateAction() {
+    updateAction(doClose = true) {
       if (this.$refs.form.validate()) {
         const data = {
           guid: this.guid,
           name: this.name,
+          dbName: this.dbName,
           code: this.code,
           confirmText: this.confirmText,
           closeModal: this.closeModal,
@@ -200,7 +263,7 @@ export default {
             `<i class="fas fa-pencil-alt"></i> &nbsp ${msg}`
           );
           this.currentGuid = this.guid;
-          this.$emit('updateAction');
+          this.$emit('updateAction', doClose);
         });
       }
     },
@@ -259,6 +322,23 @@ export default {
 }
 .editor {
   width: 100%;
+  height: 100%;
+}
+
+.monacoWrapper {
+  width: 100%;
   height: 600px;
+}
+
+.monacoWrapperFullScreen {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  top: 0px;
+  left: 0px;
+  z-index: 1000;
+  overflow: hidden;
 }
 </style>

@@ -169,8 +169,7 @@ export default {
             Vue.customElement(kebabName, columnPromise, {
               props: ['options_json']
             });
-
-            renderer = params => `<${kebabName}>${params.value}</${kebabName}>`;
+            renderer = params => `<${kebabName} options_json='${column.field.optionsJson}'>${params.value}</${kebabName}>`;
           } else {
             renderer = params => params.value;
           }
@@ -402,6 +401,7 @@ export default {
                       icon
                       isColumnnAvalible
                     }
+                    optionsJson
                   }
                   columnType
                   aggregationType

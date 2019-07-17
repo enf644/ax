@@ -247,6 +247,7 @@ def create_field_types() -> None:
             position=1,
             value_type="GUID",
             is_inline_editable=False,
+            is_columnn_avalible=True,
             icon="link"))
         ax_model.db_session.add(AxFieldType(
             tag="Ax1tom",
@@ -256,6 +257,7 @@ def create_field_types() -> None:
             position=2,
             value_type="JSON",
             is_backend_available=True,
+            is_columnn_avalible=True,
             is_inline_editable=False,
             icon="link"))
         ax_model.db_session.add(AxFieldType(
@@ -266,6 +268,7 @@ def create_field_types() -> None:
             position=3,
             value_type="JSON",
             is_backend_available=True,
+            is_columnn_avalible=True,
             is_inline_editable=True,
             icon="link"))
 
@@ -346,7 +349,7 @@ def create_field_types() -> None:
             icon="user"))
         ax_model.db_session.add(AxFieldType(
             tag="AxUsers",
-            parent="group-files",
+            parent="group-users",
             position=1,
             default_db_name="users",
             is_backend_available=True,

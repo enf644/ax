@@ -71,7 +71,10 @@ def init_ax():
     ax_misc.load_configuration()
     # Misc functions used throw all application. Nothing specific.
     ax_misc.init_misc(
-        timezone_name=str(os.environ.get('AX_TIMEZONE') or 'UTC')
+        timezone_name=str(os.environ.get('AX_TIMEZONE') or 'UTC'),
+        tmp_absolute_path=os.environ.get('AX_TMP_ABSOLUTE_PATH') or None,
+        uploads_absolute_path=os.environ.get(
+            'AX_UPLOADS_ABSOLUTE_PATH') or None
     )
     # Logger (loguru) used in all modules - console + file + sentry
     ax_logger.init_logger(
@@ -80,8 +83,8 @@ def init_ax():
         logs_level=os.environ.get('AX_LOGS_LEVEL') or 'ERROR'
     )
 
-    for item, value in os.environ.items():
-        logger.info('ENV: {}: {}'.format(item, value))
+    # for item, value in os.environ.items():
+    #     logger.info('ENV: {}: {}'.format(item, value))
 
     # Initiate SqlAlchemy. Made with separate function for alembic.
     # It initiates database connection on migration.
@@ -123,11 +126,7 @@ def init_ax():
         # _app.add_route(ax_routes.graphql_view, '/api/graphql')
 
     # Initiate all sanic server routes
-    ax_routes.init_routes(
-        sanic_app=app,
-        tmp_absolute_path=os.environ.get('AX_TMP_ABSOLUTE_PATH') or None,
-        uploads_absolute_path=os.environ.get(
-            'AX_UPLOADS_ABSOLUTE_PATH') or None)
+    ax_routes.init_routes(sanic_app=app)
     # Initiate SQL dialects module. Different SQL queries for differents DBs
     ax_dialects.init_dialects(os.environ.get('AX_DB_DIALECT') or 'sqlite')
 
@@ -154,11 +153,11 @@ ax_logo = """
 
 def main():
     """Main function"""
-    try:
-        import googleclouddebugger
-        googleclouddebugger.enable()
-    except ImportError:
-        pass
+    # try:
+    #     import googleclouddebugger
+    #     googleclouddebugger.enable()
+    # except ImportError:
+    #     pass
 
     arguments = docopt(__doc__)
 

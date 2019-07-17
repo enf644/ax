@@ -21,11 +21,15 @@ def after_update(field, before_form, tobe_form, action, current_user):
     if field.value:
         for file in field.value:
             value_guids.append(file['guid'])
-            tmp_folder = ax_misc.path(f"tmp/{file['guid']}")
+            tmp_folder = os.path.join(ax_misc.tmp_root_dir, file['guid'])
             tmp_path = os.path.join(tmp_folder, file['name'])
-            dist_folder = ax_misc.path(
-                f"uploads/form_row_field_file/"
-                f"{form_guid}/{row_guid}/{field_guid}/{file['guid']}")
+            dist_folder = os.path.join(
+                ax_misc.uploads_root_dir,
+                'form_row_field_file',
+                form_guid,
+                row_guid,
+                field_guid,
+                file['guid'])
             dist_path = os.path.join(dist_folder, file['name'])
 
             # if file exists in tmp - move it to row folder
@@ -38,8 +42,13 @@ def after_update(field, before_form, tobe_form, action, current_user):
     # if form.row.field directory contains sub dirs with guid wich is not
     # in current value -> then file was deleted from field data,
     # We must delete this file from filesystem
-    field_folder = ax_misc.path(f"uploads/form_row_field_file/"
-                                f"{form_guid}/{row_guid}/{field_guid}")
+    field_folder = os.path.join(
+        ax_misc.uploads_root_dir,
+        'form_row_field_file',
+        form_guid,
+        row_guid,
+        field_guid
+    )
     if os.path.exists(field_folder) is True:
         for root, dirs, _ in os.walk(field_folder):
             del root
@@ -65,8 +74,12 @@ def after_delete(field, before_form, tobe_form, action, current_user):
     del before_form, action, current_user
     form_guid = str(tobe_form.guid)
     row_guid = str(uuid.UUID(tobe_form.row_guid))
-    row_folder = ax_misc.path(
-        f"uploads/form_row_field_file/{form_guid}/{row_guid}")
+    row_folder = os.path.join(
+        ax_misc.uploads_root_dir,
+        'form_row_field_file',
+        form_guid,
+        row_guid
+    )
 
     if os.path.exists(row_folder) is True:
         shutil.rmtree(row_folder)

@@ -6,6 +6,7 @@ import sys
 import base64
 import uuid
 import shutil
+from pathlib import Path
 from sanic import response
 from sanic import Blueprint
 from loguru import logger
@@ -15,6 +16,8 @@ import backend.misc as ax_misc
 this = sys.modules[__name__]
 tus_bp = Blueprint('sanic_tus')
 upload_folder = ax_misc.path('tmp')
+if ax_misc.server_is_app_engine():
+    upload_folder = str(Path('/tmp'))
 upload_url = 'upload'
 tus_api_version = '1.0.0'
 tus_api_version_supported = '1.0.0'

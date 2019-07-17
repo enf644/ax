@@ -93,6 +93,7 @@ const GET_FORM_DATA = gql`
           node {
             guid,
             name,
+            dbName,
             roles{
               edges {
                 node {
@@ -568,6 +569,9 @@ const actions = {
 
 
   updateField(context, payload) {
+    let { privateOptionsJson } = payload;
+    if (privateOptionsJson == null || privateOptionsJson === 'null') privateOptionsJson = '{}';
+
     apolloClient.mutate({
       mutation: UPDATE_FIELD,
       variables: {
@@ -577,7 +581,7 @@ const actions = {
         isRequired: payload.isRequired,
         isWholeRow: payload.isWholeRow,
         optionsJson: payload.optionsJson,
-        privateOptionsJson: payload.privateOptionsJson
+        privateOptionsJson
       }
     })
       .then(data => {

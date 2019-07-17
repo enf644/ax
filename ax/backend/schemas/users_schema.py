@@ -47,16 +47,21 @@ class CreateUser(graphene.Mutation):
 class MutationExample(graphene.Mutation):
     """Mutation example"""
     class Arguments:  # pylint: disable=missing-docstring
-        input_text = graphene.String()
+        input_text = graphene.String(required=False, default_value=None)
 
     output_text = graphene.String()
 
-    async def mutate(self, info, input_text):  # pylint: disable=missing-docstring
+    def mutate(self, info, input_text=None):  # pylint: disable=missing-docstring
         del info
-        return MutationExample(output_text=input_text)
-
+        ret_text = input_text
+        if not input_text:
+            ret_text = "default text"
+        print('\n\n\n\n!!!' + ret_text + '!!!\n\n\n\n')
+        return MutationExample(output_text=ret_text)
 
 # Used to Change Username with Email
+
+
 class ChangeUserName(graphene.Mutation):
     """Update AxUser"""
     class Arguments:  # pylint: disable=missing-docstring

@@ -424,6 +424,7 @@ class AxAction(Base):
     guid = Column(GUID(), primary_key=True,
                   default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String(255))
+    db_name = Column(String(255))
     form_guid = Column(GUID(), ForeignKey('_ax_forms.guid'))
     form = relationship("AxForm")
     roles = relationship("AxRole", secondary='_ax_action2role')

@@ -145,6 +145,22 @@ class SqliteDialect(object):
             ret_param = value if value else None
         return ret_param
 
+    def custom_query(self, sql):
+        """ Executes any SQL. Used in action python code.
+
+        Args:
+            sql (str): Any sql that needs to be executed
+
+        Returns:
+            List(Dict(column_name: value)): result of SQL query
+        """
+        try:
+            return ax_model.db_session.execute(sql).fetchall()
+        except Exception:
+            logger.exception(
+                f"Error executing SQL - {sql}")
+            raise
+
     def select_all(self, ax_form, quicksearch=None, server_filter=None,
                    guids=None):
         """ Select * from table
@@ -204,6 +220,8 @@ class SqliteDialect(object):
                     guids_string = ", ".join(
                         "'" + item + "'" for item in guids_array)
                 guids_sql = f"OR guid IN ({guids_string})"
+                if not quicksearch_sql and not serverfilter_sql:
+                    guids_sql = f"AND guid IN ({guids_string})"
             sql = (
                 f"SELECT guid, axState, {fields_sql}"
                 f", {tom_name} as axLabel FROM {ax_form.db_name}"

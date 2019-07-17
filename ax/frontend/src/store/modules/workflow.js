@@ -110,11 +110,12 @@ const CREATE_ACTION = gql`
 `;
 
 const UPDATE_ACTION = gql`
-  mutation ($guid: String!, $name: String, $code: String, $confirmText: String, $closeModal: Boolean, $icon: String, $radius: Float ) {
-    updateAction(guid: $guid, name: $name, code: $code, confirmText: $confirmText, closeModal: $closeModal, icon: $icon, radius: $radius) {
+  mutation ($guid: String!, $name: String, $dbName: String, $code: String, $confirmText: String, $closeModal: Boolean, $icon: String, $radius: Float ) {
+    updateAction(guid: $guid, name: $name, dbName: $dbName, code: $code, confirmText: $confirmText, closeModal: $closeModal, icon: $icon, radius: $radius) {
       action {
         guid,
         name,
+        dbName,
         roles{
           edges {
             node {
@@ -149,6 +150,7 @@ const GET_ACTION_DATA = gql`
     actionData(guid: $guid, updateTime: $updateTime) {
       guid,
       name,
+      dbName,
       code,
       confirmText,
       closeModal,
@@ -542,6 +544,7 @@ const actions = {
       variables: {
         guid: payload.guid,
         name: payload.name,
+        dbName: payload.dbName,
         code: payload.code,
         confirmText: payload.confirmText,
         closeModal: payload.closeModal,

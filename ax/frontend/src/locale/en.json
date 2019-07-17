@@ -183,7 +183,10 @@
             "close-modal-name": "Close modal on action",
             "confirm-name": "Confirmation text",
             "confirm-hint": "If not empy, the action will be performed only after comfirmation",
-            "action-error": "{error_class} at line {line_number} of [{action_name}] action: {detail}"
+            "action-error": "{error_class} at line {line_number} of [{action_name}] action: {detail}",
+            "action-db-name": "Action code name",
+            "action-db-hint": "Used in python code to reference current action",
+            "db-name-error": "Use camelCase. Only latin letters."
         },
         "role": {
             "roles-list-header": "Workflow roles",

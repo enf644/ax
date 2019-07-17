@@ -292,10 +292,11 @@ class UpdateField(graphene.Mutation):
         guid = graphene.String()
         name = graphene.String()
         db_name = graphene.String()
-        is_required = graphene.Boolean()
-        is_whole_row = graphene.Boolean()
-        options_json = graphene.JSONString()
-        private_options_json = graphene.JSONString()
+        is_required = graphene.Boolean(required=False, default_value=None)
+        is_whole_row = graphene.Boolean(required=False, default_value=None)
+        options_json = graphene.JSONString(required=False, default_value=None)
+        private_options_json = graphene.JSONString(
+            required=False, default_value=None)
 
     ok = graphene.Boolean()
     field = graphene.Field(Field)

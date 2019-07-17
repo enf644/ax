@@ -38,7 +38,7 @@ env_variables:
   # AX_DB_PASSWORD:
   # AX_DB_DATABASE:
   # AX_DB_SQLITE_FILENAME: "my_ax.db" #  default='ax_sqlite.db
-  AX_DB_SQLITE_ABSOLUTE_PATH: "/tmp" #  default=None
+  # AX_DB_SQLITE_ABSOLUTE_PATH: "/tmp" #  default=None
   AX_LOCALE: ru # default=en
-  AX_TMP_ABSOLUTE_PATH: '/tmp' #'D:\Projects\tmp'
-  AX_UPLOADS_ABSOLUTE_PATH: '/tmp/uploads'
+  # AX_TMP_ABSOLUTE_PATH: '/tmp' #'D:\Projects\tmp'
+  # AX_UPLOADS_ABSOLUTE_PATH: '/tmp/uploads'

@@ -3,7 +3,6 @@
 import os
 import sys
 import asyncio
-from pathlib import Path
 import uuid
 
 from sanic import response
@@ -13,7 +12,6 @@ from graphql_ws.websockets_lib import WsLibSubscriptionServer
 from sanic_graphql import GraphQLView
 from graphql.execution.executors.asyncio import AsyncioExecutor
 import ujson as json
-# from python_resumable import Uploader
 
 import backend.cache as ax_cache
 import backend.schema as ax_schema
@@ -23,16 +21,15 @@ from backend.tus import tus_bp
 import backend.model as ax_model
 from backend.model import AxForm, AxField
 import backend.schemas.form_schema as form_schema
+import backend.scheduler as ax_scheduler
 import backend.dialects as ax_dialects
 
 this = sys.modules[__name__]
 
-loop = None
+loop = asyncio.new_event_loop()
 app = None
 graphql_view = None
 dummy_view = None
-tmp_root_dir = None
-uploads_root_dir = None
 
 
 class AxGraphQLView(GraphQLView):
@@ -41,6 +38,7 @@ class AxGraphQLView(GraphQLView):
     def __init__(self, **kwargs):
         super().__init__(schema=ax_schema.schema,
                          graphiql=False,
+                         enable_async=True,
                          executor=AsyncioExecutor(loop=this.loop))
 
     @staticmethod
@@ -55,37 +53,52 @@ def init_graphql_view():  # pylint: disable=unused-variable
     this.app.add_route(this.graphql_view, '/api/graphql')
 
 
-def init_routes(sanic_app, tmp_absolute_path, uploads_absolute_path):
+
+async def do_action():
+    """ Test function """
+    from backend.schema import schema
+
+    values = {
+        "searchString": "Chateau Lafite Rothschild 1996",
+        "supplier": "9c198568469447268d62b395badeb71f",
+        "loader": "0eb38c45e9954442995c6205f2e3f7eb"
+    }
+
+    query = f"""
+        mutation(
+            $formDbName: String,
+            $actionDbName: String,
+            $values: String
+        ){{
+            doAction(
+                formDbName: $formDbName
+                actionDbName: $actionDbName
+                values: $values
+            ) {{
+                form {{
+                guid
+                dbName
+                }}
+                newGuid
+                messages
+                ok
+            }}
+        }}
+    """
+    variables = {
+        "formDbName": "Stock",
+        "actionDbName": "addDraft",
+        "values": json.dumps(values)
+    }
+    result = schema.execute(query, variables=variables)
+    test_str = json.dumps(result.data, sort_keys=True, indent=4)
+    print(test_str)
+
+
+def init_routes(sanic_app):
     """Innitiate all Ax routes"""
     try:
-        try:
-            this.uploads_root_dir = ax_misc.path('uploads')
-            if uploads_absolute_path is not None:
-                this.uploads_root_dir = str(Path(uploads_absolute_path))
-            if not ax_misc.server_is_app_engine():
-                if not os.path.exists(this.uploads_root_dir):
-                    logger.info('------- TRY CREATE UPLOAD DIR -----')
-                    # os.makedirs(this.uploads_root_dir)
-        except Exception:
-            logger.exception(
-                'Uploads folder does not exists and Ax cant create it')
-            raise
-
-        try:
-            this.tmp_root_dir = ax_misc.path('tmp')
-            if tmp_absolute_path is not None:
-                this.tmp_root_dir = str(Path(tmp_absolute_path))
-            if not os.path.exists(this.tmp_root_dir):
-                if not ax_misc.server_is_app_engine():
-                    logger.info('------- TRY CREATE TMP DIR -----')
-                    # os.makedirs(this.tmp_root_dir)
-        except Exception:
-            logger.exception(
-                'Tmp folder does not exists and Ax cant create it')
-            raise
-
         # Add tus upload blueprint
-        tus_bp.upload_folder = this.tmp_root_dir
         sanic_app.blueprint(tus_bp)
         # Add web-socket subscription server
         subscription_server = WsLibSubscriptionServer(ax_schema.schema)
@@ -118,7 +131,7 @@ def init_routes(sanic_app, tmp_absolute_path, uploads_absolute_path):
 
             # if row_guid is null -> display from /tmp without permissions
             if not row_guid or row_guid == 'null':
-                tmp_dir = os.path.join(this.tmp_root_dir, file_guid)
+                tmp_dir = os.path.join(ax_misc.tmp_root_dir, file_guid)
                 file_name = os.listdir(tmp_dir)[0]
                 temp_path = os.path.join(tmp_dir, file_name)
                 return await response.file(temp_path)
@@ -149,7 +162,7 @@ def init_routes(sanic_app, tmp_absolute_path, uploads_absolute_path):
             # if file exists -> return file
             row_guid_str = str(uuid.UUID(row_guid))
             file_path = os.path.join(
-                this.uploads_root_dir,
+                ax_misc.uploads_root_dir,
                 'form_row_field_file',
                 form_guid,
                 row_guid_str,
@@ -220,6 +233,223 @@ def init_routes(sanic_app, tmp_absolute_path, uploads_absolute_path):
             ret_str = 'READ cache == ' + \
                 str(obj[0].username + ' - ' + os.environ['AX_VERSION'])
             return response.text(ret_str)
+
+        @sanic_app.route('/api/wine')
+        async def wine(request):  # pylint: disable=unused-variable
+            """Test function"""
+            del request
+
+            from pyquery import PyQuery as pq
+            # from lxml import etree
+            import urllib
+            import re
+
+            search_string = 'Chateau Pontet-Canet 2005'
+            url_part = urllib.parse.quote_plus(search_string)
+
+            search_url = f'http://www.wine.com/search/' + url_part + '/0?showOutOfStock=true'
+            search_page = pq(url=search_url)
+            wine_page_url = search_page(".prodItemInfo_link")[0].attrib['href']
+            wine_page = pq(url='http://www.wine.com' + wine_page_url)
+
+            initials = wine_page(
+                ".pipProfessionalReviews_list .wineRatings_initials")
+            ratings = wine_page(".wineRatings_rating")
+            texts = wine_page(".pipSecContent_copy")
+
+            dollars = pq(wine_page(".productPrice_price-saleWhole")).text()
+            cents = pq(wine_page(".productPrice_price-saleFractional")).text()
+            price = dollars + "." + cents
+
+            label_small_img = wine_page(".pipThumb_img-0")[0].attrib['src']
+            front_small_img = wine_page(".pipThumb_img-1")[0].attrib['src']
+            back_small_img = wine_page(".pipThumb_img-2")[0].attrib['src']
+
+            label_img_id = re.findall(r'/(\w+).jpg$', label_small_img)[0]
+            front_img_id = re.findall(r'/(\w+).jpg$', front_small_img)[0]
+            back_img_id = re.findall(r'/(\w+).jpg$', back_small_img)[0]
+
+            name = pq(wine_page(".pipName")).text()
+            vintage = re.findall(r'(\d+)$', name)[0]
+
+            big_img_url = 'http://www.wine.com/product/images/w_767,c_fit,q_auto:good,fl_progressive/'
+
+            ret_dict = {
+                "search_string": search_string,
+                "name": name,
+                "vintage": vintage,
+                "verietal": pq(wine_page(".prodItemInfo_varietal")).text(),
+                "origin": pq(wine_page(".pipOrigin_link")).text(),
+                "volume": pq(wine_page(".prodAlcoholVolume_text")[0]).text(),
+                "alcohol": pq(wine_page(".prodAlcoholPercent_percent")[0]).text(),
+                "price": price,
+                "label_img": big_img_url + label_img_id + '.jpg',
+                "front_img": big_img_url + front_img_id + '.jpg',
+                "back_img": big_img_url + back_img_id + '.jpg'
+            }
+            for idx, pq_element in enumerate(initials):
+                tag = pq(pq_element).text()
+                ret_dict[tag] = {
+                    "rating": pq(ratings[idx]).text(),
+                    "text": pq(texts[idx]).text(),
+                }
+            test_str = json.dumps(ret_dict, sort_keys=True, indent=4)
+            return response.html("<pre>" + test_str + "</pre>")
+
+        @sanic_app.route('/api/excel')
+        async def excel(request):  # pylint: disable=unused-variable
+            """Test function"""
+            del request
+            import openpyxl
+            from openpyxl.styles import colors
+            from openpyxl.styles import Font
+            from pyquery import PyQuery as pq
+            # from lxml import etree
+            import urllib
+            import re
+
+            wb = openpyxl.load_workbook(r'D:\Projects\wine_art_short.xlsx')
+            ws = wb.active
+            search_list = []
+
+            # For each row of catalog -
+            for row_index, row in enumerate(ws.iter_rows()):
+
+                # Checks if row data is valid. If not ->
+                # append error info to row.
+                row_is_valid = True
+                errors = []
+
+                # Get row values
+                name = str(row[0].value)
+                vintage = str(row[1].value)
+                volume = str(row[2].value)
+                quantity = row[3].value
+                price_string = str(row[4].value)
+
+                volume_is_float = True
+                try:
+                    float(volume)
+                except ValueError:
+                    volume_is_float = False
+
+                vintage_is_int = True
+                vintage_clean = None
+                try:
+                    vintage_stipped = re.findall(r"\d+", vintage)[0]
+                    vintage_clean = int(vintage_stipped)
+                except Exception: # pylint: disable=broad-except
+                    vintage_is_int = False
+
+                # Work only with rows that contains quantity
+                if not quantity or quantity == 0 or not name:
+                    row_is_valid = False
+                    errors.append(f'Quantity={quantity}')
+                # If many years in cell -> we have a gift
+                elif not vintage or not vintage_is_int:
+                    row_is_valid = False
+                    errors.append(
+                        'Multiple years detected, gifts not supported')
+                # If many years in cell -> we have a gift
+                elif not volume or not volume_is_float:
+                    row_is_valid = False
+                    errors.append('Volume is wrong, gifts not supported')
+                elif 'OWC-' in name:
+                    row_is_valid = False
+                    errors.append('OWC gifts not supported')
+
+                if not row_is_valid:
+                    msg = " ".join(errors)
+                    row[6].value = msg
+                    row[6].font = Font(color=colors.RED)
+                else:
+                    search_string = name + ' ' + str(vintage_clean)
+                    stock_item = {
+                        "rowIndex": row_index,
+                        "searchString": search_string,
+                        "vintage": str(vintage_clean),
+                        "volume": volume,
+                        "quantity": quantity,
+                        "priceString": price_string,
+                    }
+                    search_list.append(stock_item)
+
+            items_total = len(search_list)
+            print(f"Found {items_total} stock items to search. Starting search")
+
+            for idx, stock_item in enumerate(search_list):
+                print(f"Parsing {idx}/{items_total}")
+                url_part = urllib.parse.quote_plus(stock_item["searchString"])
+                search_url = f'http://www.wine.com/search/' + url_part + '/0?showOutOfStock=true'
+                search_page = pq(url=search_url)
+                wine_page_url = search_page(".prodItemInfo_link")[0].attrib['href']
+                wine_name = pq(search_page(".prodItemInfo_name")[0]).text()
+                wine_vintage = re.findall(r'(\d+)$', wine_name)[0]
+
+                search_is_valid = True
+                # If nothing found - error
+                if not wine_name:
+                    search_is_valid = False
+                    errors.append('No wine found')
+
+                # Years do not match
+                if str(wine_vintage) != str(stock_item['vintage']):
+                    search_is_valid = False
+                    errors.append('Years do not match')
+
+                if not search_is_valid:
+                    stock_item["error"] = " ".join(errors)
+                    print(stock_item["error"])
+                else:
+                    stock_item["wineUrl"] = wine_page_url
+                    stock_item["wineName"] = wine_name
+                    print(f"{wine_name} OK")
+
+            # Save results to excel -
+            print("grabbing done, saving to excel")
+            for row_index, row in enumerate(ws.iter_rows()):
+                for stock_item in search_list:
+                    if stock_item["rowIndex"] == row_index:
+                        if "error" in stock_item:
+                            row[6].value = stock_item["error"]
+                            row[6].font = Font(color=colors.RED)
+                            row[7].value = stock_item["searchString"]
+                        else:
+                            row[7].value = stock_item["searchString"]
+                            row[8].value = stock_item["wineName"]
+                            row[9].value = stock_item["wineUrl"]
+
+                            if stock_item["searchString"] == stock_item["wineName"]:
+                                row[7].font = Font(color=colors.GREEN)
+                                row[8].font = Font(color=colors.GREEN)
+
+
+            wb.save(r'D:\Projects\parse_result.xlsx')
+            print('ALL DONE EXCEL SAVED')
+
+            # Check if stock exists with this searchString
+            # if exists -> get wine guid and skip Grab
+            # else ->
+                # Grab search page. Check if wine is found. Get wine id. If not -> append error info to row.
+                # Check if wine id already grabbed, get wine data
+                # Do create action on Wine
+                    # Grab wine page -> get wine data
+            # If Wine guid is set - create stock row -> write excel with wine data. Name, verietal, origin, volume
+            # Create new excel file and write it to current loader row.
+
+            test_str = json.dumps(search_list, sort_keys=True, indent=4)
+            return response.html("<pre>" + test_str + "</pre>")
+
+        @sanic_app.route('/api/graph')
+        async def graph(request):  # pylint: disable=unused-variable
+            """Test function"""
+            del request
+
+            job = ax_scheduler.scheduler.add_job(do_action, id='do_action_job')
+
+
+            return response.html("<pre> Started" + job.name + "</pre>")
+
     except Exception:
         logger.exception('Error initiating routes.')
         raise

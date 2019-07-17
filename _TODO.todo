@@ -515,6 +515,25 @@ AX 0.2:
                 ✔ AxForm - after delete -> display empty message @done(19-07-03 17:38)
                 ✔ After action -> display toast in standalone form @done(19-07-03 17:48)
             ✔ Error -> Delete field, column in grid stays @done(19-07-03 18:11)
+    ☐ WINE
+        ☐ Loader
+            ✔ Action db_name @done(19-07-10 09:01)
+            ☐ From routes - parse xls and doAction create on Wine
+        ☐ Catalog
+            ☐ Create mock using template
+            ☐ Graphql catalog
+                ☐ Authorisation
+        ☐ Client authorisation
+            ☐ Client form
+            ☐ Auth process
+        ☐ Cart
+            ☐ Cart form
+            ☐ Cart view
+        ☐ Order form
+            ☐ Order form
+        ☐ Questions
+            ☐ What if two catalogs have same wine?
+            ☐ What if wine disapeared from catalog? It must be deleted?
     ☐ TEST MILESTONE
         ✔ Comment every def and gql method like ax_misc @done(19-07-05 10:24)
         ✘ Try catch for every vue method @cancelled(19-07-05 11:23)
@@ -527,6 +546,9 @@ AX 0.2:
             ☐ Action drag on update action??
             ☐ If new record form closed - it must be reset
             ☐ Check if app have access to uploads dir.
+            ☐ If app engine -> disable Web-sockets
+            ☐ If error accured while executing field before/after code -> the exception must be seen in modal for user
+            ☐ If someone makes create action, the notification is poped up in constructor!
     ☐ CYPRESS TESTS FOR ALL
     ☐ ESTABLISH CI
         ☐ Each commit runs tests - installs from pip, runs cypress tests
@@ -661,6 +683,7 @@ AX 0.3:
             ☐ Monaco language server, language client
             ☐ Code snippets
         ☐ Think of ст, фт, пси - how to with Ax. How to update existing application?
+        ☐ While code in fullscreen mode - the debugger is avalible. You can choose some row from db_table and run action. The result will be displayed in modal. The database will not be modified.
 
 
 
@@ -728,6 +751,7 @@ NEW FROGS TODOS:
     ☐ if field removed - remove all files from /uploads/from_files
     ✔ If field is virtual of readonly - hide hint and required settings @done(19-07-02 12:39)
     ☐ Some fields can be added only once to form - AxNum, AxChangelog
+    ☐ Form constructor - when field is dragged to folder - the folder is focused edited and selected
 
 
 NEW FEATURES:
@@ -751,6 +775,8 @@ NEW FEATURES:
     ☐ Toasts in ax-grid and ax-form without admin (idie)
     ☐ Tus upload -> concationation
     ☐ Tus upload -> checksum
+    ☐ GraphQL copy help snippets - action, grid
+    ☐ Workflow constructor - hints onmouseover on states and actions. Description is displayed.
 
     
 MAYBE LATER:

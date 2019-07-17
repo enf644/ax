@@ -222,6 +222,7 @@ class UpdateAction(graphene.Mutation):
     class Arguments:  # pylint: disable=missing-docstring
         guid = graphene.String()
         name = graphene.String(required=False, default_value=None)
+        db_name = graphene.String(required=False, default_value=None)
         code = graphene.String(required=False, default_value=None)
         confirm_text = graphene.String(required=False, default_value=None)
         close_modal = graphene.Boolean(required=False, default_value=None)
@@ -240,6 +241,8 @@ class UpdateAction(graphene.Mutation):
 
             if args.get('name'):
                 ax_action.name = args.get('name')
+            if args.get('db_name'):
+                ax_action.db_name = args.get('db_name')
             if args.get('code'):
                 ax_action.code = args.get('code')
             if args.get('confirm_text'):

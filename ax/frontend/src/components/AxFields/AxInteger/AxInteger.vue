@@ -1,6 +1,7 @@
 <template>
   <v-text-field
     :error-messages='errors'
+    :hint='options.hint'
     :label='name'
     @keyup='isValid'
     type='number'

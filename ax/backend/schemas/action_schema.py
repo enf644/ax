@@ -18,7 +18,9 @@ from backend.model import AxForm, AxAction
 import backend.model as ax_model
 import backend.dialects as ax_dialects
 import backend.pubsub as ax_pubsub
+import backend.schema as ax_schema
 import backend.misc as ax_misc
+import backend.scheduler as ax_scheduler
 
 # import backend.cache as ax_cache # TODO use cache!
 from backend.schemas.types import Action, Form
@@ -88,21 +90,26 @@ def do_exec(action, form):
                 state will not be changed
     """
     localz = dict()
-    localz['ax_form'] = form
-    item = DotMap()  # javascript style dicts item['guid'] == item.guid
-    item['guid'] = form.row_guid
-    item['ax_from_state'] = action.from_state.name
-    item['ax_to_state'] = action.to_state.name
+    ax = DotMap()  # javascript style dicts item['guid'] == item.guid
+    ax.row.guid = form.row_guid
+    ax.form = form
+    ax.action = action
+    ax.schema = ax_schema.schema
+    ax.sql = ax_dialects.dialect.custom_query
+    ax.paths.uploads = ax_misc.uploads_root_dir
+    ax.paths.tmp = ax_misc.tmp_root_dir
+    ax.do_action = ax_scheduler.do_action
     for field in form.db_fields:
-        item[field.db_name] = field.value
-    localz['item'] = item
+        ax.row[field.db_name] = field.value
+    localz['ax'] = ax
+    line_number = None
 
     try:
         exec(str(action.code), globals(), localz)   # pylint: disable=exec-used
         ret_data = {
             "info": localz['ax_message'] if 'ax_message' in localz else None,
             "error": localz['ax_error'] if 'ax_error' in localz else None,
-            "item": localz['item'],
+            "item": localz['ax']['row'],
             "exception": None,
             "abort": localz['ax_abort'] if 'ax_abort' in localz else None
         }
@@ -129,8 +136,10 @@ def do_exec(action, form):
         detail = err.args[0]
         cl, exc, tb = sys.exc_info()
         del cl, exc
-        line_number = traceback.extract_tb(tb)[-1][1]
+        # line_number = traceback.extract_tb(tb)[-1][1]
+        line_number = traceback.extract_tb(tb)[1].lineno
         del tb
+
         ret_data = {
             "info": None,
             "item": None,
@@ -146,22 +155,20 @@ def do_exec(action, form):
         return ret_data
 
 
-def get_before_form(row_guid, form_guid, ax_action):
+def get_before_form(row_guid, form, ax_action):
     """Constructs before_form AxForm object and populate fields with
     values of specific row. AxForm.fields[0].value
 
     Args:
         row_guid (str): guid of specific row
-        form_guid (str): guid of AxForm
+        form (AxForm): empty AxForm
         ax_action (AxAction): AxAction wich is currently happening
 
     Returns:
        before_object (AxForm), tobe_object(AxForm): before_object is AxForm
        with field values of specific row. tobe_row is dummy for future
        population"""
-    tobe_form = ax_model.db_session.query(AxForm).filter(
-        AxForm.guid == uuid.UUID(form_guid)
-    ).first()
+    tobe_form = form
 
     if row_guid:
         fields_names = [field for field in tobe_form.db_fields]
@@ -230,6 +237,7 @@ def run_field_backend(field, action, before_form, tobe_form, current_user,
 
 class DoAction(graphene.Mutation):
     """ Performs Action on row
+        # 0. Get AxForm
         # 1. Get AxAction and query_type
         # 2. Get before_form - fill it with values from database row
         # 3. Assemble tobe_object - fill it with values from AxForm.vue
@@ -265,8 +273,10 @@ class DoAction(graphene.Mutation):
     """
     class Arguments:  # pylint: disable=missing-docstring
         row_guid = graphene.String(required=False, default_value=None)
-        form_guid = graphene.String()
-        action_guid = graphene.String()
+        form_guid = graphene.String(required=False, default_value=None)
+        form_db_name = graphene.String(required=False, default_value=None)
+        action_guid = graphene.String(required=False, default_value=None)
+        action_db_name = graphene.String(required=False, default_value=None)
         values = graphene.String()
         modal_guid = graphene.String(required=False, default_value=None)
 
@@ -276,7 +286,7 @@ class DoAction(graphene.Mutation):
     modal_guid = graphene.String()
     ok = graphene.Boolean()
 
-    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+    def mutate(self, info, **args):  # pylint: disable=missing-docstring
         try:
             del info
             values_string = args.get('values')
@@ -284,13 +294,37 @@ class DoAction(graphene.Mutation):
             row_guid = args.get('row_guid')
             modal_guid = args.get('modal_guid')
             form_guid = args.get('form_guid')
+            form_db_name = args.get('form_db_name')
+            action_guid = args.get('action_guid')
+            action_db_name = args.get('action_db_name')
             new_guid = uuid.uuid4()
             current_user = None  # TODO: implement users
 
+            # 0. Get AxForm
+            ax_form = None
+            if form_guid:
+                ax_form = ax_model.db_session.query(AxForm).filter(
+                    AxForm.guid == uuid.UUID(form_guid)
+                ).first()
+            elif form_db_name:
+                ax_form = ax_model.db_session.query(AxForm).filter(
+                    AxForm.db_name == form_db_name
+                ).first()
+            else:
+                raise ValueError(
+                    'doAction GQL - form guid or db_name required')
+
             # 1. Get AxAction and query_type
-            ax_action = ax_model.db_session.query(AxAction).filter(
-                AxAction.guid == uuid.UUID(args.get('action_guid'))
-            ).first()
+            ax_action = None
+            if not action_guid and not action_db_name:
+                raise ValueError(
+                    'doAction GQL - action guid or db_name required')
+            for action in ax_form.actions:
+                if not ax_action:
+                    if action_guid and action.guid == uuid.UUID(action_guid):
+                        ax_action = action
+                    if action_db_name and action.db_name == action_db_name:
+                        ax_action = action
 
             query_type = 'update'
             if ax_action.from_state.is_start:
@@ -301,7 +335,7 @@ class DoAction(graphene.Mutation):
             # 2. Get before_form - fill it with values from database row
             before_form, tobe_form = get_before_form(
                 row_guid=row_guid,
-                form_guid=form_guid,
+                form=ax_form,
                 ax_action=ax_action)
 
             # 3. Assemble tobe_object - fill it with values from AxForm.vue

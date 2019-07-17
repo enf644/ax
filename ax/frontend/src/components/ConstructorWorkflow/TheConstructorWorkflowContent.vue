@@ -27,7 +27,14 @@
       />
     </modal>
 
-    <modal adaptive height='auto' name='update-action' scrollable width='1000px'>
+    <modal
+      :clickToClose='false'
+      adaptive
+      height='auto'
+      name='update-action'
+      scrollable
+      width='1000px'
+    >
       <TheActionModal
         :guid='this.selectedActionGuid'
         @close='closeModal'
@@ -1363,11 +1370,11 @@ export default {
       this.$modal.show('update-action');
     },
 
-    updateModalAction() {
+    updateModalAction(doClose = true) {
       const actionGuid = this.$refs.actionModal.currentGuid;
       setTimeout(() => {
         this.redrawSingleAction(actionGuid);
-        this.closeModal();
+        if (doClose) this.closeModal();
       }, 100);
     },
 
