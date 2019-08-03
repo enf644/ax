@@ -22,7 +22,7 @@ from backend.schemas.types import Form, PositionInput
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
 
 
-def tom_sync_form(old_form_db_name, new_form_db_name):
+async def tom_sync_form(old_form_db_name, new_form_db_name):
     """ Relation fields such as Ax1to1, Ax1tom and Ax1tomTable are using
     options_json to store db_name of related form. If form db_name is changed,
     the Json's in every relation field must be updated.
@@ -44,7 +44,7 @@ def tom_sync_form(old_form_db_name, new_form_db_name):
                 ax_model.db_session.commit()
 
 
-def is_db_name_avalible(_db_name) -> bool:
+async def is_db_name_avalible(_db_name) -> bool:
     """Check if table with name '_db_name' is already exists in database"""
     try:
         meta = MetaData()
@@ -56,16 +56,16 @@ def is_db_name_avalible(_db_name) -> bool:
         raise
 
 
-def create_db_table(_db_name: str) -> None:
+async def create_db_table(_db_name: str) -> None:
     """Create database table"""
     try:
-        ax_dialects.dialect.create_data_table(db_name=_db_name)
+        await ax_dialects.dialect.create_data_table(db_name=_db_name)
     except Exception:
         logger.exception('Error creating new Form. Cant create db table')
         raise
 
 
-def create_ax_form(_name: str, _db_name: str) -> object:
+async def create_ax_form(_name: str, _db_name: str) -> object:
     """Creates AxForm object"""
     try:
         ax_form = AxForm()
@@ -81,7 +81,7 @@ def create_ax_form(_name: str, _db_name: str) -> object:
         raise
 
 
-def create_default_tab(ax_form, name) -> None:
+async def create_default_tab(ax_form, name) -> None:
     """ Create default AxForm tab """
     try:
         ax_field = AxField()
@@ -96,7 +96,7 @@ def create_default_tab(ax_form, name) -> None:
         raise
 
 
-def create_default_grid(ax_form, name):
+async def create_default_grid(ax_form, name):
     """Creates default AxGrid"""
     try:
         ax_grid = AxGrid()
@@ -126,7 +126,7 @@ def create_default_grid(ax_form, name):
         raise
 
 
-def create_default_states(
+async def create_default_states(
         ax_form, default_start, default_state, default_all, default_deleted):
     """Creates default AxStates"""
     try:
@@ -173,7 +173,7 @@ def create_default_states(
         raise
 
 
-def create_default_actions(
+async def create_default_actions(
         ax_form, states, default_create, default_delete,
         default_update, delete_confirm):
     """Creates default AxActions"""
@@ -210,7 +210,7 @@ def create_default_actions(
         raise
 
 
-def create_default_roles(ax_form, states, actions, default_admin):
+async def create_default_roles(ax_form, states, actions, default_admin):
     "Creates default AxRole"
 
     admin_role = AxRole()
@@ -282,23 +282,24 @@ class CreateForm(graphene.Mutation):
             default_update = args.get('default_update')
             delete_confirm = args.get('delete_confirm')
 
-            if is_db_name_avalible(_db_name=db_name) is False:
+            name_avalible = await is_db_name_avalible(_db_name=db_name)
+            if name_avalible is False:
                 return CreateForm(form=None, avalible=False, ok=True)
 
-            create_db_table(_db_name=db_name)
-            new_form = create_ax_form(_name=name, _db_name=db_name)
+            await create_db_table(_db_name=db_name)
+            new_form = await create_ax_form(_name=name, _db_name=db_name)
 
             # Create default process ??
 
             # Add Admins role to object
-            states = create_default_states(
+            states = await create_default_states(
                 ax_form=new_form,
                 default_start=default_start,
                 default_state=default_state,
                 default_all=default_all,
                 default_deleted=default_deleted)
 
-            actions = create_default_actions(
+            actions = await create_default_actions(
                 ax_form=new_form,
                 states=states,
                 default_create=default_create,
@@ -306,14 +307,14 @@ class CreateForm(graphene.Mutation):
                 default_update=default_update,
                 delete_confirm=delete_confirm)
 
-            create_default_roles(
+            await create_default_roles(
                 ax_form=new_form,
                 states=states,
                 actions=actions,
                 default_admin=default_admin)
 
-            create_default_grid(ax_form=new_form, name=default_grid_name)
-            create_default_tab(ax_form=new_form, name=default_tab_name)
+            await create_default_grid(ax_form=new_form, name=default_grid_name)
+            await create_default_tab(ax_form=new_form, name=default_tab_name)
 
             ax_schema.init_schema()
             # TODO: check for multiple workers and load balancers.
@@ -353,7 +354,8 @@ class UpdateForm(graphene.Mutation):
 
             if str(args.get('db_name')) != str(ax_form.db_name):
                 db_name_changed = args.get('db_name')
-                if is_db_name_avalible(_db_name=args.get('db_name')) is False:
+                name_avalible = await is_db_name_avalible(_db_name=args.get('db_name')) 
+                if name_avalible is False:
                     return UpdateForm(
                         form=None,
                         avalible=False,
@@ -361,7 +363,7 @@ class UpdateForm(graphene.Mutation):
                         ok=True
                     )
                 else:
-                    ax_dialects.dialect.rename_table(
+                    await ax_dialects.dialect.rename_table(
                         old=ax_form.db_name,
                         new=args.get('db_name'))
                     tom_sync_needed = True
@@ -377,7 +379,7 @@ class UpdateForm(graphene.Mutation):
                 ax_schema.init_schema()
 
             if tom_sync_needed:
-                tom_sync_form(
+                await tom_sync_form(
                     old_form_db_name=old_form_db_name,
                     new_form_db_name=ax_form.db_name)
 
@@ -446,7 +448,7 @@ class DeleteForm(graphene.Mutation):
             for field in ax_form.fields:
                 ax_model.db_session.delete(field)
 
-            ax_dialects.dialect.drop_table(db_name=ax_form.db_name)
+            await ax_dialects.dialect.drop_table(db_name=ax_form.db_name)
             ax_model.db_session.delete(ax_form)
             ax_model.db_session.commit()
 
@@ -603,7 +605,7 @@ class HomeQuery(graphene.ObjectType):
         try:
             query = Form.get_query(info)  # SQLAlchemy query
             form_list = query.all()
-            await ax_cache.cache.set('form_list', form_list)
+            # await ax_cache.cache.set('form_list', form_list)
             return form_list
         except Exception:
             logger.exception('Error in GQL query - resolve_all_forms.')

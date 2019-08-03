@@ -1,6 +1,8 @@
 """Axy Class Model
 Contains class structure of Ax storage.
 """
+
+import os
 import sys
 from pathlib import Path
 import uuid
@@ -14,6 +16,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 import ujson as json
 import backend.misc as ax_misc
+from sqlalchemy.pool import SingletonThreadPool
 
 
 # TODO: replace String(2000) for json fields with dialect agnostic JSON field
@@ -56,7 +59,10 @@ def init_model(dialect: str, host: str, port: str, login: str, password: str,
             raise Exception(msg)
 
         logger.debug('DB url = {url}', url=this.db_url)
-        this.engine = create_engine(this.db_url, convert_unicode=True)
+        this.engine = create_engine(
+            this.db_url,
+            convert_unicode=True,
+            poolclass=SingletonThreadPool)
         this.db_session = scoped_session(sessionmaker(autocommit=False,
                                                       autoflush=False,
                                                       bind=this.engine))
@@ -180,6 +186,13 @@ class AxForm(Base):
         """Set current AxForm to match specific row in database table"""
         return "GET ROW DATA"
 
+    def get_field(self, field_db_name):
+        """ returns AxFiled by given db_name of field"""
+        for field in self.fields:
+            if field.db_name == field_db_name:
+                return field
+        return None
+
 
 class AxFieldType(Base):
     """List of avalible ax field types"""
@@ -293,6 +306,21 @@ class AxField(Base):
     def options(self):
         """ return parsed options_json """
         return json.loads(self.options_json)
+
+    @property
+    def files_path(self):
+        """ returns path to directory where files for 
+        current field would be stored
+        Sample - 
+        """
+        files_path = os.path.join(
+            ax_misc.uploads_root_dir,
+            'form_row_field_file',
+            str(self.form.guid),
+            str(uuid.UUID(str(self.form.row_guid))),
+            str(str(self.guid))
+        )
+        return files_path
 
 
 class AxGrid(Base):

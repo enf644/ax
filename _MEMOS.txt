@@ -14,22 +14,6 @@ THINK ABOUT
 // prettier-ignore
 
 
-Parse Price list
-    for each row of price - create new item
-        Construct json values of Wine form
-        doAction - create new row
-
-Run parser
-    query - all ungrabbed items, using server-filter
-    For each item:
-        doAction -> Grab
-
-Grab
-    Use search string and get info on wine.com
-    Set form values
-
-
-
 
 
 Without Ax:

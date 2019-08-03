@@ -4,7 +4,7 @@
     <br />
     <v-chip
       :key='file.guid'
-      @click='openFile(file.guid)'
+      @click='openFile(file)'
       @input='deleteFile(file.guid)'
       close
       v-for='file in this.currentValue'
@@ -32,7 +32,7 @@
 <script>
 import i18n from '../../../locale.js';
 import uuid4 from 'uuid4';
-import { getAxHost } from '../../../misc';
+import { getAxHost, uuidWithDashes } from '../../../misc';
 import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
 import getClassNameForExtension from 'font-awesome-filetypes';
@@ -187,10 +187,11 @@ export default {
         ...this.currentValue.filter(element => element.guid !== guid)
       ];
     },
-    openFile(guid) {
-      const url = `http://${getAxHost()}/api/file/${this.formGuid}/${
-        this.rowGuid
-      }/${this.fieldGuid}/${guid}`;
+    openFile(file) {
+      const rowGuid = uuidWithDashes(this.rowGuid);
+      const url = `http://${getAxHost()}/api/file/${this.formGuid}/${rowGuid}/${
+        this.fieldGuid
+      }/${file.guid}/${file.name}`;
       Object.assign(document.createElement('a'), {
         target: '_blank',
         href: url

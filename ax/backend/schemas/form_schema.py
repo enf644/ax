@@ -18,7 +18,7 @@ import backend.schemas.action_schema as action_schema
 import ujson as json
 
 
-def set_form_values(ax_form, row_guid):
+async def set_form_values(ax_form, row_guid):
     """ Select row from DB and set AxForm.fields values, state and rowGuid
 
     Args:
@@ -33,7 +33,7 @@ def set_form_values(ax_form, row_guid):
     for field in ax_form.db_fields:
         allowed_fields.append(field)
 
-    result = ax_dialects.dialect.select_one(
+    result = await ax_dialects.dialect.select_one(
         form=ax_form,
         fields_list=allowed_fields,
         row_guid=row_guid)
@@ -226,7 +226,7 @@ class CreateField(graphene.Mutation):
             ax_model.db_session.add(ax_field)
 
             if ax_field_type.is_virtual is False:
-                ax_dialects.dialect.add_column(
+                await ax_dialects.dialect.add_column(
                     table=ax_form.db_name,
                     db_name=ax_field.db_name,
                     type_name=ax_field_type.value_type)
@@ -331,7 +331,7 @@ class UpdateField(graphene.Mutation):
                 if db_name_error:
                     db_name = db_name + '_enother'
 
-                ax_dialects.dialect.rename_column(
+                await ax_dialects.dialect.rename_column(
                     table=ax_field.form.db_name,
                     old_name=ax_field.db_name,
                     new_name=db_name,
@@ -393,7 +393,7 @@ class DeleteField(graphene.Mutation):
                 AxColumn.field_guid == ax_field.guid).delete()
 
             if ax_field.is_tab is False and ax_field.is_virtual is False:
-                ax_dialects.dialect.drop_column(
+                await ax_dialects.dialect.drop_column(
                     table=ax_field.form.db_name,
                     column=ax_field.db_name
                 )
@@ -496,9 +496,9 @@ class FormQuery(graphene.ObjectType):
         ax_form = query.filter(AxForm.db_name == db_name).first()
 
         if row_guid is not None:
-            ax_form = set_form_values(ax_form=ax_form, row_guid=row_guid)
+            ax_form = await set_form_values(ax_form=ax_form, row_guid=row_guid)
 
-        ax_form.avalible_actions = action_schema.get_actions(
+        ax_form.avalible_actions = await action_schema.get_actions(
             form=ax_form,
             current_state=ax_form.current_state_name
         )

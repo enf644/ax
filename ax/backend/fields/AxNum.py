@@ -6,7 +6,7 @@ from backend.model import AxMetric
 import backend.model as ax_model
 
 
-def before_insert(field, before_form, tobe_form, action, current_user):
+async def before_insert(field, before_form, tobe_form, action, current_user):
     """
     Executes python code from AxField.private_options
 

@@ -5,7 +5,7 @@ import shutil
 import backend.misc as ax_misc
 
 
-def after_update(field, before_form, tobe_form, action, current_user):
+async def after_update(field, before_form, tobe_form, action, current_user):
     """
     Moves uploaded files from /tmp/<file_guid>/<file_name> folder to
     /uploads/form_row_field_file/<form_guid>/<row_guid>/<file_guid>/<file_name>
@@ -60,12 +60,12 @@ def after_update(field, before_form, tobe_form, action, current_user):
     return field.value
 
 
-def after_insert(field, before_form, tobe_form, action, current_user):
+async def after_insert(field, before_form, tobe_form, action, current_user):
     """ Do the same as after_update """
-    return after_update(field, before_form, tobe_form, action, current_user)
+    return await after_update(field, before_form, tobe_form, action, current_user)
 
 
-def after_delete(field, before_form, tobe_form, action, current_user):
+async def after_delete(field, before_form, tobe_form, action, current_user):
     """
     Deletes all files uploaded for current row
     WARNING! do not use ax_model.db_session.commit() here!

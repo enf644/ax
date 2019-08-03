@@ -151,6 +151,11 @@ ax_logo = """
 """
 
 
+def die():
+    """ Currently not used. Will be used to stop and clean everything on exit"""
+    # await aiohttp_session.close()
+
+
 def main():
     """Main function"""
     # try:
@@ -174,7 +179,12 @@ def main():
 
     print(ax_logo)
     logger.info('Running Ax on {host}:{port}', host=host, port=port)
-    app.run(host=host, port=port, debug=debug, access_log=access_log)
+    app.run(
+        host=host,
+        port=port,
+        debug=debug,
+        access_log=access_log,
+        workers=1)
 
 
 app = Sanic()

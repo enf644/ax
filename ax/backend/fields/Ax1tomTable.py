@@ -4,7 +4,7 @@ import backend.model as ax_model
 from backend.model import Ax1tomReference
 
 
-def before_update(field, before_form, tobe_form, action, current_user):
+async def before_update(field, before_form, tobe_form, action, current_user):
     """Python code runs for field before update
     WARNING! do not use ax_model.db_session.commit() here!
 

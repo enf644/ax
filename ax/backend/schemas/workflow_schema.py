@@ -247,8 +247,8 @@ class UpdateAction(graphene.Mutation):
                 ax_action.code = args.get('code')
             if args.get('confirm_text'):
                 ax_action.confirm_text = args.get('confirm_text')
-
-            ax_action.close_modal = args.get('close_modal')
+            if args.get('close_modal') is not None:
+                ax_action.close_modal = args.get('close_modal')
             if args.get('icon'):
                 ax_action.icon = args.get('icon')
             if args.get('radius') is not None:

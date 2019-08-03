@@ -235,6 +235,7 @@ export default {
           }
         })
         .then(data => {
+          console.log(data);
           this.axItems = data.data[this.viewDbName];
           this.formIcon = data.data.form.icon;
         })

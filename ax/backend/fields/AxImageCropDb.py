@@ -5,7 +5,7 @@ import shutil
 import backend.misc as ax_misc
 
 
-def before_update(field, before_form, tobe_form, action, current_user):
+async def before_update(field, before_form, tobe_form, action, current_user):
     """
     Reads file from tmp/<file_guid>/<file_name> and sets it as
     field value. It will be inserted to database
@@ -28,6 +28,6 @@ def before_update(field, before_form, tobe_form, action, current_user):
     return field.value
 
 
-def before_insert(field, before_form, tobe_form, action, current_user):
+async def before_insert(field, before_form, tobe_form, action, current_user):
     """ Do the same as after_update """
-    return before_update(field, before_form, tobe_form, action, current_user)
+    return await before_update(field, before_form, tobe_form, action, current_user)

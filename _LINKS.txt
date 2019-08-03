@@ -8,6 +8,13 @@ CODE STYLE
     https://github.com/google/styleguide/blob/gh-pages/pyguide.md
 	
 
+
+CONSOLE
+    https://aioconsole.readthedocs.io/en/latest/
+    https://ndabap.github.io/vue-command/
+    https://github.com/dongsuo/vue-terminal  - good
+
+
 MARKDOWN
     https://f-loat.github.io/vue-simplemde/
     https://github.com/hinesboy/mavonEditor/blob/master/README-EN.md

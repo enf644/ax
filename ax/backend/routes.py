@@ -27,6 +27,7 @@ import backend.dialects as ax_dialects
 this = sys.modules[__name__]
 
 loop = asyncio.new_event_loop()
+actions_loop = asyncio.new_event_loop()
 app = None
 graphql_view = None
 dummy_view = None
@@ -104,8 +105,8 @@ def init_routes(sanic_app):
         subscription_server = WsLibSubscriptionServer(ax_schema.schema)
 
         @sanic_app.route(
-            '/api/file/<form_guid>/<row_guid>/<field_guid>', methods=['GET'])
-        async def db_file_viewer(request, form_guid, row_guid, field_guid):  # pylint: disable=unused-variable
+            '/api/file/<form_guid>/<row_guid>/<field_guid>/<file_name>', methods=['GET'])
+        async def db_file_viewer(request, form_guid, row_guid, field_guid, file_name):  # pylint: disable=unused-variable
             """ Used to display files that are stored in database.
                 Used in fields like AxImageCropDb"""
             del request, form_guid
@@ -113,7 +114,7 @@ def init_routes(sanic_app):
             ax_field = ax_model.db_session.query(AxField).filter(
                 AxField.guid == uuid.UUID(field_guid)
             ).first()
-            field_value = ax_dialects.dialect.select_field(
+            field_value = await ax_dialects.dialect.select_field(
                 form_db_name=ax_field.form.db_name,
                 field_db_name=ax_field.db_name,
                 row_guid=safe_row_guid)
@@ -121,10 +122,10 @@ def init_routes(sanic_app):
                 field_value, content_type='application/octet-stream')
 
         @sanic_app.route(
-            '/api/file/<form_guid>/<row_guid>/<field_guid>/<file_guid>',
+            '/api/file/<form_guid>/<row_guid>/<field_guid>/<file_guid>/<file_name>',
             methods=['GET'])
         async def file_viewer(  # pylint: disable=unused-variable
-                request, form_guid, row_guid, field_guid, file_guid):
+                request, form_guid, row_guid, field_guid, file_guid, file_name):
             """ Used to display files uploaded and stored on disk.
                 Displays temp files too. Used in all fields with upload"""
             del request
@@ -140,7 +141,7 @@ def init_routes(sanic_app):
             ax_form = ax_model.db_session.query(AxForm).filter(
                 AxForm.guid == uuid.UUID(form_guid)
             ).first()
-            ax_form = form_schema.set_form_values(
+            ax_form = await form_schema.set_form_values(
                 ax_form=ax_form, row_guid=row_guid)
 
             # Get values from row, field
@@ -172,6 +173,7 @@ def init_routes(sanic_app):
             if not os.path.lexists(file_path):
                 return response.text("", status=404)
             return await response.file(file_path)
+
 
         @sanic_app.route('/<path:path>')
         def index(request, path):  # pylint: disable=unused-variable
@@ -233,6 +235,17 @@ def init_routes(sanic_app):
             ret_str = 'READ cache == ' + \
                 str(obj[0].username + ' - ' + os.environ['AX_VERSION'])
             return response.text(ret_str)
+
+        @sanic_app.route('/api/console')
+        async def console(request):  # pylint: disable=unused-variable
+            """Cache Test function"""
+            del request
+            ax_pubsub.publisher.publish(
+                aiopubsub.Key('console_log'), 'Hello world')
+            
+            return response.text('Pubsub sent')
+
+
 
         @sanic_app.route('/api/wine')
         async def wine(request):  # pylint: disable=unused-variable

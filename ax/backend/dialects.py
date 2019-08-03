@@ -7,6 +7,7 @@ import sqlite3
 import uuid
 import re
 from loguru import logger
+from sqlalchemy.exc import DatabaseError
 import ujson as json
 import backend.model as ax_model
 from backend.model import AxForm
@@ -17,7 +18,7 @@ dialect_name = None
 dialect = None
 
 
-def get_tom_sql(form_db_name, form_name, tom_label, fields):
+async def get_tom_sql(form_db_name, form_name, tom_label, fields):
     """    '{{name}} {{surname}}' -> 'Mikhail Marenov'
     Each form have 1toM label option. It could be '{{name}} {{surname}}'
     This function custructs SELECT statement string that will return
@@ -145,7 +146,7 @@ class SqliteDialect(object):
             ret_param = value if value else None
         return ret_param
 
-    def custom_query(self, sql):
+    def custom_query(self, sql, variables=None):
         """ Executes any SQL. Used in action python code.
 
         Args:
@@ -155,13 +156,26 @@ class SqliteDialect(object):
             List(Dict(column_name: value)): result of SQL query
         """
         try:
-            return ax_model.db_session.execute(sql).fetchall()
+            res = None
+            try:
+                if variables:
+                    res = ax_model.db_session.execute(sql, variables)
+                else:
+                    res = ax_model.db_session.execute(sql)
+            except DatabaseError as exc:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
+
+            if res and res.returns_rows:
+                return res.fetchall()
+            return res
         except Exception:
             logger.exception(
                 f"Error executing SQL - {sql}")
             raise
 
-    def select_all(self, ax_form, quicksearch=None, server_filter=None,
+    async def select_all(self, ax_form, quicksearch=None, server_filter=None,
                    guids=None):
         """ Select * from table
 
@@ -182,7 +196,7 @@ class SqliteDialect(object):
         try:
             sql_params = {}
 
-            tom_name = this.get_tom_sql(
+            tom_name = await this.get_tom_sql(
                 form_db_name=ax_form.db_name,
                 form_name=ax_form.name,
                 tom_label=ax_form.tom_label,
@@ -209,6 +223,9 @@ class SqliteDialect(object):
                 guids_array = json.loads(guids)['items']
                 guids_string = ''
                 if guids_array:
+                    for idx, guid in enumerate(guids_array):
+                        guids_array[idx] = guids_array[idx].replace('-','')
+
                     for check_guid in guids_array:
                         try:
                             uuid.UUID(check_guid)
@@ -227,11 +244,15 @@ class SqliteDialect(object):
                 f", {tom_name} as axLabel FROM {ax_form.db_name}"
                 f" WHERE (1=1 {quicksearch_sql} {serverfilter_sql}) {guids_sql}"
             )
-
-            result = ax_model.db_session.execute(
-                sql,
-                sql_params
-            ).fetchall()
+            try:
+                result = ax_model.db_session.execute(
+                    sql,
+                    sql_params
+                ).fetchall()
+            except DatabaseError as exc:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise            
 
             return result
             # names = [row[0] for row in result]
@@ -240,7 +261,7 @@ class SqliteDialect(object):
                 f"Error executing SQL - quicksearch {ax_form.db_name}")
             raise
 
-    def select_one(self, form, fields_list, row_guid):
+    async def select_one(self, form, fields_list, row_guid):
         """Select fields from table for one row
 
         Args:
@@ -276,7 +297,14 @@ class SqliteDialect(object):
             if ax_misc.string_is_guid(guid_or_num):
                 guid_or_num = guid_or_num.replace('-', '')
             query_params = {"row_guid": guid_or_num}
-            result = ax_model.db_session.execute(sql, query_params).fetchall()
+            result = None
+            try:
+                result = ax_model.db_session.execute(sql, query_params).fetchall()
+            except DatabaseError as exc:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
+
             return result
             # names = [row[0] for row in result]
         except Exception:
@@ -285,7 +313,7 @@ class SqliteDialect(object):
 
 
 
-    def select_field(self, form_db_name, field_db_name, row_guid):
+    async def select_field(self, form_db_name, field_db_name, row_guid):
         """Gets value of single field from SQL. Used in file viewer.
         See routes.py
 
@@ -304,7 +332,14 @@ class SqliteDialect(object):
                    f"FROM {form_db_name} "
                    f"WHERE guid='{row_guid_stripped}'"
                    )
-            result = ax_model.db_session.execute(sql).fetchall()
+            result = None
+            try:
+                result = ax_model.db_session.execute(sql).fetchall()
+            except DatabaseError as exc:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
+
             if result:
                 ret_value = result[0][field_db_name]
             return ret_value
@@ -313,7 +348,7 @@ class SqliteDialect(object):
                 f"Error executing SQL - select_field {form_db_name}")
             raise
 
-    def insert(self, form, to_state_name, new_guid):
+    async def insert(self, form, to_state_name, new_guid):
         """ Insert row into database and set state with AxForm field values
 
         Args:
@@ -356,10 +391,16 @@ class SqliteDialect(object):
             )
             result = ax_model.db_session.execute(sql, query_params)
 
-            last_guid_result = ax_model.db_session.execute(
-                f"SELECT guid FROM {form.db_name} "
-                f"WHERE rowid={result.lastrowid}"
-            ).fetchall()
+            last_guid_result = None
+            try:
+                last_guid_result = ax_model.db_session.execute(
+                    f"SELECT guid FROM {form.db_name} "
+                    f"WHERE rowid={result.lastrowid}"
+                ).fetchall()
+            except DatabaseError as exc:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise            
             last_guid = last_guid_result[0]['guid']
 
             ax_model.db_session.commit()
@@ -368,7 +409,7 @@ class SqliteDialect(object):
             logger.exception('Error executing SQL - insert')
             raise
 
-    def update(self, form, to_state_name, row_guid):
+    async def update(self, form, to_state_name, row_guid):
         """Update database row based of AxForm fields values
 
         Args:
@@ -403,70 +444,102 @@ class SqliteDialect(object):
                 f"SET axState=:axState, {values_sql} "
                 f"WHERE guid=:row_guid "
             )
-            result = ax_model.db_session.execute(sql, query_params)
+            result = None
+            try:
+                result = ax_model.db_session.execute(sql, query_params)
+            except DatabaseError as exc:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
+
             ax_model.db_session.commit()
             return result
         except Exception:
             logger.exception('Error executing SQL - update')
             raise
 
-    def delete(self, form, row_guid):
+    async def delete(self, form, row_guid):
         """ Delete row of table of form"""
         try:
             sql = (
                 f"DELETE FROM {form.db_name} WHERE guid='{row_guid}' "
             )
-            ax_model.db_session.execute(sql)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.execute(sql)
+                ax_model.db_session.commit()
+            except DatabaseError as exc:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise                
         except Exception:
             logger.exception('Error executing SQL - delete')
             raise
 
-    def create_data_table(self, db_name: str) -> None:
+    async def create_data_table(self, db_name: str) -> None:
         """Create table with system columns"""
         try:
             sql = f"""CREATE TABLE {db_name} (
                 guid VARCHAR PRIMARY KEY,
                 axState VARCHAR NOT NULL
             );"""
-            ax_model.db_session.execute(sql)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.execute(sql)
+                ax_model.db_session.commit()
+            except DatabaseError as exc:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise            
         except Exception:
             logger.exception('Error executing SQL - create_data_table')
             raise
 
-    def rename_table(self, old: str, new: str) -> None:
+    async def rename_table(self, old: str, new: str) -> None:
         """Rename table"""
         try:
             sql = f'ALTER TABLE {old} RENAME TO {new};'
-            ax_model.db_session.execute(sql)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.execute(sql)
+                ax_model.db_session.commit()
+            except DatabaseError as exc:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise                
         except Exception:
             logger.exception('Error executing SQL - rename_table')
             raise
 
-    def drop_table(self, db_name: str) -> None:
+    async def drop_table(self, db_name: str) -> None:
         """Drop table"""
         try:
             sql = f'DROP TABLE {db_name};'
-            ax_model.db_session.execute(sql)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.execute(sql)
+                ax_model.db_session.commit()
+            except DatabaseError as exc:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise                
         except Exception:
             logger.exception('Error executing SQL - drop_table')
             raise
 
-    def add_column(self, table: str, db_name: str, type_name: str) -> None:
+    async def add_column(self, table: str, db_name: str, type_name: str) -> None:
         """Add column"""
         try:
             dialect_type = self.get_type(type_name=type_name)
             sql = f"ALTER TABLE `{table}` ADD COLUMN {db_name} {dialect_type}"
-            ax_model.db_session.execute(sql)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.execute(sql)
+                ax_model.db_session.commit()
+            except DatabaseError as exc:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise            
         except Exception:
             logger.exception('Error executing SQL - add_column')
             raise
 
-    def rename_column(self, table, old_name, new_name, type_name) -> None:
+    async def rename_column(self, table, old_name, new_name, type_name) -> None:
         """Sqlite allows rename of column only from version 3.25.0.
         We have to reacreate table and copy data"""
         try:
@@ -516,7 +589,7 @@ class SqliteDialect(object):
             logger.exception('Error executing SQL - rename_column')
             raise
 
-    def drop_column(self, table, column) -> None:
+    async def drop_column(self, table, column) -> None:
         """Sqlite does not allows to drop columns.
         We have to reacreate table and copy data"""
         try:

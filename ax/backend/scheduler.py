@@ -6,14 +6,17 @@ import os
 import sys
 import time
 import shutil
-from datetime import timedelta
+import asyncio
+from datetime import timedelta, datetime
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.executors.asyncio import AsyncIOExecutor
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from graphql.execution.executors.asyncio import AsyncioExecutor
 from loguru import logger
 import ujson as json
 import backend.model as ax_model
 import backend.misc as ax_misc
+import backend.schemas.action_schema as ax_action_schema
 
 this = sys.modules[__name__]
 scheduler = None
@@ -41,12 +44,16 @@ async def clear_tmp_files():
 async def gql_query_job(query, variables):
     """ Jon that executes Graphql query """
     from backend.schema import schema
-    result = schema.execute(query, variables=variables)
-    test_str = json.dumps(result.data, sort_keys=True, indent=4)
-    print(test_str)
+    # result = schema.execute(query, variables=variables)
+
+    result = await schema.execute(
+        query,
+        variables=variables,
+        return_promise=True)
+#         executor=AsyncioExecutor(loop=asyncio.get_event_loop()),
 
 
-def do_action(form_db_name, action_db_name, values, row_guid=None):
+def do_action_REM(form_db_name, action_db_name, values, row_guid=None):
     """
     Adds job that executes GQL query for workflow action. Used in AxAction
     python code.
@@ -92,7 +99,45 @@ def do_action(form_db_name, action_db_name, values, row_guid=None):
         "query": query,
         "variables": variables
     }
-    this.scheduler.add_job(func=gql_query_job, kwargs=args)
+    job = this.scheduler.add_job(func=gql_query_job, kwargs=args,
+                                 misfire_grace_time=60 * 60)
+    print(str(job))
+
+
+def add_action_job(form_db_name, action_db_name, values, row_guid=None, wait_seconds=0):
+    variables = {
+        "form_db_name": form_db_name,
+        "action_db_name": action_db_name,
+        "row_guid": row_guid,
+        "values": values
+    }
+    moscow_dt = datetime.now() + timedelta(seconds=wait_seconds)
+
+    job = this.scheduler.add_job(
+        func=ax_action_schema.execute_action,
+        kwargs=variables,
+        misfire_grace_time=60 * 60,
+        trigger='date',
+        next_run_time=moscow_dt)
+    print(str(job))
+
+
+# def do_action(form_db_name, action_db_name, values, row_guid=None):
+#     asyncio.run_coroutine_threadsafe(
+#         do_action_async(form_db_name, action_db_name, values, row_guid),
+#         asyncio.get_event_loop())
+
+
+async def test_executable(name):
+    await asyncio.sleep(10)
+    print('Sleep ->' + name)
+
+
+def do_test(name):
+    args = {"name": name}
+    job = this.scheduler.add_job(func=test_executable, kwargs=args,
+                                 misfire_grace_time=60 * 60)
+    print(str(job))
 
 
 def init_scheduler():
@@ -112,25 +157,37 @@ def init_scheduler():
             'default': AsyncIOExecutor()
         }
 
+        loop = asyncio.get_event_loop()
         this.scheduler = AsyncIOScheduler(
             jobstores=jobstores,
             executors=executors,
-            timezone=ax_misc.timezone)
+            timezone=ax_misc.timezone,
+            event_loop=loop)
         this.scheduler.start()
 
         # this.scheduler.remove_all_jobs()
         # dt = datetime.now() + timedelta(seconds=5)
+
         moscow_dt = ax_misc.date() + timedelta(seconds=5)
         this.scheduler.add_job(
             prn_job,
             'date',
             run_date=moscow_dt,
             args=['SCHEDULER WORKS'],
-            id='prn_job'
+            id='prn_job',
+            misfire_grace_time=60
         )
 
         # Job cleaning /uploads/tmp folder. deletes files that are expired
-        this.scheduler.add_job(clear_tmp_files, trigger='cron', minute='30')
+        all_jobs = this.scheduler.get_jobs()
+        if "clear_tmp_files" not in [job.name for job in all_jobs]:
+            this.scheduler.add_job(
+                clear_tmp_files,
+                trigger='cron',
+                minute='30',
+                coalesce=True,
+                misfire_grace_time=60,
+                id='clear_tmp_files')
 
     except Exception:
         logger.exception('Error initiating scheduler module. ')

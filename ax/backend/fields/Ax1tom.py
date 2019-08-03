@@ -4,7 +4,7 @@ import backend.model as ax_model
 from backend.model import Ax1tomReference
 
 
-def after_update(field, before_form, tobe_form, action, current_user):
+async def after_update(field, before_form, tobe_form, action, current_user):
     """Python code runs for field before update
     WARNING! do not use ax_model.db_session.commit() here!
 
@@ -45,12 +45,12 @@ def after_update(field, before_form, tobe_form, action, current_user):
     return field.value
 
 
-def after_insert(field, before_form, tobe_form, action, current_user):
+async def after_insert(field, before_form, tobe_form, action, current_user):
     """ Do the same as after_update """
-    return after_update(field, before_form, tobe_form, action, current_user)
+    return await after_update(field, before_form, tobe_form, action, current_user)
 
 
-def after_delete(field, before_form, tobe_form, action, current_user):
+async def after_delete(field, before_form, tobe_form, action, current_user):
     """ Delete all Ax1tomReference """
     del before_form, action, current_user
     ax_model.db_session.query(Ax1tomReference).filter(

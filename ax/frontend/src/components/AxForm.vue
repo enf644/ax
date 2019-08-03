@@ -67,7 +67,7 @@
             </v-badge>
             <i :class='iconClass'></i>
             &nbsp; {{name}}
-            <resize-observer @notify='handleResize'/>
+            <resize-observer @notify='handleResize' />
           </div>
           <v-container class='form-container' fluid grid-list-xl>
             <v-layout align-left justify-left row wrap>
@@ -438,6 +438,7 @@ export default {
           else this.activeTab = this.tabs[0].guid;
           this.updateValue();
           this.subscribeToActions();
+          this.subscribeToConsole();
 
           setTimeout(() => {
             this.formIsLoaded = true;
@@ -682,6 +683,34 @@ export default {
           {
             error(error) {
               this.$log.error(`ERRROR in GQL subscribeToActions => ${error}`);
+            }
+          }
+        );
+    },
+    subscribeToConsole() {
+      const CONSOLE_SUBSCRIPTION_QUERY = gql`
+        subscription($modalGuid: String!) {
+          consoleNotify(modalGuid: $modalGuid) {
+            modalGuid
+            text
+          }
+        }
+      `;
+
+      apolloClient
+        .subscribe({
+          query: CONSOLE_SUBSCRIPTION_QUERY,
+          variables: {
+            modalGuid: this.modalGuid
+          }
+        })
+        .subscribe(
+          data => {
+            console.log(data.data.consoleNotify);
+          },
+          {
+            error(error) {
+              this.$log.error(`ERRROR in GQL subscribeToConsole => ${error}`);
             }
           }
         );

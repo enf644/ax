@@ -515,25 +515,6 @@ AX 0.2:
                 ✔ AxForm - after delete -> display empty message @done(19-07-03 17:38)
                 ✔ After action -> display toast in standalone form @done(19-07-03 17:48)
             ✔ Error -> Delete field, column in grid stays @done(19-07-03 18:11)
-    ☐ WINE
-        ☐ Loader
-            ✔ Action db_name @done(19-07-10 09:01)
-            ☐ From routes - parse xls and doAction create on Wine
-        ☐ Catalog
-            ☐ Create mock using template
-            ☐ Graphql catalog
-                ☐ Authorisation
-        ☐ Client authorisation
-            ☐ Client form
-            ☐ Auth process
-        ☐ Cart
-            ☐ Cart form
-            ☐ Cart view
-        ☐ Order form
-            ☐ Order form
-        ☐ Questions
-            ☐ What if two catalogs have same wine?
-            ☐ What if wine disapeared from catalog? It must be deleted?
     ☐ TEST MILESTONE
         ✔ Comment every def and gql method like ax_misc @done(19-07-05 10:24)
         ✘ Try catch for every vue method @cancelled(19-07-05 11:23)
@@ -541,6 +522,20 @@ AX 0.2:
         ✔ Try pip installation (without alembic migration) @done(19-07-05 13:40)
         ✔ Try app engine installation @done(19-07-07 13:34)
             ✔ Uploads dir must be taken from app.yaml @done(19-07-07 13:34)
+        ☐ Code experience 1
+            ✔ Code full screen, ctrl+s @done(19-08-03 10:53)
+            ✔ Code running in separate loop @done(19-08-03 10:53)
+            ✔ Schedule code job @done(19-08-03 10:54)
+            ☐ Console execution
+                ☐ Action settings
+                    ☐ Sync / Async
+                ☐ Sync execution, run code and wait for execution (normal). Loading icon on button.
+                ☐ Async run - run and forget. If form is not closed - wait for action subscribtion.
+                ☐ Console run - graphql returns right after run. Console subscribtion, console is opened.
+            ☐ Engine
+                ☐ Lock rows that are already performing actions.
+                ☐ Error when someone wants to execute blocked action.
+        ☐ PostgreSQL support
         ☐ Errors
             ☐ What if database already exists?
             ☐ Action drag on update action??
@@ -549,6 +544,7 @@ AX 0.2:
             ☐ If app engine -> disable Web-sockets
             ☐ If error accured while executing field before/after code -> the exception must be seen in modal for user
             ☐ If someone makes create action, the notification is poped up in constructor!
+            ☐ Ax1to1 - not updated after action, needs reload
     ☐ CYPRESS TESTS FOR ALL
     ☐ ESTABLISH CI
         ☐ Each commit runs tests - installs from pip, runs cypress tests
@@ -657,7 +653,7 @@ AX 0.2:
     ☐ START REACHING OUT
         ☐ Indie hackers post - intro and ask how to maximise user reach
         ☐ Friends - vs, facebook
-    ☐ SET MEDIA LIFECYCLE 
+    ☐ SET MEDIA LIFECYCLE
         ☐ Research list of media - register in every media
         ☐ Automate - write, translate, post, metrics
         ☐ Set AX fetaures list
@@ -675,8 +671,8 @@ AX 0.2:
 
 AX 0.3:
     ☐ ACTION EXPERIENCE
-        ☐ Feature -> ctrl+s in code editor saves action without closing
-        ☐ Feature -> full screen code mode ctrl+enter
+        ✔ Feature -> ctrl+s in code editor saves action without closing @done(19-08-03 10:49)
+        ✔ Feature -> full screen code mode ctrl+enter @done(19-08-03 10:49)
         ☐ Feature -> Relation forms (1to1 1tom) must be avalivle via GQL query - https://github.com/graphql-python/graphene/issues/798
         ☐ Logging code 
         ☐ Code highlite and autocomplete
@@ -684,6 +680,7 @@ AX 0.3:
             ☐ Code snippets
         ☐ Think of ст, фт, пси - how to with Ax. How to update existing application?
         ☐ While code in fullscreen mode - the debugger is avalible. You can choose some row from db_table and run action. The result will be displayed in modal. The database will not be modified.
+        ☐ Erros in acction that was launched within actions
 
 
 
@@ -752,6 +749,10 @@ NEW FROGS TODOS:
     ✔ If field is virtual of readonly - hide hint and required settings @done(19-07-02 12:39)
     ☐ Some fields can be added only once to form - AxNum, AxChangelog
     ☐ Form constructor - when field is dragged to folder - the folder is focused edited and selected
+    ☐ Error toasts everywhere!! `[IMPORTANT]`
+    ☐ Long names for form tabs - limit is too small!
+    ☐ Del key when editing field names - tryes to delete whole field
+    ☐ Database is locked in sqlite `[IMPORTANT]`
 
 
 NEW FEATURES:
@@ -777,6 +778,8 @@ NEW FEATURES:
     ☐ Tus upload -> checksum
     ☐ GraphQL copy help snippets - action, grid
     ☐ Workflow constructor - hints onmouseover on states and actions. Description is displayed.
+    ☐ Arguments for doAction. Can be used in python code.
+    ☐ favico for each form must be different - same as font-awesome icon
 
     
 MAYBE LATER:

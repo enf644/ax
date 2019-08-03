@@ -21,9 +21,10 @@ import backend.pubsub as ax_pubsub
 import backend.schema as ax_schema
 import backend.misc as ax_misc
 import backend.scheduler as ax_scheduler
+from backend.routes import actions_loop
 
 # import backend.cache as ax_cache # TODO use cache!
-from backend.schemas.types import Action, Form
+from backend.schemas.types import Action, Form, ConsoleMessage
 
 import backend.fields.Ax1tom as AxFieldAx1tom   # pylint: disable=unused-import
 import backend.fields.Ax1tomTable as AxFieldAx1tomTable  # pylint: disable=unused-import
@@ -31,13 +32,51 @@ import backend.fields.AxChangelog as AxFieldAxChangelog  # pylint: disable=unuse
 import backend.fields.AxFiles as AxFieldAxFiles  # pylint: disable=unused-import
 import backend.fields.AxImageCropDb as AxFieldAxImageCropDb  # pylint: disable=unused-import
 import backend.fields.AxNum as AxFieldAxNum  # pylint: disable=unused-import
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
+
+this = sys.modules[__name__]
+# loop = asyncio.get_event_loop()
 
 
 class InterpreterError(Exception):
     """ Class for AxAction python code errors """
 
 
-def get_actions(form, current_state=None):
+class Executor:
+    """In most cases, you can just use the 'execute' instance as a
+    function, i.e. y = await execute(f, a, b, k=c) => run f(a, b, k=c) in
+    the executor, assign result to y. The defaults can be changed, though,
+    with your own instantiation of Executor, i.e. execute =
+    Executor(nthreads=4)"""
+
+    def __init__(self, loop, nthreads=1):
+        from concurrent.futures import ThreadPoolExecutor
+        self._ex = ThreadPoolExecutor(nthreads)
+        self._loop = loop
+
+    def __call__(self, f, *args, **kw):
+        from functools import partial
+        result = self._loop.run_in_executor(self._ex, partial(f, *args, **kw))
+        return result
+
+
+class ConsoleSender:
+    """ Used to send ax_console web socket messages to AxForm"""
+    def __init__(self, modal_guid):
+        self.modal_guid = modal_guid
+
+    def __call__(self, msg):
+        ax_pubsub.publisher.publish(
+            aiopubsub.Key('console_log'),
+            {
+                'text': msg,
+                'modal_guid': self.modal_guid
+            })
+
+
+
+async def get_actions(form, current_state=None):
     """ Get actions for current state
 
     Args:
@@ -71,13 +110,34 @@ def get_actions(form, current_state=None):
     return ret_actions
 
 
-def do_exec(action, form):
+async def aexec(code, localz, **kwargs):
+    # Don't clutter locals
+    locs = {}
+    # Restore globals later
+    args = ", ".join(list(kwargs.keys()))
+    code_from_action = code.replace("\n", "\n    ")
+    async_code = (f"async def func({args}):"
+                  f"\n    {code_from_action}"
+                  f"\n    return ax")
+    exec(
+        async_code,
+        {},
+        localz)
+    # Don't expect it to return from the coro.
+    result = await localz["func"](**kwargs)
+    return result
+   
+
+
+async def do_exec(action, form, arguments=None, modal_guid=None):
     """ Executes python commands form AxAction.code
 
     Args:
         action (AxAction): Current action that is performed
         form (AxForm): Tobe form. Its same as action.form, but it contains
             values from vue form
+        arguments(**kargs): Custom dict that can be used in code
+        modal_guid (str): AxForm modal guid for wss console subscribtion
 
     Returns:
         Dict: Its custom Dict containing:
@@ -92,26 +152,35 @@ def do_exec(action, form):
     localz = dict()
     ax = DotMap()  # javascript style dicts item['guid'] == item.guid
     ax.row.guid = form.row_guid
+    ax.arguments = arguments
     ax.form = form
     ax.action = action
     ax.schema = ax_schema.schema
     ax.sql = ax_dialects.dialect.custom_query
+    console_log = ConsoleSender(modal_guid=modal_guid)
+    ax.print = console_log
     ax.paths.uploads = ax_misc.uploads_root_dir
     ax.paths.tmp = ax_misc.tmp_root_dir
-    ax.do_action = ax_scheduler.do_action
+    ax.add_action_job = ax_scheduler.add_action_job
+    ax.do_action = this.execute_action
+    ax.do_test = ax_scheduler.do_test
     for field in form.db_fields:
         ax.row[field.db_name] = field.value
     localz['ax'] = ax
     line_number = None
 
     try:
-        exec(str(action.code), globals(), localz)   # pylint: disable=exec-used
+        # exec(str(action.code), globals(), localz)   # pylint: disable=exec-used
+        # await eval('exec(str(action.code), globals(), localz)')
+        ret_ax = await aexec(code=str(action.code), localz=localz, ax=ax)
+        ret_ax = localz['ax']
+
         ret_data = {
-            "info": localz['ax_message'] if 'ax_message' in localz else None,
-            "error": localz['ax_error'] if 'ax_error' in localz else None,
-            "item": localz['ax']['row'],
+            "info": ret_ax.message if 'message' in ret_ax else None,
+            "error": ret_ax.error if 'error' in ret_ax else None,
+            "item": ret_ax.row,
             "exception": None,
-            "abort": localz['ax_abort'] if 'ax_abort' in localz else None
+            "abort": ret_ax.abort if 'abort' in ret_ax else None
         }
         return ret_data
     except SyntaxError as err:
@@ -137,8 +206,13 @@ def do_exec(action, form):
         cl, exc, tb = sys.exc_info()
         del cl, exc
         # line_number = traceback.extract_tb(tb)[-1][1]
-        line_number = traceback.extract_tb(tb)[1].lineno
+        line_number = 0
+        traces = traceback.extract_tb(tb)
+        for idx, trace in enumerate(traces):
+            if trace.filename == '<string>':
+                line_number = traceback.extract_tb(tb)[idx].lineno
         del tb
+        ax_model.db_session.rollback()
 
         ret_data = {
             "info": None,
@@ -155,7 +229,7 @@ def do_exec(action, form):
         return ret_data
 
 
-def get_before_form(row_guid, form, ax_action):
+async def get_before_form(row_guid, form, ax_action):
     """Constructs before_form AxForm object and populate fields with
     values of specific row. AxForm.fields[0].value
 
@@ -172,7 +246,7 @@ def get_before_form(row_guid, form, ax_action):
 
     if row_guid:
         fields_names = [field for field in tobe_form.db_fields]
-        before_result = ax_dialects.dialect.select_one(
+        before_result = await ax_dialects.dialect.select_one(
             form=tobe_form,
             fields_list=fields_names,
             row_guid=row_guid)
@@ -200,8 +274,8 @@ def get_before_form(row_guid, form, ax_action):
     return before_form, tobe_form
 
 
-def run_field_backend(field, action, before_form, tobe_form, current_user,
-                      when='before', query_type='update'):
+async def run_field_backend(field, action, before_form, tobe_form, current_user,
+                            when='before', query_type='update'):
     """Some field types need backend execution on insert/update/delete
 
     Args:
@@ -225,7 +299,7 @@ def run_field_backend(field, action, before_form, tobe_form, current_user,
         field_py = globals()[f'AxField{tag}']
         if field_py and hasattr(field_py, function_name):
             method_to_call = getattr(field_py, function_name)
-            new_value = method_to_call(
+            new_value = await method_to_call(
                 field=field,
                 before_form=before_form,
                 tobe_form=tobe_form,
@@ -235,7 +309,15 @@ def run_field_backend(field, action, before_form, tobe_form, current_user,
     return field.value
 
 
-class DoAction(graphene.Mutation):
+async def execute_action(
+        row_guid=None,
+        form_guid=None,
+        form_db_name=None,
+        action_guid=None,
+        action_db_name=None,
+        values=None,
+        modal_guid=None,
+        arguments=None):
     """ Performs Action on row
         # 0. Get AxForm
         # 1. Get AxAction and query_type
@@ -254,8 +336,12 @@ class DoAction(graphene.Mutation):
     Args:
         row_guid (str): Guid of row that is opened
         form_guid (str): Guid of AxForm that is opened
+        form_db_name (str): db_name of AxForm that is opened. 
+            (Form guid or db_name must be specified)
         action_guid (str): Guid of AxAction that is performed
-        values (str): JSON from AxForm.vue with values of form
+        action_db_name (str): db_name of AxAction 
+            (Action guid or db_name must be specified)
+        values (Dict): Dict from AxForm.vue with values of form
         modal_guid (str): Guid generated by AxForm.vue. It used in web-socket
             subscribtion. If current form is performing this action - it does
             not need to notify user of performed action
@@ -270,6 +356,225 @@ class DoAction(graphene.Mutation):
         modal_guid (str): Same as Args. It used in web-socket
             subscribtion. If current form is performing this action - it does
             not need to notify user of performed action
+        ok (bool): Used in gql query
+    """
+    try:
+        new_guid = uuid.uuid4()
+        if not values:
+            values = {}
+        current_user = None  # TODO: implement users
+
+        # 0. Get AxForm
+        ax_form = None
+        if form_guid:
+            ax_form = ax_model.db_session.query(AxForm).filter(
+                AxForm.guid == uuid.UUID(form_guid)
+            ).first()
+        elif form_db_name:
+            ax_form = ax_model.db_session.query(AxForm).filter(
+                AxForm.db_name == form_db_name
+            ).first()
+        else:
+            raise ValueError(
+                'doAction GQL - form guid or db_name required')
+
+        ax_model.db_session.expire(ax_form)
+
+        # 1. Get AxAction and query_type
+        ax_action = None
+        if not action_guid and not action_db_name:
+            raise ValueError(
+                'doAction GQL - action guid or db_name required')
+        for action in ax_form.actions:
+            if not ax_action:
+                if action_guid and action.guid == uuid.UUID(action_guid):
+                    ax_action = action
+                if action_db_name and action.db_name == action_db_name:
+                    ax_action = action
+
+        query_type = 'update'
+        if ax_action.from_state.is_start:
+            query_type = 'insert'
+        elif ax_action.to_state.is_deleted:
+            query_type = 'delete'
+
+        # 2. Get before_form - fill it with values from database row
+        before_form, tobe_form = await get_before_form(
+            row_guid=row_guid,
+            form=ax_form,
+            ax_action=ax_action)
+
+        # 3. Assemble tobe_object - fill it with values from AxForm.vue
+        if not tobe_form.row_guid:
+            tobe_form.row_guid = new_guid
+        for field in tobe_form.db_fields:
+            if field.db_name in values.keys():
+                field.value = values[field.db_name]
+                field.needs_sql_update = True
+            if field.field_type.is_updated_always:
+                field.needs_sql_update = True
+
+        # 4. Run before backend code for each field.
+        for field in tobe_form.no_tab_fields:
+            if field.field_type.is_backend_available:
+                field.value = await run_field_backend(
+                    when='before',
+                    query_type=query_type,
+                    field=field,
+                    action=ax_action,
+                    before_form=before_form,
+                    tobe_form=tobe_form,
+                    current_user=current_user)
+
+        # 5. Run python action, rewrite tobe_object
+        messages = None
+        messages_json = None
+        if ax_action.code:
+            code_result = await do_exec(
+                action=ax_action, 
+                form=tobe_form, 
+                arguments=arguments,
+                modal_guid=modal_guid)
+            messages = {
+                "exception": code_result["exception"],
+                "error": code_result["error"],
+                "info": code_result["info"]
+            }
+            messages_json = json.dumps(messages)
+            if code_result['abort'] or code_result["exception"]:
+                return {
+                    "form": before_form,
+                    "new_guid": None,
+                    "messages": messages_json,
+                    "modal_guid": modal_guid,
+                    "ok": False
+                }
+            # update fields with values recieved from actions python
+            new_item = code_result['item']
+            for field in tobe_form.db_fields:
+                if field.db_name in new_item.keys():
+                    field.value = new_item[field.db_name]
+                    field.needs_sql_update = True
+
+        # 6. Make update or insert or delete query #COMMIT HERE
+        return_guid = tobe_form.row_guid
+        after_form = copy.deepcopy(tobe_form)
+        if query_type == 'insert':
+            await ax_dialects.dialect.insert(
+                form=tobe_form,
+                to_state_name=ax_action.to_state.name,
+                new_guid=new_guid
+            )
+            tobe_form.row_guid = new_guid
+            return_guid = new_guid
+        elif query_type == 'delete':
+            await ax_dialects.dialect.delete(
+                form=tobe_form,
+                row_guid=tobe_form.row_guid
+            )
+            return_guid = None
+        else:
+            await ax_dialects.dialect.update(
+                form=tobe_form,
+                to_state_name=ax_action.to_state.name,
+                row_guid=tobe_form.row_guid
+            )
+
+        # 7. Run after backend code for each field.
+        for field in after_form.no_tab_fields:
+            if field.field_type.is_backend_available:
+                field.value = await run_field_backend(
+                    when='after',
+                    query_type=query_type,
+                    field=field,
+                    action=ax_action,
+                    before_form=before_form,
+                    tobe_form=after_form,
+                    current_user=current_user)
+
+        # 8. Fire all web-socket subscribtions. Notify of action performed
+        subscription_form = AxForm()
+        subscription_form.guid = tobe_form.guid
+        subscription_form.icon = tobe_form.icon
+        subscription_form.db_name = tobe_form.db_name
+        subscription_form.row_guid = tobe_form.row_guid
+        subscription_form.modal_guid = modal_guid
+
+        ax_pubsub.publisher.publish(
+            aiopubsub.Key('do_action'), subscription_form)
+
+        return {
+            "form": tobe_form,
+            "new_guid": return_guid,
+            "messages": messages_json,
+            "modal_guid": modal_guid,
+            "ok": True
+        }
+    except Exception:
+        logger.exception('Error while executing action - DoAction.')
+        raise
+
+
+def run_async(corofn, *args):
+    """  run_in_executor takes only sync function, but with
+    this hack we can run corutines """
+    # loop = asyncio.new_event_loop()
+    coro = corofn(*args)
+    asyncio.set_event_loop(actions_loop)
+    return actions_loop.run_until_complete(coro)
+
+
+async def run_execute_action(
+        row_guid=None,
+        form_guid=None,
+        form_db_name=None,
+        action_guid=None,
+        action_db_name=None,
+        values=None,
+        modal_guid=None,
+        arguments=None
+    ):
+    """ This function executes execute_action corutine in different thread """
+    loop = asyncio.get_event_loop()
+    executor = ThreadPoolExecutor(max_workers=5)
+    execute_func = partial(
+        execute_action, 
+        row_guid=row_guid,
+        form_guid=form_guid,
+        form_db_name=form_db_name,
+        action_guid=action_guid,
+        action_db_name=action_db_name,
+        values=values,
+        modal_guid=modal_guid,
+        arguments=arguments
+    )
+
+    result = await loop.run_in_executor(
+        executor,
+        run_async,
+        execute_func)
+
+    # execute = Executor(loop=actions_loop, nthreads=5)
+    # result = await execute(
+    #     execute_action, 
+    #     row_guid=row_guid,
+    #     form_guid=form_guid,
+    #     form_db_name=form_db_name,
+    #     action_guid=action_guid,
+    #     action_db_name=action_db_name,
+    #     values=values,
+    #     modal_guid=modal_guid,
+    #     arguments=arguments        
+    # )
+
+    return result
+
+
+
+
+class DoAction(graphene.Mutation):
+    """
+        Runs execute_action. Performs action on row.
     """
     class Arguments:  # pylint: disable=missing-docstring
         row_guid = graphene.String(required=False, default_value=None)
@@ -278,6 +583,7 @@ class DoAction(graphene.Mutation):
         action_guid = graphene.String(required=False, default_value=None)
         action_db_name = graphene.String(required=False, default_value=None)
         values = graphene.String()
+        arguments = graphene.String(required=False, default_value=None)
         modal_guid = graphene.String(required=False, default_value=None)
 
     form = graphene.Field(Form)
@@ -286,157 +592,41 @@ class DoAction(graphene.Mutation):
     modal_guid = graphene.String()
     ok = graphene.Boolean()
 
-    def mutate(self, info, **args):  # pylint: disable=missing-docstring
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         try:
             del info
             values_string = args.get('values')
-            values = json.loads(values_string)
+            values = {}
+            if values_string and values_string != 'null':
+                values = json.loads(values_string)
             row_guid = args.get('row_guid')
             modal_guid = args.get('modal_guid')
             form_guid = args.get('form_guid')
             form_db_name = args.get('form_db_name')
             action_guid = args.get('action_guid')
             action_db_name = args.get('action_db_name')
-            new_guid = uuid.uuid4()
-            current_user = None  # TODO: implement users
+            arguments_string = args.get('arguments')
+            arguments = {}
+            if arguments_string and arguments_string != 'null':
+                arguments = json.loads(arguments_string)
 
-            # 0. Get AxForm
-            ax_form = None
-            if form_guid:
-                ax_form = ax_model.db_session.query(AxForm).filter(
-                    AxForm.guid == uuid.UUID(form_guid)
-                ).first()
-            elif form_db_name:
-                ax_form = ax_model.db_session.query(AxForm).filter(
-                    AxForm.db_name == form_db_name
-                ).first()
-            else:
-                raise ValueError(
-                    'doAction GQL - form guid or db_name required')
-
-            # 1. Get AxAction and query_type
-            ax_action = None
-            if not action_guid and not action_db_name:
-                raise ValueError(
-                    'doAction GQL - action guid or db_name required')
-            for action in ax_form.actions:
-                if not ax_action:
-                    if action_guid and action.guid == uuid.UUID(action_guid):
-                        ax_action = action
-                    if action_db_name and action.db_name == action_db_name:
-                        ax_action = action
-
-            query_type = 'update'
-            if ax_action.from_state.is_start:
-                query_type = 'insert'
-            elif ax_action.to_state.is_deleted:
-                query_type = 'delete'
-
-            # 2. Get before_form - fill it with values from database row
-            before_form, tobe_form = get_before_form(
+            result = await run_execute_action(
                 row_guid=row_guid,
-                form=ax_form,
-                ax_action=ax_action)
+                form_guid=form_guid,
+                form_db_name=form_db_name,
+                action_guid=action_guid,
+                action_db_name=action_db_name,
+                values=values,
+                arguments=arguments,
+                modal_guid=modal_guid)
 
-            # 3. Assemble tobe_object - fill it with values from AxForm.vue
-            if not tobe_form.row_guid:
-                tobe_form.row_guid = new_guid
-            for field in tobe_form.db_fields:
-                if field.db_name in values.keys():
-                    field.value = values[field.db_name]
-                    field.needs_sql_update = True
-                if field.field_type.is_updated_always:
-                    field.needs_sql_update = True
-
-            # 4. Run before backend code for each field.
-            for field in tobe_form.no_tab_fields:
-                if field.field_type.is_backend_available:
-                    field.value = run_field_backend(
-                        when='before',
-                        query_type=query_type,
-                        field=field,
-                        action=ax_action,
-                        before_form=before_form,
-                        tobe_form=tobe_form,
-                        current_user=current_user)
-
-            # 5. Run python action, rewrite tobe_object
-            messages = None
-            messages_json = None
-            if ax_action.code:
-                code_result = do_exec(action=ax_action, form=tobe_form)
-                messages = {
-                    "exception": code_result["exception"],
-                    "error": code_result["error"],
-                    "info": code_result["info"]
-                }
-                messages_json = json.dumps(messages)
-                if code_result['abort'] or code_result["exception"]:
-                    return DoAction(
-                        form=before_form,
-                        new_guid=None,
-                        messages=messages_json,
-                        modal_guid=modal_guid,
-                        ok=False)
-                # update fields with values recieved from actions python
-                new_item = code_result['item']
-                for field in tobe_form.db_fields:
-                    if field.db_name in new_item.keys():
-                        field.value = new_item[field.db_name]
-                        field.needs_sql_update = True
-
-            # 6. Make update or insert or delete query #COMMIT HERE
-            return_guid = tobe_form.row_guid
-            after_form = copy.deepcopy(tobe_form)
-            if query_type == 'insert':
-                ax_dialects.dialect.insert(
-                    form=tobe_form,
-                    to_state_name=ax_action.to_state.name,
-                    new_guid=new_guid
-                )
-            elif query_type == 'delete':
-                ax_dialects.dialect.delete(
-                    form=tobe_form,
-                    row_guid=tobe_form.row_guid
-                )
-                return_guid = None
-            else:
-                ax_dialects.dialect.update(
-                    form=tobe_form,
-                    to_state_name=ax_action.to_state.name,
-                    row_guid=tobe_form.row_guid
-                )
-
-            # 7. Run after backend code for each field.
-            for field in after_form.no_tab_fields:
-                if field.field_type.is_backend_available:
-                    field.value = run_field_backend(
-                        when='after',
-                        query_type=query_type,
-                        field=field,
-                        action=ax_action,
-                        before_form=before_form,
-                        tobe_form=after_form,
-                        current_user=current_user)
-
-            # 8. Fire all web-socket subscribtions. Notify of action performed
-            subscription_form = AxForm()
-            subscription_form.guid = tobe_form.guid
-            subscription_form.icon = tobe_form.icon
-            subscription_form.db_name = tobe_form.db_name
-            subscription_form.row_guid = tobe_form.row_guid
-            subscription_form.modal_guid = modal_guid
-
-            ax_pubsub.publisher.publish(
-                aiopubsub.Key('do_action'), subscription_form)
-
-            ok = True
             return DoAction(
-                form=tobe_form,
-                new_guid=return_guid,
-                messages=messages_json,
-                modal_guid=modal_guid,
-                ok=ok)
+                form=result["form"],
+                new_guid=result["new_guid"],
+                messages=result["messages"],
+                modal_guid=result["modal_guid"],
+                ok=result["ok"])
+
         except Exception:
             logger.exception('Error in gql mutation - DoAction.')
             raise
@@ -487,6 +677,31 @@ class ActionSubscription(graphene.ObjectType):
             await subscriber.remove_all_listeners()
 
 
+    console_notify = graphene.Field(
+        ConsoleMessage,
+        modal_guid=graphene.Argument(type=graphene.String, required=True))
+
+    async def resolve_console_notify(self, info, modal_guid):
+        """ Web-socket subscription on every performed action
+        """
+        del info
+        try:
+            subscriber = aiopubsub.Subscriber(
+                ax_pubsub.hub, 'action_notify_subscriber')
+            subscriber.subscribe(aiopubsub.Key('console_log'))
+            while True:
+                key, payload = await subscriber.consume()
+                del key
+                if payload['modal_guid'] == modal_guid:
+                    message = ConsoleMessage(
+                        text=payload['text'],
+                        modal_guid=payload['modal_guid'])
+                yield message
+        except asyncio.CancelledError:
+            await subscriber.remove_all_listeners()
+
+
+
 class ActionQuery(graphene.ObjectType):
     """Query all data of AxAction and related classes"""
     action_data = graphene.Field(
@@ -515,7 +730,7 @@ class ActionQuery(graphene.ObjectType):
             ax_form = ax_model.db_session.query(AxForm).filter(
                 AxForm.db_name == form_db_name
             ).first()
-            ax_actions = get_actions(form=ax_form, current_state=current_state)
+            ax_actions = await get_actions(form=ax_form, current_state=current_state)
 
             return ax_actions
         except Exception:

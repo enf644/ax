@@ -45,6 +45,12 @@ class PositionInput(graphene.InputObjectType):
     parent = graphene.NonNull(graphene.String)
 
 
+class ConsoleMessage(graphene.ObjectType):
+    """ - """
+    modal_guid = graphene.String()
+    text = graphene.String()
+
+
 class Field(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
     class Meta:  # pylint: disable=missing-docstring
         model = AxField

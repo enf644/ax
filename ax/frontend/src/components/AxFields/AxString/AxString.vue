@@ -29,6 +29,9 @@ export default {
   watch: {
     currentValue(newValue) {
       this.$emit('update:value', newValue);
+    },
+    value(newValue) {
+      this.currentValue = newValue;
     }
   },
   created() {

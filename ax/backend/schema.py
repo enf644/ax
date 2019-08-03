@@ -105,24 +105,32 @@ def make_resolver(db_name, type_class):
 
     """
 
-    def resolver(self, info, update_time=None, quicksearch=None, guids=None):
+    async def resolver(self, info, update_time=None, quicksearch=None, guids=None):
         del self, info, update_time
 
         # Find AxForm with name that db_name is started with
-        ax_form = ax_model.db_session.query(AxForm).filter(
+        ax_form = None
+        found_forms = ax_model.db_session.query(AxForm).filter(
             literal(db_name).startswith(AxForm.db_name)
-        ).first()
+        ).all()
 
-        # iterate all grids to know, what grid to use
         ax_grid = {}
         default_grid = {}
-        for grid in ax_form.grids:
-            if ax_form.db_name + grid.db_name == db_name:
-                ax_grid = grid
-            if grid.is_default_view:
-                default_grid = grid
+
+        for form in found_forms:
+            # iterate all grids to know, what grid to use
+            for grid in form.grids:
+                if form.db_name + grid.db_name == db_name:
+                    ax_grid = grid
+                    ax_form = form
+                if grid.is_default_view and form.db_name == db_name:
+                    default_grid = grid
+                    ax_form = form
 
         grid_to_use = ax_grid or default_grid
+        if not grid_to_use:
+            return None
+
         grid_options = json.loads(grid_to_use.options_json)
         server_filter = None
         if 'serverFilter' in grid_options:
@@ -135,7 +143,7 @@ def make_resolver(db_name, type_class):
 
         # select * from table
         # TODO Add paging
-        results = ax_dialects.dialect.select_all(
+        results = await ax_dialects.dialect.select_all(
             ax_form=ax_form,
             quicksearch=quicksearch,
             server_filter=server_filter,
