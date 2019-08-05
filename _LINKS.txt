@@ -13,6 +13,10 @@ CONSOLE
     https://aioconsole.readthedocs.io/en/latest/
     https://ndabap.github.io/vue-command/
     https://github.com/dongsuo/vue-terminal  - good
+    https://github.com/baramofme/vue-custom-console
+    https://github.com/danieldaeschle/web-termjs - nice
+    https://github.com/sasadjolic/dom-terminal
+    https://xtermjs.org/ - UBER
 
 
 MARKDOWN

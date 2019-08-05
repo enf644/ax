@@ -106,7 +106,10 @@
         "record-modifyed-warning": "WARNING! Current record was modifyed by another user. Do you want to load new data?",
         "reload-data": "Reload data",
         "guid-not-found": "[{num}] not found",
-        "action-ok-toast": "Action [{action}] performed"
+        "action-ok-toast": "Action [{action}] performed",
+        "reload-success": "Form reloaded",
+        "terminal-header": "Action terminal",
+        "row-locked": "Current row is locked. Action is running. Please, try later."
     },
     "grids": {
         "add-column-toast": "Column added",

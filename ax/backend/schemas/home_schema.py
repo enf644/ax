@@ -13,7 +13,7 @@ from backend.model import GUID, AxForm, AxField, AxGrid, AxAction, AxState, \
     AxRole, AxRole2Users, AxRoleFieldPermission, AxState2Role, AxAction2Role, \
     Ax1tomReference
 import backend.model as ax_model
-import backend.cache as ax_cache
+# import backend.cache as ax_cache
 import backend.dialects as ax_dialects
 import backend.schema as ax_schema
 import backend.misc as ax_misc
@@ -354,7 +354,8 @@ class UpdateForm(graphene.Mutation):
 
             if str(args.get('db_name')) != str(ax_form.db_name):
                 db_name_changed = args.get('db_name')
-                name_avalible = await is_db_name_avalible(_db_name=args.get('db_name')) 
+                name_avalible = await is_db_name_avalible(
+                    _db_name=args.get('db_name'))
                 if name_avalible is False:
                     return UpdateForm(
                         form=None,

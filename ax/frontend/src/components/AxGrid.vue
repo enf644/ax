@@ -136,8 +136,8 @@ export default {
 
           // set width
           if (
-            this.options.widths
-            && Object.prototype.hasOwnProperty.call(
+            this.options.widths &&
+            Object.prototype.hasOwnProperty.call(
               this.options.widths,
               columnModelName
             )
@@ -169,7 +169,8 @@ export default {
             Vue.customElement(kebabName, columnPromise, {
               props: ['options_json']
             });
-            renderer = params => `<${kebabName} options_json='${column.field.optionsJson}'>${params.value}</${kebabName}>`;
+            renderer = params =>
+              `<${kebabName} options_json='${column.field.optionsJson}'>${params.value}</${kebabName}>`;
           } else {
             renderer = params => params.value;
           }
@@ -244,20 +245,20 @@ export default {
       const themeClass = 'ag-theme-material';
       if (this.options) {
         if (
-          (this.options.enableQuickSearch || this.options.enableTitle)
-          && (this.options.enableActions || this.isTomInlineMode)
+          (this.options.enableQuickSearch || this.options.enableTitle) &&
+          (this.options.enableActions || this.isTomInlineMode)
         ) {
           return `${themeClass} grid-search-actions`;
         }
         if (
-          (this.options.enableQuickSearch || this.options.enableTitle)
-          && !(this.options.enableActions || this.isTomInlineMode)
+          (this.options.enableQuickSearch || this.options.enableTitle) &&
+          !(this.options.enableActions || this.isTomInlineMode)
         ) {
           return `${themeClass} grid-search`;
         }
         if (
-          !(this.options.enableQuickSearch || this.options.enableTitle)
-          && (this.options.enableActions || this.isTomInlineMode)
+          !(this.options.enableQuickSearch || this.options.enableTitle) &&
+          (this.options.enableActions || this.isTomInlineMode)
         ) {
           return `${themeClass} grid-actions`;
         }
@@ -324,8 +325,8 @@ export default {
       const ACTION_SUBSCRIPTION_QUERY = gql`
         subscription($formDbName: String!, $rowGuid: String) {
           actionNotify(formDbName: $formDbName, rowGuid: $rowGuid) {
-            guid
-            dbName
+            formGuid
+            formDbName
             rowGuid
           }
         }
@@ -367,7 +368,7 @@ export default {
             oldData.isHighlited = false;
             node.setData(oldData);
           }
-        }, 200);
+        }, 400);
       }
     },
     loadOptions(formDbName, gridDbName) {

@@ -105,7 +105,8 @@ def make_resolver(db_name, type_class):
 
     """
 
-    async def resolver(self, info, update_time=None, quicksearch=None, guids=None):
+    async def resolver(
+            self, info, update_time=None, quicksearch=None, guids=None):
         del self, info, update_time
 
         # Find AxForm with name that db_name is started with

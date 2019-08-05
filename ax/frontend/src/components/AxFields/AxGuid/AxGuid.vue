@@ -75,5 +75,9 @@ export default {
   min-height: 26px;
   font-size: 16px;
   font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: calc(100% - 30px);
 }
 </style>

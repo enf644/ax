@@ -146,6 +146,7 @@ class SqliteDialect(object):
             ret_param = value if value else None
         return ret_param
 
+
     def custom_query(self, sql, variables=None):
         """ Executes any SQL. Used in action python code.
 
@@ -162,7 +163,7 @@ class SqliteDialect(object):
                     res = ax_model.db_session.execute(sql, variables)
                 else:
                     res = ax_model.db_session.execute(sql)
-            except DatabaseError as exc:
+            except DatabaseError:
                 ax_model.db_session.rollback()
                 logger.exception(f"Error executing SQL, rollback! - {sql}")
                 raise
@@ -175,8 +176,9 @@ class SqliteDialect(object):
                 f"Error executing SQL - {sql}")
             raise
 
+
     async def select_all(self, ax_form, quicksearch=None, server_filter=None,
-                   guids=None):
+                         guids=None):
         """ Select * from table
 
         Args:
@@ -224,7 +226,8 @@ class SqliteDialect(object):
                 guids_string = ''
                 if guids_array:
                     for idx, guid in enumerate(guids_array):
-                        guids_array[idx] = guids_array[idx].replace('-','')
+                        del guid
+                        guids_array[idx] = guids_array[idx].replace('-', '')
 
                     for check_guid in guids_array:
                         try:
@@ -249,10 +252,10 @@ class SqliteDialect(object):
                     sql,
                     sql_params
                 ).fetchall()
-            except DatabaseError as exc:
+            except DatabaseError:
                 ax_model.db_session.rollback()
                 logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise            
+                raise
 
             return result
             # names = [row[0] for row in result]
@@ -260,6 +263,7 @@ class SqliteDialect(object):
             logger.exception(
                 f"Error executing SQL - quicksearch {ax_form.db_name}")
             raise
+
 
     async def select_one(self, form, fields_list, row_guid):
         """Select fields from table for one row
@@ -299,8 +303,9 @@ class SqliteDialect(object):
             query_params = {"row_guid": guid_or_num}
             result = None
             try:
-                result = ax_model.db_session.execute(sql, query_params).fetchall()
-            except DatabaseError as exc:
+                result = ax_model.db_session.execute(
+                    sql, query_params).fetchall()
+            except DatabaseError:
                 ax_model.db_session.rollback()
                 logger.exception(f"Error executing SQL, rollback! - {sql}")
                 raise
@@ -335,7 +340,7 @@ class SqliteDialect(object):
             result = None
             try:
                 result = ax_model.db_session.execute(sql).fetchall()
-            except DatabaseError as exc:
+            except DatabaseError:
                 ax_model.db_session.rollback()
                 logger.exception(f"Error executing SQL, rollback! - {sql}")
                 raise
@@ -347,6 +352,8 @@ class SqliteDialect(object):
             logger.exception(
                 f"Error executing SQL - select_field {form_db_name}")
             raise
+
+
 
     async def insert(self, form, to_state_name, new_guid):
         """ Insert row into database and set state with AxForm field values
@@ -397,10 +404,10 @@ class SqliteDialect(object):
                     f"SELECT guid FROM {form.db_name} "
                     f"WHERE rowid={result.lastrowid}"
                 ).fetchall()
-            except DatabaseError as exc:
+            except DatabaseError:
                 ax_model.db_session.rollback()
                 logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise            
+                raise
             last_guid = last_guid_result[0]['guid']
 
             ax_model.db_session.commit()
@@ -408,6 +415,7 @@ class SqliteDialect(object):
         except Exception:
             logger.exception('Error executing SQL - insert')
             raise
+
 
     async def update(self, form, to_state_name, row_guid):
         """Update database row based of AxForm fields values
@@ -447,7 +455,7 @@ class SqliteDialect(object):
             result = None
             try:
                 result = ax_model.db_session.execute(sql, query_params)
-            except DatabaseError as exc:
+            except DatabaseError:
                 ax_model.db_session.rollback()
                 logger.exception(f"Error executing SQL, rollback! - {sql}")
                 raise
@@ -467,10 +475,10 @@ class SqliteDialect(object):
             try:
                 ax_model.db_session.execute(sql)
                 ax_model.db_session.commit()
-            except DatabaseError as exc:
+            except DatabaseError:
                 ax_model.db_session.rollback()
                 logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise                
+                raise
         except Exception:
             logger.exception('Error executing SQL - delete')
             raise
@@ -485,10 +493,10 @@ class SqliteDialect(object):
             try:
                 ax_model.db_session.execute(sql)
                 ax_model.db_session.commit()
-            except DatabaseError as exc:
+            except DatabaseError:
                 ax_model.db_session.rollback()
                 logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise            
+                raise
         except Exception:
             logger.exception('Error executing SQL - create_data_table')
             raise
@@ -500,10 +508,10 @@ class SqliteDialect(object):
             try:
                 ax_model.db_session.execute(sql)
                 ax_model.db_session.commit()
-            except DatabaseError as exc:
+            except DatabaseError:
                 ax_model.db_session.rollback()
                 logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise                
+                raise
         except Exception:
             logger.exception('Error executing SQL - rename_table')
             raise
@@ -515,15 +523,15 @@ class SqliteDialect(object):
             try:
                 ax_model.db_session.execute(sql)
                 ax_model.db_session.commit()
-            except DatabaseError as exc:
+            except DatabaseError:
                 ax_model.db_session.rollback()
                 logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise                
+                raise
         except Exception:
             logger.exception('Error executing SQL - drop_table')
             raise
 
-    async def add_column(self, table: str, db_name: str, type_name: str) -> None:
+    async def add_column(self, table: str, db_name: str, type_name: str):
         """Add column"""
         try:
             dialect_type = self.get_type(type_name=type_name)
@@ -531,10 +539,10 @@ class SqliteDialect(object):
             try:
                 ax_model.db_session.execute(sql)
                 ax_model.db_session.commit()
-            except DatabaseError as exc:
+            except DatabaseError:
                 ax_model.db_session.rollback()
                 logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise            
+                raise
         except Exception:
             logger.exception('Error executing SQL - add_column')
             raise
@@ -654,9 +662,412 @@ class PorstgreDialect(object):
             'GUID': 'UUID',
             'JSON': 'JSON',
             'TIMESTAMP': 'TIMESTAMP',
-            'BLOB': 'VARBIT'
+            'BLOB': 'bytea'
         }
         return postgre_types[type_name]
+
+    def get_select_sql(self, type_name, db_name):
+        """Some value types need a transformation inside SQL Select statement.
+
+        Args:
+            type_name (str): value of AxField.AxFieldType.value_type, like INT
+            db_name (str): AxField.db_name, the column name of table
+
+        Returns:
+            str: SQL statement to be placed in select section
+                SET <db_name>=<this function>
+        """
+        ret_val = None
+        if "BLOB" in type_name:
+            ret_val = f"octet_length({db_name}) as {db_name}"
+        else:
+            ret_val = db_name
+        return ret_val
+
+
+    def get_value_sql(self, type_name, db_name):
+        """Some value types need a cast inside SQL.
+        Like [UPDATE <table> SET <field>=<this function>]
+        It uses param names same as db_name, like :surname
+
+        Args:
+            type_name (str): value of AxFieldType.value_type, like INT
+            db_name (str): AxField.db_name, the column name of table
+
+        Returns:
+            str: SQL statement to be placed in value section
+                SET <db_name>=<this function>
+        """
+        ret_val = None
+        # if "TIMESTAMP" in type_name:
+        #     ret_val = f"CAST(:{db_name} AS INTEGER)"
+        # elif "DECIMAL" in type_name:
+        #     ret_val = f"CAST(:{db_name} AS REAL)"
+        # else:
+        ret_val = f":{db_name}"
+        return ret_val
+
+
+    def get_value_param(self, type_name, value=None):
+        """ Some value types needs to convert field value before submiting
+        to SQL.
+
+        Args:
+            type_name (str): value of AxFieldType.value_type, like INT
+            value (object, optional): Value of field. Defaults to None.
+
+        Returns:
+            object: initial value of converted value if needed by field type
+        """
+        ret_param = None
+        if "DECIMAL" in type_name:
+            ret_param = str(value).replace(",", ".") if value else None
+        elif "JSON" in type_name:
+            ret_param = json.dumps(value) if value else None
+        else:
+            ret_param = value if value else None
+        return ret_param
+
+
+    def custom_query(self, sql, variables=None):
+        """ Executes any SQL. Used in action python code.
+
+        Args:
+            sql (str): Any sql that needs to be executed
+
+        Returns:
+            List(Dict(column_name: value)): result of SQL query
+        """
+        try:
+            res = None
+            try:
+                if variables:
+                    res = ax_model.db_session.execute(sql, variables)
+                else:
+                    res = ax_model.db_session.execute(sql)
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
+
+            if res and res.returns_rows:
+                return res.fetchall()
+            return res
+        except Exception:
+            logger.exception(
+                f"Error executing SQL - {sql}")
+            raise
+
+
+
+    async def select_all(self, ax_form, quicksearch=None, server_filter=None,
+                         guids=None):
+        """ Select * from table
+
+        Args:
+            ax_form (AxForm): Current AxForm
+            quicksearch (str, optional): Search string from AxGrid.vue
+            server_filter (Dict, optional): Dicts with current grid server-
+            filter. Constructed by query builder javascript plugin:
+                sql (str): Sql expression with params, like 'price > :price'
+                params (str): Sql params of query. lile {'price': 20000}
+            guids (str, optional): JSON containing list of guids, that must be
+                selected. Used in 1tom fields. Where you need to display only
+                selected guids.
+
+        Returns:
+            List(Dict): Result of SqlAlchemy query. List of rows
+        """
+        try:
+            sql_params = {}
+
+            tom_name = await this.get_tom_sql(
+                form_db_name=ax_form.db_name,
+                form_name=ax_form.name,
+                tom_label=ax_form.tom_label,
+                fields=ax_form.db_fields)
+
+            fields_sql = ", ".join(
+                field.db_name for field in ax_form.db_fields)
+
+            quicksearch_sql = ''
+            if quicksearch:
+                sql_params['quicksearch'] = quicksearch
+                quicksearch_sql = (
+                    f"AND axLabel LIKE ('%' || :quicksearch || '%') "
+                )
+
+            serverfilter_sql = ''
+            if server_filter and server_filter["params"]:
+                serverfilter_sql = f"AND ({server_filter['sql']})"
+                for key, param in server_filter["params"].items():
+                    sql_params[key] = param
+
+            guids_sql = ''
+            if guids:
+                guids_array = json.loads(guids)['items']
+                guids_string = ''
+                if guids_array:
+                    for idx, guid in enumerate(guids_array):
+                        del guid
+                        guids_array[idx] = guids_array[idx].replace('-', '')
+
+                    for check_guid in guids_array:
+                        try:
+                            uuid.UUID(check_guid)
+                        except Exception:
+                            logger.exception(
+                                f"Error in guids argument. Cant parse json")
+                            raise
+
+                    guids_string = ", ".join(
+                        "'" + item + "'" for item in guids_array)
+                guids_sql = f"OR guid IN ({guids_string})"
+                if not quicksearch_sql and not serverfilter_sql:
+                    guids_sql = f"AND guid IN ({guids_string})"
+            sql = (
+                f"SELECT guid, axState, {fields_sql}"
+                f", {tom_name} as axLabel FROM {ax_form.db_name}"
+                f" WHERE (1=1 {quicksearch_sql} {serverfilter_sql}) {guids_sql}"
+            )
+            try:
+                result = ax_model.db_session.execute(
+                    sql,
+                    sql_params
+                ).fetchall()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
+
+            return result
+            # names = [row[0] for row in result]
+        except Exception:
+            logger.exception(
+                f"Error executing SQL - quicksearch {ax_form.db_name}")
+            raise
+
+
+
+    async def select_one(self, form, fields_list, row_guid):
+        """Select fields from table for one row
+
+        Args:
+            form (AxForm): Current form
+            fields_list (List(AxField)): Fields that must be selected.
+            row_guid (str): String of row guid
+            num_fields (List(AxField)): AxNum fields. If not empy, row will
+                be searched by guid and every AxNum
+
+        Returns:
+            List(Dict(column_name: value)): result of SQL query
+        """
+        try:
+            form_db_name = form.db_name
+            num_fields = []
+            for field in form.db_fields:
+                if field.field_type.tag == 'AxNum':
+                    num_fields.append(field)
+            fields_string = 'guid, axState'
+            for field in fields_list:
+                field_name = self.get_select_sql(
+                    field.field_type.value_type, field.db_name)
+                fields_string += f", {field_name}"
+
+            sql = (f"SELECT {fields_string} "
+                   f"FROM {form_db_name} "
+                   f"WHERE guid=:row_guid"
+                   )
+            if num_fields:
+                for num_field in num_fields:
+                    sql += f" OR {num_field.db_name}=:row_guid"
+            guid_or_num = str(row_guid)
+            if ax_misc.string_is_guid(guid_or_num):
+                guid_or_num = guid_or_num.replace('-', '')
+            query_params = {"row_guid": guid_or_num}
+            result = None
+            try:
+                result = ax_model.db_session.execute(
+                    sql, query_params).fetchall()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
+
+            return result
+            # names = [row[0] for row in result]
+        except Exception:
+            logger.exception(f"Error executing SQL - select_one {form_db_name}")
+            raise
+
+
+
+    async def select_field(self, form_db_name, field_db_name, row_guid):
+        """Gets value of single field from SQL. Used in file viewer.
+        See routes.py
+
+        Args:
+            form_db_name (str): AxForm.db_name - table name of current form
+            fields_db_name (str): Db name of field
+            row_guid (str): String of row guid
+
+        Returns:
+            List(Dict(column_name: value)): result of SQL query
+        """
+        try:
+            row_guid_stripped = row_guid.replace('-', '')
+            ret_value = None
+            sql = (f"SELECT {field_db_name} "
+                   f"FROM {form_db_name} "
+                   f"WHERE guid='{row_guid_stripped}'"
+                   )
+            result = None
+            try:
+                result = ax_model.db_session.execute(sql).fetchall()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
+
+            if result:
+                ret_value = result[0][field_db_name]
+            return ret_value
+        except Exception:
+            logger.exception(
+                f"Error executing SQL - select_field {form_db_name}")
+            raise
+
+
+    async def insert(self, form, to_state_name, new_guid):
+        """ Insert row into database and set state with AxForm field values
+
+        Args:
+            form (AxForm): Current form with filled field values.
+            to_state_name (str): Name of form state that must be set
+            new_guid (str): Guid that must be used to create record.
+
+        Returns:
+            str: Guid of created row
+        """
+        try:
+            fields_db_names = []
+            query_params = {
+                "axState": to_state_name,
+                "row_guid": str(new_guid).replace('-', ''),
+            }
+
+            value_strings = []
+            for field in form.fields:
+                if field.needs_sql_update:
+                    fields_db_names.append(field.db_name)
+                    value_strings.append(
+                        self.get_value_sql(
+                            type_name=field.field_type.value_type,
+                            db_name=field.db_name
+                        )
+                    )
+                    query_params[field.db_name] = self.get_value_param(
+                        type_name=field.field_type.value_type,
+                        value=field.value
+                    )
+
+            column_sql = ", ".join(fields_db_names)
+            values_sql = ", ".join(value_strings)
+
+            sql = (
+                f"INSERT INTO {form.db_name} "
+                f"(guid, axState, {column_sql}) "
+                f"VALUES (:row_guid, :axState, {values_sql});"
+            )
+            result = ax_model.db_session.execute(sql, query_params)
+
+            last_guid_result = None
+            try:
+                last_guid_result = ax_model.db_session.execute(
+                    f"SELECT guid FROM {form.db_name} "
+                    f"WHERE rowid={result.lastrowid}"
+                ).fetchall()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
+            last_guid = last_guid_result[0]['guid']
+
+            ax_model.db_session.commit()
+            return last_guid
+        except Exception:
+            logger.exception('Error executing SQL - insert')
+            raise
+
+
+
+    async def update(self, form, to_state_name, row_guid):
+        """Update database row based of AxForm fields values
+
+        Args:
+            form (AxForm): Current form with filled field values.
+            to_state_name (str): Name of form state that must be set
+            row_guid (str): Guid of updated row
+
+        Returns:
+            SqlAlchemy result: Contains nothing. Not used.
+        """
+        try:
+            value_strings = []
+            query_params = {
+                "axState": to_state_name,
+                "row_guid": row_guid
+            }
+            for field in form.fields:
+                if field.needs_sql_update:
+                    current_valu_str = self.get_value_sql(
+                        type_name=field.field_type.value_type,
+                        db_name=field.db_name
+                    )
+                    value_strings.append(f"{field.db_name}={current_valu_str}")
+                    query_params[field.db_name] = self.get_value_param(
+                        type_name=field.field_type.value_type,
+                        value=field.value
+                    )
+
+            values_sql = ", ".join(value_strings)
+            sql = (
+                f"UPDATE {form.db_name} "
+                f"SET axState=:axState, {values_sql} "
+                f"WHERE guid=:row_guid "
+            )
+            result = None
+            try:
+                result = ax_model.db_session.execute(sql, query_params)
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
+
+            ax_model.db_session.commit()
+            return result
+        except Exception:
+            logger.exception('Error executing SQL - update')
+            raise
+
+
+    async def delete(self, form, row_guid):
+        """ Delete row of table of form"""
+        try:
+            sql = (
+                f"DELETE FROM {form.db_name} WHERE guid='{row_guid}' "
+            )
+            try:
+                ax_model.db_session.execute(sql)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
+        except Exception:
+            logger.exception('Error executing SQL - delete')
+            raise
+
 
     def create_data_table(self, db_name: str) -> None:
         """Create table with system columns"""
@@ -670,30 +1081,50 @@ class PorstgreDialect(object):
             logger.exception('Error executing SQL - create_data_table')
             raise
 
-    def rename_table(self, old: str, new: str) -> None:
+    async def rename_table(self, old: str, new: str) -> None:
         """Rename table"""
         try:
             sql = f'ALTER TABLE {old} RENAME TO {new};'
-            ax_model.db_session.execute(sql)
+            try:
+                ax_model.db_session.execute(sql)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
         except Exception:
             logger.exception('Error executing SQL - rename_table')
             raise
 
-    def drop_table(self, db_name: str) -> None:
+
+    async def drop_table(self, db_name: str) -> None:
         """Drop table"""
         try:
             sql = f'DROP TABLE {db_name};'
-            ax_model.db_session.execute(sql)
+            try:
+                ax_model.db_session.execute(sql)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
         except Exception:
             logger.exception('Error executing SQL - drop_table')
             raise
 
-    def add_column(self, table, db_name, type_name) -> None:
+
+    async def add_column(self, table: str, db_name: str, type_name: str):
         """Add column"""
         try:
             dialect_type = self.get_type(type_name=type_name)
             sql = f"ALTER TABLE `{table}` ADD COLUMN {db_name} {dialect_type}"
-            ax_model.db_session.execute(sql)
+            try:
+                ax_model.db_session.execute(sql)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
         except Exception:
             logger.exception('Error executing SQL - add_column')
             raise
@@ -703,7 +1134,13 @@ class PorstgreDialect(object):
         try:
             del type_name
             sql = f"ALTER TABLE {table} RENAME COLUMN {old_name} TO {new_name};"
-            ax_model.db_session.execute(sql)
+            try:
+                ax_model.db_session.execute(sql)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
         except Exception:
             logger.exception('Error executing SQL - rename_column')
             raise
@@ -712,7 +1149,13 @@ class PorstgreDialect(object):
         """ Drop column """
         try:
             sql = f"ALTER TABLE {table} DROP COLUMN {column};"
-            ax_model.db_session.execute(sql)
+            try:
+                ax_model.db_session.execute(sql)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(f"Error executing SQL, rollback! - {sql}")
+                raise
         except Exception:
             logger.exception('Error executing SQL - drop_column')
             raise

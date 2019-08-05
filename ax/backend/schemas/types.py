@@ -51,6 +51,18 @@ class ConsoleMessage(graphene.ObjectType):
     text = graphene.String()
 
 
+class ActionNotifyMessage(graphene.ObjectType):
+    """ - """
+    form_guid = graphene.String()
+    form_icon = graphene.String()
+    form_db_name = graphene.String()
+    row_guid = graphene.String()
+    modal_guid = graphene.String()
+    action_guid = graphene.String()
+    action_db_name = graphene.String()
+    action_icon = graphene.String()
+
+
 class Field(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
     class Meta:  # pylint: disable=missing-docstring
         model = AxField

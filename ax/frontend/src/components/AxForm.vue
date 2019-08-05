@@ -66,7 +66,10 @@
               </v-btn>
             </v-badge>
             <i :class='iconClass'></i>
-            &nbsp; {{name}}
+            &nbsp; {{name}} &nbsp;
+            <v-btn @click='reloadData' flat icon>
+              <i class='fas fa-redo-alt'></i>
+            </v-btn>
             <resize-observer @notify='handleResize' />
           </div>
           <v-container class='form-container' fluid grid-list-xl>
@@ -109,8 +112,12 @@
                   &nbsp; {{$t("form.test-from")}}
                 </v-btn>
 
+                <v-btn @click='openTerminalModal' color='success' icon v-if='terminalIsAvalible'>
+                  <i class='fas fa-terminal'></i>
+                </v-btn>
+
                 <v-btn
-                  :disabled='!formIsValid'
+                  :disabled='!formIsValid || performingActionGuid != null'
                   :key='action.guid'
                   @click='doAction(action)'
                   small
@@ -120,6 +127,10 @@
                   <i :class='getActionIconClass(action)'></i>
                   &nbsp;
                   {{ action.name }}
+                  <i
+                    class='fas fa-spinner fa-spin action-loading'
+                    v-if='action.guid == performingActionGuid'
+                  ></i>
                 </v-btn>
                 <!-- <v-btn @click='openForm()' color='primary' outline>text</v-btn> -->
               </v-flex>
@@ -154,6 +165,22 @@
         <AxForm no_margin></AxForm>
       </v-card>
     </modal>
+
+    <modal :name='`terminal-${this.modalGuid}`' adaptive height='auto' scrollable width='60%'>
+      <div>
+        <v-btn :ripple='false' @click='closeTerminalModal' class='close' color='black' flat icon>
+          <i class='fas fa-times close-ico'></i>
+        </v-btn>
+        <div class='header'>
+          <i class='fas fa-terminal'></i>
+          &nbsp;
+          {{$t("form.terminal-header")}}
+        </div>
+        <div class='terminal-wrapper'>
+          <div class='terminal-div' ref='terminalDiv'></div>
+        </div>
+      </div>
+    </modal>
   </v-app>
 </template>
 
@@ -164,6 +191,13 @@ import apolloClient from '../apollo';
 import AxField from '@/components/AxField.vue';
 import gql from 'graphql-tag';
 import uuid4 from 'uuid4';
+import { Terminal } from 'xterm';
+import { WebLinksAddon } from 'xterm-addon-web-links';
+// import { FitAddon } from 'xterm-addon-fit';
+// import { SearchAddon } from 'xterm-addon-search';
+import * as fit from 'xterm/lib/addons/fit/fit';
+import 'xterm/dist/xterm.css';
+
 // import { settings } from 'cluster';
 
 export default {
@@ -219,7 +253,10 @@ export default {
       modalGuid: null,
       insertedGuid: null,
       showSubscribtionWarning: false,
-      guidNotFound: false
+      guidNotFound: false,
+      terminal: null,
+      performingActionGuid: null,
+      terminalIsAvalible: false
     };
   },
   computed: {
@@ -265,13 +302,36 @@ export default {
   },
   mounted() {
     if (this.db_name) this.loadData(this.db_name, this.currentRowGuid);
+    this.initiateTerminal();
   },
   methods: {
+    initiateTerminal() {
+      Terminal.applyAddon(fit);
+      this.terminal = new Terminal({
+        fontSize: 14,
+        fontFamily: 'Consolas, courier-new, courier, sans-serif'
+      });
+
+      // #d4d4d4 vs code white color
+      this.terminal.setOption('theme', { background: '#1e1e1e' });
+      this.terminal.setOption('cursorBlink', false);
+      this.terminal.setOption('convertEol', true);
+      this.terminal.loadAddon(new WebLinksAddon());
+      // this.terminal.on('data', data => {
+      //   this.terminal.write(data);
+      // });
+      // this.terminal.loadAddon(new FitAddon());
+      // this.terminal.loadAddon(new SearchAddon());
+    },
     reloadData() {
       setTimeout(() => {
         this.loadData(this.db_name, this.currentRowGuid);
         this.showSubscribtionWarning = false;
-      }, 1000);
+        const msg = this.$t('form.reload-success');
+        this.$dialog.message.success(
+          `<i class="fas fa-redo-alt"></i> &nbsp ${msg}`
+        );
+      }, 100);
     },
     getWidthClass(field) {
       if (field.isWholeRow || this.isMobile) return 'xs12';
@@ -409,11 +469,13 @@ export default {
           this.dbName = currentFormData.dbName;
           this.icon = currentFormData.icon;
           this.actions = currentFormData.avalibleActions;
+          // If form was opened from AxGrid by clicking on create action - then only one buttob must be avalible in form
           if (this.action_guid && !this.insertedGuid) {
             this.actions = this.actions.filter(
               action => action.guid === this.action_guid
             );
           }
+          this.performingActionGuid = null; // Reset performing action to hide spinner
 
           this.guidNotFound = false;
           if (this.guid && !currentFormData.rowGuid) this.guidNotFound = true;
@@ -424,9 +486,9 @@ export default {
           fields.forEach(field => {
             const thisField = field;
             if (
-              !field.isTab
-              && field.value
-              && field.fieldType.valueType === 'JSON'
+              !field.isTab &&
+              field.value &&
+              field.fieldType.valueType === 'JSON'
             ) {
               thisField.value = JSON.parse(field.value);
             }
@@ -454,11 +516,22 @@ export default {
     openForm() {
       this.$modal.show(`sub-form-${this.modalGuid}`);
     },
+    openTerminalModal() {
+      this.$modal.show(`terminal-${this.modalGuid}`);
+      setTimeout(() => {
+        this.terminal.open(this.$refs.terminalDiv);
+        this.terminal.fit();
+        // this.terminal.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ');
+      }, 100);
+    },
+    closeTerminalModal() {
+      this.$modal.hide(`terminal-${this.modalGuid}`);
+    },
     handleResize(force = false) {
       if (
-        this.currentWidth
-        && this.currentWidth === this.$el.clientWidth
-        && !force
+        this.currentWidth &&
+        this.currentWidth === this.$el.clientWidth &&
+        !force
       ) {
         return false;
       }
@@ -485,8 +558,8 @@ export default {
       }
 
       if (
-        this.drawerIsFloating === false
-        && this.currentWidth * 1 < drawerBreakingPoint
+        this.drawerIsFloating === false &&
+        this.currentWidth * 1 < drawerBreakingPoint
       ) {
         this.drawerIsFloating = true;
         this.drawerIsHidden = true;
@@ -495,8 +568,8 @@ export default {
       }
 
       if (
-        this.drawerIsFloating === true
-        && this.currentWidth * 1 > drawerBreakingPoint
+        this.drawerIsFloating === true &&
+        this.currentWidth * 1 > drawerBreakingPoint
       ) {
         this.drawerIsFloating = false;
         this.drawerIsHidden = false;
@@ -525,6 +598,9 @@ export default {
       if (action.toStateGuid === action.fromStateGuid) return 'fas fa-redo';
       return 'far fa-arrow-alt-circle-right';
     },
+    disableActions(currentActionGuid) {
+      this.performingActionGuid = currentActionGuid;
+    },
     async doAction(action) {
       this.isValid();
       if (!this.formIsValid) return false;
@@ -543,6 +619,8 @@ export default {
 
         if (!comfirmed) return false;
       }
+
+      this.disableActions(action.guid);
 
       const DO_ACTION = gql`
         mutation(
@@ -613,8 +691,20 @@ export default {
       try {
         let res = false;
         if (actionResult.messages && actionResult.messages.error) {
+          let errorText = actionResult.messages.error;
+          console.log(errorText);
+          console.log(errorText.includes("$i18n('form.row-locked')"));
+          if (errorText.includes("$i18n('form.row-locked')")) {
+            errorText = errorText.replace(
+              "$i18n('form.row-locked')",
+              this.$t('form.row-locked')
+            );
+          }
+          // const reg = new RegExp(/\$i18n\('(.*?)'\)/);
+          // const matches = errorText.match(reg);
+
           res = await this.$dialog.error({
-            text: actionResult.messages.error,
+            text: errorText,
             persistent: false
           });
         } else if (actionResult.messages && actionResult.messages.exception) {
@@ -641,6 +731,11 @@ export default {
         if (res) {
           if (actionResult.closeModal) {
             this.$emit('close', actionResult.retGuid);
+            // incase this form inserted as web-conponent
+            // the close will fail and we need to reload form
+            setTimeout(() => {
+              this.loadData(this.db_name, this.currentRowGuid);
+            }, 100);
           } else {
             setTimeout(() => {
               this.loadData(this.db_name, this.currentRowGuid);
@@ -656,10 +751,11 @@ export default {
       const ACTION_SUBSCRIPTION_QUERY = gql`
         subscription($formDbName: String!, $rowGuid: String) {
           actionNotify(formDbName: $formDbName, rowGuid: $rowGuid) {
-            guid
-            dbName
+            formGuid
+            formDbName
             rowGuid
             modalGuid
+            actionGuid
           }
         }
       `;
@@ -669,7 +765,7 @@ export default {
           query: ACTION_SUBSCRIPTION_QUERY,
           variables: {
             formDbName: this.dbName,
-            rowGuid: this.guid
+            rowGuid: this.rowGuid
           }
         })
         .subscribe(
@@ -677,7 +773,18 @@ export default {
             if (data.data.actionNotify.modalGuid !== this.modalGuid) {
               setTimeout(() => {
                 this.showSubscribtionWarning = true;
-              }, 1000);
+              }, 100);
+            }
+            const notifyActionGuid = data.data.actionNotify.actionGuid.replace(
+              '-',
+              ''
+            );
+            const performingActionGuid = this.performingActionGuid.replace(
+              '-',
+              ''
+            );
+            if (notifyActionGuid === performingActionGuid) {
+              this.reloadData();
             }
           },
           {
@@ -706,7 +813,12 @@ export default {
         })
         .subscribe(
           data => {
-            console.log(data.data.consoleNotify);
+            if (!this.terminalIsAvalible) {
+              this.terminalIsAvalible = true;
+              this.openTerminalModal();
+            }
+            const msg = data.data.consoleNotify.text;
+            this.terminal.write(`${msg}\n`);
           },
           {
             error(error) {
@@ -835,5 +947,22 @@ export default {
 }
 .not-found i {
   font-size: 3em;
+}
+.terminal-wrapper {
+  margin: 10px 25px 25px 25px;
+  padding: 20px;
+  background: #1e1e1e;
+}
+.close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+.close-ico {
+  font-size: 20px;
+}
+.action-loading {
+  margin-left: 15px;
+  color: #f44336;
 }
 </style>
