@@ -62,7 +62,7 @@ npm run test:e2e
 
 ============= ALEMBIC ===============
 [working directory = '/ax/' , where 'alembic.ini' is located]
-alembic revision -m "baseline" 
+alembic revision -m "baseline"
 alembic stamp head
 alembic revision --autogenerate -m "added field_types"
 alembic upgrade head
@@ -73,7 +73,7 @@ diffs = alembic.autogenerate.compare_metadata(...) <- check on startup
 
 ============ PIPY ==================
 To deploy to PIPY:
-    
+    python publish_version.py
 
 pip install .
 python -m pip install --upgrade setuptools wheel

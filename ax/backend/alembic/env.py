@@ -17,6 +17,14 @@ import backend.misc as ax_misc
 import backend.model as ax_model
 import main as ax_app
 
+
+def include_object(object, name, type_, reflected, compare_to):
+    if (type_ == "table" and not str(name).startswith('_')):
+        return False
+    else:
+        return True
+
+
 print('----------------------------------------------------')
 
 # Sets alembic configuration. migration script distanation and database url
@@ -45,13 +53,14 @@ def run_migrations_offline():
     script output.
 
     """
+    print('running offline migration')
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url, target_metadata=target_metadata,
         literal_binds=True,
+        include_object=include_object,
         version_table='_ax_alembic_version'
     )
-
     with context.begin_transaction():
         context.run_migrations()
 
@@ -63,6 +72,8 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
+    print('running offline migration')
+
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",
@@ -72,6 +83,7 @@ def run_migrations_online():
     with connectable.connect() as connection:
         context.configure(
             connection=connection,
+            include_object=include_object,
             target_metadata=target_metadata,
             version_table='_ax_alembic_version'
         )

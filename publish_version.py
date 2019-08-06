@@ -79,7 +79,6 @@ def bump_version(is_major: bool = False, is_minor: bool = False):
             this.final_version = str(major) + "." + \
                 str(minor) + "." + str(micro)
             this.app_yaml['env_variables']['AX_VERSION'] = this.final_version
-
     except Exception:
         logger.exception('Failed to bump version')
         raise
@@ -187,18 +186,18 @@ if __name__ == "__main__":
     logger.info(arguments['--minor'])
 
     #  Init migration.py for alembic and model.py for database
-    init_ax()
+    # init_ax()
 
     #  Automatic bump version, save in app.yaml
     bump_version(is_major=arguments['--major'], is_minor=arguments['--minor'])
 
-    #  Create db migration script
-    if ax_migration.database_fits_metadata() is False:
-        # Create migration script and save revision on app.yaml
-        create_db_revision()
-        save_db_revision()
-    else:
-        logger.info('No database changes detected')
+    # #  Create db migration script
+    # if ax_migration.database_fits_metadata() is False:
+    #     # Create migration script and save revision on app.yaml
+    #     create_db_revision()
+    #     save_db_revision()
+    # else:
+    #     logger.info('No database changes detected')
 
     save_yaml()
     clear_pipy_dist()

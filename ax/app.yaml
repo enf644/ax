@@ -30,7 +30,7 @@ env_variables:
   AX_LOGS_LEVEL: DEBUG # ERROR, WARNING, INFO, DEBUG. default = ERROR
   # AX_LOGS_FILENAME: ax_logs.log #  If not set, logs only output to stdio
   # AX_LOGS_ABSOLUTE_PATH: 'D:\Projects\' #  default =
-  AX_DB_REVISION: v0.0.11_2b12003a3b8
+  AX_DB_REVISION: 9b898740929f
 
   # AX_DB_DIALECT: 'postgre' # sqlite, postgre, mysql. Default is sqlite
   # AX_DB_HOST: '127.0.0.1'
