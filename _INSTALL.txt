@@ -72,6 +72,9 @@ alembic.command.upgrade(dfg, 'head')
 diffs = alembic.autogenerate.compare_metadata(...) <- check on startup
 
 ============ PIPY ==================
+To deploy to PIPY:
+    
+
 pip install .
 python -m pip install --upgrade setuptools wheel
 python -m pip install --upgrade twine

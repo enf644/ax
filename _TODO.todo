@@ -538,7 +538,10 @@ AX 0.2:
             ✔ Engine @done(19-08-04 16:12)
                 ✔ Lock rows that are already performing actions. @done(19-08-04 16:12)
                 ✔ Error when someone wants to execute action on blocked row. @done(19-08-04 16:12)
-        ☐ PostgreSQL support
+        ✔ PostgreSQL support @done(19-08-06 10:21)
+        ☐ Two working versions on same machine - sqlite + postgre
+            ☐ Check if settings works with sqlite file path
+            ☐ Publish to pypi, install, run sqlite version.
         ☐ Errors
             ☐ What if database already exists?
             ☐ Action drag on update action??
@@ -548,7 +551,7 @@ AX 0.2:
             ☐ If error accured while executing field before/after code -> the exception must be seen in modal for user
             ☐ If someone makes create action, the notification is poped up in constructor!
             ☐ Ax1to1 - not updated after action, needs reload
-    ☐ CYPRESS TESTS FOR ALL
+    ☐ CYPRESS TESTS FOR MAIN FUNCTIONS
     ☐ ESTABLISH CI
         ☐ Each commit runs tests - installs from pip, runs cypress tests
         ☐ Start versionning

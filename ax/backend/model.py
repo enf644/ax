@@ -44,7 +44,6 @@ def init_model(dialect: str, host: str, port: str, login: str, password: str,
         sqlite_absolute_path (str): Path to Sqlite file. If file does not exist
             it will be created
     """
-    del host, port, login, password, database
     try:
         if dialect == 'sqlite':
             if sqlite_absolute_path is None:
@@ -53,6 +52,8 @@ def init_model(dialect: str, host: str, port: str, login: str, password: str,
             else:
                 db_path = str(Path(sqlite_absolute_path) / sqlite_filename)
                 this.db_url = 'sqlite:///' + db_path
+        elif dialect == 'postgre':
+            this.db_url = f'postgresql://{login}:{password}@{host}:{port}/{database}'
         else:
             msg = 'This database dialect is not supported'
             logger.error(msg)

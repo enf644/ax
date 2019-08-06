@@ -31,14 +31,17 @@ env_variables:
   # AX_LOGS_FILENAME: ax_logs.log #  If not set, logs only output to stdio
   # AX_LOGS_ABSOLUTE_PATH: 'D:\Projects\' #  default =
   AX_DB_REVISION: v0.0.11_2b12003a3b8
-  # AX_DB_DIALECT: # sqlite, postgre, mysql. Default is sqlite
-  # AX_DB_HOST:
-  # AX_DB_PORT:
-  # AX_DB_LOGIN:
-  # AX_DB_PASSWORD:
-  # AX_DB_DATABASE:
-  # AX_DB_SQLITE_FILENAME: "my_ax.db" #  default='ax_sqlite.db
-  # AX_DB_SQLITE_ABSOLUTE_PATH: "/tmp" #  default=None
-  AX_LOCALE: ru # default=en
+
+  # AX_DB_DIALECT: 'postgre' # sqlite, postgre, mysql. Default is sqlite
+  # AX_DB_HOST: '127.0.0.1'
+  # AX_DB_PORT: '5432'
+  # AX_DB_LOGIN: 'postgres'
+  # AX_DB_PASSWORD: 'Cnuds644'
+  # AX_DB_DATABASE: 'wine'
+  
+  # AX_DB_SQLITE_FILENAME: "wine.db" #  default='ax_sqlite.db
+  # AX_DB_SQLITE_ABSOLUTE_PATH: "C:\\Users\\enf64_000\\Desktop\\Dimiant\\WineProject\\Archive" #  default=None
+
+  # AX_LOCALE: ru # default=en
   # AX_TMP_ABSOLUTE_PATH: '/tmp' #'D:\Projects\tmp'
   # AX_UPLOADS_ABSOLUTE_PATH: '/tmp/uploads'
