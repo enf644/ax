@@ -15,7 +15,6 @@ from backend.model import GUID, AxForm, AxField, AxGrid, AxAction, AxState, \
 import backend.model as ax_model
 # import backend.cache as ax_cache
 import backend.dialects as ax_dialects
-import backend.schema as ax_schema
 import backend.misc as ax_misc
 from backend.schemas.types import Form, PositionInput
 
@@ -266,6 +265,7 @@ class CreateForm(graphene.Mutation):
     form = graphene.Field(Form)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        import backend.schema as ax_schema
         try:
             del info
             name = args.get('name')
@@ -342,6 +342,7 @@ class UpdateForm(graphene.Mutation):
     form = graphene.Field(Form)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        import backend.schema as ax_schema
         try:
             del info
             ax_form = ax_model.db_session.query(AxForm).filter(

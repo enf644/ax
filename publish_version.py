@@ -207,7 +207,7 @@ if __name__ == "__main__":
 
     buid_pypi()
     upload_to_pypi()
-    tag_git()
+    # tag_git()
 
     #  Publish pipy package to TEST pypi
     #  Run all tests

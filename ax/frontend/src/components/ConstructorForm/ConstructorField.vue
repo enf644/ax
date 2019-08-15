@@ -8,7 +8,7 @@
       ref='nameInput'
       type='text'
       v-model='currentName'
-    >
+    />
     <div id='db_div'>
       <i
         @click='openSettings'
@@ -24,7 +24,7 @@
         ref='dbInput'
         type='text'
         v-model='currentDbName'
-      >
+      />
     </div>
   </span>
 </template>
@@ -173,6 +173,7 @@ export default {
 }
 .wrap {
   position: relative;
+  white-space: nowrap;
 }
 .but {
   color: #cfcfcf;

@@ -35,7 +35,7 @@ def get_requirements():
 setup(
     name="ax",
     version=get_version(),
-    description="Ax workflow apps builder",
+    description="Ax - workflow apps builder",
     long_description=readme,
     long_description_content_type="text/markdown",
     url="https://github.com/enf644/ax",

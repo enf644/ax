@@ -108,9 +108,11 @@ def init_ax():
     CORS(app, automatic_options=True)  # TODO limit CORS to api folder
 
     app.static('/uploads', str(ax_misc.path('uploads')))
-    app.static('/static', str(ax_misc.path('dist/static')))
-    app.static('/stats', str(ax_misc.path('dist/stats.html')))
-    app.static('/test_webpack', str(ax_misc.path('dist/test.html')))
+    app.static('/static', str(ax_misc.path('dist/ax/static')))
+    app.static('/stats', str(ax_misc.path('dist/ax/stats.html')))
+    app.static('/test_webpack', str(ax_misc.path('dist/ax/test.html')))
+    app.static('/deck', str(ax_misc.path('dist/deck')))
+    app.static('/deck', str(ax_misc.path('dist/deck/index.html')))
 
     @app.listener('before_server_start')
     async def initialize_scheduler(_app, _loop):  # pylint: disable=unused-variable
@@ -158,12 +160,6 @@ def die():
 
 def main():
     """Main function"""
-    # try:
-    #     import googleclouddebugger
-    #     googleclouddebugger.enable()
-    # except ImportError:
-    #     pass
-
     arguments = docopt(__doc__)
 
     host = str(os.environ.get('AX_HOST') or '127.0.0.1')

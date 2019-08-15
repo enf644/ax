@@ -486,9 +486,9 @@ export default {
           fields.forEach(field => {
             const thisField = field;
             if (
-              !field.isTab &&
-              field.value &&
-              field.fieldType.valueType === 'JSON'
+              !field.isTab
+              && field.value
+              && field.fieldType.valueType === 'JSON'
             ) {
               thisField.value = JSON.parse(field.value);
             }
@@ -529,9 +529,9 @@ export default {
     },
     handleResize(force = false) {
       if (
-        this.currentWidth &&
-        this.currentWidth === this.$el.clientWidth &&
-        !force
+        this.currentWidth
+        && this.currentWidth === this.$el.clientWidth
+        && !force
       ) {
         return false;
       }
@@ -558,8 +558,8 @@ export default {
       }
 
       if (
-        this.drawerIsFloating === false &&
-        this.currentWidth * 1 < drawerBreakingPoint
+        this.drawerIsFloating === false
+        && this.currentWidth * 1 < drawerBreakingPoint
       ) {
         this.drawerIsFloating = true;
         this.drawerIsHidden = true;
@@ -568,8 +568,8 @@ export default {
       }
 
       if (
-        this.drawerIsFloating === true &&
-        this.currentWidth * 1 > drawerBreakingPoint
+        this.drawerIsFloating === true
+        && this.currentWidth * 1 > drawerBreakingPoint
       ) {
         this.drawerIsFloating = false;
         this.drawerIsHidden = false;
@@ -818,7 +818,8 @@ export default {
               this.openTerminalModal();
             }
             const msg = data.data.consoleNotify.text;
-            this.terminal.write(`${msg}\n`);
+            console.log(msg);
+            this.terminal.write(`${msg}`);
           },
           {
             error(error) {
@@ -924,6 +925,7 @@ export default {
 }
 .form {
   width: 100%;
+  min-width: 350px;
 }
 .highlighted {
   background: #e0e0e0;

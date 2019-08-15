@@ -136,8 +136,8 @@ export default {
 
           // set width
           if (
-            this.options.widths &&
-            Object.prototype.hasOwnProperty.call(
+            this.options.widths
+            && Object.prototype.hasOwnProperty.call(
               this.options.widths,
               columnModelName
             )
@@ -169,8 +169,7 @@ export default {
             Vue.customElement(kebabName, columnPromise, {
               props: ['options_json']
             });
-            renderer = params =>
-              `<${kebabName} options_json='${column.field.optionsJson}'>${params.value}</${kebabName}>`;
+            renderer = params => `<${kebabName} options_json='${column.field.optionsJson}'>${params.value}</${kebabName}>`;
           } else {
             renderer = params => params.value;
           }
@@ -245,20 +244,20 @@ export default {
       const themeClass = 'ag-theme-material';
       if (this.options) {
         if (
-          (this.options.enableQuickSearch || this.options.enableTitle) &&
-          (this.options.enableActions || this.isTomInlineMode)
+          (this.options.enableQuickSearch || this.options.enableTitle)
+          && (this.options.enableActions || this.isTomInlineMode)
         ) {
           return `${themeClass} grid-search-actions`;
         }
         if (
-          (this.options.enableQuickSearch || this.options.enableTitle) &&
-          !(this.options.enableActions || this.isTomInlineMode)
+          (this.options.enableQuickSearch || this.options.enableTitle)
+          && !(this.options.enableActions || this.isTomInlineMode)
         ) {
           return `${themeClass} grid-search`;
         }
         if (
-          !(this.options.enableQuickSearch || this.options.enableTitle) &&
-          (this.options.enableActions || this.isTomInlineMode)
+          !(this.options.enableQuickSearch || this.options.enableTitle)
+          && (this.options.enableActions || this.isTomInlineMode)
         ) {
           return `${themeClass} grid-actions`;
         }
@@ -470,7 +469,7 @@ export default {
       // So only guids rows  will be returned
       let impossibleGuid = null;
       if (this.isTomInlineMode) {
-        impossibleGuid = 'de24a16e-3b4d-4abf-8d50-0bb30f3e6aab';
+        impossibleGuid = 'de24a16e-3b4d-4abf-guid-imposible000';
       }
 
       const GRID_DATA = placeholder => gql`

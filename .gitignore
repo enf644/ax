@@ -4,6 +4,7 @@
 /.vscode
 /dist
 uploads
+tmp
 /ax/dist
 /build
 /backend/py_libs

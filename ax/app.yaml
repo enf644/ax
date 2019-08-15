@@ -17,7 +17,7 @@ handlers:
   script: auto
 
 env_variables:
-  AX_VERSION: 0.1.0
+  AX_VERSION: 0.8.0
   # AX_HOST: 0.0.0.0 #  default = 127.0.0.1
   # AX_PORT: "8085" #  default = 8080
   # AX_SANIC_DEBUG: true #  default=false
@@ -38,7 +38,15 @@ env_variables:
   # AX_DB_LOGIN: 'postgres'
   # AX_DB_PASSWORD: 'Cnuds644'
   # AX_DB_DATABASE: 'wine'
-  
+
+
+  AX_DB_DIALECT: postgre   # sqlite, postgre, mysql. Default is sqlite
+  AX_DB_HOST: 84.201.174.246
+  AX_DB_PORT: '5432'
+  AX_DB_LOGIN: postgres
+  AX_DB_PASSWORD: Sdgs2019
+  AX_DB_DATABASE: wine
+
   # AX_DB_SQLITE_FILENAME: "wine.db" #  default='ax_sqlite.db
   # AX_DB_SQLITE_ABSOLUTE_PATH: "C:\\Users\\enf64_000\\Desktop\\Dimiant\\WineProject\\Archive" #  default=None
 

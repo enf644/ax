@@ -16,7 +16,6 @@ from loguru import logger
 import ujson as json
 import backend.model as ax_model
 import backend.misc as ax_misc
-import backend.schemas.action_schema as ax_action_schema
 
 this = sys.modules[__name__]
 scheduler = None
@@ -105,6 +104,7 @@ def do_action_REM(form_db_name, action_db_name, values, row_guid=None):
 
 
 def add_action_job(form_db_name, action_db_name, values, row_guid=None, wait_seconds=0):
+    import backend.schemas.action_schema as ax_action_schema
     variables = {
         "form_db_name": form_db_name,
         "action_db_name": action_db_name,

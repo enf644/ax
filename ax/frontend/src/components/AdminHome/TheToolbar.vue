@@ -1,8 +1,8 @@
 <template>
   <v-toolbar app class='top-toolbar' clipped-left fixed height='40'>
-    <v-toolbar-title align-center>
+    <v-toolbar-title align-center class='logo-div'>
       <router-link to='/admin/home'>
-        <img class='logo' src='../../assets/small_axe.png'>
+        <img class='logo' src='../../assets/small_axe.png' />
       </router-link>
     </v-toolbar-title>
 
@@ -40,7 +40,11 @@
         </v-btn>
       </div>
 
-      <div cy-data='current-form-breadcrumb' v-show='currentFormDbName'>
+      <div
+        class='current-form-breadcrumb'
+        cy-data='current-form-breadcrumb'
+        v-show='currentFormDbName'
+      >
         <i class='fas fa-angle-right breadcrumb-devider'></i>
         <i :class='[currentFormIconClass]'></i>
         {{this.currentFormName}}
@@ -57,7 +61,7 @@
       </div>
 
       <modal adaptive height='auto' name='update-form' scrollable>
-        <TheNewForm :guid='this.$store.state.form.guid' @created='closeFormModal'/>
+        <TheNewForm :guid='this.$store.state.form.guid' @created='closeFormModal' />
       </modal>
 
       <v-menu offset-y>
@@ -107,14 +111,14 @@
       </v-menu>
 
       <modal adaptive height='auto' name='update-grid' scrollable>
-        <TheGridSettings :guid='this.$store.state.grids.guid' @updated='closeGridModal'/>
+        <TheGridSettings :guid='this.$store.state.grids.guid' @updated='closeGridModal' />
       </modal>
     </v-layout>
     <v-spacer></v-spacer>
     <transition enter-active-class='animated fadeIn faster' name='fade'></transition>
     <div>
       <v-avatar class='logout' size='27px' slot='activator'>
-        <img src='https://avatars0.githubusercontent.com/u/9064066?v=4&s=460'>
+        <img src='https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' />
       </v-avatar>
     </div>
   </v-toolbar>
@@ -276,10 +280,11 @@ export default {
 .buttons-div {
   vertical-align: middle;
   line-height: 25px;
-  margin-left: 60px;
+  /* margin-left: 60px; */
   margin-right: 20px;
   padding-right: 20px;
   background: #eee;
+  white-space: nowrap;
 }
 .constructor-button {
   margin-left: 10px !important;
@@ -291,5 +296,11 @@ export default {
 }
 .grids-card {
   padding: 20px;
+}
+.current-form-breadcrumb {
+  white-space: nowrap;
+}
+.logo-div {
+  width: 10%;
 }
 </style>

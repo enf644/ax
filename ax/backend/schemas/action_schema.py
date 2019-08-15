@@ -20,7 +20,6 @@ from backend.model import AxForm, AxAction
 import backend.model as ax_model
 import backend.dialects as ax_dialects
 import backend.pubsub as ax_pubsub
-import backend.schema as ax_schema
 import backend.misc as ax_misc
 import backend.scheduler as ax_scheduler
 
@@ -37,7 +36,7 @@ import backend.fields.AxNum as AxFieldAxNum  # pylint: disable=unused-import
 
 
 this = sys.modules[__name__]
-# loop = asyncio.get_event_loop()
+loop = None
 
 
 class InterpreterError(Exception):
@@ -61,19 +60,33 @@ class Executor:
         return result
 
 
+
+async def console_log(msg, modal_guid):
+        ax_pubsub.publisher.publish(
+            aiopubsub.Key('console_log'),
+            {
+                'text': msg,
+                'modal_guid': modal_guid
+            })
+        await asyncio.sleep(0.01)
+
+
 class ConsoleSender:
     """ Used to send ax_console web socket messages to AxForm"""
     def __init__(self, modal_guid):
         self.modal_guid = modal_guid
 
     def __call__(self, msg):
-        ax_pubsub.publisher.publish(
-            aiopubsub.Key('console_log'),
-            {
-                'text': msg,
-                'modal_guid': self.modal_guid
-            })
-
+        # ax_pubsub.publisher.publish(
+        #     aiopubsub.Key('console_log'),
+        #     {
+        #         'text': msg,
+        #         'modal_guid': self.modal_guid
+        #     })
+        # await asyncio.sleep(0.1)
+        console_func = partial(console_log, msg=msg, modal_guid=self.modal_guid)
+        this.loop.call_soon_threadsafe(console_func)
+        asyncio.ensure_future(console_log(msg=msg, modal_guid=self.modal_guid), loop=this.loop)
 
 
 async def get_actions(form, current_state=None):
@@ -146,6 +159,17 @@ async def do_exec(action, form, arguments=None, modal_guid=None):
             abort (Bool): If set to True - the action will be aborted and row
                 state will not be changed
     """
+    import backend.schema as ax_schema
+
+    # async def console_print(msg):
+    #     ax_pubsub.publisher.publish(
+    #         aiopubsub.Key('console_log'),
+    #         {
+    #             'text': msg,
+    #             'modal_guid': modal_guid
+    #         })
+    #     await asyncio.sleep(1)
+
     localz = dict()
     ax = DotMap()  # javascript style dicts item['guid'] == item.guid
     ax.row.guid = form.row_guid
@@ -161,6 +185,7 @@ async def do_exec(action, form, arguments=None, modal_guid=None):
     ax.add_action_job = ax_scheduler.add_action_job
     ax.do_action = this.execute_action
     ax.do_test = ax_scheduler.do_test
+    ax.modal_guid = modal_guid
     for field in form.db_fields:
         ax.row[field.db_name] = field.value
     localz['ax'] = ax
@@ -264,7 +289,7 @@ async def get_before_form(row_guid, form, ax_action):
         for field in tobe_form.db_fields:
             if field.db_name in before_result[0].keys():
                 field.value = before_result[0][field.db_name]
-                if field.value and field.field_type.value_type == 'JSON':
+                if field.value and isinstance(field.value, str) and field.field_type.value_type == 'JSON':
                     field.value = json.loads(field.value)
 
     before_form = copy.deepcopy(tobe_form)
@@ -714,23 +739,27 @@ class ActionSubscription(graphene.ObjectType):
         modal_guid=graphene.Argument(type=graphene.String, required=True))
 
     async def resolve_console_notify(self, info, modal_guid):
-        """ Web-socket subscription on every performed action
+        """ Web-socket subscription on ax terminal print
         """
         del info
         try:
             subscriber = aiopubsub.Subscriber(
                 ax_pubsub.hub, 'action_notify_subscriber')
             subscriber.subscribe(aiopubsub.Key('console_log'))
+            this.loop = asyncio.get_event_loop()
             while True:
                 key, payload = await subscriber.consume()
+                await asyncio.sleep(0.1)
                 del key
                 if payload['modal_guid'] == modal_guid:
                     message = ConsoleMessage(
                         text=payload['text'],
                         modal_guid=payload['modal_guid'])
-                yield message
+                    yield message
         except asyncio.CancelledError:
             await subscriber.remove_all_listeners()
+        except Exception:
+            logger.exception('Error in gql sub resolve_console_notify.')
 
 
 

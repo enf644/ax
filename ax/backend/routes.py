@@ -44,6 +44,7 @@ class AxGraphQLView(GraphQLView):
 
     @staticmethod
     def format_error(error):
+        """ This method is required for showing graphql errors """
         logger.error(error)
         return GraphQLView.format_error(error)
 
@@ -54,45 +55,45 @@ def init_graphql_view():  # pylint: disable=unused-variable
     this.app.add_route(this.graphql_view, '/api/graphql')
 
 
-async def do_action():
-    """ Test function """
-    from backend.schema import schema
+# async def do_action():
+#     """ Test function """
+#     from backend.schema import schema
 
-    values = {
-        "searchString": "Chateau Lafite Rothschild 1996",
-        "supplier": "9c198568469447268d62b395badeb71f",
-        "loader": "0eb38c45e9954442995c6205f2e3f7eb"
-    }
+#     values = {
+#         "searchString": "Chateau Lafite Rothschild 1996",
+#         "supplier": "9c198568469447268d62b395badeb71f",
+#         "loader": "0eb38c45e9954442995c6205f2e3f7eb"
+#     }
 
-    query = f"""
-        mutation(
-            $formDbName: String,
-            $actionDbName: String,
-            $values: String
-        ){{
-            doAction(
-                formDbName: $formDbName
-                actionDbName: $actionDbName
-                values: $values
-            ) {{
-                form {{
-                guid
-                dbName
-                }}
-                newGuid
-                messages
-                ok
-            }}
-        }}
-    """
-    variables = {
-        "formDbName": "Stock",
-        "actionDbName": "addDraft",
-        "values": json.dumps(values)
-    }
-    result = schema.execute(query, variables=variables)
-    test_str = json.dumps(result.data, sort_keys=True, indent=4)
-    print(test_str)
+#     query = f"""
+#         mutation(
+#             $formDbName: String,
+#             $actionDbName: String,
+#             $values: String
+#         ){{
+#             doAction(
+#                 formDbName: $formDbName
+#                 actionDbName: $actionDbName
+#                 values: $values
+#             ) {{
+#                 form {{
+#                 guid
+#                 dbName
+#                 }}
+#                 newGuid
+#                 messages
+#                 ok
+#             }}
+#         }}
+#     """
+#     variables = {
+#         "formDbName": "Stock",
+#         "actionDbName": "addDraft",
+#         "values": json.dumps(values)
+#     }
+#     result = schema.execute(query, variables=variables)
+#     test_str = json.dumps(result.data, sort_keys=True, indent=4)
+#     print(test_str)
 
 
 def init_routes(sanic_app):
@@ -175,14 +176,18 @@ def init_routes(sanic_app):
                 return response.text("", status=404)
             return await response.file(file_path)
 
-        @sanic_app.route('/<path:path>')
+        @sanic_app.route('/admin/<path:path>')
         def index(request, path):  # pylint: disable=unused-variable
             """ This is MAIN ROUTE. (except other routes listed in this module).
                 All requests are directed to Vue single page app. After that Vue
                 handles routing."""
             del request, path
-            absolute_path = ax_misc.path('dist/index.html')
+            absolute_path = ax_misc.path('dist/ax/index.html')
             return response.html(open(absolute_path).read())
+
+        @sanic_app.route('/')
+        def handle_request():  # pylint: disable=unused-variable
+            return response.redirect('/deck')
 
         @sanic_app.route('/draw_ax')
         async def draw_ax(request):  # pylint: disable=unused-variable
@@ -190,7 +195,7 @@ def init_routes(sanic_app):
                 are inputed somewhere. Users can use this url for <script> tag
                 """
             del request
-            absolute_path = ax_misc.path('dist/static/js/ax-bundle.js')
+            absolute_path = ax_misc.path('dist/ax/static/js/ax-bundle.js')
             return await response.file(
                 absolute_path,
                 headers={

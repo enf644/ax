@@ -124,14 +124,10 @@ def load_configuration() -> None:
                 raise ValueError(err)
 
 
-def convert_column_to_string(type, column, registry=None):  # pylint: disable=redefined-builtin
+def convert_column_to_string(type, column, registry=None):
     """This functions is needed to convert UUID column to String column
     for SQL Alchemy"""
-    del type, registry
-    return graphene.String(
-        description=graphene_sqlalchemy.converter.get_column_doc(column),
-        required=not(graphene_sqlalchemy.converter.is_column_nullable(column))
-    )
+    return graphene.String
 
 
 def string_is_guid(string_guid):

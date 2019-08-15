@@ -74,6 +74,7 @@ diffs = alembic.autogenerate.compare_metadata(...) <- check on startup
 ============ PIPY ==================
 To deploy to PIPY:
     python publish_version.py
+    python publish_version.py --no-front
 
 pip install .
 python -m pip install --upgrade setuptools wheel

@@ -73,7 +73,7 @@ async def after_delete(field, before_form, tobe_form, action, current_user):
         Object: Returns updated value of current field"""
     del before_form, action, current_user
     form_guid = str(tobe_form.guid)
-    row_guid = str(uuid.UUID(tobe_form.row_guid))
+    row_guid = str(uuid.UUID(str(tobe_form.row_guid)))
     row_folder = os.path.join(
         ax_misc.uploads_root_dir,
         'form_row_field_file',

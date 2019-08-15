@@ -10,7 +10,7 @@ import ujson as json
 
 from backend.model import AxForm, AxGrid, AxColumn, AxField
 import backend.model as ax_model
-import backend.schema as ax_schema
+
 
 # import backend.cache as ax_cache # TODO use cache!
 from backend.schemas.types import Grid, Column, PositionInput
@@ -196,6 +196,7 @@ class CreateGrid(graphene.Mutation):
     grid = graphene.Field(Grid)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        import backend.schema as ax_schema
         try:
             del info
             form_guid = args.get('form_guid')
@@ -265,6 +266,7 @@ class DeleteGrid(graphene.Mutation):
     deleted = graphene.String()
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        import backend.schema as ax_schema
         try:
             del info
             guid = args.get('guid')
@@ -310,6 +312,7 @@ class UpdateGrid(graphene.Mutation):
     grid = graphene.Field(Grid)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        import backend.schema as ax_schema
         try:
             del info
             guid = args.get('guid')

@@ -16,6 +16,17 @@ THINK ABOUT
 AX - rapid automation tool
 
 
+AX Deck
+    Pages are marketplace app just as any other
+        Can be multiple fronts - pages/shop/intranet
+    Menu based on permissions
+    Must be able to host static content!!
+    Pages is npm package that works with Ax throw GQL
+    Mobile ready - PWA! draggable drawer
+    
+
+
+
 Without Ax:
     Upload form
     Custom items form

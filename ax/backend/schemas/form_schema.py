@@ -11,7 +11,6 @@ from backend.model import AxForm, AxField, AxFieldType, \
     AxRoleFieldPermission, AxColumn, AxRole
 import backend.model as ax_model
 import backend.dialects as ax_dialects
-import backend.schema as ax_schema
 from backend.schemas.types import Form, Field, PositionInput, \
     RoleFieldPermission
 import backend.schemas.action_schema as action_schema
@@ -44,7 +43,9 @@ async def set_form_values(ax_form, row_guid):
         # populate each AxField with data
         for field in ax_form.fields:
             if field in allowed_fields:
-                field.value = result[0][field.db_name]
+                field.value = await ax_dialects.dialect.get_value(
+                    type_name=field.field_type.value_type,
+                    value=result[0][field.db_name])
             if field.is_tab is False and field.is_virtual:
                 field.value = result[0][field.field_type.default_db_name]
 
@@ -171,6 +172,7 @@ class CreateField(graphene.Mutation):
     permissions = graphene.List(RoleFieldPermission)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        import backend.schema as ax_schema
         del info
         try:
             form_guid = args.get('form_guid')
@@ -302,6 +304,7 @@ class UpdateField(graphene.Mutation):
     field = graphene.Field(Field)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        import backend.schema as ax_schema
         del info
         try:
             guid = args.get('guid')
@@ -321,7 +324,7 @@ class UpdateField(graphene.Mutation):
             if name:
                 ax_field.name = name
 
-            if db_name:
+            if db_name and db_name != ax_field.db_name:
                 db_name_error = False
                 for field in ax_field.form.fields:
                     if field.db_name == db_name and (
@@ -379,6 +382,7 @@ class DeleteField(graphene.Mutation):
     deleted = graphene.String()
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        import backend.schema as ax_schema
         try:
             del info
             guid = args.get('guid')

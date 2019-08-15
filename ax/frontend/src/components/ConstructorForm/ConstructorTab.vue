@@ -8,7 +8,7 @@
       ref='nameInput'
       type='text'
       v-model='currentName'
-    >
+    />
   </span>
 </template>
 
@@ -68,5 +68,8 @@ export default {
 }
 #nameInput:focus {
   outline: none;
+}
+.wrap {
+  white-space: nowrap;
 }
 </style>

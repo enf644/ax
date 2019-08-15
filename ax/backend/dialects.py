@@ -152,6 +152,15 @@ class PorstgreDialect(object):
         return ret_param
 
 
+    async def get_value(self, type_name, value):
+        """ SELECT cat return different types for diferent dialects
+        This method makes returning value same """
+        ret_value = value
+        if "JSON" in type_name:
+            ret_value = json.dumps(value) if value else None
+        return ret_value
+
+
     def custom_query(self, sql, variables=None):
         """ Executes any SQL. Used in action python code.
         This method is SYNC, leave it so
@@ -218,8 +227,13 @@ class PorstgreDialect(object):
             if quicksearch:
                 sql_params['quicksearch'] = quicksearch
                 quicksearch_sql = (
-                    f"AND \"axLabel\" LIKE ('%' || :quicksearch || '%') "
+                    f"AND {tom_name} LIKE ('%' || :quicksearch || '%') "
                 )
+                # quicksearch_sql = (
+                #     f"AND \"axLabel\" LIKE ('%' || :quicksearch || '%') "
+                # )
+
+
 
             serverfilter_sql = ''
             if server_filter and server_filter["params"]:
@@ -246,9 +260,9 @@ class PorstgreDialect(object):
 
                     guids_string = ", ".join(
                         "'" + item + "'" for item in guids_array)
-                guids_sql = f"OR guid IN ({guids_string})"
-                if not quicksearch_sql and not serverfilter_sql:
-                    guids_sql = f"AND guid IN ({guids_string})"
+                    guids_sql = f"OR guid IN ({guids_string})"
+                    if not quicksearch_sql and not serverfilter_sql:
+                        guids_sql = f"AND guid IN ({guids_string})"
             sql = (
                 f'SELECT guid, "axState", {fields_sql}'
                 f', {tom_name} as "axLabel" FROM "{ax_form.db_name}"'
@@ -292,18 +306,18 @@ class PorstgreDialect(object):
             for field in form.db_fields:
                 if field.field_type.tag == 'AxNum':
                     num_fields.append(field)
-            fields_string = 'guid, "axState"'
+            fields_string = '"guid", "axState"'
             for field in fields_list:
                 field_name = await self.get_select_sql(
                     field.field_type.value_type, field.db_name)
-                fields_string += f", {field_name}"
+                fields_string += f', "{field_name}"'
 
             sql = (f'SELECT {fields_string} '
                    f'FROM "{form_db_name}" '
                    f'WHERE guid=:row_guid')
             if num_fields:
                 for num_field in num_fields:
-                    sql += f" OR {num_field.db_name}=:row_guid"
+                    sql += f' OR "{num_field.db_name}"=:row_guid'
             guid_or_num = str(row_guid)
             if ax_misc.string_is_guid(guid_or_num):
                 guid_or_num = guid_or_num.replace('-', '')
@@ -382,7 +396,7 @@ class PorstgreDialect(object):
             value_strings = []
             for field in form.fields:
                 if field.needs_sql_update:
-                    fields_db_names.append(f'"field.db_name"')
+                    fields_db_names.append(f'"{field.db_name}"')
                     value_str = await self.get_value_sql(
                         type_name=field.field_type.value_type,
                         db_name=field.db_name)
@@ -395,8 +409,8 @@ class PorstgreDialect(object):
             values_sql = ", ".join(value_strings)
 
             sql = (
-                f"INSERT INTO {form.db_name} "
-                f"(guid, \"axState\", {column_sql}) "
+                f'INSERT INTO "{form.db_name}" '
+                f'("guid", "axState", {column_sql}) '
                 f"VALUES (:row_guid, :ax_state, {values_sql});"
             )
             try:
@@ -553,7 +567,7 @@ class PorstgreDialect(object):
         try:
             del type_name
             sql = (
-                f'ALTER TABLE "{table}"',
+                f'ALTER TABLE "{table}"'
                 f' RENAME COLUMN "{old_name}" TO "{new_name}";'
             )
             try:
@@ -800,6 +814,13 @@ class MysqlDialect(object):
             'BLOB': 'BLOB'
         }
         return mysql_types[type_name]
+
+
+    async def get_value(self, type_name, value):
+        """ SELECT cat return different types for diferent dialects
+        This method makes returning value same """
+        ret_value = value     
+        return ret_value        
 
     async def create_data_table(self, db_name: str) -> None:
         """Create table with system columns"""
