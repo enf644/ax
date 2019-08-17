@@ -1,14 +1,11 @@
+# Used in Google app engine configuration
 runtime: python37
 env: standard
 # api_version: 1
 # threadsafe: true
-# service: core
 service: test
-
-# entrypoint: gunicorn -b :$PORT main:app
-# entrypoint: gunicorn <main:app> --bind 0.0.0.0:8080 --worker-class sanic.worker.GunicornWorker
 entrypoint: gunicorn main:app --bind 0.0.0.0:8080 --worker-class sanic.worker.GunicornWorker
-# entrypoint: python main.py
+
 
 handlers:
 - url: /static
@@ -17,11 +14,13 @@ handlers:
   script: auto
 
 env_variables:
-  AX_VERSION: 0.8.0
+  AX_VERSION: 0.11.0
   # AX_HOST: 0.0.0.0 #  default = 127.0.0.1
   # AX_PORT: "8085" #  default = 8080
   # AX_SANIC_DEBUG: true #  default=false
   # AX_SANIC_ACCESS_LOG:  #  default=false
+  # AX_SANIC_WORKERS: 1 # default=1 . On Windoes 1 is max!
+
   # AX_CACHE_MODE: "" # ' default='default'. Set 'redis' for redis
   # AX_REDIS_ENDPOINT:  #  default='127.0.0.1'
   # AX_REDIS_PORT:  #  default='6379'
@@ -32,20 +31,6 @@ env_variables:
   # AX_LOGS_ABSOLUTE_PATH: 'D:\Projects\' #  default =
   AX_DB_REVISION: 9b898740929f
 
-  # AX_DB_DIALECT: 'postgre' # sqlite, postgre, mysql. Default is sqlite
-  # AX_DB_HOST: '127.0.0.1'
-  # AX_DB_PORT: '5432'
-  # AX_DB_LOGIN: 'postgres'
-  # AX_DB_PASSWORD: 'Cnuds644'
-  # AX_DB_DATABASE: 'wine'
-
-
-  AX_DB_DIALECT: postgre   # sqlite, postgre, mysql. Default is sqlite
-  AX_DB_HOST: 84.201.174.246
-  AX_DB_PORT: '5432'
-  AX_DB_LOGIN: postgres
-  AX_DB_PASSWORD: Sdgs2019
-  AX_DB_DATABASE: wine
 
   # AX_DB_SQLITE_FILENAME: "wine.db" #  default='ax_sqlite.db
   # AX_DB_SQLITE_ABSOLUTE_PATH: "C:\\Users\\enf64_000\\Desktop\\Dimiant\\WineProject\\Archive" #  default=None
@@ -53,3 +38,6 @@ env_variables:
   # AX_LOCALE: ru # default=en
   # AX_TMP_ABSOLUTE_PATH: '/tmp' #'D:\Projects\tmp'
   # AX_UPLOADS_ABSOLUTE_PATH: '/tmp/uploads'
+
+
+  # AX_DECK_ABSOLUTE_PATH: 'C:\Users\enf64_000\Desktop\Dimiant\WineProject\wine\dist'

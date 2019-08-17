@@ -5,9 +5,9 @@ Sea schema.py for more info.
 """
 import uuid
 import graphene
+from sqlalchemy.exc import DatabaseError
 from loguru import logger
 import ujson as json
-
 from backend.model import AxForm, AxGrid, AxColumn, AxField
 import backend.model as ax_model
 
@@ -39,7 +39,12 @@ def tom_sync_grid(form_db_name, old_db_name, new_db_name):
                 new_options['grid'] = new_db_name
 
                 field.options_json = json.dumps(new_options)
-                ax_model.db_session.commit()
+                try:
+                    ax_model.db_session.commit()
+                except DatabaseError:
+                    ax_model.db_session.rollback()
+                    logger.exception(
+                        f"Error executing SQL, rollback! - tom_sync_grid")
 
 
 class CreateColumn(graphene.Mutation):
@@ -91,7 +96,12 @@ class CreateColumn(graphene.Mutation):
                         column.position = pos.position
                         column.column_type = pos.parent
 
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - CreateColumn")
 
             ok = True
             return CreateColumn(column=ax_column, ok=ok)
@@ -115,7 +125,12 @@ class UpdateColumnOptions(graphene.Mutation):
                 AxColumn.guid == uuid.UUID(args.get('guid'))
             ).first()
             ax_column.options_json = args.get('options')
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - UpdateColumnOptions")
 
             return UpdateColumnOptions(ok=True)
         except Exception:
@@ -139,8 +154,13 @@ class DeleteColumn(graphene.Mutation):
             ax_column = ax_model.db_session.query(AxColumn).filter(
                 AxColumn.guid == uuid.UUID(guid)
             ).first()
-            ax_model.db_session.delete(ax_column)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.delete(ax_column)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - DeleteColumn")
 
             ok = True
             return DeleteColumn(deleted=guid, ok=ok)
@@ -173,7 +193,13 @@ class ChangeColumnsPositions(graphene.Mutation):
                         column.position = pos.position
                         column.column_type = pos.parent
 
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - ChangeColumnPositions")
+
             query = Column.get_query(info)
             column_list = query.filter(
                 AxColumn.grid_guid == uuid.UUID(grid_guid)
@@ -245,8 +271,13 @@ class CreateGrid(graphene.Mutation):
 
             ax_grid.options_json = json.dumps(default_options)
             ax_grid.is_default_view = False
-            ax_model.db_session.add(ax_grid)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.add(ax_grid)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - CreateGrid")
 
             ax_schema.init_schema()
 
@@ -282,8 +313,13 @@ class DeleteGrid(graphene.Mutation):
                 if grid.is_default_view:
                     default_db_name = grid.db_name
 
-            ax_model.db_session.delete(ax_grid)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.delete(ax_grid)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - DeleteGrid")
 
             ax_schema.init_schema()
 
@@ -352,7 +388,12 @@ class UpdateGrid(graphene.Mutation):
                 ax_grid.is_default_view = is_default_view
                 schema_reload_needed = True
 
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - UpdateGrid")
 
             if schema_reload_needed:
                 ax_schema.init_schema()

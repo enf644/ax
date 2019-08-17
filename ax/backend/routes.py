@@ -96,9 +96,24 @@ def init_graphql_view():  # pylint: disable=unused-variable
 #     print(test_str)
 
 
-def init_routes(sanic_app):
+def init_routes(sanic_app, deck_path=None):
     """Innitiate all Ax routes"""
     try:
+
+        sanic_app.static('/uploads', str(ax_misc.path('uploads')))
+        sanic_app.static('/static', str(ax_misc.path('dist/ax/static')))
+        sanic_app.static('/stats', str(ax_misc.path('dist/ax/stats.html')))
+        sanic_app.static(
+            '/test_webpack', str(ax_misc.path('dist/ax/test.html')))
+
+        deck_dist_path = str(ax_misc.path('dist/deck'))
+        if deck_path:
+            deck_dist_path = deck_path
+        index_path = str(os.path.join(deck_dist_path, "index.html"))
+
+        sanic_app.static('/deck/', deck_dist_path)
+        sanic_app.static('/deck', index_path)
+
         # Add tus upload blueprint
         sanic_app.blueprint(tus_bp)
         # Add web-socket subscription server
@@ -186,7 +201,7 @@ def init_routes(sanic_app):
             return response.html(open(absolute_path).read())
 
         @sanic_app.route('/')
-        def handle_request():  # pylint: disable=unused-variable
+        def handle_request(request):  # pylint: disable=unused-variable
             return response.redirect('/deck')
 
         @sanic_app.route('/draw_ax')

@@ -3,10 +3,11 @@ Create/update/delete of Form, Folder """
 import uuid
 import os
 import shutil
+from sqlalchemy.exc import DatabaseError
+from sqlalchemy import MetaData
 import graphene
 from loguru import logger
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
-from sqlalchemy import MetaData
 import ujson as json
 from backend.misc import convert_column_to_string  # TODO check if needed
 from backend.model import GUID, AxForm, AxField, AxGrid, AxAction, AxState, \
@@ -40,7 +41,12 @@ async def tom_sync_form(old_form_db_name, new_form_db_name):
                 new_options = field.options
                 new_options['form'] = new_form_db_name
                 field.options_json = json.dumps(new_options)
-                ax_model.db_session.commit()
+                try:
+                    ax_model.db_session.commit()
+                except DatabaseError:
+                    ax_model.db_session.rollback()
+                    logger.exception(
+                        f"Error executing SQL, rollback! - tom_sync_form")
 
 
 async def is_db_name_avalible(_db_name) -> bool:
@@ -72,8 +78,14 @@ async def create_ax_form(_name: str, _db_name: str) -> object:
         ax_form.db_name = _db_name
         ax_form.tom_label = "{{ax_form_name}} - {{ax_num}}"
         ax_form.icon = "dice-d6"  # TODO: move default icon to Vue
-        ax_model.db_session.add(ax_form)
-        ax_model.db_session.commit()
+        try:
+            ax_model.db_session.add(ax_form)
+            ax_model.db_session.commit()
+        except DatabaseError:
+            ax_model.db_session.rollback()
+            logger.exception(
+                f"Error executing SQL, rollback! - create_ax_form")
+
         return ax_form
     except Exception:
         logger.exception('Error creating AxForm object')
@@ -88,8 +100,13 @@ async def create_default_tab(ax_form, name) -> None:
         ax_field.form_guid = ax_form.guid
         ax_field.is_tab = True
         ax_field.position = 1
-        ax_model.db_session.add(ax_field)
-        ax_model.db_session.commit()
+        try:
+            ax_model.db_session.add(ax_field)
+            ax_model.db_session.commit()
+        except DatabaseError:
+            ax_model.db_session.rollback()
+            logger.exception(
+                f"Error executing SQL, rollback! - create_default_tab")
     except Exception:
         logger.exception('Error creating default tab.')
         raise
@@ -118,8 +135,13 @@ async def create_default_grid(ax_form, name):
 
         ax_grid.options_json = json.dumps(default_options)
         ax_grid.is_default_view = True
-        ax_model.db_session.add(ax_grid)
-        ax_model.db_session.commit()
+        try:
+            ax_model.db_session.add(ax_grid)
+            ax_model.db_session.commit()
+        except DatabaseError:
+            ax_model.db_session.rollback()
+            logger.exception(
+                f"Error executing SQL, rollback! - create_default_grid")
     except Exception:
         logger.exception('Error creating default grid.')
         raise
@@ -160,7 +182,13 @@ async def create_default_states(
         all_state.is_all = True
         ax_model.db_session.add(all_state)
 
-        ax_model.db_session.commit()
+        try:
+            ax_model.db_session.commit()
+        except DatabaseError:
+            ax_model.db_session.rollback()
+            logger.exception(
+                f"Error executing SQL, rollback! - create_default_states")
+
         return {
             "start": start.guid,
             "created": created.guid,
@@ -199,7 +227,13 @@ async def create_default_actions(
         delete.confirm_text = delete_confirm
         ax_model.db_session.add(delete)
 
-        ax_model.db_session.commit()
+        try:
+            ax_model.db_session.commit()
+        except DatabaseError:
+            ax_model.db_session.rollback()
+            logger.exception(
+                f"Error executing SQL, rollback! - create_default_actions")
+
         return {
             "create": create.guid,
             "delete": delete.guid
@@ -218,7 +252,13 @@ async def create_default_roles(ax_form, states, actions, default_admin):
     admin_role.is_admin = True
     # TODO add admin group user to role
     ax_model.db_session.add(admin_role)
-    ax_model.db_session.commit()
+
+    try:
+        ax_model.db_session.commit()
+    except DatabaseError:
+        ax_model.db_session.rollback()
+        logger.exception(
+            f"Error executing SQL, rollback! - create_default_roles - 1")
 
     start_role = AxState2Role()
     start_role.state_guid = states['start']
@@ -240,7 +280,12 @@ async def create_default_roles(ax_form, states, actions, default_admin):
     delete_action_role.role_guid = admin_role.guid
     ax_model.db_session.add(delete_action_role)
 
-    ax_model.db_session.commit()
+    try:
+        ax_model.db_session.commit()
+    except DatabaseError:
+        ax_model.db_session.rollback()
+        logger.exception(
+            f"Error executing SQL, rollback! - create_default_roles - 2")
 
 
 class CreateForm(graphene.Mutation):
@@ -375,7 +420,12 @@ class UpdateForm(graphene.Mutation):
             ax_form.db_name = args.get('db_name')
             ax_form.icon = args.get('icon')
             ax_form.tom_label = args.get('tom_label')
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - UpdateForm")
 
             if schema_reload_needed:
                 ax_schema.init_schema()
@@ -451,8 +501,13 @@ class DeleteForm(graphene.Mutation):
                 ax_model.db_session.delete(field)
 
             await ax_dialects.dialect.drop_table(db_name=ax_form.db_name)
-            ax_model.db_session.delete(ax_form)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.delete(ax_form)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - DeleteForm")
 
             # s.execute("SET FOREIGN_KEY_CHECKS=1;")
 
@@ -488,8 +543,13 @@ class CreateFolder(graphene.Mutation):
             ax_form = AxForm()
             ax_form.name = name
             ax_form.is_folder = True
-            ax_model.db_session.add(ax_form)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.add(ax_form)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - CreateFolder")
 
             ok = True
             return CreateFolder(form=ax_form, ok=ok)
@@ -517,7 +577,12 @@ class UpdateFolder(graphene.Mutation):
                 AxForm.guid == uuid.UUID(guid)
             ).first()
             ax_form.name = name
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - UpdateFolder")
 
             ok = True
             return CreateFolder(form=ax_form, ok=ok)
@@ -550,15 +615,20 @@ class DeleteFolder(graphene.Mutation):
                 sub.parent = None
                 sub.position = 1000
 
-            ax_model.db_session.delete(ax_folder)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.delete(ax_folder)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - DeleteFolder")
 
             query = Form.get_query(info)  # SQLAlchemy query
             form_list = query.all()
             ok = True
             return DeleteFolder(forms=form_list, ok=ok)
         except Exception:
-            logger.exception('Error in gql mutation - UpdateFolder.')
+            logger.exception('Error in gql mutation - DeleteFolder.')
             raise
 
 
@@ -583,7 +653,12 @@ class ChangeFormsPositions(graphene.Mutation):
                 db_form.parent = current_parent
                 db_form.position = position.position
 
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - ChageFormsPositions")
 
             query = Form.get_query(info)  # SQLAlchemy query
             form_list = query.all()

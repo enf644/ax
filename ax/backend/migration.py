@@ -12,6 +12,7 @@ Checks that current Database schema fits SqlAlchemy schema. If it is not,
 import os
 import sys
 from loguru import logger
+from sqlalchemy.exc import DatabaseError
 from alembic.config import Config
 from alembic.migration import MigrationContext
 from alembic.autogenerate import compare_metadata
@@ -63,7 +64,12 @@ def create_tables() -> None:
         first_version = AxAlembicVersion()
         first_version.version_num = os.environ.get('AX_DB_REVISION')
         ax_model.db_session.add(first_version)
-        ax_model.db_session.commit()
+        try:
+            ax_model.db_session.commit()
+        except DatabaseError:
+            ax_model.db_session.rollback()
+            logger.exception(f"Error executing SQL, rollback! - create_table")
+            raise
 
         logger.info('Ax tables not found. Creating database tables.')
         return True
@@ -372,7 +378,13 @@ def create_field_types() -> None:
             is_backend_available=True,
             icon="comments"))
 
-        ax_model.db_session.commit()
+        try:
+            ax_model.db_session.commit()
+        except DatabaseError:
+            ax_model.db_session.rollback()
+            logger.exception(
+                f"Error executing SQL, rollback! - create_field_types")
+            raise
     except Exception:
         logger.exception('Failed creating default AxFieldTypes')
         raise

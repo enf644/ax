@@ -7,6 +7,7 @@ Query form_data is used in AxForm.vue as main form query.
 import uuid
 import graphene
 from loguru import logger
+from sqlalchemy.exc import DatabaseError
 from backend.model import AxForm, AxField, AxFieldType, \
     AxRoleFieldPermission, AxColumn, AxRole
 import backend.model as ax_model
@@ -78,7 +79,12 @@ class CreateTab(graphene.Mutation):
             ax_field.position = len(
                 [i for i in ax_form.fields if i.is_tab is True]) + 1
             ax_model.db_session.add(ax_field)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - CreateTab")
 
             ok = True
             return CreateTab(field=ax_field, ok=ok)
@@ -106,7 +112,12 @@ class UpdateTab(graphene.Mutation):
                 AxField.guid == uuid.UUID(guid)
             ).first()
             ax_field.name = name
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - UpdateTab")
 
             ok = True
             return UpdateTab(field=ax_field, ok=ok)
@@ -131,8 +142,13 @@ class DeleteTab(graphene.Mutation):
             ax_field = ax_model.db_session.query(AxField).filter(
                 AxField.guid == uuid.UUID(guid)
             ).first()
-            ax_model.db_session.delete(ax_field)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.delete(ax_field)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - DeleteTab")
 
             ok = True
             return DeleteTab(deleted=guid, ok=ok)
@@ -233,7 +249,12 @@ class CreateField(graphene.Mutation):
                     db_name=ax_field.db_name,
                     type_name=ax_field_type.value_type)
 
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - CreateField - 1")
 
             # Update positions of all fields that are lower then created field
             for field in ax_form.fields:
@@ -262,7 +283,13 @@ class CreateField(graphene.Mutation):
                 ax_model.db_session.add(perm)
                 permissions.append(perm)
 
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - CreateField - 2")
+
             ax_schema.init_schema()  # re-create GQL schema
 
             ok = True
@@ -342,7 +369,13 @@ class UpdateField(graphene.Mutation):
                 )
 
                 ax_field.db_name = db_name
-                ax_model.db_session.commit()
+                try:
+                    ax_model.db_session.commit()
+                except DatabaseError:
+                    ax_model.db_session.rollback()
+                    logger.exception(
+                        f"Error executing SQL, rollback! - UpdateField - 1")
+
                 schema_needs_update = True
 
             if options_json:
@@ -360,8 +393,12 @@ class UpdateField(graphene.Mutation):
                     ax_field.is_whole_row = True
                 else:
                     ax_field.is_whole_row = is_whole_row
-
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - UpdateField - 2")
 
             if schema_needs_update:
                 ax_schema.init_schema()  # re-create GQL schema
@@ -402,8 +439,14 @@ class DeleteField(graphene.Mutation):
                     column=ax_field.db_name
                 )
 
-            ax_model.db_session.delete(ax_field)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.delete(ax_field)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - DeleteField")
+
             ax_schema.init_schema()  # re-create GQL schema
 
             ok = True
@@ -439,8 +482,13 @@ class ChangeFieldsPositions(graphene.Mutation):
                             current_parent = uuid.UUID(position.parent)
                         field.parent = current_parent
                         field.position = position.position
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - ChangeFieldsPositions")
 
-            ax_model.db_session.commit()
             query = Field.get_query(info)
             field_list = query.filter(
                 AxField.form_guid == uuid.UUID(form_guid)

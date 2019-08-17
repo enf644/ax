@@ -466,12 +466,12 @@ class PorstgreDialect(object):
             result = None
             try:
                 result = ax_model.db_session.execute(sql, query_params)
+                ax_model.db_session.commit()
             except DatabaseError:
                 ax_model.db_session.rollback()
                 logger.exception(f"Error executing SQL, rollback! - {sql}")
                 raise
 
-            ax_model.db_session.commit()
             return result
         except Exception:
             logger.exception('Error executing SQL - update')
@@ -736,11 +736,12 @@ class SqliteDialect(PorstgreDialect):
                 ax_model.db_session.execute(drop_old)
                 ax_model.db_session.execute(rename_tmp)
                 ax_model.db_session.commit()
-            except Exception:
+            except DatabaseError:
                 ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - rename_column")
                 raise
 
-            ax_model.db_session.commit()
             return True
         except Exception:
             logger.exception('Error executing SQL - rename_column')
@@ -783,11 +784,12 @@ class SqliteDialect(PorstgreDialect):
                 ax_model.db_session.execute(drop_old)
                 ax_model.db_session.execute(rename_tmp)
                 ax_model.db_session.commit()
-            except Exception:
+            except DatabaseError:
                 ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - rename_column")
                 raise
 
-            ax_model.db_session.commit()
             return True
         except Exception:
             logger.exception('Error executing SQL - drop_column')
@@ -819,8 +821,9 @@ class MysqlDialect(object):
     async def get_value(self, type_name, value):
         """ SELECT cat return different types for diferent dialects
         This method makes returning value same """
-        ret_value = value     
-        return ret_value        
+        del type_name
+        ret_value = value
+        return ret_value
 
     async def create_data_table(self, db_name: str) -> None:
         """Create table with system columns"""

@@ -3,6 +3,7 @@
 Usage:
   ax [--host=<host>] [--port=<port>]
   ax --version
+  ax --help
 
 Options:
   -h --help       Show this screen.
@@ -24,6 +25,9 @@ from docopt import docopt
 root_path = Path(__file__).parent.resolve()
 if root_path not in sys.path:
     sys.path.insert(0, str(root_path))
+
+# from backend.daemon import daemon
+# import daemonocle
 
 # pylint: disable=wrong-import-position
 import backend.logger as ax_logger
@@ -93,7 +97,7 @@ def init_ax():
     ax_cache.init_cache(
         mode=str(os.environ.get('AX_CACHE_MODE') or 'default'),
         redis_endpoint=str(os.environ.get('AX_REDIS_ENDPOINT') or '127.0.0.1'),
-        redis_port=int(os.environ.get('AX_REDIS_ENDPOINT') or 6379),
+        redis_port=int(os.environ.get('AX_REDIS_PORT') or 6379),
         redis_timeout=int(os.environ.get('AX_REDIS_ENDPOINT') or 1),
     )
     # Initiate pub-sub module. Used for web-socket subscriptions.
@@ -106,13 +110,6 @@ def init_ax():
 
     # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
     CORS(app, automatic_options=True)  # TODO limit CORS to api folder
-
-    app.static('/uploads', str(ax_misc.path('uploads')))
-    app.static('/static', str(ax_misc.path('dist/ax/static')))
-    app.static('/stats', str(ax_misc.path('dist/ax/stats.html')))
-    app.static('/test_webpack', str(ax_misc.path('dist/ax/test.html')))
-    app.static('/deck', str(ax_misc.path('dist/deck')))
-    app.static('/deck', str(ax_misc.path('dist/deck/index.html')))
 
     @app.listener('before_server_start')
     async def initialize_scheduler(_app, _loop):  # pylint: disable=unused-variable
@@ -128,7 +125,10 @@ def init_ax():
         # _app.add_route(ax_routes.graphql_view, '/api/graphql')
 
     # Initiate all sanic server routes
-    ax_routes.init_routes(sanic_app=app)
+    ax_routes.init_routes(
+        sanic_app=app,
+        deck_path=os.environ.get('AX_DECK_ABSOLUTE_PATH')
+    )
     # Initiate SQL dialects module. Different SQL queries for differents DBs
     ax_dialects.init_dialects(os.environ.get('AX_DB_DIALECT') or 'sqlite')
 
@@ -153,11 +153,6 @@ ax_logo = """
 """
 
 
-def die():
-    """ Currently not used. Will be used to stop and clean everything on exit"""
-    # await aiohttp_session.close()
-
-
 def main():
     """Main function"""
     arguments = docopt(__doc__)
@@ -166,6 +161,7 @@ def main():
     port = int(os.environ.get('AX_PORT') or 8080)
     debug = bool(os.environ.get('AX_SANIC_DEBUG') or False)
     access_log = bool(os.environ.get('AX_SANIC_ACCESS_LOG') or False)
+    workers = int(os.environ.get('AX_SANIC_WORKERS') or 1)
 
     if arguments['--host']:
         host = arguments['--host']
@@ -174,13 +170,13 @@ def main():
         port = int(arguments['--port'])
 
     print(ax_logo)
-    logger.info('Running Ax on {host}:{port}', host=host, port=port)
+    logger.info(f'Running Ax on {host}:{port}, {workers} workers running')
     app.run(
         host=host,
         port=port,
         debug=debug,
         access_log=access_log,
-        workers=1)
+        workers=workers)
 
 
 app = Sanic()

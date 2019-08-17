@@ -2,6 +2,7 @@
 Workflow manipulation - create/update/delete - State, Action, Role,
 Role2Action, Role2State, StatePermissions"""
 import uuid
+from sqlalchemy.exc import DatabaseError
 import graphene
 from loguru import logger
 from backend.model import AxForm, AxField, AxAction, AxState, \
@@ -47,8 +48,13 @@ class CreateState(graphene.Mutation):
             new_state.x = args.get('x')
             new_state.y = args.get('y')
 
-            ax_model.db_session.add(new_state)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.add(new_state)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - CreateState - 1")
 
             # Create default self-action
             update_action = None
@@ -59,8 +65,13 @@ class CreateState(graphene.Mutation):
                 update_action.from_state_guid = new_state.guid
                 update_action.to_state_guid = new_state.guid
 
-                ax_model.db_session.add(update_action)
-                ax_model.db_session.commit()
+                try:
+                    ax_model.db_session.add(update_action)
+                    ax_model.db_session.commit()
+                except DatabaseError:
+                    ax_model.db_session.rollback()
+                    logger.exception(
+                        f"Error executing SQL, rollback! - CreateState - 2")
 
             # Add default admin role
             admin_role = ax_model.db_session.query(AxRole).filter(
@@ -75,8 +86,13 @@ class CreateState(graphene.Mutation):
                 state2role = AxState2Role()
                 state2role.state_guid = new_state.guid
                 state2role.role_guid = admin_role.guid
-                ax_model.db_session.add(state2role)
-                ax_model.db_session.commit()
+                try:
+                    ax_model.db_session.add(state2role)
+                    ax_model.db_session.commit()
+                except DatabaseError:
+                    ax_model.db_session.rollback()
+                    logger.exception(
+                        f"Error executing SQL, rollback! - CreateState - 3")
 
                 ax_form = ax_model.db_session.query(AxForm).filter(
                     AxForm.guid == uuid.UUID(args.get('form_guid'))
@@ -93,7 +109,12 @@ class CreateState(graphene.Mutation):
                     ax_model.db_session.add(perm)
                     permissions.append(perm)
 
-                ax_model.db_session.commit()
+                try:
+                    ax_model.db_session.commit()
+                except DatabaseError:
+                    ax_model.db_session.rollback()
+                    logger.exception(
+                        f"Error executing SQL, rollback! - CreateState - 4")
 
             ok = True
             return CreateState(
@@ -130,7 +151,12 @@ class UpdateState(graphene.Mutation):
             if args.get('y'):
                 ax_state.y = args.get('y')
 
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - UpdateState")
 
             ok = True
             return UpdateState(state=ax_state, ok=ok)
@@ -163,8 +189,13 @@ class DeleteState(graphene.Mutation):
                 AxAction.to_state_guid == uuid.UUID(guid)
             ).delete()
 
-            ax_model.db_session.delete(ax_state)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.delete(ax_state)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - DeleteState")
 
             ok = True
             return DeleteState(deleted=guid, ok=ok)
@@ -193,8 +224,13 @@ class CreateAction(graphene.Mutation):
             new_action.from_state_guid = args.get('from_state_guid')
             new_action.to_state_guid = args.get('to_state_guid')
 
-            ax_model.db_session.add(new_action)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.add(new_action)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - CreateAction - 1")
 
             # Add default admin role
             admin_role = ax_model.db_session.query(AxRole).filter(
@@ -207,8 +243,13 @@ class CreateAction(graphene.Mutation):
                 action2role = AxAction2Role()
                 action2role.action_guid = new_action.guid
                 action2role.role_guid = admin_role.guid
-                ax_model.db_session.add(action2role)
-                ax_model.db_session.commit()
+                try:
+                    ax_model.db_session.add(action2role)
+                    ax_model.db_session.commit()
+                except DatabaseError:
+                    ax_model.db_session.rollback()
+                    logger.exception(
+                        f"Error executing SQL, rollback! - CreateAction - 2")
 
             ok = True
             return CreateAction(action=new_action, ok=ok)
@@ -254,7 +295,12 @@ class UpdateAction(graphene.Mutation):
             if args.get('radius') is not None:
                 ax_action.radius = args.get('radius')
 
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - UpdateAction")
 
             ok = True
             return UpdateAction(action=ax_action, ok=ok)
@@ -280,8 +326,13 @@ class DeleteAction(graphene.Mutation):
                 AxAction.guid == uuid.UUID(guid)
             ).first()
 
-            ax_model.db_session.delete(ax_action)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.delete(ax_action)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - DeleteAction")
 
             ok = True
             return DeleteAction(deleted=guid, ok=ok)
@@ -302,15 +353,17 @@ class CreateRole(graphene.Mutation):
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         try:
             del info
-
             ax_role = AxRole()
             ax_role.name = args.get('name')
             ax_role.form_guid = args.get('form_guid')
-
-            ax_model.db_session.add(ax_role)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.add(ax_role)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - CreateRole")
             ok = True
-
             return CreateRole(role=ax_role, ok=ok)
         except Exception:
             logger.exception('Error in gql mutation - CreateRole.')
@@ -363,8 +416,13 @@ class DeleteRole(graphene.Mutation):
                 AxRole.guid == uuid.UUID(guid)
             ).first()
 
-            ax_model.db_session.delete(ax_role)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.delete(ax_role)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - DeleteRole")
 
             ok = True
             return DeleteRole(deleted=guid, ok=ok)
@@ -403,8 +461,13 @@ class AddRoleToState(graphene.Mutation):
             state2role.state_guid = uuid.UUID(state_guid)
             state2role.role_guid = uuid.UUID(role_guid)
 
-            ax_model.db_session.add(state2role)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.add(state2role)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - AddRoleToState")
 
             ok = True
             return AddRoleToState(state2role=state2role, ok=ok)
@@ -447,8 +510,13 @@ class DeleteRoleFromState(graphene.Mutation):
             the_role_guid = role2state.role_guid
             the_state_guid = role2state.state_guid
 
-            ax_model.db_session.delete(role2state)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.delete(role2state)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - DeleteRoleFromState")
 
             ok = True
             return DeleteRoleFromState(
@@ -492,8 +560,13 @@ class AddRoleToAction(graphene.Mutation):
             action2role.action_guid = uuid.UUID(action_guid)
             action2role.role_guid = uuid.UUID(role_guid)
 
-            ax_model.db_session.add(action2role)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.add(action2role)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - AddRoleToAction")
 
             ok = True
             return AddRoleToAction(action2role=action2role, ok=ok)
@@ -534,8 +607,13 @@ class DeleteRoleFromAction(graphene.Mutation):
                 ).first()
 
             deleted = role2action.guid
-            ax_model.db_session.delete(role2action)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.delete(role2action)
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - DeleteRoleFromState")
 
             ok = True
             return DeleteRoleFromAction(
@@ -604,11 +682,16 @@ class SetStatePermission(graphene.Mutation):
                     ax_perm.read = read
                     ax_perm.edit = edit
                     ax_model.db_session.add(ax_perm)
-                    ax_model.db_session.commit()
                 else:
                     ax_perm.read = read
                     ax_perm.edit = edit
+
+                try:
                     ax_model.db_session.commit()
+                except DatabaseError:
+                    ax_model.db_session.rollback()
+                    logger.exception(
+                        f"Error executing SQL, rollback! - CreateField")
 
             return_permissions = ax_model.db_session.query(
                 AxRoleFieldPermission

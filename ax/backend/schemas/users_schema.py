@@ -1,6 +1,7 @@
 """Defines Users Scheme and all mutations"""
 
 import asyncio
+from sqlalchemy.exc import DatabaseError
 import graphene
 # from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyConnectionField
@@ -35,7 +36,13 @@ class CreateUser(graphene.Mutation):
                 email=args.get('email'),
             )
             ax_model.db_session.add(new_user)
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - CreateUser")
+
             ok = True
             ax_pubsub.publisher.publish(aiopubsub.Key('new_user'), new_user)
             return CreateUser(user=new_user, ok=ok)
@@ -80,7 +87,13 @@ class ChangeUserName(graphene.Mutation):
             name = args.get('name')
             user = query.filter(AxUser.email == email).first()
             user.name = name
-            ax_model.db_session.commit()
+            try:
+                ax_model.db_session.commit()
+            except DatabaseError:
+                ax_model.db_session.rollback()
+                logger.exception(
+                    f"Error executing SQL, rollback! - ChangeUserName")
+
             ok = True
             return ChangeUserName(user=user, ok=ok)
         except Exception:

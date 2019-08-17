@@ -9,6 +9,11 @@ CODE STYLE
 	
 
 
+AUTH
+    https://sanic-auth.readthedocs.io/en/latest/
+    https://github.com/mekicha/awesome-sanic#authentication
+
+
 CONSOLE
     https://aioconsole.readthedocs.io/en/latest/
     https://ndabap.github.io/vue-command/
@@ -56,13 +61,12 @@ MONITORING
     https://github.com/dkruchinin/sanic-prometheus
 
 
-AUTH
+AUTH - OLD
 	https://auth0.com/pricing
 	https://stackabuse.com/single-page-apps-with-vue-js-and-flask-jwt-authentication/
 	http://python-eve.org/authentication.html
 	https://python-social-auth-docs.readthedocs.io/en/latest/
 	https://www.keycloak.org/about.html
-	http://www.passportjs.org/
 	
 	
 Split panels
