@@ -192,6 +192,7 @@ def init_routes(sanic_app, deck_path=None):
             return await response.file(file_path)
 
         @sanic_app.route('/admin/<path:path>')
+        @sanic_app.route('/form/<path:path>')
         def index(request, path):  # pylint: disable=unused-variable
             """ This is MAIN ROUTE. (except other routes listed in this module).
                 All requests are directed to Vue single page app. After that Vue

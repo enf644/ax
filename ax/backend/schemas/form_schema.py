@@ -542,21 +542,30 @@ class FormQuery(graphene.ObjectType):
         Returns:
             AxForm: Form with field values, avaluble actions, state, row_guid
         """
-        del update_time  # used to disable gql caching
+        try:
+            del update_time  # used to disable gql caching
 
-        query = Form.get_query(info=info)
-        ax_form = query.filter(AxForm.db_name == db_name).first()
+            query = Form.get_query(info=info)
+            ax_form = query.filter(AxForm.db_name == db_name).first()
 
-        if row_guid is not None:
-            ax_form = await set_form_values(ax_form=ax_form, row_guid=row_guid)
+            if row_guid is not None:
+                ax_form = await set_form_values(ax_form=ax_form, row_guid=row_guid)
 
-        ax_form.avalible_actions = await action_schema.get_actions(
-            form=ax_form,
-            current_state=ax_form.current_state_name
-        )
+            ax_form.avalible_actions = await action_schema.get_actions(
+                form=ax_form,
+                current_state=ax_form.current_state_name
+            )
 
-        ax_model.db_session.flush()
-        return ax_form
+            ax_model.db_session.flush()
+            return ax_form
+        except DatabaseError:
+            ax_model.db_session.rollback()
+            logger.exception(
+                f"Error executing SQL, rollback! - resolve_form_data")
+            raise
+        except Exception:
+            logger.exception('Error in gql query - resolve_form_data.')
+            raise
 
 
 class FormMutations(graphene.ObjectType):

@@ -4,7 +4,7 @@ const MonocoEditorPlugin = require('monaco-editor-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
-  outputDir: './../dist',
+  outputDir: '../dist/ax',
   assetsDir: 'static',
   css: {
     extract: false

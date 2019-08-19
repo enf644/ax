@@ -312,17 +312,26 @@ class PorstgreDialect(object):
                     field.field_type.value_type, field.db_name)
                 fields_string += f', "{field_name}"'
 
-            sql = (f'SELECT {fields_string} '
-                   f'FROM "{form_db_name}" '
-                   f'WHERE guid=:row_guid')
-            if num_fields:
-                for num_field in num_fields:
-                    sql += f' OR "{num_field.db_name}"=:row_guid'
-            guid_or_num = str(row_guid)
-            if ax_misc.string_is_guid(guid_or_num):
-                guid_or_num = guid_or_num.replace('-', '')
-            query_params = {"row_guid": guid_or_num}
+            sql = None
+            query_params = None
             result = None
+
+            if ax_misc.string_is_guid(str(row_guid)):
+                sql = (f'SELECT {fields_string} '
+                       f'FROM "{form_db_name}" '
+                       f'WHERE guid=:row_guid')
+                query_params = {"row_guid": str(row_guid).replace('-', '')}
+            elif num_fields:
+                num_where = []
+                for num_field in num_fields:
+                    num_where.append(f'"{num_field.db_name}"=:ax_num')
+                num_where_sql = " OR ".join(num_where)
+
+                sql = (f'SELECT {fields_string} '
+                       f'FROM "{form_db_name}" '
+                       f'WHERE {num_where_sql}')
+                query_params = {"ax_num": str(row_guid)}
+
             try:
                 result = ax_model.db_session.execute(
                     sql, query_params).fetchall()

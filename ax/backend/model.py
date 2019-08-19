@@ -5,6 +5,7 @@ Contains class structure of Ax storage.
 import os
 import sys
 from pathlib import Path
+from contextlib import contextmanager
 import uuid
 from loguru import logger
 from sqlalchemy import create_engine
@@ -14,9 +15,10 @@ from sqlalchemy import Text, String, CHAR, Float, Unicode, Boolean, Integer
 from sqlalchemy import TypeDecorator, Column, LargeBinary
 from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.pool import SingletonThreadPool
+
 import ujson as json
 import backend.misc as ax_misc
-from sqlalchemy.pool import SingletonThreadPool
 
 
 # TODO: replace String(2000) for json fields with dialect agnostic JSON field
@@ -26,6 +28,20 @@ engine = None
 db_session = None
 db_url = None
 Base = declarative_base()
+
+
+# @contextmanager
+# def scoped_session():
+#     session = Session()
+#     try:
+#         yield session
+#         session.commit()
+#     except:
+#         logger.error('WARNING! contextmanager scoped_session rollback')
+#         session.rollback()
+#         raise
+#     finally:
+#         session.close()
 
 
 def init_model(dialect: str, host: str, port: str, login: str, password: str,
@@ -63,7 +79,8 @@ def init_model(dialect: str, host: str, port: str, login: str, password: str,
         this.engine = create_engine(
             this.db_url,
             convert_unicode=True,
-            poolclass=SingletonThreadPool)
+            poolclass=SingletonThreadPool,
+            pool_pre_ping=True)
         this.db_session = scoped_session(sessionmaker(autocommit=False,
                                                       autoflush=False,
                                                       bind=this.engine))

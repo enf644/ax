@@ -564,7 +564,9 @@ AX 0.2:
             ☐ AxRoleFieldPermission - takes too much data. Make permissions on tabs.
             ☐ Default action names
             ☐ Connection lost, Error 'NoneType' object has no attribute 'cursor'
-            ☐ Take uploads folder from app.yaml
+            ✔ Take uploads folder from app.yaml @done(19-08-18 11:16)
+            ☐ How to know guid and axNum inside insert action?
+            ☐ Refresh in AxGrid
     ☐ USERS
         ☐ GAuth - зачем?
         ☐ Админ дает доступ пользователю или группе на Папку в списке объектов.

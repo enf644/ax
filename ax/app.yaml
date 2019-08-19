@@ -14,7 +14,7 @@ handlers:
   script: auto
 
 env_variables:
-  AX_VERSION: 0.11.0
+  AX_VERSION: 0.12.0
   # AX_HOST: 0.0.0.0 #  default = 127.0.0.1
   # AX_PORT: "8085" #  default = 8080
   # AX_SANIC_DEBUG: true #  default=false
@@ -30,6 +30,13 @@ env_variables:
   # AX_LOGS_FILENAME: ax_logs.log #  If not set, logs only output to stdio
   # AX_LOGS_ABSOLUTE_PATH: 'D:\Projects\' #  default =
   AX_DB_REVISION: 9b898740929f
+
+  AX_DB_DIALECT: postgre   # sqlite, postgre, mysql. Default is sqlite
+  AX_DB_HOST: 84.201.174.246
+  AX_DB_PORT: '5432'
+  AX_DB_LOGIN: postgres
+  AX_DB_PASSWORD: Sdgs2019
+  AX_DB_DATABASE: wine
 
 
   # AX_DB_SQLITE_FILENAME: "wine.db" #  default='ax_sqlite.db

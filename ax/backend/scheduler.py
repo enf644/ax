@@ -16,6 +16,7 @@ from loguru import logger
 import ujson as json
 import backend.model as ax_model
 import backend.misc as ax_misc
+from sqlalchemy.exc import DatabaseError
 
 this = sys.modules[__name__]
 scheduler = None
@@ -189,6 +190,11 @@ def init_scheduler():
                 misfire_grace_time=60,
                 id='clear_tmp_files')
 
+    except DatabaseError:
+        ax_model.db_session.rollback()
+        logger.exception(
+            f"Error executing SQL, rollback! - init_scheduler")
+        raise
     except Exception:
         logger.exception('Error initiating scheduler module. ')
         raise
