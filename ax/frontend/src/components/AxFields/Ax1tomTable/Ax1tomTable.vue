@@ -28,7 +28,7 @@
       :value='true'
       type='warning'
       v-if='!this.options.grid'
-    >{{$t("common.no-field-settings-error", {name: this.name})}}</v-alert>
+    >{{locale("common.no-field-settings-error", {name: this.name})}}</v-alert>
 
     <modal :name='`tom-form-${this.modalGuid}`' adaptive height='auto' scrollable width='70%'>
       <v-card>
@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import i18n from '../../../locale.js';
+import i18n from '@/locale';
 import uuid4 from 'uuid4';
 import AxForm from '@/components/AxForm.vue';
 import AxGrid from '@/components/AxGrid.vue';
@@ -135,6 +135,9 @@ export default {
     this.modalGuid = uuid4();
   },
   methods: {
+    locale(key) {
+      return i18n.t(key);
+    },
     openFormModal(item) {
       if (
         this.options.enableFormModal

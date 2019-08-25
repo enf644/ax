@@ -18,7 +18,7 @@
     <v-btn :id='btnId' flat small>
       <i class='fas fa-upload'></i>
       &nbsp;
-      {{$t("types.AxFiles.upload-btn")}}
+      {{locale("types.AxFiles.upload-btn")}}
     </v-btn>
 
     <hr :class='errorClass' />
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import i18n from '../../../locale.js';
+import i18n from '@/locale';
 import uuid4 from 'uuid4';
 import { getAxHost, uuidWithDashes } from '../../../misc';
 import '@uppy/core/dist/style.css';
@@ -97,6 +97,9 @@ export default {
     this.initUppy();
   },
   methods: {
+    locale(key) {
+      return i18n.t(key);
+    },
     initUppy() {
       this.uppy = Core({
         id: 'AxFilesUppy',

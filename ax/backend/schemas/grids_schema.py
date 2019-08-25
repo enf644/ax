@@ -5,8 +5,7 @@ Sea schema.py for more info.
 """
 import uuid
 import graphene
-from sqlalchemy.exc import DatabaseError
-from loguru import logger
+# from loguru import logger
 import ujson as json
 from backend.model import AxForm, AxGrid, AxColumn, AxField
 import backend.model as ax_model
@@ -16,7 +15,7 @@ import backend.model as ax_model
 from backend.schemas.types import Grid, Column, PositionInput
 
 
-def tom_sync_grid(form_db_name, old_db_name, new_db_name):
+def tom_sync_grid(db_session, form_db_name, old_db_name, new_db_name):
     """ Relation fields such as Ax1to1, Ax1tom and Ax1tomTable are using
     options_json to store db_name of grid used. If grid db_name is changed,
     the Json's in every relation field must be updated.
@@ -27,7 +26,7 @@ def tom_sync_grid(form_db_name, old_db_name, new_db_name):
         old_db_name (str): Old db_name of grid
         new_db_name (str): New db_name of grid
     """
-    relation_fields = ax_model.db_session.query(AxField).filter(
+    relation_fields = db_session.query(AxField).filter(
         AxField.field_type_tag.in_(('Ax1to1', 'Ax1tom', 'Ax1tomTable'))
     ).all()
     for field in relation_fields:
@@ -39,12 +38,7 @@ def tom_sync_grid(form_db_name, old_db_name, new_db_name):
                 new_options['grid'] = new_db_name
 
                 field.options_json = json.dumps(new_options)
-                try:
-                    ax_model.db_session.commit()
-                except DatabaseError:
-                    ax_model.db_session.rollback()
-                    logger.exception(
-                        f"Error executing SQL, rollback! - tom_sync_grid")
+                db_session.flush()
 
 
 class CreateColumn(graphene.Mutation):
@@ -71,15 +65,15 @@ class CreateColumn(graphene.Mutation):
     column = graphene.Field(Column)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
-        try:
-            del info
+        err = 'grids_schema -> CreateColumn'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
             grid_guid = args.get('grid_guid')
             field_guid = args.get('field_guid')
             column_type = args.get('column_type')
             position = args.get('position')
             positions = args.get('positions')
 
-            ax_grid = ax_model.db_session.query(AxGrid).filter(
+            ax_grid = db_session.query(AxGrid).filter(
                 AxGrid.guid == uuid.UUID(grid_guid)
             ).first()
 
@@ -88,7 +82,7 @@ class CreateColumn(graphene.Mutation):
             ax_column.field_guid = uuid.UUID(field_guid)
             ax_column.column_type = column_type
             ax_column.position = position
-            ax_model.db_session.add(ax_column)
+            db_session.add(ax_column)
 
             for column in ax_grid.columns:
                 for pos in positions:
@@ -96,18 +90,8 @@ class CreateColumn(graphene.Mutation):
                         column.position = pos.position
                         column.column_type = pos.parent
 
-            try:
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - CreateColumn")
-
-            ok = True
-            return CreateColumn(column=ax_column, ok=ok)
-        except Exception:
-            logger.exception('Error in gql mutation - CreateColumn.')
-            raise
+            db_session.flush()
+            return CreateColumn(column=ax_column, ok=True)
 
 
 class UpdateColumnOptions(graphene.Mutation):
@@ -119,23 +103,14 @@ class UpdateColumnOptions(graphene.Mutation):
     ok = graphene.Boolean()
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
-        try:
-            del info
-            ax_column = ax_model.db_session.query(AxColumn).filter(
+        err = 'Error in gql mutation - grids_schema -> UpdateColumnOptions.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
+            ax_column = db_session.query(AxColumn).filter(
                 AxColumn.guid == uuid.UUID(args.get('guid'))
             ).first()
             ax_column.options_json = args.get('options')
-            try:
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - UpdateColumnOptions")
-
+            db_session.flush()
             return UpdateColumnOptions(ok=True)
-        except Exception:
-            logger.exception('Error in gql mutation - UpdateColumnOptions.')
-            raise
 
 
 class DeleteColumn(graphene.Mutation):
@@ -147,26 +122,14 @@ class DeleteColumn(graphene.Mutation):
     deleted = graphene.String()
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
-        try:
-            del info
+        err = 'Error in gql mutation - grids_schema -> DeleteColumn'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
             guid = args.get('guid')
-
-            ax_column = ax_model.db_session.query(AxColumn).filter(
+            ax_column = db_session.query(AxColumn).filter(
                 AxColumn.guid == uuid.UUID(guid)
             ).first()
-            try:
-                ax_model.db_session.delete(ax_column)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - DeleteColumn")
-
-            ok = True
-            return DeleteColumn(deleted=guid, ok=ok)
-        except Exception:
-            logger.exception('Error in gql mutation - DeleteColumn.')
-            raise
+            db_session.delete(ax_column)
+            return DeleteColumn(deleted=guid, ok=True)
 
 
 class ChangeColumnsPositions(graphene.Mutation):
@@ -179,11 +142,12 @@ class ChangeColumnsPositions(graphene.Mutation):
     columns = graphene.List(Column)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
-        try:
+        err = 'Error in gql mutation - grids_schema -> ChangeColumnsPositions.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
             grid_guid = args.get('grid_guid')
             positions = args.get('positions')
 
-            ax_grid = ax_model.db_session.query(AxGrid).filter(
+            ax_grid = db_session.query(AxGrid).filter(
                 AxGrid.guid == uuid.UUID(grid_guid)
             ).one()
 
@@ -192,14 +156,7 @@ class ChangeColumnsPositions(graphene.Mutation):
                     if column.guid == uuid.UUID(pos.guid):
                         column.position = pos.position
                         column.column_type = pos.parent
-
-            try:
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - ChangeColumnPositions")
-
+            db_session.flush()
             query = Column.get_query(info)
             column_list = query.filter(
                 AxColumn.grid_guid == uuid.UUID(grid_guid)
@@ -207,9 +164,6 @@ class ChangeColumnsPositions(graphene.Mutation):
 
             ok = True
             return ChangeColumnsPositions(columns=column_list, ok=ok)
-        except Exception:
-            logger.exception('Error in gql mutation - ChangeColumnsPositions.')
-            raise
 
 
 class CreateGrid(graphene.Mutation):
@@ -223,12 +177,12 @@ class CreateGrid(graphene.Mutation):
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
-        try:
-            del info
+        err = 'Error in gql mutation - grids_schema -> CreateGrid.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
             form_guid = args.get('form_guid')
             name = args.get('name')
 
-            ax_form = ax_model.db_session.query(AxForm).filter(
+            ax_form = db_session.query(AxForm).filter(
                 AxForm.guid == uuid.UUID(form_guid)
             ).first()
 
@@ -271,21 +225,10 @@ class CreateGrid(graphene.Mutation):
 
             ax_grid.options_json = json.dumps(default_options)
             ax_grid.is_default_view = False
-            try:
-                ax_model.db_session.add(ax_grid)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - CreateGrid")
-
+            db_session.add(ax_grid)
+            db_session.commit()
             ax_schema.init_schema()
-
-            ok = True
-            return CreateGrid(grid=ax_grid, ok=ok)
-        except Exception:
-            logger.exception('Error in gql mutation - CreateGrid.')
-            raise
+            return CreateGrid(grid=ax_grid, ok=True)
 
 
 class DeleteGrid(graphene.Mutation):
@@ -298,11 +241,11 @@ class DeleteGrid(graphene.Mutation):
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
-        try:
-            del info
+        err = 'Error in gql mutation - grids_schema -> DeleteGrid.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
             guid = args.get('guid')
 
-            ax_grid = ax_model.db_session.query(AxGrid).filter(
+            ax_grid = db_session.query(AxGrid).filter(
                 AxGrid.guid == uuid.UUID(guid)
             ).first()
             form_db_name = ax_grid.form.name
@@ -313,26 +256,14 @@ class DeleteGrid(graphene.Mutation):
                 if grid.is_default_view:
                     default_db_name = grid.db_name
 
-            try:
-                ax_model.db_session.delete(ax_grid)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - DeleteGrid")
-
+            db_session.delete(ax_grid)
+            db_session.commit()
             ax_schema.init_schema()
-
-            tom_sync_grid(
-                form_db_name=form_db_name,
-                old_db_name=old_grid_db_name,
-                new_db_name=default_db_name)
-
-            ok = True
-            return DeleteGrid(deleted=guid, ok=ok)
-        except Exception:
-            logger.exception('Error in gql mutation - DeleteGrid.')
-            raise
+            tom_sync_grid(db_session=db_session,
+                          form_db_name=form_db_name,
+                          old_db_name=old_grid_db_name,
+                          new_db_name=default_db_name)
+            return DeleteGrid(deleted=guid, ok=True)
 
 
 class UpdateGrid(graphene.Mutation):
@@ -349,8 +280,8 @@ class UpdateGrid(graphene.Mutation):
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
-        try:
-            del info
+        err = 'Error in gql mutation - grids_schema -> UpdateGrid.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
             guid = args.get('guid')
             name = args.get('name')
             db_name = args.get('db_name')
@@ -359,7 +290,7 @@ class UpdateGrid(graphene.Mutation):
             schema_reload_needed = False
             tom_sync_needed = False
 
-            ax_grid = ax_model.db_session.query(AxGrid).filter(
+            ax_grid = db_session.query(AxGrid).filter(
                 AxGrid.guid == uuid.UUID(guid)
             ).first()
             old_db_name = ax_grid.db_name
@@ -377,7 +308,7 @@ class UpdateGrid(graphene.Mutation):
                 ax_grid.options_json = options_json
 
             if is_default_view:
-                all_grids = ax_model.db_session.query(AxGrid).filter(
+                all_grids = db_session.query(AxGrid).filter(
                     AxGrid.form_guid == ax_grid.form_guid
                     and AxGrid.guid != ax_grid.guid
                 ).all()
@@ -388,27 +319,19 @@ class UpdateGrid(graphene.Mutation):
                 ax_grid.is_default_view = is_default_view
                 schema_reload_needed = True
 
-            try:
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - UpdateGrid")
+            db_session.commit()
 
             if schema_reload_needed:
                 ax_schema.init_schema()
 
             if tom_sync_needed:
                 tom_sync_grid(
+                    db_session=db_session,
                     form_db_name=ax_grid.form.db_name,
                     old_db_name=old_db_name,
                     new_db_name=ax_grid.db_name)
 
-            ok = True
-            return UpdateGrid(grid=ax_grid, ok=ok)
-        except Exception:
-            logger.exception('Error in gql mutation - UpdateGrid.')
-            raise
+            return UpdateGrid(grid=ax_grid, ok=True)
 
 
 class GridsQuery(graphene.ObjectType):
@@ -428,32 +351,38 @@ class GridsQuery(graphene.ObjectType):
             self, info, form_db_name, grid_db_name, update_time=None):
         """Get AxGrid by form db_name and grid db_name"""
         del update_time
-        ax_form = ax_model.db_session.query(AxForm).filter(
-            AxForm.db_name == form_db_name
-        ).first()
+        err = 'grids_schema -> resolve_grid'
+        with ax_model.try_catch(
+                info.context['session'], err, no_commit=True) as db_session:
+            ax_form = db_session.query(AxForm).filter(
+                AxForm.db_name == form_db_name
+            ).first()
 
-        query = Grid.get_query(info=info)
-        grid = query.filter(AxGrid.form_guid == ax_form.guid).filter(
-            AxGrid.db_name == grid_db_name).first()
+            query = Grid.get_query(info=info)
+            grid = query.filter(AxGrid.form_guid == ax_form.guid).filter(
+                AxGrid.db_name == grid_db_name).first()
 
-        # if field is_virtual - we must switch current dbName with
-        # field_type.default_db_name
-        for column in grid.columns:
-            if column.field.field_type.is_virtual:
-                column.field.db_name = column.field.field_type.default_db_name
+            # if field is_virtual - we must switch current dbName with
+            # field_type.default_db_name
+            for column in grid.columns:
+                if column.field.field_type.is_virtual:
+                    column.field.db_name = (
+                        column.field.field_type.default_db_name)
 
-        return grid
+            return grid
 
     async def resolve_grids_list(self, info, form_db_name):
         """Gets list of all AxGrid's of form """
+        err = 'grids_schema -> resolve_grids_list'
+        with ax_model.try_catch(
+                info.context['session'], err, no_commit=True) as db_session:
+            ax_form = db_session.query(AxForm).filter(
+                AxForm.db_name == form_db_name
+            ).first()
 
-        ax_form = ax_model.db_session.query(AxForm).filter(
-            AxForm.db_name == form_db_name
-        ).first()
-
-        query = Grid.get_query(info=info)
-        grids = query.filter(AxGrid.form_guid == ax_form.guid).all()
-        return grids
+            query = Grid.get_query(info=info)
+            grids = query.filter(AxGrid.form_guid == ax_form.guid).all()
+            return grids
 
 
 class GridsMutations(graphene.ObjectType):

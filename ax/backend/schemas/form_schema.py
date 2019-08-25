@@ -6,8 +6,8 @@ Query form_data is used in AxForm.vue as main form query.
 
 import uuid
 import graphene
-from loguru import logger
-from sqlalchemy.exc import DatabaseError
+# from loguru import logger
+# from sqlalchemy.exc import DatabaseError
 from backend.model import AxForm, AxField, AxFieldType, \
     AxRoleFieldPermission, AxColumn, AxRole
 import backend.model as ax_model
@@ -18,7 +18,7 @@ import backend.schemas.action_schema as action_schema
 import ujson as json
 
 
-async def set_form_values(ax_form, row_guid):
+async def set_form_values(db_session, ax_form, row_guid):
     """ Select row from DB and set AxForm.fields values, state and rowGuid
 
     Args:
@@ -34,6 +34,7 @@ async def set_form_values(ax_form, row_guid):
         allowed_fields.append(field)
 
     result = await ax_dialects.dialect.select_one(
+        db_session=db_session,
         form=ax_form,
         fields_list=allowed_fields,
         row_guid=row_guid)
@@ -63,12 +64,12 @@ class CreateTab(graphene.Mutation):
     field = graphene.Field(Field)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
-        try:
-            del info
+        err = f"Error in gql mutation - form.schema -> CreateTab"
+        with ax_model.try_catch(info.context['session'], err) as db_session:
             form_guid = args.get('form_guid')
             name = args.get('name')
 
-            ax_form = ax_model.db_session.query(AxForm).filter(
+            ax_form = db_session.query(AxForm).filter(
                 AxForm.guid == uuid.UUID(form_guid)
             ).first()
 
@@ -78,19 +79,10 @@ class CreateTab(graphene.Mutation):
             ax_field.is_tab = True
             ax_field.position = len(
                 [i for i in ax_form.fields if i.is_tab is True]) + 1
-            ax_model.db_session.add(ax_field)
-            try:
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - CreateTab")
-
+            db_session.add(ax_field)
+            db_session.flush()
             ok = True
             return CreateTab(field=ax_field, ok=ok)
-        except Exception:
-            logger.exception('Error in gql mutation - CreateTab.')
-            raise
 
 
 class UpdateTab(graphene.Mutation):
@@ -103,27 +95,18 @@ class UpdateTab(graphene.Mutation):
     field = graphene.Field(Field)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
-        try:
-            del info
+        err = 'Error in gql mutation - form_schema -> UpdateTab.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
             guid = args.get('guid')
             name = args.get('name')
 
-            ax_field = ax_model.db_session.query(AxField).filter(
+            ax_field = db_session.query(AxField).filter(
                 AxField.guid == uuid.UUID(guid)
             ).first()
             ax_field.name = name
-            try:
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - UpdateTab")
-
+            db_session.flush()
             ok = True
             return UpdateTab(field=ax_field, ok=ok)
-        except Exception:
-            logger.exception('Error in gql mutation - UpdateTab.')
-            raise
 
 
 class DeleteTab(graphene.Mutation):
@@ -135,26 +118,14 @@ class DeleteTab(graphene.Mutation):
     deleted = graphene.String()
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
-        try:
-            del info
+        err = 'Error in gql mutation - form_schema -> DeleteTab.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
             guid = args.get('guid')
-
-            ax_field = ax_model.db_session.query(AxField).filter(
+            ax_field = db_session.query(AxField).filter(
                 AxField.guid == uuid.UUID(guid)
             ).first()
-            try:
-                ax_model.db_session.delete(ax_field)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - DeleteTab")
-
-            ok = True
-            return DeleteTab(deleted=guid, ok=ok)
-        except Exception:
-            logger.exception('Error in gql mutation - DeleteTab.')
-            raise
+            db_session.delete(ax_field)
+            return DeleteTab(deleted=guid, ok=True)
 
 
 class CreateField(graphene.Mutation):
@@ -189,8 +160,8 @@ class CreateField(graphene.Mutation):
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
-        del info
-        try:
+        err = 'Error in gql mutation - form_schema -> CreateTab'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
             form_guid = args.get('form_guid')
             name = args.get('name')
             tag = args.get('tag')
@@ -203,11 +174,11 @@ class CreateField(graphene.Mutation):
             name_is_checked = False
             cur_num = 1
 
-            ax_field_type = ax_model.db_session.query(AxFieldType).filter(
+            ax_field_type = db_session.query(AxFieldType).filter(
                 AxFieldType.tag == tag
             ).first()
 
-            ax_form = ax_model.db_session.query(AxForm).filter(
+            ax_form = db_session.query(AxForm).filter(
                 AxForm.guid == uuid.UUID(form_guid)
             ).first()
 
@@ -241,20 +212,16 @@ class CreateField(graphene.Mutation):
             if ax_field_type.is_always_whole_row:
                 ax_field.is_whole_row = True
 
-            ax_model.db_session.add(ax_field)
+            db_session.add(ax_field)
 
             if ax_field_type.is_virtual is False:
                 await ax_dialects.dialect.add_column(
+                    db_session=db_session,
                     table=ax_form.db_name,
                     db_name=ax_field.db_name,
                     type_name=ax_field_type.value_type)
 
-            try:
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - CreateField - 1")
+            db_session.flush()
 
             # Update positions of all fields that are lower then created field
             for field in ax_form.fields:
@@ -267,7 +234,7 @@ class CreateField(graphene.Mutation):
                         field.parent = current_parent
 
             # add permission for default admin role on every state
-            admin_role = ax_model.db_session.query(AxRole).filter(
+            admin_role = db_session.query(AxRole).filter(
                 AxRole.is_admin.is_(True)
             ).filter(AxRole.form_guid == ax_form.guid).first()
 
@@ -280,23 +247,14 @@ class CreateField(graphene.Mutation):
                 perm.field_guid = ax_field.guid
                 perm.read = True
                 perm.edit = True
-                ax_model.db_session.add(perm)
+                db_session.add(perm)
                 permissions.append(perm)
 
-            try:
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - CreateField - 2")
-
+            db_session.flush()
             ax_schema.init_schema()  # re-create GQL schema
 
             ok = True
             return CreateField(field=ax_field, permissions=permissions, ok=ok)
-        except Exception:
-            logger.exception('Error in gql mutation - CreateTab.')
-            raise
 
 
 class UpdateField(graphene.Mutation):
@@ -332,8 +290,8 @@ class UpdateField(graphene.Mutation):
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
-        del info
-        try:
+        err = 'Error in gql mutation - form_schema -> UpdateField.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
             guid = args.get('guid')
             name = args.get('name')
             db_name = args.get('db_name')
@@ -344,7 +302,7 @@ class UpdateField(graphene.Mutation):
 
             schema_needs_update = False
 
-            ax_field = ax_model.db_session.query(AxField).filter(
+            ax_field = db_session.query(AxField).filter(
                 AxField.guid == uuid.UUID(guid)
             ).first()
 
@@ -362,6 +320,7 @@ class UpdateField(graphene.Mutation):
                     db_name = db_name + '_enother'
 
                 await ax_dialects.dialect.rename_column(
+                    db_session=db_session,
                     table=ax_field.form.db_name,
                     old_name=ax_field.db_name,
                     new_name=db_name,
@@ -369,13 +328,7 @@ class UpdateField(graphene.Mutation):
                 )
 
                 ax_field.db_name = db_name
-                try:
-                    ax_model.db_session.commit()
-                except DatabaseError:
-                    ax_model.db_session.rollback()
-                    logger.exception(
-                        f"Error executing SQL, rollback! - UpdateField - 1")
-
+                db_session.flush()
                 schema_needs_update = True
 
             if options_json:
@@ -393,21 +346,14 @@ class UpdateField(graphene.Mutation):
                     ax_field.is_whole_row = True
                 else:
                     ax_field.is_whole_row = is_whole_row
-            try:
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - UpdateField - 2")
+
+            # db_session.flush()
 
             if schema_needs_update:
                 ax_schema.init_schema()  # re-create GQL schema
 
             ok = True
             return CreateTab(field=ax_field, ok=ok)
-        except Exception:
-            logger.exception('Error in gql mutation - UpdateField.')
-            raise
 
 
 class DeleteField(graphene.Mutation):
@@ -420,40 +366,30 @@ class DeleteField(graphene.Mutation):
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
-        try:
-            del info
+        err = 'Error in gql mutation - form_schema -> DeleteField.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
             guid = args.get('guid')
 
-            ax_field = ax_model.db_session.query(AxField).filter(
+            ax_field = db_session.query(AxField).filter(
                 AxField.guid == uuid.UUID(guid)
             ).first()
 
-            ax_model.db_session.query(AxRoleFieldPermission).filter(
+            db_session.query(AxRoleFieldPermission).filter(
                 AxRoleFieldPermission.field_guid == ax_field.guid).delete()
-            ax_model.db_session.query(AxColumn).filter(
+            db_session.query(AxColumn).filter(
                 AxColumn.field_guid == ax_field.guid).delete()
 
             if ax_field.is_tab is False and ax_field.is_virtual is False:
                 await ax_dialects.dialect.drop_column(
+                    db_session=db_session,
                     table=ax_field.form.db_name,
                     column=ax_field.db_name
                 )
 
-            try:
-                ax_model.db_session.delete(ax_field)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - DeleteField")
-
+            db_session.delete(ax_field)
             ax_schema.init_schema()  # re-create GQL schema
-
             ok = True
             return DeleteField(deleted=guid, ok=ok)
-        except Exception:
-            logger.exception('Error in gql mutation - DeleteField.')
-            raise
 
 
 class ChangeFieldsPositions(graphene.Mutation):
@@ -466,11 +402,12 @@ class ChangeFieldsPositions(graphene.Mutation):
     fields = graphene.List(Field)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
-        try:
+        err = 'Error in gql mutation - form_schema -> ChangeFieldsPositions.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
             form_guid = args.get('form_guid')
             positions = args.get('positions')
 
-            ax_form = ax_model.db_session.query(AxForm).filter(
+            ax_form = db_session.query(AxForm).filter(
                 AxForm.guid == uuid.UUID(form_guid)
             ).one()
 
@@ -482,23 +419,13 @@ class ChangeFieldsPositions(graphene.Mutation):
                             current_parent = uuid.UUID(position.parent)
                         field.parent = current_parent
                         field.position = position.position
-            try:
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - ChangeFieldsPositions")
 
+            # db_session.flush()
             query = Field.get_query(info)
             field_list = query.filter(
                 AxField.form_guid == uuid.UUID(form_guid)
             ).all()
-
-            ok = True
-            return ChangeFieldsPositions(fields=field_list, ok=ok)
-        except Exception:
-            logger.exception('Error in gql mutation - ChangeFieldsPositions.')
-            raise
+            return ChangeFieldsPositions(fields=field_list, ok=True)
 
 
 class FormQuery(graphene.ObjectType):
@@ -527,8 +454,11 @@ class FormQuery(graphene.ObjectType):
             AxForm: AxForm
         """
         del update_time
-        query = Form.get_query(info=info)
-        return query.filter(AxForm.db_name == db_name).first()
+        err = 'form_schema -> resolve_form'
+        with ax_model.try_catch(
+                info.context['session'], err, no_commit=True):
+            query = Form.get_query(info=info)
+            return query.filter(AxForm.db_name == db_name).first()
 
     async def resolve_form_data(
             self, info, db_name=None, row_guid=None, update_time=None):
@@ -542,30 +472,24 @@ class FormQuery(graphene.ObjectType):
         Returns:
             AxForm: Form with field values, avaluble actions, state, row_guid
         """
-        try:
+        err = 'Error in gql query - form_schema -> resolve_form_data'
+        with ax_model.try_catch(
+                info.context['session'], err, no_commit=True) as db_session:
+            db_session = info.context['session']
             del update_time  # used to disable gql caching
 
             query = Form.get_query(info=info)
             ax_form = query.filter(AxForm.db_name == db_name).first()
 
             if row_guid is not None:
-                ax_form = await set_form_values(ax_form=ax_form, row_guid=row_guid)
+                ax_form = await set_form_values(
+                    db_session=db_session, ax_form=ax_form, row_guid=row_guid)
 
             ax_form.avalible_actions = await action_schema.get_actions(
                 form=ax_form,
                 current_state=ax_form.current_state_name
             )
-
-            ax_model.db_session.flush()
             return ax_form
-        except DatabaseError:
-            ax_model.db_session.rollback()
-            logger.exception(
-                f"Error executing SQL, rollback! - resolve_form_data")
-            raise
-        except Exception:
-            logger.exception('Error in gql query - resolve_form_data.')
-            raise
 
 
 class FormMutations(graphene.ObjectType):

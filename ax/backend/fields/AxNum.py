@@ -3,14 +3,13 @@ import sys
 import traceback
 import ujson as json
 from backend.model import AxMetric
-import backend.model as ax_model
 
 
-async def before_insert(field, before_form, tobe_form, action, current_user):
+async def before_insert(db_session, field, before_form, tobe_form, action,
+                        current_user):
     """
     Executes python code from AxField.private_options
 
-    WARNING! do not use ax_model.db_session.commit() here!
     Returns:
         Object: Returns updated value of current field"""
     del before_form, action, current_user, tobe_form
@@ -28,7 +27,7 @@ async def before_insert(field, before_form, tobe_form, action, current_user):
     if not key:
         return None
 
-    current_counter = ax_model.db_session.query(AxMetric).filter(
+    current_counter = db_session.query(AxMetric).filter(
         AxMetric.key == key
     ).first()
 
@@ -39,7 +38,7 @@ async def before_insert(field, before_form, tobe_form, action, current_user):
         current_counter = AxMetric()
         current_counter.key = key
         current_counter.value = None
-        ax_model.db_session.add(current_counter)
+        db_session.add(current_counter)
 
     localz = dict()
     localz['ax_counter'] = current_value

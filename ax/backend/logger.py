@@ -19,9 +19,9 @@ def init_logger(logs_filename: str, logs_absolute_path: str, logs_level: str):
         "handlers": [
             {
                 'sink': sys.stdout,
-                'colorize': 'True',
+                'colorize': True,
                 'format': '⛏️  | {level} | <level>{message}</level>',
-                'backtrace': 'False'
+                'backtrace': False
             }
         ],
         "extra": {"user": "someone"}
@@ -37,10 +37,10 @@ def init_logger(logs_filename: str, logs_absolute_path: str, logs_level: str):
             # TODO add rotation and retention, compression from app.yaml
             file_handler = {
                 'sink': log_path,
-                'serialize': 'True',
+                'serialize': True,
                 'rotation': '100 MB',
-                'enqueue': 'True',
-                'backtrace': 'True',
+                'enqueue': True,
+                'backtrace': False,
                 'level': logs_level
             }
             config['handlers'].append(file_handler)

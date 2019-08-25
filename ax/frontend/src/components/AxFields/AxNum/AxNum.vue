@@ -3,7 +3,7 @@
     <div v-if='this.options.comparator'>
       <span class='label'>{{currentName}}</span>
       <div class='value-div'>{{value}}</div>
-      <hr>
+      <hr />
     </div>
     <v-tooltip bottom>
       <template v-slot:activator='{ on }'>
@@ -15,20 +15,21 @@
           </transition>
         </div>
       </template>
-      <span>{{$t("types.AxNum.link-tooltip")}}</span>
+      <span>{{locale("types.AxNum.link-tooltip")}}</span>
     </v-tooltip>
 
     <v-alert
       :value='true'
       type='warning'
       v-if='!this.options.comparator'
-    >{{$t("common.no-field-settings-error", {name: this.name})}}</v-alert>
+    >{{locale("common.no-field-settings-error", {name: this.name})}}</v-alert>
   </div>
 </template>
 
 <script>
 import copy from 'copy-to-clipboard';
 import { getAxHost, getAxProtocol } from '@/misc';
+import i18n from '@/locale';
 
 export default {
   name: 'AxNum',
@@ -52,6 +53,9 @@ export default {
     }
   },
   methods: {
+    locale(key) {
+      return i18n.t(key);
+    },
     copyLink() {
       const url = `${getAxProtocol()}://${getAxHost()}/form/${
         this.formDbName

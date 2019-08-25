@@ -27,12 +27,12 @@
       </v-flex>
       <v-flex offset-xs1 xs5>
         <v-switch
-          :label='this.$t("types.AxFiles.settings-enable-webcam-label")'
+          :label='this.locale("types.AxFiles.settings-enable-webcam-label")'
           cy-data='settings-enableModal'
           v-model='changedOptions.enableWebcam'
         ></v-switch>
       </v-flex>
-      <br>
+      <br />
       <v-text-field
         :hint='locale("types.AxFiles.settings-types-hint")'
         :label='locale("types.AxFiles.settings-types-label")'
@@ -47,7 +47,7 @@
 
 <script>
 import AxFieldSettings from '@/components/AxFieldSettings.vue';
-import i18n from '../../../locale.js';
+import i18n from '@/locale';
 
 export default {
   name: 'AxFilesSettings',

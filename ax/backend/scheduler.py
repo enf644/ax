@@ -11,12 +11,11 @@ from datetime import timedelta, datetime
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.executors.asyncio import AsyncIOExecutor
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-from graphql.execution.executors.asyncio import AsyncioExecutor
+# from graphql.execution.executors.asyncio import AsyncioExecutor
 from loguru import logger
-import ujson as json
+# import ujson as json
 import backend.model as ax_model
 import backend.misc as ax_misc
-from sqlalchemy.exc import DatabaseError
 
 this = sys.modules[__name__]
 scheduler = None
@@ -46,65 +45,67 @@ async def gql_query_job(query, variables):
     from backend.schema import schema
     # result = schema.execute(query, variables=variables)
 
-    result = await schema.execute(
+    await schema.execute(
         query,
         variables=variables,
         return_promise=True)
 #         executor=AsyncioExecutor(loop=asyncio.get_event_loop()),
 
 
-def do_action_REM(form_db_name, action_db_name, values, row_guid=None):
-    """
-    Adds job that executes GQL query for workflow action. Used in AxAction
-    python code.
+# def do_action_REM(form_db_name, action_db_name, values, row_guid=None):
+#     """
+#     Adds job that executes GQL query for workflow action. Used in AxAction
+#     python code.
 
-    Args:
-        form_db_name (str): db_name of AxForm
-        action_db_name (str): db_name of AxAction that needs to be performed
-        values (Dict): Dict with form values. Keys are db table columns
-        row_guid (str): Guid (not dashes) of database row
+#     Args:
+#         form_db_name (str): db_name of AxForm
+#         action_db_name (str): db_name of AxAction that needs to be performed
+#         values (Dict): Dict with form values. Keys are db table columns
+#         row_guid (str): Guid (not dashes) of database row
 
-    """
+#     """
 
-    query = f"""
-        mutation(
-            $formDbName: String,
-            $actionDbName: String,
-            $rowGuid: String,
-            $values: String
-        ){{
-            doAction(
-                formDbName: $formDbName
-                actionDbName: $actionDbName
-                rowGuid: $rowGuid
-                values: $values
-            ) {{
-                form {{
-                guid
-                dbName
-                }}
-                newGuid
-                messages
-                ok
-            }}
-        }}
-    """
-    variables = {
-        "formDbName": form_db_name,
-        "actionDbName": action_db_name,
-        "rowGuid": row_guid,
-        "values": json.dumps(values)
-    }
-    args = {
-        "query": query,
-        "variables": variables
-    }
-    job = this.scheduler.add_job(func=gql_query_job, kwargs=args,
-                                 misfire_grace_time=60 * 60)
-    print(str(job))
+#     query = f"""
+#         mutation(
+#             $formDbName: String,
+#             $actionDbName: String,
+#             $rowGuid: String,
+#             $values: String
+#         ){{
+#             doAction(
+#                 formDbName: $formDbName
+#                 actionDbName: $actionDbName
+#                 rowGuid: $rowGuid
+#                 values: $values
+#             ) {{
+#                 form {{
+#                 guid
+#                 dbName
+#                 }}
+#                 newGuid
+#                 messages
+#                 ok
+#             }}
+#         }}
+#     """
+#     variables = {
+#         "formDbName": form_db_name,
+#         "actionDbName": action_db_name,
+#         "rowGuid": row_guid,
+#         "values": json.dumps(values)
+#     }
+#     args = {
+#         "query": query,
+#         "variables": variables
+#     }
+#     job = this.scheduler.add_job(func=gql_query_job, kwargs=args,
+#                                  misfire_grace_time=60 * 60)
+#     print(str(job))
 
 
-def add_action_job(form_db_name, action_db_name, values, row_guid=None, wait_seconds=0):
+def add_action_job(form_db_name, action_db_name, values, row_guid=None,
+                   wait_seconds=0):
+    """ Adds scheduller job that executes a AxAction """
     import backend.schemas.action_schema as ax_action_schema
     variables = {
         "form_db_name": form_db_name,
@@ -120,24 +121,6 @@ def add_action_job(form_db_name, action_db_name, values, row_guid=None, wait_sec
         misfire_grace_time=60 * 60,
         trigger='date',
         next_run_time=moscow_dt)
-    print(str(job))
-
-
-# def do_action(form_db_name, action_db_name, values, row_guid=None):
-#     asyncio.run_coroutine_threadsafe(
-#         do_action_async(form_db_name, action_db_name, values, row_guid),
-#         asyncio.get_event_loop())
-
-
-async def test_executable(name):
-    await asyncio.sleep(10)
-    print('Sleep ->' + name)
-
-
-def do_test(name):
-    args = {"name": name}
-    job = this.scheduler.add_job(func=test_executable, kwargs=args,
-                                 misfire_grace_time=60 * 60)
     print(str(job))
 
 
@@ -190,11 +173,6 @@ def init_scheduler():
                 misfire_grace_time=60,
                 id='clear_tmp_files')
 
-    except DatabaseError:
-        ax_model.db_session.rollback()
-        logger.exception(
-            f"Error executing SQL, rollback! - init_scheduler")
-        raise
     except Exception:
         logger.exception('Error initiating scheduler module. ')
         raise

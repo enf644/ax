@@ -1,6 +1,6 @@
 <template>
   <AxFieldSettings :guid='guid' :options='changedOptions' @closed='$emit("closed")'>
-    <br>
+    <br />
     <v-autocomplete
       :items='axForms'
       :label='locale("types.Ax1to1.settings-form-select")'
@@ -22,7 +22,7 @@
         </v-chip>
       </template>
     </v-autocomplete>
-    <br>
+    <br />
     <v-autocomplete
       :hint='locale("types.Ax1to1.settings-grid-hint")'
       :items='axGrids'
@@ -44,9 +44,9 @@
         </v-chip>
       </template>
     </v-autocomplete>
-    <br>
+    <br />
     <v-switch
-      :label='this.$t("types.Ax1to1.settings-enable-modal")'
+      :label='this.locale("types.Ax1to1.settings-enable-modal")'
       cy-data='settings-enableModal'
       v-model='changedOptions.enableFormModal'
     ></v-switch>
@@ -57,7 +57,7 @@
 
 <script>
 import AxFieldSettings from '@/components/AxFieldSettings.vue';
-import i18n from '../../../locale.js';
+import i18n from '@/locale';
 
 export default {
   name: 'Ax1tomSettings',

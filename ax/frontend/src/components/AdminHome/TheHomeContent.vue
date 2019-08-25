@@ -5,7 +5,7 @@
         <li :key='user.guid' v-for='user in users'>{{ user.name }} -> {{ user.email }}</li>
       </ul>
 
-      <br>
+      <br />
 
       <v-btn
         @click='createNewUser'
@@ -13,17 +13,23 @@
         data-cy='add-new-user'
       >{{$t("users.add-new-user")}}</v-btn>
 
-      <br>
-      <br>
+      <br />
+      <br />
       <h1>{{ $t("hello")}}</h1>
-      <br>
+      <br />
+      <!-- <ax-form form='Wine'></ax-form> -->
+      <!-- <AxForm db_name='Wine'></AxForm> -->
+      <ax-test></ax-test>
     </v-sheet>
   </div>
 </template>
 
 <script>
+import AxForm from '@/components/AxForm.vue';
+
 export default {
   name: 'admin-toolbar',
+  components: { AxForm },
   created() {
     // this.$log.info(this.$language.available);
     if (!this.$store.state.users.isUsersLoaded) {

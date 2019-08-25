@@ -29,13 +29,13 @@
       <div class='actions' v-if='this.isTomMode'>
         <v-btn @click='emitSelectedItems' small>
           <i class='fas fa-check-double'></i>
-          &nbsp; {{$t("grids.select-relation")}}
+          &nbsp; {{locale("grids.select-relation")}}
         </v-btn>
       </div>
       <div class='actions' v-if='this.isTomInlineMode'>
         <v-btn @click='emitSelectDialog' small>
           <i class='fas fa-check-double'></i>
-          &nbsp; {{$t("grids.open-select-dialog")}}
+          &nbsp; {{locale("grids.open-select-dialog")}}
         </v-btn>
       </div>
     </v-sheet>
@@ -65,7 +65,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import gql from 'graphql-tag';
 import apolloClient from '../apollo';
 import logger from '../logger';
-// import i18n from '../locale';
+import i18n from '@/locale';
 import AxForm from './AxForm.vue';
 // import { print } from 'graphql/language/printer';
 import uuid4 from 'uuid4';
@@ -77,7 +77,7 @@ export default {
     form: null,
     grid: {
       type: String,
-      default: 'default'
+      default: 'Default'
     },
     update_time: null,
     tom_mode: null,
@@ -303,6 +303,9 @@ export default {
     this.loadOptions(this.form, this.grid);
   },
   methods: {
+    locale(key) {
+      return i18n.t(key);
+    },
     updateAndClose(guid) {
       if (!this.options.enableSubscription) {
         this.loadData();

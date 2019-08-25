@@ -16,7 +16,6 @@ import sys
 import uuid
 import subprocess
 from pathlib import Path
-from sqlalchemy.exc import DatabaseError
 import ruamel.yaml
 from loguru import logger
 from docopt import docopt
@@ -110,19 +109,12 @@ def create_db_revision():
 
 def save_db_revision() -> None:
     """Saves db revision to current database"""
-    try:
+
+    msg = 'Failed saving revision id to database'
+    with ax_model.scoped_session(msg) as db_session:
         current_version = AxAlembicVersion()
         current_version.version_num = this.revision_id
-        try:
-            ax_model.db_session.add(current_version)
-            ax_model.db_session.commit()
-        except DatabaseError:
-            ax_model.db_session.rollback()
-            logger.exception(
-                f"Error executing SQL, rollback! - save_db_revision")
-    except Exception:
-        logger.exception('Failed saving revision id to database')
-        raise
+        db_session.add(current_version)
 
 
 def clear_pipy_dist() -> None:

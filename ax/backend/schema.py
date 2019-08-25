@@ -8,7 +8,7 @@
 """
 import sys
 import graphene
-from loguru import logger
+# from loguru import logger
 from sqlalchemy import literal
 from graphene_sqlalchemy import SQLAlchemyConnectionField
 import ujson as json
@@ -107,58 +107,61 @@ def make_resolver(db_name, type_class):
 
     async def resolver(
             self, info, update_time=None, quicksearch=None, guids=None):
-        del self, info, update_time
+        del update_time
+        err = f"Schema -> Resolver for {db_name}"
+        with ax_model.try_catch(info.context['session'], err) as db_session:
+            # Find AxForm with name that db_name is started with
+            ax_form = None
+            found_forms = db_session.query(AxForm).filter(
+                literal(db_name).startswith(AxForm.db_name)
+            ).all()
 
-        # Find AxForm with name that db_name is started with
-        ax_form = None
-        found_forms = ax_model.db_session.query(AxForm).filter(
-            literal(db_name).startswith(AxForm.db_name)
-        ).all()
+            ax_grid = {}
+            default_grid = {}
 
-        ax_grid = {}
-        default_grid = {}
+            for form in found_forms:
+                # iterate all grids to know, what grid to use
+                for grid in form.grids:
+                    if form.db_name + grid.db_name == db_name:
+                        ax_grid = grid
+                        ax_form = form
+                    if grid.is_default_view and form.db_name == db_name:
+                        default_grid = grid
+                        ax_form = form
 
-        for form in found_forms:
-            # iterate all grids to know, what grid to use
-            for grid in form.grids:
-                if form.db_name + grid.db_name == db_name:
-                    ax_grid = grid
-                    ax_form = form
-                if grid.is_default_view and form.db_name == db_name:
-                    default_grid = grid
-                    ax_form = form
+            grid_to_use = ax_grid or default_grid
+            if not grid_to_use:
+                return None
 
-        grid_to_use = ax_grid or default_grid
-        if not grid_to_use:
-            return None
+            grid_options = json.loads(grid_to_use.options_json)
+            server_filter = None
+            if 'serverFilter' in grid_options:
+                server_filter = grid_options['serverFilter']
 
-        grid_options = json.loads(grid_to_use.options_json)
-        server_filter = None
-        if 'serverFilter' in grid_options:
-            server_filter = grid_options['serverFilter']
+            # TODO add permission checks
+            allowed_fields = []
+            for field in ax_form.db_fields:
+                allowed_fields.append(field.db_name)
 
-        # TODO add permission checks
-        allowed_fields = []
-        for field in ax_form.db_fields:
-            allowed_fields.append(field.db_name)
+            # select * from table
+            # TODO Add paging
+            results = await ax_dialects.dialect.select_all(
+                db_session=db_session,
+                ax_form=ax_form,
+                quicksearch=quicksearch,
+                server_filter=server_filter,
+                guids=guids)
 
-        # select * from table
-        # TODO Add paging
-        results = await ax_dialects.dialect.select_all(
-            ax_form=ax_form,
-            quicksearch=quicksearch,
-            server_filter=server_filter,
-            guids=guids)
+            result_items = []
+            for row in results:
+                kwargs = {}
+                for key, value in row.items():
+                    kwargs[key] = value
 
-        result_items = []
-        for row in results:
-            kwargs = {}
-            for key, value in row.items():
-                kwargs[key] = value
+                result_items.append(type_class(**kwargs))
 
-            result_items.append(type_class(**kwargs))
+            return result_items
 
-        return result_items
     resolver.__name__ = 'resolve_%s' % db_name
     return resolver
 
@@ -166,13 +169,14 @@ def make_resolver(db_name, type_class):
 def init_schema():
     """Initiate GQL schema. Create dynamic part of schema and combine it with
     static part take from schemas folder"""
-    try:
+    error_msg = "Schema -> init_schema. Error initiating GraphQL shcema."
+    with ax_model.scoped_session(error_msg) as db_session:
         # Create typeClass based on each AxForm
         this.schema = None
         type_classes = {}
         all_types = gql_types.copy()  # Add dynamic types to GQL schema
 
-        ax_forms = ax_model.db_session.query(AxForm).all()
+        ax_forms = db_session.query(AxForm).all()
         for form in ax_forms:
             for grid in form.grids:
                 # For each grid we create Graphene field with name FormGrid
@@ -188,7 +192,8 @@ def init_schema():
 
                 # Add fields for each field of AxForm
                 for field in form.db_fields:
-                    field_type = type_dictionary[field.field_type.value_type]
+                    field_type = (
+                        type_dictionary[field.field_type.value_type])
                     # TODO maybe add label as description?
                     class_fields[field.db_name] = field_type()
 
@@ -203,8 +208,8 @@ def init_schema():
                 type_classes[class_name] = graph_class
                 all_types.append(graph_class)
 
-                # if grid is default view we add enother class with name Form
-                # without Grid name
+                # if grid is default view we add enother class with name
+                # Form without Grid name
                 if grid.is_default_view is True:
                     default_class_name = form.db_name[0].upper(
                     ) + form.db_name[1:]
@@ -233,7 +238,8 @@ def init_schema():
                     type=graphene.String, required=False)
             )
 
-            dynamic_fields['resolve_%s' % key] = make_resolver(key, type_class)
+            dynamic_fields['resolve_%s' % key] = make_resolver(
+                key, type_class)
 
         # Combine static schema query and dynamic query
         DynamicQuery = type('DynamicQuery', (Query,), dynamic_fields)
@@ -244,6 +250,3 @@ def init_schema():
             types=all_types,
             subscription=Subscription
         )
-    except Exception:
-        logger.exception('Error initiating GraphQL shcema. ')
-        raise

@@ -38,7 +38,7 @@
       :value='true'
       type='warning'
       v-if='!this.options.grid'
-    >{{$t("common.no-field-settings-error", {name: this.name})}}</v-alert>
+    >{{locale("common.no-field-settings-error", {name: this.name})}}</v-alert>
 
     <modal :name='`tom-form-${this.modalGuid}`' adaptive height='auto' scrollable width='70%'>
       <v-card>
@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import i18n from '../../../locale.js';
+import i18n from '@/locale';
 import gql from 'graphql-tag';
 import apolloClient from '../../../apollo.js';
 import uuid4 from 'uuid4';
@@ -139,6 +139,9 @@ export default {
     this.modalGuid = uuid4();
   },
   methods: {
+    locale(key) {
+      return i18n.t(key);
+    },
     openFormModal(item) {
       if (
         this.options.enableFormModal

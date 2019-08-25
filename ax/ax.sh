@@ -20,6 +20,11 @@ case $process in
 esac
 
 
+# sudo nano /etc/monit/monitrc
+# sudo monit status
+# sudo monit reload
+
+
 #   check host ax with address 84.201.174.246
 #     start program = "/home/wineuser/.local/lib/python3.6/site-packages/ax/ax.sh start"
 #     stop program = "/home/wineuser/.local/lib/python3.6/site-packages/ax/ax.sh stop"

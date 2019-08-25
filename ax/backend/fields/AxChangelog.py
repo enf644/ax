@@ -2,9 +2,9 @@
 import time
 
 
-async def before_update(field, before_form, tobe_form, action, current_user):
+async def before_update(db_session, field, before_form, tobe_form, action,
+                        current_user):
     """Python code runs for field before update
-    WARNING! do not use ax_model.db_session.commit() here!
 
     Args:
         field (AxField): Current field. Is used for value and guid.
@@ -18,7 +18,7 @@ async def before_update(field, before_form, tobe_form, action, current_user):
     Returns:
         Object: Returns updated value of current field"""
 
-    del current_user
+    del current_user, db_session
 
     field_val = []
     changed_fields = []
@@ -53,9 +53,10 @@ async def before_update(field, before_form, tobe_form, action, current_user):
     return field_val
 
 
-async def before_insert(field, before_form, tobe_form, action, current_user):
+async def before_insert(db_session, field, before_form, tobe_form, action,
+                        current_user):
     """ before insert """
-    del before_form, current_user, field
+    del before_form, current_user, field, db_session
 
     field_val = []
     changed_fields = []

@@ -1,12 +1,11 @@
 """Ax1tom field type functions - before, after / insert, update, delete"""
 import uuid
-import backend.model as ax_model
 from backend.model import Ax1tomReference
 
 
-async def after_update(field, before_form, tobe_form, action, current_user):
+async def after_update(db_session, field, before_form, tobe_form, action,
+                       current_user):
     """Python code runs for field before update
-    WARNING! do not use ax_model.db_session.commit() here!
 
     Args:
         field (AxField): Current field. Is used for value and guid.
@@ -27,7 +26,7 @@ async def after_update(field, before_form, tobe_form, action, current_user):
         Object: Returns updated value of current field"""
     del before_form, action, current_user
 
-    ax_model.db_session.query(Ax1tomReference).filter(
+    db_session.query(Ax1tomReference).filter(
         Ax1tomReference.field_guid == field.guid
     ).filter(
         Ax1tomReference.row_guid == uuid.UUID(str(tobe_form.row_guid))
@@ -40,20 +39,23 @@ async def after_update(field, before_form, tobe_form, action, current_user):
             new_tom.field_guid = field.guid
             new_tom.row_guid = uuid.UUID(str(tobe_form.row_guid))
             new_tom.child_guid = uuid.UUID(str(child_guid))
-            ax_model.db_session.add(new_tom)
+            db_session.add(new_tom)
 
     return field.value
 
 
-async def after_insert(field, before_form, tobe_form, action, current_user):
+async def after_insert(db_session, field, before_form, tobe_form, action,
+                       current_user):
     """ Do the same as after_update """
-    return await after_update(field, before_form, tobe_form, action, current_user)
+    return await after_update(
+        db_session, field, before_form, tobe_form, action, current_user)
 
 
-async def after_delete(field, before_form, tobe_form, action, current_user):
+async def after_delete(db_session, field, before_form, tobe_form, action,
+                       current_user):
     """ Delete all Ax1tomReference """
     del before_form, action, current_user
-    ax_model.db_session.query(Ax1tomReference).filter(
+    db_session.query(Ax1tomReference).filter(
         Ax1tomReference.field_guid == field.guid
     ).filter(
         Ax1tomReference.row_guid == uuid.UUID(str(tobe_form.row_guid))

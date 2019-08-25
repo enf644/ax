@@ -1,6 +1,7 @@
 <template>
   <v-app class='ax-form-app' id='ax-form' ref='formApp'>
     <!-- <transition enter-active-class='animated fadeIn'> -->
+    <h1 v-if='this.db_name == null'>db_name not specified</h1>
     <v-sheet
       :class='no_margin ? "form-container-no-margin" : "form-container"'
       elevation='5'
@@ -96,12 +97,12 @@
 
               <transition enter-active-class='animated fadeIn'>
                 <v-alert :value='true' type='warning' v-show='showSubscribtionWarning'>
-                  {{$t("form.record-modifyed-warning")}}
+                  {{locale("form.record-modifyed-warning")}}
                   &nbsp;
                   <v-btn @click='reloadData' small>
                     <i class='fas fa-sync-alt'></i>
                     &nbsp;
-                    {{$t("form.reload-data")}}
+                    {{locale("form.reload-data")}}
                   </v-btn>
                 </v-alert>
               </transition>
@@ -109,7 +110,7 @@
               <v-flex xs12>
                 <v-btn :disabled='!formIsValid' @click='submitTest' small v-if='isConstructorMode'>
                   <i class='fas fa-vial'></i>
-                  &nbsp; {{$t("form.test-from")}}
+                  &nbsp; {{locale("form.test-from")}}
                 </v-btn>
 
                 <v-btn @click='openTerminalModal' color='success' icon v-if='terminalIsAvalible'>
@@ -143,7 +144,7 @@
       <h1 class='not-found'>
         <i class='far fa-sad-cry'></i>
         &nbsp;
-        {{$t("form.guid-not-found", {num: this.guid})}}
+        {{locale("form.guid-not-found", {num: this.guid})}}
       </h1>
     </div>
     <!-- </transition> -->
@@ -174,7 +175,7 @@
         <div class='header'>
           <i class='fas fa-terminal'></i>
           &nbsp;
-          {{$t("form.terminal-header")}}
+          {{locale("form.terminal-header")}}
         </div>
         <div class='terminal-wrapper'>
           <div class='terminal-div' ref='terminalDiv'></div>
@@ -187,6 +188,7 @@
 <script>
 // import AxGrid from './AxGrid.vue';
 // import smoothReflow from 'vue-smooth-reflow';
+import i18n from '../locale.js';
 import apolloClient from '../apollo';
 import AxField from '@/components/AxField.vue';
 import gql from 'graphql-tag';
@@ -305,6 +307,9 @@ export default {
     this.initiateTerminal();
   },
   methods: {
+    locale(key) {
+      return i18n.t(key);
+    },
     initiateTerminal() {
       Terminal.applyAddon(fit);
       this.terminal = new Terminal({
@@ -327,7 +332,7 @@ export default {
       setTimeout(() => {
         this.loadData(this.db_name, this.currentRowGuid);
         this.showSubscribtionWarning = false;
-        const msg = this.$t('form.reload-success');
+        const msg = this.locale('form.reload-success');
         this.$dialog.message.success(
           `<i class="fas fa-redo-alt"></i> &nbsp ${msg}`
         );
@@ -469,7 +474,8 @@ export default {
           this.dbName = currentFormData.dbName;
           this.icon = currentFormData.icon;
           this.actions = currentFormData.avalibleActions;
-          // If form was opened from AxGrid by clicking on create action - then only one buttob must be avalible in form
+          // If form was opened from AxGrid by clicking on create action -
+          // then only one buttob must be avalible in form
           if (this.action_guid && !this.insertedGuid) {
             this.actions = this.actions.filter(
               action => action.guid === this.action_guid
@@ -609,9 +615,9 @@ export default {
         const comfirmed = await this.$dialog.confirm({
           text: action.confirmText,
           actions: {
-            false: this.$t('common.confirm-no'),
+            false: this.locale('common.confirm-no'),
             true: {
-              text: this.$t('common.confirm-yes'),
+              text: this.locale('common.confirm-yes'),
               color: 'red'
             }
           }
@@ -675,7 +681,9 @@ export default {
             retGuid,
             closeModal: action.closeModal
           });
-          const msg = this.$t('form.action-ok-toast', { action: action.name });
+          const msg = this.locale('form.action-ok-toast', {
+            action: action.name
+          });
           this.$dialog.message.success(
             `<i class="far fa-arrow-alt-circle-right"></i> &nbsp ${msg}`
           );
@@ -692,12 +700,12 @@ export default {
         let res = false;
         if (actionResult.messages && actionResult.messages.error) {
           let errorText = actionResult.messages.error;
-          console.log(errorText);
-          console.log(errorText.includes("$i18n('form.row-locked')"));
+          // console.log(errorText);
+          // console.log(errorText.includes("$i18n('form.row-locked')"));
           if (errorText.includes("$i18n('form.row-locked')")) {
             errorText = errorText.replace(
               "$i18n('form.row-locked')",
-              this.$t('form.row-locked')
+              this.locale('form.row-locked')
             );
           }
           // const reg = new RegExp(/\$i18n\('(.*?)'\)/);
@@ -708,7 +716,7 @@ export default {
             persistent: false
           });
         } else if (actionResult.messages && actionResult.messages.exception) {
-          const msg = this.$t('workflow.action.action-error', {
+          const msg = this.locale('workflow.action.action-error', {
             error_class: actionResult.messages.exception.error_class,
             line_number: actionResult.messages.exception.line_number,
             action_name: actionResult.messages.exception.action_name,
@@ -723,7 +731,7 @@ export default {
             text: actionResult.messages.info,
             persistent: false,
             actions: {
-              true: this.$t('common.ok')
+              true: this.locale('common.ok')
             }
           });
         } else res = true;

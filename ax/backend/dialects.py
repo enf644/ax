@@ -7,11 +7,10 @@ import sqlite3
 import uuid
 import re
 from loguru import logger
-from sqlalchemy.exc import DatabaseError
 import ujson as json
-import backend.model as ax_model
 from backend.model import AxForm
 import backend.misc as ax_misc
+import backend.model as ax_model
 
 this = sys.modules[__name__]
 dialect_name = None
@@ -166,38 +165,28 @@ class PorstgreDialect(object):
         This method is SYNC, leave it so
 
         Args:
+            db_session: SqlAlchemy session
             sql (str): Any sql that needs to be executed
+            variables (Dict): Arguments used in sql query
 
         Returns:
             List(Dict(column_name: value)): result of SQL query
         """
-        try:
-            res = None
-            try:
-                if variables:
-                    res = ax_model.db_session.execute(sql, variables)
-                else:
-                    res = ax_model.db_session.execute(sql)
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise
 
+        with ax_model.scoped_session("SQL - custom_query") as db_session:
+            res = db_session.execute(sql, variables)
+            db_session.commit()
             if res and res.returns_rows:
                 return res.fetchall()
             return res
-        except Exception:
-            logger.exception(
-                f"Error executing SQL - {sql}")
-            raise
 
 
-
-    async def select_all(self, ax_form, quicksearch=None, server_filter=None,
-                         guids=None):
+    async def select_all(self, db_session, ax_form, quicksearch=None,
+                         server_filter=None, guids=None):
         """ Select * from table
 
         Args:
+            db_session: SqlAlchemy session
             ax_form (AxForm): Current AxForm
             quicksearch (str, optional): Search string from AxGrid.vue
             server_filter (Dict, optional): Dicts with current grid server-
@@ -229,11 +218,6 @@ class PorstgreDialect(object):
                 quicksearch_sql = (
                     f"AND {tom_name} LIKE ('%' || :quicksearch || '%') "
                 )
-                # quicksearch_sql = (
-                #     f"AND \"axLabel\" LIKE ('%' || :quicksearch || '%') "
-                # )
-
-
 
             serverfilter_sql = ''
             if server_filter and server_filter["params"]:
@@ -268,29 +252,23 @@ class PorstgreDialect(object):
                 f', {tom_name} as "axLabel" FROM "{ax_form.db_name}"'
                 f' WHERE (1=1 {quicksearch_sql} {serverfilter_sql}) {guids_sql}'
             )
-            try:
-                result = ax_model.db_session.execute(
-                    sql,
-                    sql_params
-                ).fetchall()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise
+
+            result = db_session.execute(sql, sql_params).fetchall()
 
             return result
             # names = [row[0] for row in result]
         except Exception:
             logger.exception(
-                f"Error executing SQL - quicksearch {ax_form.db_name}")
+                f"Error executing SQL - select_all - {sql}")
             raise
 
 
 
-    async def select_one(self, form, fields_list, row_guid):
+    async def select_one(self, db_session, form, fields_list, row_guid):
         """Select fields from table for one row
 
         Args:
+            db_session: SqlAlchemy session
             form (AxForm): Current form
             fields_list (List(AxField)): Fields that must be selected.
             row_guid (str): String of row guid
@@ -314,7 +292,6 @@ class PorstgreDialect(object):
 
             sql = None
             query_params = None
-            result = None
 
             if ax_misc.string_is_guid(str(row_guid)):
                 sql = (f'SELECT {fields_string} '
@@ -332,27 +309,22 @@ class PorstgreDialect(object):
                        f'WHERE {num_where_sql}')
                 query_params = {"ax_num": str(row_guid)}
 
-            try:
-                result = ax_model.db_session.execute(
-                    sql, query_params).fetchall()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise
-
+            result = db_session.execute(sql, query_params).fetchall()
             return result
-            # names = [row[0] for row in result]
+
         except Exception:
-            logger.exception(f"Error executing SQL - select_one {form_db_name}")
+            logger.exception(f"Error executing SQL - select_one - {sql}")
             raise
 
 
 
-    async def select_field(self, form_db_name, field_db_name, row_guid):
+    async def select_field(self, db_session, form_db_name, field_db_name,
+                           row_guid):
         """Gets value of single field from SQL. Used in file viewer.
         See routes.py
 
         Args:
+            db_session: SqlAlchemy session
             form_db_name (str): AxForm.db_name - table name of current form
             fields_db_name (str): Db name of field
             row_guid (str): String of row guid
@@ -362,32 +334,23 @@ class PorstgreDialect(object):
         """
         try:
             row_guid_stripped = row_guid.replace('-', '')
-            ret_value = None
             sql = (f"SELECT \"{field_db_name}\" "
                    f"FROM {form_db_name} "
                    f"WHERE guid='{row_guid_stripped}'"
                    )
-            result = None
-            try:
-                result = ax_model.db_session.execute(sql).fetchall()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise
-
-            if result:
-                ret_value = result[0][field_db_name]
-            return ret_value
+            result = db_session.execute(sql).fetchall()
+            return result[0][field_db_name] if result else None
         except Exception:
             logger.exception(
                 f"Error executing SQL - select_field {form_db_name}")
             raise
 
 
-    async def insert(self, form, to_state_name, new_guid):
+    async def insert(self, db_session, form, to_state_name, new_guid):
         """ Insert row into database and set state with AxForm field values
 
         Args:
+            db_session: SqlAlchemy session
             form (AxForm): Current form with filled field values.
             to_state_name (str): Name of form state that must be set
             new_guid (str): Guid that must be used to create record.
@@ -422,24 +385,18 @@ class PorstgreDialect(object):
                 f'("guid", "axState", {column_sql}) '
                 f"VALUES (:row_guid, :ax_state, {values_sql});"
             )
-            try:
-                ax_model.db_session.execute(sql, query_params)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise
+            db_session.execute(sql, query_params)
             return new_guid
         except Exception:
             logger.exception('Error executing SQL - insert')
             raise
 
 
-
-    async def update(self, form, to_state_name, row_guid):
+    async def update(self, db_session, form, to_state_name, row_guid):
         """Update database row based of AxForm fields values
 
         Args:
+            db_session: SqlAlchemy session
             form (AxForm): Current form with filled field values.
             to_state_name (str): Name of form state that must be set
             row_guid (str): Guid of updated row
@@ -472,106 +429,69 @@ class PorstgreDialect(object):
                 f"SET \"axState\"=:ax_state, {values_sql} "
                 f"WHERE guid=:row_guid "
             )
-            result = None
-            try:
-                result = ax_model.db_session.execute(sql, query_params)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise
+            return db_session.execute(sql, query_params)
 
-            return result
         except Exception:
             logger.exception('Error executing SQL - update')
             raise
 
 
-    async def delete(self, form, row_guid):
+    async def delete(self, db_session, form, row_guid):
         """ Delete row of table of form"""
         try:
             sql = (
                 f"DELETE FROM \"{form.db_name}\" WHERE guid='{row_guid}' "
             )
-            try:
-                ax_model.db_session.execute(sql)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise
+            db_session.execute(sql)
         except Exception:
             logger.exception('Error executing SQL - delete')
             raise
 
 
-    async def create_data_table(self, db_name: str) -> None:
+    async def create_data_table(self, db_session, db_name):
         """Create table with system columns"""
         try:
             sql = f"""CREATE TABLE \"{db_name}\" (
                 guid UUID PRIMARY KEY,
                 \"axState\" VARCHAR NOT NULL
             );"""
-            try:
-                ax_model.db_session.execute(sql)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise
+            db_session.execute(sql)
         except Exception:
             logger.exception('Error executing SQL - create_data_table')
             raise
 
-    async def rename_table(self, old: str, new: str) -> None:
+    async def rename_table(self, db_session, old, new):
         """Rename table"""
         try:
             sql = f'ALTER TABLE "{old}" RENAME TO "{new}";'
-            try:
-                ax_model.db_session.execute(sql)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise
+            db_session.execute(sql)
         except Exception:
             logger.exception('Error executing SQL - rename_table')
             raise
 
 
-    async def drop_table(self, db_name: str) -> None:
+    async def drop_table(self, db_session, db_name):
         """Drop table"""
         try:
             sql = f'DROP TABLE "{db_name}";'
-            try:
-                ax_model.db_session.execute(sql)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise
+            db_session.execute(sql)
         except Exception:
             logger.exception('Error executing SQL - drop_table')
             raise
 
 
-    async def add_column(self, table: str, db_name: str, type_name: str):
+    async def add_column(self, db_session, table, db_name, type_name):
         """Add column"""
         try:
             dialect_type = await self.get_type(type_name=type_name)
             sql = f'ALTER TABLE "{table}" ADD COLUMN "{db_name}" {dialect_type}'
-            try:
-                ax_model.db_session.execute(sql)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise
+            db_session.execute(sql)
         except Exception:
             logger.exception('Error executing SQL - add_column')
             raise
 
-    async def rename_column(self, table, old_name, new_name, type_name) -> None:
+    async def rename_column(self, db_session, table, old_name, new_name,
+                            type_name) -> None:
         """Rename column"""
         try:
             del type_name
@@ -579,28 +499,16 @@ class PorstgreDialect(object):
                 f'ALTER TABLE "{table}"'
                 f' RENAME COLUMN "{old_name}" TO "{new_name}";'
             )
-            try:
-                ax_model.db_session.execute(sql)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise
+            db_session.execute(sql)
         except Exception:
             logger.exception('Error executing SQL - rename_column')
             raise
 
-    async def drop_column(self, table, column) -> None:
+    async def drop_column(self, db_session, table, column) -> None:
         """ Drop column """
         try:
             sql = f'ALTER TABLE "{table}" DROP COLUMN "{column}";'
-            try:
-                ax_model.db_session.execute(sql)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise
+            db_session.execute(sql)
         except Exception:
             logger.exception('Error executing SQL - drop_column')
             raise
@@ -687,30 +595,25 @@ class SqliteDialect(PorstgreDialect):
         return ret_param
 
 
-    async def create_data_table(self, db_name: str) -> None:
+    async def create_data_table(self, db_session, db_name: str) -> None:
         """Create table with system columns"""
         try:
             sql = f"""CREATE TABLE {db_name} (
                 guid VARCHAR PRIMARY KEY,
                 axState VARCHAR NOT NULL
             );"""
-            try:
-                ax_model.db_session.execute(sql)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(f"Error executing SQL, rollback! - {sql}")
-                raise
+            db_session.execute(sql)
         except Exception:
             logger.exception('Error executing SQL - create_data_table')
             raise
 
-    async def rename_column(self, table, old_name, new_name, type_name) -> None:
+    async def rename_column(
+            self, db_session, table, old_name, new_name, type_name) -> None:
         """Sqlite allows rename of column only from version 3.25.0.
         We have to reacreate table and copy data"""
         try:
             del type_name
-            ax_form = ax_model.db_session.query(AxForm).filter(
+            ax_form = db_session.query(AxForm).filter(
                 AxForm.db_name == table
             ).first()
 
@@ -738,29 +641,21 @@ class SqliteDialect(PorstgreDialect):
 
             rename_tmp = f'ALTER TABLE _ax_tmp RENAME TO {ax_form.db_name};'
 
-            try:
-                ax_model.db_session.execute(drop_tmp)
-                ax_model.db_session.execute(create_tmp)
-                ax_model.db_session.execute(copy_data)
-                ax_model.db_session.execute(drop_old)
-                ax_model.db_session.execute(rename_tmp)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - rename_column")
-                raise
+            db_session.execute(drop_tmp)
+            db_session.execute(create_tmp)
+            db_session.execute(copy_data)
+            db_session.execute(drop_old)
+            db_session.execute(rename_tmp)
 
-            return True
         except Exception:
             logger.exception('Error executing SQL - rename_column')
             raise
 
-    async def drop_column(self, table, column) -> None:
+    async def drop_column(self, db_session, table, column) -> None:
         """Sqlite does not allows to drop columns.
         We have to reacreate table and copy data"""
         try:
-            ax_form = ax_model.db_session.query(AxForm).filter(
+            ax_form = db_session.query(AxForm).filter(
                 AxForm.db_name == table
             ).first()
 
@@ -781,23 +676,14 @@ class SqliteDialect(PorstgreDialect):
                 if field.db_name != column:
                     copy_data += f", {field.db_name}"
             copy_data += f" FROM {ax_form.db_name};"
-
             drop_old = f"DROP TABLE {ax_form.db_name};"
-
             rename_tmp = f'ALTER TABLE _ax_tmp RENAME TO {ax_form.db_name};'
 
-            try:
-                ax_model.db_session.execute(drop_tmp)
-                ax_model.db_session.execute(create_tmp)
-                ax_model.db_session.execute(copy_data)
-                ax_model.db_session.execute(drop_old)
-                ax_model.db_session.execute(rename_tmp)
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - rename_column")
-                raise
+            db_session.execute(drop_tmp)
+            db_session.execute(create_tmp)
+            db_session.execute(copy_data)
+            db_session.execute(drop_old)
+            db_session.execute(rename_tmp)
 
             return True
         except Exception:
@@ -834,66 +720,16 @@ class MysqlDialect(object):
         ret_value = value
         return ret_value
 
-    async def create_data_table(self, db_name: str) -> None:
+    async def create_data_table(self, db_session, db_name) -> None:
         """Create table with system columns"""
         try:
             sql = f"""CREATE TABLE {db_name} (
                 guid VARCHAR(64) PRIMARY KEY,
                 axState VARCHAR(255) NOT NULL
             );"""
-            ax_model.db_session.execute(sql)
+            db_session.execute(sql)
         except Exception:
             logger.exception('Error executing SQL - create_data_table')
-            raise
-
-    async def rename_table(self, old: str, new: str) -> None:
-        """Rename table"""
-        try:
-            sql = f'RENAME TABLE `{old}` TO `{new}`'
-            ax_model.db_session.execute(sql)
-        except Exception:
-            logger.exception('Error executing SQL - rename_table')
-            raise
-
-    async def drop_table(self, db_name: str) -> None:
-        """Drop table"""
-        try:
-            sql = f'DROP TABLE {db_name};'
-            ax_model.db_session.execute(sql)
-        except Exception:
-            logger.exception('Error executing SQL - drop_table')
-            raise
-
-    async def add_column(self, table, db_name, type_name) -> None:
-        """Add column"""
-        try:
-            dialect_type = await self.get_type(type_name=type_name)
-            sql = f"ALTER TABLE `{table}` ADD COLUMN {db_name} {dialect_type}"
-            ax_model.db_session.execute(sql)
-        except Exception:
-            logger.exception('Error executing SQL - add_column')
-            raise
-
-    async def rename_column(self, table, old_name, new_name, type_name) -> None:
-        """Rename column"""
-        try:
-            dialect_type = await self.get_type(type_name=type_name)
-            sql = (
-                f"ALTER TABLE `{table}` "
-                f"CHANGE COLUMN `{old_name}` `{new_name}` {dialect_type}"
-            )
-            ax_model.db_session.execute(sql)
-        except Exception:
-            logger.exception('Error executing SQL - rename_column')
-            raise
-
-    async def drop_column(self, table, column) -> None:
-        """ Drop column """
-        try:
-            sql = f"ALTER TABLE {table} DROP COLUMN {column};"
-            ax_model.db_session.execute(sql)
-        except Exception:
-            logger.exception('Error executing SQL - drop_column')
             raise
 
 

@@ -14,7 +14,7 @@
       >
         <i class='up-ico far fa-images'></i>
         <br />
-        {{$t("types.AxImageCropDb.placeholder")}}
+        {{locale("types.AxImageCropDb.placeholder")}}
       </div>
     </div>
 
@@ -51,7 +51,7 @@
         <v-btn @click='doUpload' class='upload-btn' flat>
           <i class='fas fa-upload'></i>
           &nbsp;
-          {{$t("types.AxImageCropDb.upload-btn")}}
+          {{locale("types.AxImageCropDb.upload-btn")}}
         </v-btn>
         <v-btn @click='croppaData.rotate()' flat icon>
           <i class='fas fa-sync-alt'></i>
@@ -64,7 +64,7 @@
       <br />
       <v-btn @click='clearValue' flat small>
         <i class='far fa-trash-alt'></i>
-        &nbsp; {{$t("types.AxImageCropDb.clear-image")}}
+        &nbsp; {{locale("types.AxImageCropDb.clear-image")}}
       </v-btn>
     </div>
 
@@ -80,7 +80,7 @@
 import Vue from 'vue';
 import Croppa from 'vue-croppa';
 import uuid4 from 'uuid4';
-import i18n from '../../../locale.js';
+import i18n from '@/locale';
 import { getAxHost } from '../../../misc';
 import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
@@ -222,6 +222,9 @@ export default {
     });
   },
   methods: {
+    locale(key) {
+      return i18n.t(key);
+    },
     doUpload() {
       this.uppy.removeFile(this.uppyFile.id);
       this.$refs.croppa.generateBlob(blob => {
@@ -325,7 +328,9 @@ export default {
     },
     uploadFinished() {
       if (!this.currentValue && this.uppyImage) {
-        this.errors.push(this.$t('types.AxImageCropDb.upload-not-finished'));
+        this.errors.push(
+          this.locale('types.AxImageCropDb.upload-not-finished')
+        );
         return false;
       }
       return true;

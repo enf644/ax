@@ -5,14 +5,14 @@ import shutil
 import backend.misc as ax_misc
 
 
-async def after_update(field, before_form, tobe_form, action, current_user):
+async def after_update(db_session, field, before_form, tobe_form, action,
+                       current_user):
     """
     Moves uploaded files from /tmp/<file_guid>/<file_name> folder to
     /uploads/form_row_field_file/<form_guid>/<row_guid>/<file_guid>/<file_name>
-    WARNING! do not use ax_model.db_session.commit() here!
     Returns:
         Object: Returns updated value of current field"""
-    del before_form, action, current_user
+    del before_form, action, current_user, db_session
     value_guids = []
     form_guid = str(tobe_form.guid)
     row_guid = str(uuid.UUID(str(tobe_form.row_guid)))
@@ -60,18 +60,20 @@ async def after_update(field, before_form, tobe_form, action, current_user):
     return field.value
 
 
-async def after_insert(field, before_form, tobe_form, action, current_user):
+async def after_insert(db_session, field, before_form, tobe_form, action,
+                       current_user):
     """ Do the same as after_update """
-    return await after_update(field, before_form, tobe_form, action, current_user)
+    return await after_update(
+        db_session, field, before_form, tobe_form, action, current_user)
 
 
-async def after_delete(field, before_form, tobe_form, action, current_user):
+async def after_delete(db_session, field, before_form, tobe_form, action,
+                       current_user):
     """
     Deletes all files uploaded for current row
-    WARNING! do not use ax_model.db_session.commit() here!
     Returns:
         Object: Returns updated value of current field"""
-    del before_form, action, current_user
+    del before_form, action, current_user, db_session
     form_guid = str(tobe_form.guid)
     row_guid = str(uuid.UUID(str(tobe_form.row_guid)))
     row_folder = os.path.join(

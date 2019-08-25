@@ -1,7 +1,6 @@
 <template>
   <div>
     <h1>Deck is empty</h1>
-    <a href='/admin/home'>Ax admin</a>
   </div>
 </template>
 

@@ -38,7 +38,7 @@ ax_misc.load_configuration()
 ax_app.init_model()
 
 config.set_main_option('sqlalchemy.url', str(ax_model.db_url))
-target_metadata = ax_model.Base.metadata
+# target_metadata = ax_model.Base.metadata
 
 
 def run_migrations_offline():
@@ -53,16 +53,20 @@ def run_migrations_offline():
     script output.
 
     """
-    print('running offline migration')
-    url = config.get_main_option("sqlalchemy.url")
-    context.configure(
-        url=url, target_metadata=target_metadata,
-        literal_binds=True,
-        include_object=include_object,
-        version_table='_ax_alembic_version'
-    )
-    with context.begin_transaction():
-        context.run_migrations()
+    print('running offline Ax migration')
+    err = 'env -> run_migrations_offline'
+    with ax_model.Session() as db_session:
+        url = config.get_main_option("sqlalchemy.url")
+        ax_model.Base.query = db_session.query_property()
+        target_metadata = ax_model.Base.metadata
+        context.configure(
+            url=url, target_metadata=target_metadata,
+            literal_binds=True,
+            include_object=include_object,
+            version_table='_ax_alembic_version'
+        )
+        with context.begin_transaction():
+            context.run_migrations()
 
 
 def run_migrations_online():

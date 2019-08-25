@@ -1,13 +1,12 @@
 """Defines Users Scheme and all mutations"""
 
 import asyncio
-from sqlalchemy.exc import DatabaseError
 import graphene
 # from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyConnectionField
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 import aiopubsub
-from loguru import logger
+# from loguru import logger
 
 from backend.misc import convert_column_to_string
 from backend.model import AxUser, GUID
@@ -29,26 +28,18 @@ class CreateUser(graphene.Mutation):
     user = graphene.Field(User)
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
-        try:
-            del info
+        err = 'Error in gql mutation - users_schema -> CreateUser.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
             new_user = AxUser(
                 name=args.get('name'),
                 email=args.get('email'),
             )
-            ax_model.db_session.add(new_user)
-            try:
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - CreateUser")
+            db_session.add(new_user)
+            db_session.flush()
 
             ok = True
             ax_pubsub.publisher.publish(aiopubsub.Key('new_user'), new_user)
             return CreateUser(user=new_user, ok=ok)
-        except Exception:
-            logger.exception('Error in gql mutation - CreateUser.')
-            raise
 
 
 class MutationExample(graphene.Mutation):
@@ -80,25 +71,15 @@ class ChangeUserName(graphene.Mutation):
 
     @classmethod
     def mutate(cls, _, args, context, info):   # pylint: disable=missing-docstring
-        try:
-            del info
+        err = 'Error in gql - users_schema -> ChangeUserName'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
             query = User.get_query(context)
             email = args.get('email')
             name = args.get('name')
             user = query.filter(AxUser.email == email).first()
             user.name = name
-            try:
-                ax_model.db_session.commit()
-            except DatabaseError:
-                ax_model.db_session.rollback()
-                logger.exception(
-                    f"Error executing SQL, rollback! - ChangeUserName")
-
-            ok = True
-            return ChangeUserName(user=user, ok=ok)
-        except Exception:
-            logger.exception('Error in gql mutation - ChangeUserName.')
-            raise
+            db_session.flush()
+            return ChangeUserName(user=user, ok=True)
 
 
 class UsersQuery(graphene.ObjectType):
@@ -106,30 +87,33 @@ class UsersQuery(graphene.ObjectType):
     user = SQLAlchemyConnectionField(User)
     find_user = graphene.Field(lambda: User, email=graphene.String())
     all_users = graphene.List(User)
+    ping = graphene.String()
 
     async def resolve_all_users(self, info):
         """Get all users"""
-        try:
+        err = 'Error in GQL query - all_users.'
+        with ax_model.try_catch(
+                info.context['session'], err, no_commit=True):
             query = User.get_query(info)  # SQLAlchemy query
             user_list = query.all()
             await ax_cache.cache.set('user_list', user_list)
             return user_list
-        except Exception:
-            logger.exception('Error in GQL query - all_users.')
-            raise
 
     def resolve_find_user(self, args, context, info):
         """default find method"""
-        try:
+        err = 'Error in GQL query - find_user.'
+        with ax_model.try_catch(
+                info.context['session'], err, no_commit=True):
             del info
             query = User.get_query(context)
             email = args.get('email')
             # you can also use and_ with filter()
             # eg: filter(and_(param1, param2)).first()
             return query.filter(AxUser.email == email).first()
-        except Exception:
-            logger.exception('Error in GQL query - find_user.')
-            raise
+
+    def resolve_ping(self, info):
+        """ - """
+        return "Pong"
 
 
 class UsersSubscription(graphene.ObjectType):

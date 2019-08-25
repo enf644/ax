@@ -14,7 +14,7 @@ handlers:
   script: auto
 
 env_variables:
-  AX_VERSION: 0.12.0
+  AX_VERSION: 0.15.0
   # AX_HOST: 0.0.0.0 #  default = 127.0.0.1
   # AX_PORT: "8085" #  default = 8080
   # AX_SANIC_DEBUG: true #  default=false

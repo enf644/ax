@@ -5,14 +5,14 @@ import shutil
 import backend.misc as ax_misc
 
 
-async def before_update(field, before_form, tobe_form, action, current_user):
+async def before_update(db_session, field, before_form, tobe_form, action,
+                        current_user):
     """
     Reads file from tmp/<file_guid>/<file_name> and sets it as
     field value. It will be inserted to database
-    WARNING! do not use ax_model.db_session.commit() here!
     Returns:
         Object: Returns updated value of current field"""
-    del before_form, action, current_user, tobe_form
+    del before_form, action, current_user, tobe_form, db_session
     file = field.value
 
     # value contaiins tmp file dict
@@ -28,6 +28,8 @@ async def before_update(field, before_form, tobe_form, action, current_user):
     return field.value
 
 
-async def before_insert(field, before_form, tobe_form, action, current_user):
+async def before_insert(db_session, field, before_form, tobe_form, action,
+                        current_user):
     """ Do the same as after_update """
-    return await before_update(field, before_form, tobe_form, action, current_user)
+    return await before_update(
+        db_session, field, before_form, tobe_form, action, current_user)

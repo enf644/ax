@@ -15,13 +15,14 @@
           </transition>
         </div>
       </template>
-      <span>{{$t("types.AxNum.link-tooltip")}}</span>
+      <span>{{locale("types.AxNum.link-tooltip")}}</span>
     </v-tooltip>
   </div>
 </template>
 
 <script>
 import copy from 'copy-to-clipboard';
+import i18n from '@/locale';
 
 export default {
   name: 'AxGuid',
@@ -45,6 +46,9 @@ export default {
     }
   },
   methods: {
+    locale(key) {
+      return i18n.t(key);
+    },
     copyLink() {
       const url = this.value;
       copy(url);

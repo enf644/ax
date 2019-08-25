@@ -9,11 +9,13 @@
       &nbsp;
       <span v-html='getModifiedFields(item)'></span>
     </div>
-    <b v-if='this.currentValue.length == 0'>{{$t("types.AxChangelog.no-records")}}</b>
+    <b v-if='this.currentValue.length == 0'>{{locale("types.AxChangelog.no-records")}}</b>
   </div>
 </template>
 
 <script>
+import i18n from '@/locale';
+
 export default {
   name: 'AxChangelog',
   props: {
@@ -39,6 +41,9 @@ export default {
     if (!this.value) this.currentValue = [];
   },
   methods: {
+    locale(key) {
+      return i18n.t(key);
+    },
     isValid() {
       return true;
     },
