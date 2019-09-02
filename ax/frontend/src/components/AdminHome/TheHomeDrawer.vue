@@ -2,15 +2,15 @@
   <div>
     <h3>{{$t("home.ax-forms")}}:</h3>
     <div data-cy='forms-tree' ref='tree'></div>
-    <br>
-    <v-btn @click='openFormModal' data-cy='create-form-btn' small>
+    <br />
+    <v-btn @click='openFormModal' class='mb-3' data-cy='create-form-btn' small>
       <i class='fas fa-plus'></i>
       &nbsp; {{$t("home.create-form-btn")}}
     </v-btn>
 
     <!--  transition='animated flipInX faster' -->
-    <modal adaptive height='auto' name='new-form' scrollable>
-      <TheNewForm @created='closeFormModal'/>
+    <modal adaptive class='mb-3' height='auto' name='new-form' scrollable>
+      <TheNewForm @created='closeFormModal' />
     </modal>
 
     <v-btn @click='openFolderModal()' data-cy='create-folder-btn' small>
@@ -19,25 +19,25 @@
     </v-btn>
 
     <modal adaptive height='auto' name='new-folder'>
-      <TheNewFolder :guid='currentFolderGuid' @created='closeFolderModal'/>
+      <TheNewFolder :guid='currentFolderGuid' @created='closeFolderModal' />
     </modal>
 
-    <br>
-    <br>
+    <br />
+    <br />
 
     <h3>{{$t("home.settings")}}:</h3>
-    <br>
-    <v-btn small to='/admin/users'>
+    <br />
+    <v-btn class='mb-3' small to='/admin/users'>
       <i class='far fa-user'></i>
       &nbsp; {{$t("home.users-btn")}}
     </v-btn>
-
-    <v-btn small to='/admin/marketplace'>
+    <br />
+    <v-btn class='mb-3' small to='/admin/marketplace'>
       <i class='fas fa-store'></i>
       &nbsp; {{$t("home.marketplace-btn")}}
     </v-btn>
-
-    <v-btn small to='/admin/pages'>
+    <br />
+    <v-btn class='mb-3' small to='/admin/pages'>
       <i class='fas fa-desktop'></i>
       &nbsp; {{$t("home.pages-designer-btn")}}
     </v-btn>

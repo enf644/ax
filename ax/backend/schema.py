@@ -107,7 +107,7 @@ def make_resolver(db_name, type_class):
 
     async def resolver(
             self, info, update_time=None, quicksearch=None, guids=None):
-        del update_time
+        del update_time, self
         err = f"Schema -> Resolver for {db_name}"
         with ax_model.try_catch(info.context['session'], err) as db_session:
             # Find AxForm with name that db_name is started with

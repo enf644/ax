@@ -1,5 +1,5 @@
 <template>
-  <v-app class='ax-grid-app' id='ax-grid'>
+  <div class='ax-grid-app' id='ax-grid'>
     <v-sheet :class='sheetClass' elevation='5' light ref='sheet'>
       <div class='header'>
         <div class='grid-title' v-show='titleEnabled'>
@@ -41,7 +41,7 @@
     </v-sheet>
     <modal :name='`sub-form-${this.modalGuid}`' adaptive height='auto' scrollable width='70%'>
       <v-card>
-        <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
+        <v-btn :ripple='false' @click='closeModal' class='close' color='black' icon text>
           <i class='fas fa-times close-ico'></i>
         </v-btn>
         <AxForm
@@ -53,7 +53,7 @@
         ></AxForm>
       </v-card>
     </modal>
-  </v-app>
+  </div>
 </template>
 
 <script>
@@ -280,20 +280,20 @@ export default {
         items: this.guids
       };
       return JSON.stringify(retObj);
+    },
+    formAndGrid() {
+      return this.form + this.grid;
     }
   },
   watch: {
     update_time(newValue, oldValue) {
-      if (oldValue && this.gridObj) {
-        if (this.gridObj.gridOptions && this.gridObj.gridOptions.api) {
-          this.gridObj.gridOptions.api.destroy();
-        }
-        this.gridInitialized = false;
-        this.loadOptions(this.form, this.grid);
-      }
+      this.reloadGrid();
     },
     quickSearch(newValue) {
       this.gridObj.gridOptions.api.setQuickFilter(newValue);
+    },
+    formAndGrid() {
+      this.reloadGrid();
     }
   },
   created() {
@@ -303,6 +303,13 @@ export default {
     this.loadOptions(this.form, this.grid);
   },
   methods: {
+    reloadGrid() {
+      if (this.gridObj.gridOptions && this.gridObj.gridOptions.api) {
+        this.gridObj.gridOptions.api.destroy();
+      }
+      this.gridInitialized = false;
+      this.loadOptions(this.form, this.grid);
+    },
     locale(key) {
       return i18n.t(key);
     },
@@ -374,6 +381,7 @@ export default {
       }
     },
     loadOptions(formDbName, gridDbName) {
+      // console.log(`get grid data - ${formDbName} , ${gridDbName}`);
       const GET_GRID_DATA = gql`
         query(
           $formDbName: String!
@@ -671,6 +679,7 @@ export default {
 }
 .ax-grid-app {
   height: 100%;
+  position: relative;
 }
 .actions {
   margin: 15px 25px 0px 25px;

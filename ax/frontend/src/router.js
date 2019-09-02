@@ -4,6 +4,7 @@ import Test from './views/Test.vue';
 
 const AdminLayout = () => import(/* webpackChunkName: "ax-admin" */ './views/AdminLayout.vue');
 const AdminHome = () => import(/* webpackChunkName: "ax-admin" */ './views/AdminHome.vue');
+const GridsExplorer = () => import(/* webpackChunkName: "ax-admin" */ './views/GridsExplorer.vue');
 const ConstructorForm = () => import(/* webpackChunkName: "ax-admin" */ './views/ConstructorForm.vue');
 const ConstructorWorkflow = () => import(/* webpackChunkName: "ax-admin" */ './views/ConstructorWorkflow.vue');
 const ConstructorGrids = () => import(/* webpackChunkName: "ax-admin" */ './views/ConstructorGrids.vue');
@@ -28,6 +29,16 @@ export default new Router({
           path: 'home',
           name: 'admin-home',
           component: AdminHome
+        },
+        {
+          path: 'explorer',
+          name: 'admin-explorer-default',
+          component: GridsExplorer
+        },
+        {
+          path: 'explorer/:form/:grid',
+          name: 'admin-explorer',
+          component: GridsExplorer
         },
         {
           path: ':db_name/form',

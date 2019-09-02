@@ -65,7 +65,10 @@ export default {
 
 <style scoped>
 .container {
-  padding: 20px;
-  height: 100%;
+  /* padding: 20px;*/
+  /* height: 100%; */
+  margin-top: 40px;
+  height: calc(100% - 60px);
+  position: relative;
 }
 </style>

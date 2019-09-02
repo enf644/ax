@@ -1,7 +1,7 @@
 <template>
   <div class='card'>
     <h1>{{$t("grids.server-filter-header")}}</h1>
-    <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
+    <v-btn :ripple='false' @click='closeModal' class='close' color='black' text icon>
       <i class='fas fa-times close-ico'></i>
     </v-btn>
     <div id='builder' ref='builder'></div>

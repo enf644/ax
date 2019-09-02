@@ -1,10 +1,10 @@
 <template>
   <div class='new-form-card'>
     <h1>{{modalHeader}}</h1>
-    <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
+    <v-btn :ripple='false' @click='closeModal' class='close' color='black' icon text>
       <i class='fas fa-times close-ico'></i>
     </v-btn>
-    <br>
+    <br />
     <v-form @submit='createNewForm' ref='form' v-model='valid'>
       <v-text-field
         :label='$t("home.new-form.form-name")'
@@ -32,7 +32,7 @@
         v-model='tomLabel'
       />
 
-      <br>
+      <br />
       <div class='actions'>
         <v-btn
           @click='createNewForm'
@@ -56,7 +56,7 @@
         <v-btn
           @click='openIconPicker'
           data-cy='new-form-icon-btn'
-          flat
+          text
           small
           v-if='this.$route.params.db_name'
         >
@@ -64,14 +64,14 @@
           &nbsp; {{$t("home.new-form.change-icon")}}
         </v-btn>
         <modal adaptive height='auto' name='new-form-icon' scrollable width='800px'>
-          <TheIconPicker :icon='icon' @choosed='ChangeIconAndCloseModal'/>
+          <TheIconPicker :icon='icon' @choosed='ChangeIconAndCloseModal' />
         </modal>
 
         <v-btn
           @click='deleteForm'
           color='error'
           data-cy='delete-form-btn'
-          flat
+          text
           small
           v-if='this.$route.params.db_name'
         >

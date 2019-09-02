@@ -1,7 +1,7 @@
 <template>
   <div class='card'>
     <h1>{{$t("workflow.action.action-settings-header")}}</h1>
-    <v-btn :ripple='false' @click='closeThisModal' class='close' color='black' flat icon>
+    <v-btn :ripple='false' @click='closeThisModal' class='close' color='black' icon text>
       <i class='fas fa-times close-ico'></i>
     </v-btn>
     <br />
@@ -29,7 +29,7 @@
       </v-layout>
       <br />
       <h3>{{$t("workflow.action.settings-roles-list")}}:</h3>
-      <v-chip :key='role.guid' @input='removeRole(role)' close v-for='role in axRoles'>
+      <v-chip :key='role.guid' @click:close='removeRole(role)' close v-for='role in axRoles'>
         <v-avatar :style='{ background: role.color }'>
           <i :class='getRoleIconClass(role)'></i>
         </v-avatar>
@@ -77,12 +77,12 @@
           &nbsp; {{$t("workflow.action.settings-update-btn")}}
         </v-btn>
 
-        <v-btn @click='openIconPicker' data-cy='icon-btn' flat small>
+        <v-btn @click='openIconPicker' data-cy='icon-btn' small text>
           <i :class='iconClass' key='formIcon'></i>
           &nbsp; {{$t("workflow.action.icon-btn")}}
         </v-btn>
 
-        <v-btn @click='deleteAction' color='error' data-cy='delete-action-btn' flat small>
+        <v-btn @click='deleteAction' color='error' data-cy='delete-action-btn' small text>
           <i class='fas fa-trash-alt'></i>
           &nbsp; {{$t("workflow.action.settings-delete-btn")}}
         </v-btn>

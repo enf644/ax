@@ -5,7 +5,8 @@
     <v-chip
       :key='file.guid'
       @click='openFile(file)'
-      @input='deleteFile(file.guid)'
+      @click:close='deleteFile(file.guid)'
+      class='mr-2 mb-2'
       close
       v-for='file in this.currentValue'
     >
@@ -15,7 +16,7 @@
       {{ file.name }}
     </v-chip>
 
-    <v-btn :id='btnId' flat small>
+    <v-btn :id='btnId' small text>
       <i class='fas fa-upload'></i>
       &nbsp;
       {{locale("types.AxFiles.upload-btn")}}

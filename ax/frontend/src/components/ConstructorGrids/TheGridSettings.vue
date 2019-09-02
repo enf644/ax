@@ -1,10 +1,10 @@
 <template>
   <div class='card'>
     <h1>{{$t("grids.settings-header")}}</h1>
-    <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
+    <v-btn :ripple='false' @click='closeModal' class='close' color='black' icon text>
       <i class='fas fa-times close-ico'></i>
     </v-btn>
-    <br>
+    <br />
     <v-form @submit.prevent='updateGrid' ref='form' v-model='valid'>
       <v-text-field
         :label='$t("grids.grid-name")'
@@ -36,7 +36,7 @@
         &nbsp;
         {{$t("grids.grid-is-default-view")}}
       </div>
-      <br>
+      <br />
 
       <div class='actions'>
         <v-btn @click.prevent='updateGrid' data-cy='update-grids-btn' small type='submit'>
@@ -48,8 +48,8 @@
           @click='deleteGrid'
           color='error'
           data-cy='delete-grid-btn'
-          flat
           small
+          text
           v-show='isNotDefaultView'
         >
           <i class='fas fa-trash-alt'></i>

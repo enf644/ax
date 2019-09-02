@@ -254,8 +254,18 @@ class PorstgreDialect(object):
             )
 
             result = db_session.execute(sql, sql_params).fetchall()
+            clean_result = []
+            for row in result:
+                clean_row = {
+                    "guid": row["guid"],
+                    "axState": row["axState"]
+                }
+                for field in ax_form.db_fields:
+                    clean_row[field.db_name] = await self.get_value(
+                        field.field_type.value_type, row[field.db_name])
+                clean_result.append(clean_row)
 
-            return result
+            return clean_result
             # names = [row[0] for row in result]
         except Exception:
             logger.exception(

@@ -290,6 +290,60 @@ const getters = {
       }
     }
     return jsTreeData;
+  },
+  explorerTreeData(state) {
+    const treeData = [];
+
+    state.forms.forEach(form => {
+      const parent = form.parent || '#';
+
+      if (form.isFolder) {
+        const node = {
+          id: form.guid,
+          parent,
+          text: `${form.name}`,
+          type: 'folder',
+          data: {
+            position: form.position,
+            dbName: null
+          }
+        };
+        treeData.push(node);
+      } else {
+        const node = {
+          id: form.guid,
+          parent,
+          text: `<i class="fas fa-${form.icon}"></i> ${form.name}`,
+          type: 'default',
+          data: {
+            position: form.position,
+            form: form.dbName,
+            grid: 'Default'
+          }
+        };
+        treeData.push(node);
+        const grids = form.grids ? form.grids.edges.map(edge => edge.node) : null;
+        // console.log(grids);
+        grids.forEach(grid => {
+          if (!grid.isDefaultView) {
+            const gridNode = {
+              id: grid.guid,
+              parent: form.guid,
+              text: `${grid.name}`,
+              type: 'default',
+              data: {
+                position: form.position,
+                form: form.dbName,
+                grid: grid.dbName
+              }
+            };
+            treeData.push(gridNode);
+          }
+        });
+      }
+    });
+    // console.log(treeData);
+    return treeData;
   }
 };
 

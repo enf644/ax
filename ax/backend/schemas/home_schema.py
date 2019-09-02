@@ -582,6 +582,7 @@ class HomeQuery(graphene.ObjectType):
         Form, update_time=graphene.Argument(
             type=graphene.String, required=False)
     )
+    sql_status = graphene.String()
 
     async def resolve_all_forms(self, info, update_time):
         """Get all users"""
@@ -593,6 +594,11 @@ class HomeQuery(graphene.ObjectType):
             form_list = query.all()
             # await ax_cache.cache.set('form_list', form_list)
             return form_list
+
+    async def resolve_sql_status(self, info):
+        """ - """
+        del info
+        return ax_model.engine.pool.status()
 
 
 class HomeMutations(graphene.ObjectType):

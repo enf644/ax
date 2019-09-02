@@ -1,20 +1,21 @@
-# Used in Google app engine configuration
-runtime: python37
-env: standard
+# # Used in Google app engine configuration
+# runtime: python37
+# env: standard
 # api_version: 1
 # threadsafe: true
-service: test
-entrypoint: gunicorn main:app --bind 0.0.0.0:8080 --worker-class sanic.worker.GunicornWorker
+# service: test
+# entrypoint: gunicorn main:app --bind 0.0.0.0:8080 --worker-class sanic.worker.GunicornWorker
 
-
-handlers:
-- url: /static
-  static_dir: dist/static/
-- url: /.*
-  script: auto
+# handlers:
+#   - url: /static
+#     static_dir: dist/static/
+#   - url: /.*
+#     script: auto
 
 env_variables:
-  AX_VERSION: 0.15.0
+  AX_VERSION: 0.21.0
+  AX_DB_REVISION: 9b898740929f
+
   # AX_HOST: 0.0.0.0 #  default = 127.0.0.1
   # AX_PORT: "8085" #  default = 8080
   # AX_SANIC_DEBUG: true #  default=false
@@ -28,23 +29,16 @@ env_variables:
   AX_TIMEZONE: Europe/Moscow #  default=UTC
   AX_LOGS_LEVEL: DEBUG # ERROR, WARNING, INFO, DEBUG. default = ERROR
   # AX_LOGS_FILENAME: ax_logs.log #  If not set, logs only output to stdio
-  # AX_LOGS_ABSOLUTE_PATH: 'D:\Projects\' #  default =
-  AX_DB_REVISION: 9b898740929f
-
-  AX_DB_DIALECT: postgre   # sqlite, postgre, mysql. Default is sqlite
-  AX_DB_HOST: 84.201.174.246
-  AX_DB_PORT: '5432'
-  AX_DB_LOGIN: postgres
-  AX_DB_PASSWORD: Sdgs2019
-  AX_DB_DATABASE: wine
-
-
+  # AX_LOGS_ABSOLUTE_PATH: '/home/wineuser/.local/lib/python3.6/site-packages/ax/' #  default =
+  # AX_DB_DIALECT: postgre   # sqlite, postgre, mysql. Default is sqlite
+  # AX_DB_HOST: 84.201.174.246
+  # AX_DB_PORT: '5432'
+  # AX_DB_LOGIN: postgres
+  # AX_DB_PASSWORD: 123456
+  # AX_DB_DATABASE: wine
   # AX_DB_SQLITE_FILENAME: "wine.db" #  default='ax_sqlite.db
   # AX_DB_SQLITE_ABSOLUTE_PATH: "C:\\Users\\enf64_000\\Desktop\\Dimiant\\WineProject\\Archive" #  default=None
-
   # AX_LOCALE: ru # default=en
   # AX_TMP_ABSOLUTE_PATH: '/tmp' #'D:\Projects\tmp'
   # AX_UPLOADS_ABSOLUTE_PATH: '/tmp/uploads'
-
-
   # AX_DECK_ABSOLUTE_PATH: 'C:\Users\enf64_000\Desktop\Dimiant\WineProject\wine\dist'

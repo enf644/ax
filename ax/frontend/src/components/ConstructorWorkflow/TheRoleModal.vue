@@ -1,7 +1,7 @@
 <template>
   <div class='card'>
     <h1>{{$t("workflow.role.role-settings-header")}}</h1>
-    <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
+    <v-btn :ripple='false' @click='closeModal' class='close' color='black' icon text>
       <i class='fas fa-times close-ico'></i>
     </v-btn>
     <br />
@@ -23,7 +23,7 @@
         &nbsp; {{$t("workflow.role.update-role-btn")}}
       </v-btn>
 
-      <v-btn @click='deleteRole' color='error' data-cy='delete-role-btn' flat small>
+      <v-btn @click='deleteRole' color='error' data-cy='delete-role-btn' small text>
         <i class='fas fa-trash-alt'></i>
         &nbsp; {{$t("workflow.role.delete-role-btn")}}
       </v-btn>

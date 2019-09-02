@@ -542,7 +542,7 @@ AX 0.2:
         ✔ Two working versions on same machine - sqlite + postgre @done(19-08-06 18:50)
             ✔ Check if settings works with sqlite file path @done(19-08-06 18:50)
             ✔ Publish to pypi, install, run sqlite version. @done(19-08-06 18:50)
-        ✔ Working Winepower.ru on postgre @done(19-08-23 12:10)
+    ☐ Working Winepower.ru on postgre
             ✔ Upload data object to yandex @done(19-08-11 10:22)
             ✔ Parse new wineart catalog @done(19-08-12 14:24)
             ✔ Install new AX version @done(19-08-12 14:24)
@@ -550,11 +550,15 @@ AX 0.2:
             ✔ winepower vue works locally using vps backend @done(19-08-12 14:24)
             ✔ Upload winepower vue as data object @done(19-08-12 14:29)
             ✔ Configure winepower.ru domain @done(19-08-15 15:30)
+            ☐ Backup automation
         ☐ Simple authorisation
         ☐ Errors
             ✔ Check on small screen - everything must show properly @done(19-08-12 14:30)
             ✔ Take uploads folder from app.yaml @done(19-08-18 11:16)
-            ☐ You can rename axState !!!!!!           
+            ☐ App yaml must be generateed
+            ☐ Clean build folder on pypi build
+            ☐ 1tom quicksearh not working!
+            ☐ You can rename axState !!!!!!
             ☐ What if database already exists?
             ☐ Action drag on update action??
             ☐ If new record form closed - it must be reset
@@ -563,13 +567,11 @@ AX 0.2:
             ☐ If someone makes create action, the notification is poped up in constructor!
             ☐ Ax1to1 - not updated after action, needs reload
             ☐ AxRoleFieldPermission - takes too much data. Make permissions on tabs.
-            ☐ Default action names
             ☐ How to know guid and axNum inside insert action?
             ☐ Output exception to AxAction terminal
             ☐ Action is taking long, console is working. But item is not refreshed.
-            ☐ Ax and deck must use same node_modules
         ☐ Reuired fetures
-            ☐ Echo for monit restart
+            ✔ Echo for monit restart @done(19-08-31 10:03)
             ☐ Refresh in AxGrid
             ☐ Email sender - settings from app.yaml, separete function.
             ☐ AxGrid takes sql code and arguments
@@ -788,6 +790,9 @@ NEW FROGS TODOS:
     ☐ Del key when editing field names - tryes to delete whole field
     ☐ Database is locked in sqlite `[IMPORTANT]`
     ☐ If app engine -> disable Web-sockets
+    ☐ QueuePool limit of size 20 overflow 0 reached, connection timed out, timeout 30 [`IMPORTANT`]
+        ✔ Display number of connections @done(19-09-01 10:23)
+
 
 
 NEW FEATURES:
@@ -816,6 +821,7 @@ NEW FEATURES:
     ☐ Arguments for doAction. Can be used in python code.
     ☐ favico for each form must be different - same as font-awesome icon
     ☐ Dynamic title and favico - changes for different AxForms
+    ☐ Ax and deck must use same node_modules
 
     
 MAYBE LATER:

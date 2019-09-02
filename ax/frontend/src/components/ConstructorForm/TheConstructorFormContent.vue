@@ -15,8 +15,8 @@
       <v-btn
         :to='"/admin/" + this.$route.params.db_name + "/workflow"'
         class='constructor-button'
-        flat
         small
+        text
       >
         &nbsp;
         <b>Next</b> &nbsp;

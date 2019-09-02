@@ -32,7 +32,7 @@
 
     <modal :name='`tom-form-${this.modalGuid}`' adaptive height='auto' scrollable width='70%'>
       <v-card>
-        <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
+        <v-btn :ripple='false' @click='closeModal' class='close' color='black' text icon>
           <i class='fas fa-times close-ico'></i>
         </v-btn>
         <AxForm :db_name='options.form' :guid='activeItemGuid' no_margin></AxForm>
@@ -41,7 +41,7 @@
 
     <modal :name='`tom-grid-${this.modalGuid}`' adaptive height='auto' scrollable width='70%'>
       <v-card>
-        <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
+        <v-btn :ripple='false' @click='closeModal' class='close' color='black' text icon>
           <i class='fas fa-times close-ico'></i>
         </v-btn>
         <div :style='{height: this.options.height + "px"}'>

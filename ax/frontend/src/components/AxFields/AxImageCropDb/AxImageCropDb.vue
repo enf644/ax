@@ -48,12 +48,12 @@
         v-model='croppaData'
       ></croppa>
       <div>
-        <v-btn @click='doUpload' class='upload-btn' flat>
+        <v-btn @click='doUpload' class='upload-btn' text>
           <i class='fas fa-upload'></i>
           &nbsp;
           {{locale("types.AxImageCropDb.upload-btn")}}
         </v-btn>
-        <v-btn @click='croppaData.rotate()' flat icon>
+        <v-btn @click='croppaData.rotate()' icon text>
           <i class='fas fa-sync-alt'></i>
         </v-btn>
       </div>
@@ -62,7 +62,7 @@
     <div v-show='valueIsVisible'>
       <img :src='valueSrc' :style='{width: this.width + "px", height: this.height + "px"}' />
       <br />
-      <v-btn @click='clearValue' flat small>
+      <v-btn @click='clearValue' small text>
         <i class='far fa-trash-alt'></i>
         &nbsp; {{locale("types.AxImageCropDb.clear-image")}}
       </v-btn>

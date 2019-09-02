@@ -9,7 +9,7 @@
       <template v-slot:activator='{ on }'>
         <div class='link-btn'>
           <transition enter-active-class='animated bounce'>
-            <v-btn @click='copyLink' flat icon ref='linkBtn' v-if='btnIsVisible' v-on='on'>
+            <v-btn @click='copyLink' icon ref='linkBtn' text v-if='btnIsVisible' v-on='on'>
               <i class='far fa-copy'></i>
             </v-btn>
           </transition>

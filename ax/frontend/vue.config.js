@@ -9,6 +9,12 @@ module.exports = {
   assetsDir: 'static',
   css: {
     extract: false
+    // loaderOptions: {
+    //   sass: {
+    //     implementation: require('sass'),
+    //     fiber: require('fibers')
+    //   }
+    // }
   },
   devServer: {
     disableHostCheck: true,
@@ -24,16 +30,19 @@ module.exports = {
     const conf = {
       // devtool: 'source-map',
       output: {
-        filename: 'static/js/ax-bundle.js'
+        filename: 'static/js/ax-bundle.js',
+        pathinfo: false
       },
-      // optimization: {
-      //   // splitChunks: false,
-      //   minimizer: [new TerserPlugin()],
-      //   minimize: true,
-      // },
-      // module: {
-      //   rules: []
-      // },
+      optimization: {
+        minimizer: [new TerserPlugin()],
+        minimize: true,
+        // removeAvailableModules: false,
+        removeEmptyChunks: false,
+        splitChunks: false
+      },
+      module: {
+        rules: []
+      },
       plugins: [
         new webpack.optimize.LimitChunkCountPlugin({
           maxChunks: 1
@@ -49,8 +58,7 @@ module.exports = {
     if (process.env.NODE_ENV === 'production') {
       // mutate config for production...
     } else {
-      // delete conf.optimization.splitChunks;
-      // conf.optimization.delete('splitChunks');
+      delete conf.optimization.splitChunks;
       conf.optimization.minimize = false;
     }
 

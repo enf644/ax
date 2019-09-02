@@ -23,6 +23,7 @@ esac
 # sudo nano /etc/monit/monitrc
 # sudo monit status
 # sudo monit reload
+# sudo nano /var/log/monit.log
 
 
 #   check host ax with address 84.201.174.246

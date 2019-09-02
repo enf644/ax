@@ -5,7 +5,7 @@
       <v-btn
         :to='"/admin/" + this.$route.params.db_name + "/grids/" + defaultGridDbName'
         class='constructor-button'
-        flat
+        text
         small
       >
         &nbsp;

@@ -18,3 +18,4 @@ exclude ax/backend/py_libs *
 
 global-exclude __pycache__
 global-exclude *.pyc
+global-exclude *.map

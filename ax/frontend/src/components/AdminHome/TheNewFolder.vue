@@ -1,10 +1,10 @@
 <template>
   <div class='new-form-card'>
     <h1>{{formTitle}}</h1>
-    <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
+    <v-btn :ripple='false' @click='closeModal' class='close' color='black' icon text>
       <i class='fas fa-times close-ico'></i>
     </v-btn>
-    <br>
+    <br />
     <v-form @submit='doSomething' ref='form' v-model='valid'>
       <v-text-field
         :label='$t("home.new-folder.folder-name")'
@@ -15,7 +15,7 @@
         v-model='name'
       />
     </v-form>
-    <br>
+    <br />
     <v-btn @click='doSomething' data-cy='new-folder-btn' small>
       <i class='far fa-folder'></i>
       &nbsp; {{buttonLabel}}

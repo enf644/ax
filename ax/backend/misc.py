@@ -4,6 +4,7 @@
 import os
 import sys
 import uuid
+import shutil
 from pathlib import Path
 from datetime import datetime
 import graphene
@@ -104,9 +105,15 @@ def load_configuration() -> None:
         LookupError: No env_variables section in app.yaml
     """
     app_yaml = path('app.yaml')
+    app_template_yaml = path('app.template.yaml')
+
+    if not os.path.isfile(app_yaml):
+        # os.rename(app_template_yaml, app_yaml)
+        shutil.copyfile(app_template_yaml, app_yaml)
 
     if not os.path.isfile(app_yaml):
         raise FileNotFoundError('Configuration failed, app.yaml not found')
+
     if not server_is_app_engine():
         with open(app_yaml, 'r') as stream:
             try:

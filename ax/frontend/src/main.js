@@ -9,7 +9,6 @@ import 'animate.css/animate.min.css';
 import logger from './logger';
 import './assets/ax-core.css'; // TODO check if ./ needed
 import VModal from 'vue-js-modal';
-import VuetifyDialog from 'vuetify-dialog';
 
 // Admin dependencies
 import VueResize from 'vue-resize'; // detect element resize
@@ -18,6 +17,7 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import AsyncComputed from 'vue-async-computed';
 
 import 'vue-resize/dist/vue-resize.css';
+// import vuetify from '@/plugins/vuetify';
 import Vuetify, {
   VTextField,
   VSnackbar,
@@ -32,7 +32,12 @@ import Vuetify, {
   VSpacer,
   VBtn
 } from 'vuetify/lib';
-import 'vuetify/src/stylus/app.styl';
+// import 'vuetify/dist/vuetify.min.css';
+
+// import 'vuetify/src/stylus/app.styl';
+import VuetifyDialog from 'vuetify-dialog';
+import 'vuetify-dialog/dist/vuetify-dialog.css';
+
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -40,7 +45,7 @@ import i18n from './locale.js';
 import AxTest from './components/AxTest.vue';
 
 // Dev dependencies
-import VueDummy from 'vue-dummy'; // create lorum ipsum
+// import VueDummy from 'vue-dummy'; // create lorum ipsum
 
 // Getting hostname of server from src of included script
 // no matter how many scripts a page contains,
@@ -61,18 +66,11 @@ Vue.use(Vuetify, {
     VCardActions,
     VSpacer,
     VBtn
-  },
-  iconfont: 'fa',
-  theme: {
-    primary: '#3f51b5',
-    secondary: '#b0bec5',
-    accent: '#8c9eff',
-    error: '#b71c1c'
   }
 });
 Vue.use(vueCustomElement);
 Vue.use(VueResize);
-Vue.use(VueDummy);
+// Vue.use(VueDummy);
 Vue.use(AsyncComputed);
 Vue.config.productionTip = false;
 
@@ -85,7 +83,17 @@ Vue.customElement('ax-form', formPromise, { props: ['db_name', 'row_guid', 'upda
 Vue.customElement('ax-test', AxTest);
 
 
+const vuetify = new Vuetify({
+  icons: {
+    iconfont: 'fa'
+  }
+});
+Vue.config.productionTip = false;
+
 Vue.use(VuetifyDialog, {
+  context: {
+    vuetify
+  },
   toast: { position: 'bottom-right' }
 });
 
@@ -95,6 +103,7 @@ Vue.prototype.$log = logger; // Custom logger
 new Vue({
   router,
   store,
+  vuetify,
   i18n,
   render: h => h(App)
 }).$mount('#ax-app');

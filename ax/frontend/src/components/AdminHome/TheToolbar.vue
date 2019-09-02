@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar app class='top-toolbar' clipped-left fixed height='40'>
+  <v-app-bar :height='40' app class='top-toolbar' clipped-left>
     <v-toolbar-title align-center class='logo-div'>
       <router-link to='/admin/home'>
         <img class='logo' src='../../assets/small_axe.png' />
@@ -12,8 +12,8 @@
           :disabled='isNotConstructorPath'
           :to='"/admin/" + this.$route.params.db_name + "/form"'
           class='constructor-button'
-          flat
           small
+          text
         >
           <i class='fab fa-wpforms'></i>
           &nbsp; {{$t("home.toolbar.form-btn")}}
@@ -22,8 +22,8 @@
           :disabled='isNotConstructorPath'
           :to='"/admin/" + this.$route.params.db_name + "/workflow"'
           class='constructor-button'
-          flat
           small
+          text
         >
           <i class='fas fa-project-diagram'></i>
           &nbsp; {{$t("home.toolbar.workflow-btn")}}
@@ -32,8 +32,8 @@
           :disabled='isNotConstructorPath'
           :to='"/admin/" + this.$route.params.db_name + "/grids/" + defaultGridDbName'
           class='constructor-button'
-          flat
           small
+          text
         >
           <i class='fas fa-columns'></i>
           &nbsp; {{$t("home.toolbar.grids-btn")}}
@@ -53,8 +53,8 @@
           class='breadcrumbs-action'
           color='black'
           cy-data='update-form-btn'
-          flat
           icon
+          text
         >
           <i class='fas fa-cog breadcrumbs-action-i'></i>
         </v-btn>
@@ -77,8 +77,8 @@
             class='breadcrumbs-action'
             color='black'
             cy-data
-            flat
             icon
+            text
             v-show='isGridsRoute'
           >
             <i class='fas fa-cog breadcrumbs-action-i'></i>
@@ -86,20 +86,20 @@
         </template>
         <v-card class='grids-card'>
           <v-list>
-            <v-list-tile
+            <v-list-item
               :key='index'
               @click='gotoGrid(grid.dbName)'
               v-for='(grid, index) in allGrids'
             >
-              <v-list-tile-title>
+              <v-list-item-title>
                 {{ grid.name }}
                 &nbsp;
                 <i
                   class='far fa-star'
                   v-show='grid.isDefaultView'
                 ></i>
-              </v-list-tile-title>
-            </v-list-tile>
+              </v-list-item-title>
+            </v-list-item>
           </v-list>
 
           <v-btn @click='createGrid' small>
@@ -121,7 +121,7 @@
         <img src='https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' />
       </v-avatar>
     </div>
-  </v-toolbar>
+  </v-app-bar>
 </template>
 
 <script>

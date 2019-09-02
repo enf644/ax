@@ -25,17 +25,17 @@
 </template>
 
 <script>
-import AxForm from '@/components/AxForm.vue';
+// import AxForm from '@/components/AxForm.vue';
 
 export default {
   name: 'admin-toolbar',
-  components: { AxForm },
+  components: {},
   created() {
     // this.$log.info(this.$language.available);
-    if (!this.$store.state.users.isUsersLoaded) {
-      this.$store.dispatch('users/getAllUsers');
-      this.$store.dispatch('users/subscribeToUsers');
-    }
+    // if (!this.$store.state.users.isUsersLoaded) {
+    // this.$store.dispatch('users/getAllUsers');
+    // this.$store.dispatch('users/subscribeToUsers');
+    // }
   },
   computed: {
     count() {

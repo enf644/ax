@@ -1,10 +1,10 @@
 <template>
   <div class='card'>
     <h1>{{$t("workflow.state.state-settings-header")}}</h1>
-    <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
+    <v-btn :ripple='false' @click='closeModal' class='close' color='black' icon text>
       <i class='fas fa-times close-ico'></i>
     </v-btn>
-    <br>
+    <br />
     <v-form @submit.prevent='updateState' ref='form' v-model='valid'>
       <v-text-field
         :hint='$t("workflow.state.state-name-hint")'
@@ -16,7 +16,7 @@
         required
         v-model='name'
       />
-      <br>
+      <br />
 
       <h2>{{$t("workflow.role.permissions-header")}}:</h2>
 
@@ -32,8 +32,8 @@
                   class='breadcrumbs-action'
                   color='black'
                   cy-data='delete-role'
-                  flat
                   icon
+                  text
                 >
                   <i class='fas fa-times breadcrumbs-action-i'></i>
                 </v-btn>
@@ -58,8 +58,8 @@
         </table>
       </div>
 
-      <br>
-      <br>
+      <br />
+      <br />
 
       <div class='actions'>
         <v-btn @click='updateState' data-cy='update-state-btn' small>
@@ -67,7 +67,7 @@
           &nbsp; {{$t("workflow.state.update-state-btn")}}
         </v-btn>
 
-        <v-btn @click='deleteState' color='error' data-cy='delete-state-btn' flat small>
+        <v-btn @click='deleteState' color='error' data-cy='delete-state-btn' small text>
           <i class='fas fa-trash-alt'></i>
           &nbsp; {{$t("workflow.state.delete-state-btn")}}
         </v-btn>

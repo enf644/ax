@@ -89,30 +89,35 @@ def init_model(dialect: str, host: str, port: str, login: str, password: str,
             else:
                 db_path = str(Path(sqlite_absolute_path) / sqlite_filename)
                 this.db_url = 'sqlite:///' + db_path
+
+            logger.debug('DB url = {url}', url=this.db_url)
+            this.engine = create_engine(this.db_url)
         elif dialect == 'postgre':
             this.db_url = (
                 f'postgresql://{login}:{password}@{host}:{port}/{database}')
+
+            logger.debug('DB url = {url}', url=this.db_url)
+            this.engine = create_engine(
+                this.db_url,
+                convert_unicode=True,
+                pool_size=30,
+                pool_use_lifo=True,
+                max_overflow=0,
+                pool_recycle=3600,
+                pool_pre_ping=True)
         else:
             msg = 'This database dialect is not supported'
             logger.error(msg)
             raise Exception(msg)
 
-        logger.debug('DB url = {url}', url=this.db_url)
-        this.engine = create_engine(
-            this.db_url,
-            convert_unicode=True,
-            pool_recycle=3600,
-            pool_pre_ping=True)
-
-        # poolclass=SingletonThreadPool,
-
         this.Session = sessionmaker(bind=this.engine)
 
+        # poolclass=SingletonThreadPool,
         # this.db_session = scoped_session(sessionmaker(autocommit=False,
         #                                               autoflush=False,
         #                                               bind=this.engine))
-
         # this.Base.query = db_session.query_property()
+
     except Exception:
         logger.exception('Error initating SqlAlchemy model')
         raise

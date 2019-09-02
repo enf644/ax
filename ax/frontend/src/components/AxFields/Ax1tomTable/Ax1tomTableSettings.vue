@@ -14,7 +14,7 @@
       v-model='changedOptions.form'
     >
       <template v-slot:selection='{ item, selected }'>
-        <v-chip @input='clearForm()' close>
+        <v-chip @click:close='clearForm()' close>
           <v-avatar class='grey'>
             <i :class='`ax-chip-icon fas fa-${item.icon}`'></i>
           </v-avatar>
@@ -36,7 +36,7 @@
       v-model='changedOptions.inline_grid'
     >
       <template v-slot:selection='{ item, selected }'>
-        <v-chip @input='clearInlineGrid()' close>
+        <v-chip @click:close='clearInlineGrid()' close>
           <v-avatar class='grey'>
             <i :class='`ax-chip-icon fas fa-columns`'></i>
           </v-avatar>
@@ -58,7 +58,7 @@
       v-model='changedOptions.grid'
     >
       <template v-slot:selection='{ item, selected }'>
-        <v-chip @input='clearGrid()' close>
+        <v-chip @click:close='clearGrid()' close>
           <v-avatar class='grey'>
             <i :class='`ax-chip-icon fas fa-columns`'></i>
           </v-avatar>

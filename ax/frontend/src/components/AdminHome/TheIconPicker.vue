@@ -1,10 +1,10 @@
 <template>
   <div class='new-form-card'>
     <h1>{{$t("home.new-form.icon-modal-header")}}</h1>
-    <v-btn @click='closeModal' class='close' color='black' flat icon>
+    <v-btn @click='closeModal' class='close' color='black' icon text>
       <i class='fas fa-times close-ico'></i>
     </v-btn>
-    <v-text-field label='Search icons' ref='search_input' v-model='query'/>
+    <v-text-field label='Search icons' ref='search_input' v-model='query' />
 
     <div class='flex-row'>
       <div :key='item' class='flex-cell' v-for='item in filteredItems'>

@@ -1,7 +1,7 @@
 <template>
   <v-app id='ax-admin'>
     <TheToolbar></TheToolbar>
-    <v-content>
+    <v-content class='content'>
       <transition enter-active-class='animated fadeIn faster' name='fade'>
         <router-view></router-view>
       </transition>
@@ -78,4 +78,6 @@ export default {
 </script>
 
 <style scoped>
+.content {
+}
 </style>

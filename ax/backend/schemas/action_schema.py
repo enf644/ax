@@ -744,8 +744,8 @@ class ActionSubscription(graphene.ObjectType):
                     action_icon (str): font-awesome icon of current action
 
         """
-        del info
         try:
+            del info
             subscriber = aiopubsub.Subscriber(
                 ax_pubsub.hub, 'action_notify_subscriber')
             subscriber.subscribe(aiopubsub.Key('do_action'))
@@ -775,8 +775,8 @@ class ActionSubscription(graphene.ObjectType):
     async def resolve_console_notify(self, info, modal_guid):
         """ Web-socket subscription on ax terminal print
         """
-        del info
         try:
+            del info
             subscriber = aiopubsub.Subscriber(
                 ax_pubsub.hub, 'action_notify_subscriber')
             subscriber.subscribe(aiopubsub.Key('console_log'))

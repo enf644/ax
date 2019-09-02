@@ -7,7 +7,7 @@ import uuid
 
 from sanic import response
 from loguru import logger
-import aiopubsub
+# import aiopubsub
 from graphql_ws.websockets_lib import WsLibSubscriptionServer
 from sanic_graphql import GraphQLView
 from graphql.execution.executors.asyncio import AsyncioExecutor
@@ -16,7 +16,7 @@ import ujson as json
 import backend.cache as ax_cache
 import backend.schema as ax_schema
 import backend.misc as ax_misc
-import backend.pubsub as ax_pubsub
+# import backend.pubsub as ax_pubsub
 from backend.tus import tus_bp
 import backend.model as ax_model
 from backend.model import AxForm, AxField
@@ -241,8 +241,9 @@ def init_routes(sanic_app, deck_path=None):
                 # logger.exception('Socket error')
 
         @sanic_app.route('/api/ping')
-        async def ping(request):
+        async def ping(request):  # pylint: disable=unused-variable
             """ Ping function checks if Ax is running. Used with monit """
+            del request
             from backend.schema import schema
             result = schema.execute("query { ping }")
             test_str = json.dumps(result.data, sort_keys=True, indent=4)
@@ -252,10 +253,11 @@ def init_routes(sanic_app, deck_path=None):
         async def test(request):  # pylint: disable=unused-variable
             """Test function"""
             del request
-            this.test_schema = 'IT WORKS'
-            ax_pubsub.publisher.publish(
-                aiopubsub.Key('dummy_test'), this.test_schema)
-            return response.text(this.test_schema)
+            ret_str = ax_model.engine.pool.status()
+            # this.test_schema = 'IT WORKS'
+            # ax_pubsub.publisher.publish(
+            #     aiopubsub.Key('dummy_test'), this.test_schema)
+            return response.text(ret_str)
 
         @sanic_app.route('/api/set')
         async def cache_set(request):  # pylint: disable=unused-variable

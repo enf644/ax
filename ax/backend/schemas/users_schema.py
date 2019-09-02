@@ -113,23 +113,14 @@ class UsersQuery(graphene.ObjectType):
 
     def resolve_ping(self, info):
         """ - """
+        del info
         return "Pong"
 
 
 class UsersSubscription(graphene.ObjectType):
     """GraphQL subscriptions"""
-    count_seconds = graphene.Float(up_to=graphene.Int())
     mutation_example = graphene.Field(User)
     test_sub = graphene.String()
-
-    async def resolve_count_seconds(self, info, up_to):
-        """Test graphql subscription"""
-        del info
-
-        for i in range(up_to):
-            yield i
-            await asyncio.sleep(1.)
-        yield up_to
 
     async def resolve_mutation_example(self, info):
         """Subscribe to adding new user"""

@@ -1,5 +1,5 @@
 <template>
-  <v-app class='ax-form-app' id='ax-form' ref='formApp'>
+  <div class='ax-form-app' id='ax-form' ref='formApp'>
     <!-- <transition enter-active-class='animated fadeIn'> -->
     <h1 v-if='this.db_name == null'>db_name not specified</h1>
     <v-sheet
@@ -10,135 +10,151 @@
       v-if='!this.guidNotFound'
       v-show='formIsLoaded'
     >
-      <v-layout align-space-between class='form-layout' justify-start row>
-        <transition :enter-active-class='drawerAnimationClass'>
-          <div
-            :class='{
-              "drawer-floating": drawerIsFloating,
-              "drawer-hidden": drawerIsHidden,
-            }'
-            class='drawer'
-            v-show='!drawerIsHidden'
-          >
-            <v-list class='drawer-folder-list'>
-              <v-list-tile
-                :class='getTabClass(tab.guid)'
-                :key='tab.guid'
-                @click='openTab(tab.guid)'
-                avatar
-                ripple
-                v-for='tab in tabs'
-              >
-                <v-list-tile-content class='drawer-folder-item'>
-                  <v-list-tile-title>{{ tab.name }}</v-list-tile-title>
-                </v-list-tile-content>
-                <v-list-tile-avatar>
-                  <transition
-                    enter-active-class='animated flipInY'
-                    leave-active-class='animated flipOutY'
-                  >
-                    <div class='tab-errors' v-show='tab.errors'>{{tab.errors}}</div>
-                  </transition>
-                </v-list-tile-avatar>
-              </v-list-tile>
-            </v-list>
-          </div>
-        </transition>
-        <div class='form'>
-          <div
-            @click='hideDrawer'
-            class='overlay'
-            id='overlay'
-            v-bind:class='{ "hidden": overlayIsHidden }'
-          ></div>
-          <div class='header'>
-            <v-badge
-              class='drawer-toggle'
-              color='red'
-              overlap
-              v-bind:class='{ "hidden": !drawerIsFloating }'
-              v-model='formIsNotValid'
+      <!-- <v-layout align-space-between class='form-layout' justify-start> -->
+      <v-container class='form-layout'>
+        <v-row>
+          <transition :enter-active-class='drawerAnimationClass'>
+            <v-col
+              :class='{
+                "drawer-floating": drawerIsFloating,
+                "drawer-hidden": drawerIsHidden,
+              }'
+              class='drawer col-3'
+              v-show='!drawerIsHidden'
             >
-              <template v-slot:badge>
-                <span class='drawer-toggle-errors'>{{errorsCount}}</span>
-              </template>
-              <v-btn @click='toggleDrawer' fab small>
-                <i class='fas fa-bars'></i>
-              </v-btn>
-            </v-badge>
-            <i :class='iconClass'></i>
-            &nbsp; {{name}} &nbsp;
-            <v-btn @click='reloadData' flat icon>
-              <i class='fas fa-redo-alt'></i>
-            </v-btn>
-            <resize-observer @notify='handleResize' />
-          </div>
-          <v-container class='form-container' fluid grid-list-xl>
-            <v-layout align-left justify-left row wrap>
-              <AxField
-                :class='getWidthClass(field)'
-                :dbName='field.dbName'
-                :fieldGuid='field.guid'
-                :formDbName='db_name'
-                :formGuid='formGuid'
-                :isRequired='field.isRequired'
-                :isWholeRow='field.isWholeRow'
-                :key='field.guid'
-                :name='field.name'
-                :optionsJson='field.optionsJson'
-                :ref='getFieldRef(field.guid)'
-                :rowGuid='currentRowGuid'
-                :tag='field.fieldType.tag'
-                :value.sync='field.value'
-                @update:value='updateValue'
-                v-for='field in this.fields'
-                v-show='isFieldVisible(field)'
-              ></AxField>
-
-              <transition enter-active-class='animated fadeIn'>
-                <v-alert :value='true' type='warning' v-show='showSubscribtionWarning'>
-                  {{locale("form.record-modifyed-warning")}}
-                  &nbsp;
-                  <v-btn @click='reloadData' small>
-                    <i class='fas fa-sync-alt'></i>
-                    &nbsp;
-                    {{locale("form.reload-data")}}
-                  </v-btn>
-                </v-alert>
-              </transition>
-
-              <v-flex xs12>
-                <v-btn :disabled='!formIsValid' @click='submitTest' small v-if='isConstructorMode'>
-                  <i class='fas fa-vial'></i>
-                  &nbsp; {{locale("form.test-from")}}
-                </v-btn>
-
-                <v-btn @click='openTerminalModal' color='success' icon v-if='terminalIsAvalible'>
-                  <i class='fas fa-terminal'></i>
-                </v-btn>
-
-                <v-btn
-                  :disabled='!formIsValid || performingActionGuid != null'
-                  :key='action.guid'
-                  @click='doAction(action)'
-                  small
-                  v-for='action in this.actions'
-                  v-show='isConstructorMode == false'
+              <v-list class='drawer-folder-list'>
+                <v-list-item
+                  :class='getTabClass(tab.guid)'
+                  :key='tab.guid'
+                  @click='openTab(tab.guid)'
+                  ripple
+                  v-for='tab in tabs'
                 >
-                  <i :class='getActionIconClass(action)'></i>
-                  &nbsp;
-                  {{ action.name }}
-                  <i
-                    class='fas fa-spinner fa-spin action-loading'
-                    v-if='action.guid == performingActionGuid'
-                  ></i>
+                  <v-list-item-content class='drawer-folder-item'>
+                    <v-list-item-title>{{ tab.name }}</v-list-item-title>
+                  </v-list-item-content>
+                  <v-list-item-avatar>
+                    <transition
+                      enter-active-class='animated flipInY'
+                      leave-active-class='animated flipOutY'
+                    >
+                      <div class='tab-errors' v-show='tab.errors'>{{tab.errors}}</div>
+                    </transition>
+                  </v-list-item-avatar>
+                </v-list-item>
+              </v-list>
+            </v-col>
+          </transition>
+
+          <v-col
+            :class='{
+                "col-9": drawerIsFloating,
+                "col-12": drawerIsHidden,
+              }'
+            class='form'
+          >
+            <div
+              @click='hideDrawer'
+              class='overlay'
+              id='overlay'
+              v-bind:class='{ "hidden": overlayIsHidden }'
+            ></div>
+            <div class='header'>
+              <v-badge
+                class='drawer-toggle'
+                color='red'
+                overlap
+                v-bind:class='{ "hidden": !drawerIsFloating }'
+                v-model='formIsNotValid'
+              >
+                <template v-slot:badge>
+                  <span class='drawer-toggle-errors'>{{errorsCount}}</span>
+                </template>
+                <v-btn @click='toggleDrawer' fab small>
+                  <i class='fas fa-bars'></i>
                 </v-btn>
-                <!-- <v-btn @click='openForm()' color='primary' outline>text</v-btn> -->
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </div>
-      </v-layout>
+              </v-badge>
+              <i :class='iconClass'></i>
+              &nbsp; {{name}} &nbsp;
+              <v-btn @click='reloadData' icon text>
+                <i class='fas fa-redo-alt'></i>
+              </v-btn>
+              <resize-observer @notify='handleResize' />
+            </div>
+            <v-container class='form-container' fluid grid-list-xl>
+              <v-layout align-left justify-left row wrap>
+                <AxField
+                  :class='getWidthClass(field)'
+                  :dbName='field.dbName'
+                  :fieldGuid='field.guid'
+                  :formDbName='db_name'
+                  :formGuid='formGuid'
+                  :isRequired='field.isRequired'
+                  :isWholeRow='field.isWholeRow'
+                  :key='field.guid'
+                  :name='field.name'
+                  :optionsJson='field.optionsJson'
+                  :ref='getFieldRef(field.guid)'
+                  :rowGuid='currentRowGuid'
+                  :tag='field.fieldType.tag'
+                  :value.sync='field.value'
+                  @update:value='updateValue'
+                  v-for='field in this.fields'
+                  v-show='isFieldVisible(field)'
+                ></AxField>
+
+                <transition enter-active-class='animated fadeIn'>
+                  <v-alert :value='true' type='warning' v-show='showSubscribtionWarning'>
+                    {{locale("form.record-modifyed-warning")}}
+                    &nbsp;
+                    <v-btn @click='reloadData' small>
+                      <i class='fas fa-sync-alt'></i>
+                      &nbsp;
+                      {{locale("form.reload-data")}}
+                    </v-btn>
+                  </v-alert>
+                </transition>
+
+                <v-flex xs12>
+                  <v-btn
+                    :disabled='!formIsValid'
+                    @click='submitTest'
+                    small
+                    v-if='isConstructorMode'
+                  >
+                    <i class='fas fa-vial'></i>
+                    &nbsp; {{locale("form.test-from")}}
+                  </v-btn>
+
+                  <v-btn @click='openTerminalModal' color='success' icon v-if='terminalIsAvalible'>
+                    <i class='fas fa-terminal'></i>
+                  </v-btn>
+
+                  <v-btn
+                    :disabled='!formIsValid || performingActionGuid != null'
+                    :key='action.guid'
+                    @click='doAction(action)'
+                    class='mr-3'
+                    small
+                    v-for='action in this.actions'
+                    v-show='isConstructorMode == false'
+                  >
+                    <i :class='getActionIconClass(action)'></i>
+                    &nbsp;
+                    {{ action.name }}
+                    <i
+                      class='fas fa-spinner fa-spin action-loading'
+                      v-if='action.guid == performingActionGuid'
+                    ></i>
+                  </v-btn>
+                  <!-- <v-btn @click='openForm()' color='primary' outline>text</v-btn> -->
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-col>
+        </v-row>
+      </v-container>
+      <!-- </v-layout> -->
     </v-sheet>
     <div v-if='this.guidNotFound'>
       <h1 class='not-found'>
@@ -169,7 +185,7 @@
 
     <modal :name='`terminal-${this.modalGuid}`' adaptive height='auto' scrollable width='60%'>
       <div>
-        <v-btn :ripple='false' @click='closeTerminalModal' class='close' color='black' flat icon>
+        <v-btn :ripple='false' @click='closeTerminalModal' class='close' color='black' icon text>
           <i class='fas fa-times close-ico'></i>
         </v-btn>
         <div class='header'>
@@ -182,7 +198,7 @@
         </div>
       </div>
     </modal>
-  </v-app>
+  </div>
 </template>
 
 <script>
@@ -307,8 +323,8 @@ export default {
     this.initiateTerminal();
   },
   methods: {
-    locale(key) {
-      return i18n.t(key);
+    locale(key, values) {
+      return i18n.t(key, values);
     },
     initiateTerminal() {
       Terminal.applyAddon(fit);
@@ -722,6 +738,7 @@ export default {
             action_name: actionResult.messages.exception.action_name,
             detail: actionResult.messages.exception.detail
           });
+          console.log(msg);
           res = await this.$dialog.error({
             text: msg,
             persistent: false

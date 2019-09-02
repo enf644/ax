@@ -2,7 +2,7 @@
   <div class='card'>
     <v-form @submit.prevent='updateSettings' ref='form' v-model='valid'>
       <h1>{{header}}</h1>
-      <v-btn :ripple='false' @click='closeModal' class='close' color='black' flat icon>
+      <v-btn :ripple='false' @click='closeModal' class='close' color='black' text icon>
         <i class='fas fa-times close-ico'></i>
       </v-btn>
       <br>
