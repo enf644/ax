@@ -76,6 +76,7 @@ async def create_ax_form(db_session, name, db_name) -> object:
         ax_form.tom_label = "{{ax_form_name}} - {{ax_num}}"
         ax_form.icon = "dice-d6"  # TODO: move default icon to Vue
         db_session.add(ax_form)
+        db_session.flush()
         return ax_form
 
 
@@ -89,6 +90,7 @@ async def create_default_tab(db_session, ax_form, name) -> None:
         ax_field.is_tab = True
         ax_field.position = 1
         db_session.add(ax_field)
+        db_session.flush()
 
 
 async def create_default_grid(db_session, ax_form, name):
@@ -116,6 +118,7 @@ async def create_default_grid(db_session, ax_form, name):
         ax_grid.options_json = json.dumps(default_options)
         ax_grid.is_default_view = True
         db_session.add(ax_grid)
+        db_session.flush()
 
 
 async def create_default_states(db_session,
@@ -157,6 +160,7 @@ async def create_default_states(db_session,
         all_state.y = 20
         all_state.is_all = True
         db_session.add(all_state)
+        db_session.flush()
 
         return {
             "start": start.guid,
@@ -192,6 +196,7 @@ async def create_default_actions(
         delete.to_state_guid = states['deleted']
         delete.confirm_text = delete_confirm
         db_session.add(delete)
+        db_session.flush()
 
         return {
             "create": create.guid,
@@ -233,6 +238,28 @@ async def create_default_roles(db_session, ax_form, states, actions,
         delete_action_role.action_guid = actions['delete']
         delete_action_role.role_guid = admin_role.guid
         db_session.add(delete_action_role)
+
+        # Create default permission for admin. field_guid is None
+        # it meens - for all fields
+        perm = AxRoleFieldPermission()
+        perm.form_guid = ax_form.guid
+        perm.state_guid = states['start']
+        perm.role_guid = admin_role.guid
+        perm.field_guid = None
+        perm.read = True
+        perm.edit = True
+        db_session.add(perm)
+
+        perm = AxRoleFieldPermission()
+        perm.form_guid = ax_form.guid
+        perm.state_guid = states['created']
+        perm.role_guid = admin_role.guid
+        perm.field_guid = None
+        perm.read = True
+        perm.edit = True
+        db_session.add(perm)
+
+        db_session.flush()
 
 
 class CreateForm(graphene.Mutation):
@@ -323,7 +350,7 @@ class CreateForm(graphene.Mutation):
                 name=default_tab_name)
 
             db_session.flush()
-            ax_schema.init_schema()
+            ax_schema.init_schema(db_session)
             # TODO: check for multiple workers and load balancers.
             # https://community.sanicframework.org/t/removing-routes-necessary-functionality/29
 
@@ -382,7 +409,7 @@ class UpdateForm(graphene.Mutation):
             db_session.flush()
 
             if schema_reload_needed:
-                ax_schema.init_schema()
+                ax_schema.init_schema(db_session)
 
             if tom_sync_needed:
                 await tom_sync_form(
@@ -423,17 +450,19 @@ class DeleteForm(graphene.Mutation):
             # Remove objects connected to form - Ax1tomReference, AxRole2Users,
             # AxState2Role, AxAction2Role, AxRoleFieldPermission, AxRole,
             # AxAction, AxState, AxColumn, AxGrid, AxField
-            Ax1tomReference.query.filter(
-                Ax1tomReference.form_guid == ax_form.guid).delete()
+
+            db_session.query(Ax1tomReference).filter(
+                Ax1tomReference.form_guid == ax_form.guid
+            ).delete()
 
             for role in ax_form.roles:
-                AxRole2Users.query.filter(
+                db_session.query(AxRole2Users).filter(
                     AxRole2Users.role_guid == role.guid).delete()
-                AxState2Role.query.filter(
+                db_session.query(AxState2Role).filter(
                     AxState2Role.role_guid == role.guid).delete()
-                AxAction2Role.query.filter(
+                db_session.query(AxAction2Role).filter(
                     AxAction2Role.role_guid == role.guid).delete()
-                AxRoleFieldPermission.query.filter(
+                db_session.query(AxRoleFieldPermission).filter(
                     AxRoleFieldPermission.role_guid == role.guid).delete()
 
                 db_session.delete(role)

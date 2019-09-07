@@ -63,11 +63,20 @@ export default {
   },
   watch: {
     currentDbName(newValue, oldValue) {
-      // const isCorrectDbName = /^[a-zA-Z\d][\w]{0,127}$/.test(newValue); - snake case
-      const dbName = newValue.charAt(0).toLowerCase() + newValue.slice(1);
-      const isCorrectDbName = /^([a-z0-9]+)*([A-Z][a-z0-9]*)*$/.test(newValue);
-      if (!isCorrectDbName) this.currentDbName = oldValue;
-      else this.currentDbName = dbName;
+      if (oldValue) {
+        // const isCorrectDbName = /^[a-zA-Z\d][\w]{0,127}$/.test(newValue); - snake case
+        const dbName = newValue.charAt(0).toLowerCase() + newValue.slice(1);
+        let isCorrectDbName = /^([a-z0-9]+)*([A-Z][a-z0-9]*)*$/.test(newValue);
+
+        store.state.form.fields.forEach(field => {
+          if (dbName === field.dbName) isCorrectDbName = false;
+        });
+        if (dbName === 'axState') isCorrectDbName = false;
+        if (dbName === 'axLabel') isCorrectDbName = false;
+
+        if (!isCorrectDbName) this.currentDbName = oldValue;
+        else this.currentDbName = dbName;
+      }
     }
   },
   created() {

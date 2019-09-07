@@ -211,7 +211,8 @@
             "delete-role-from-state-confirm": "Are you sure you want to delete [{role}] role from [{state}] state?",
             "role-removed-from-state-toast": "Role removed",
             "role-removed-from-action-toast": "Role removed",
-            "permission-set-toast": "State permissions modified"
+            "permission-set-toast": "State permissions modified",
+            "all-permissions": "All fields"
         },
         "delete-confirm": "Are you sure you want to delete record?"
     },

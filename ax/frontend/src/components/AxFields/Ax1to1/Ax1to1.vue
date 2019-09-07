@@ -20,7 +20,7 @@
     >
       <template v-slot:selection='{ item, selected }'>
         <v-chip @click:close='clearValue()' @click.stop='openFormModal()' class='chip' close>
-          <v-avatar class='grey'>
+          <v-avatar class='grey' left>
             <i :class='`ax-chip-icon fas fa-${formIcon}`'></i>
           </v-avatar>
           {{item.axLabel}}
@@ -117,6 +117,10 @@ export default {
     },
     search(newValue) {
       if (newValue && newValue !== this.select) this.doQuicksearch(newValue);
+    },
+    value(newValue) {
+      this.currentValue = newValue;
+      if (this.currentValue) this.loadData();
     }
   },
   created() {

@@ -1,5 +1,9 @@
 <template>
   <div class='ax-grid-app' id='ax-grid'>
+    <v-btn @click='reloadGrid' class='reload-btn' icon text>
+      <i class='fas fa-redo-alt'></i>
+    </v-btn>
+
     <v-sheet :class='sheetClass' elevation='5' light ref='sheet'>
       <div class='header'>
         <div class='grid-title' v-show='titleEnabled'>
@@ -286,7 +290,7 @@ export default {
     }
   },
   watch: {
-    update_time(newValue, oldValue) {
+    update_time() {
       this.reloadGrid();
     },
     quickSearch(newValue) {
@@ -304,11 +308,13 @@ export default {
   },
   methods: {
     reloadGrid() {
-      if (this.gridObj.gridOptions && this.gridObj.gridOptions.api) {
-        this.gridObj.gridOptions.api.destroy();
+      if (this.gridObj) {
+        if (this.gridObj.gridOptions && this.gridObj.gridOptions.api) {
+          this.gridObj.gridOptions.api.destroy();
+        }
+        this.gridInitialized = false;
+        this.loadOptions(this.form, this.grid);
       }
-      this.gridInitialized = false;
-      this.loadOptions(this.form, this.grid);
     },
     locale(key) {
       return i18n.t(key);
@@ -653,6 +659,13 @@ export default {
 </script>
 
 <style scoped>
+.reload-btn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 100;
+}
+
 .grid {
   width: 100%;
   height: 100%;

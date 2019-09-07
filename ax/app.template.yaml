@@ -26,7 +26,9 @@ env_variables:
   # AX_REDIS_ENDPOINT:  #  default='127.0.0.1'
   # AX_REDIS_PORT:  #  default='6379'
   # AX_REDIS_TIMEOUT:  #  default='1'
+
   AX_TIMEZONE: Europe/Moscow #  default=UTC
+
   AX_LOGS_LEVEL: DEBUG # ERROR, WARNING, INFO, DEBUG. default = ERROR
   # AX_LOGS_FILENAME: ax_logs.log #  If not set, logs only output to stdio
   # AX_LOGS_ABSOLUTE_PATH: '/home/wineuser/.local/lib/python3.6/site-packages/ax/' #  default =
@@ -42,3 +44,8 @@ env_variables:
   # AX_TMP_ABSOLUTE_PATH: '/tmp' #'D:\Projects\tmp'
   # AX_UPLOADS_ABSOLUTE_PATH: '/tmp/uploads'
   # AX_DECK_ABSOLUTE_PATH: 'C:\Users\enf64_000\Desktop\Dimiant\WineProject\wine\dist'
+  # AX_SMTP_HOST: smtp.yandex.com
+  # AX_SMTP_PORT: 465 # default is 465
+  # AX_SMTP_SSL: True # defualt is False
+  # AX_SMTP_LOGIN: info@ax.com
+  # AX_SMTP_PASSWORD: SecretPassword

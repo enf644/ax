@@ -26,7 +26,7 @@
           class='chip'
           close
         >
-          <v-avatar class='grey mr-2'>
+          <v-avatar class='grey mr-2' left>
             <i :class='`ax-chip-icon fas fa-${formIcon}`'></i>
           </v-avatar>
           {{item.axLabel}}
@@ -134,6 +134,7 @@ export default {
     },
     value(newValue) {
       this.currentValue = newValue;
+      if (this.currentValue) this.loadData();
     }
   },
   created() {

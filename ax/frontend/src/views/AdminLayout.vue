@@ -28,6 +28,10 @@ export default {
   },
   watch: {
     currentFormDbName(newValue) {
+      let title = '';
+      if (newValue) title = `[${newValue}] `;
+
+      document.title = `${title}Ax workflow app constructor`;
       if (newValue) {
         this.$store.dispatch('form/getFormData', {
           dbName: newValue,

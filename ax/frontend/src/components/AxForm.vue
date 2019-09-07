@@ -274,7 +274,10 @@ export default {
       guidNotFound: false,
       terminal: null,
       performingActionGuid: null,
-      terminalIsAvalible: false
+      terminalIsAvalible: false,
+      subscribedToActions: false,
+      subscribedToConsole: false,
+      doActionTimeout: false
     };
   },
   computed: {
@@ -689,6 +692,7 @@ export default {
           if (!this.guid && dataRowGuid) {
             this.insertedGuid = dataRowGuid.replace(/-/g, '');
             retGuid = this.insertedGuid;
+            this.subscribeToActions();
           }
           const messages = JSON.parse(data.data.doAction.messages);
 
@@ -705,6 +709,8 @@ export default {
           );
         })
         .catch(error => {
+          this.doActionTimeout = true;
+          // console.log('DoAction timeout');
           this.$log.error(
             `Error in AxGrid => doAction apollo client => ${error}`
           );
@@ -738,7 +744,7 @@ export default {
             action_name: actionResult.messages.exception.action_name,
             detail: actionResult.messages.exception.detail
           });
-          console.log(msg);
+          // console.log(msg);
           res = await this.$dialog.error({
             text: msg,
             persistent: false
@@ -773,6 +779,14 @@ export default {
       }
     },
     subscribeToActions() {
+      if (
+        this.constructor_mode !== undefined
+        || this.rowGuid === null
+        || this.subscribedToActions
+      ) {
+        return false;
+      }
+
       const ACTION_SUBSCRIPTION_QUERY = gql`
         subscription($formDbName: String!, $rowGuid: String) {
           actionNotify(formDbName: $formDbName, rowGuid: $rowGuid) {
@@ -785,6 +799,7 @@ export default {
         }
       `;
 
+      this.subscribedToActions = true;
       apolloClient
         .subscribe({
           query: ACTION_SUBSCRIPTION_QUERY,
@@ -818,8 +833,11 @@ export default {
             }
           }
         );
+      return true;
     },
     subscribeToConsole() {
+      if (this.subscribedToConsole) return false;
+
       const CONSOLE_SUBSCRIPTION_QUERY = gql`
         subscription($modalGuid: String!) {
           consoleNotify(modalGuid: $modalGuid) {
@@ -829,6 +847,7 @@ export default {
         }
       `;
 
+      this.subscribedToConsole = true;
       apolloClient
         .subscribe({
           query: CONSOLE_SUBSCRIPTION_QUERY,
@@ -843,8 +862,13 @@ export default {
               this.openTerminalModal();
             }
             const msg = data.data.consoleNotify.text;
-            console.log(msg);
-            this.terminal.write(`${msg}`);
+            // console.log(msg);
+            if (msg === 'ax_console::reload' && this.doActionTimeout) {
+              this.doActionTimeout = false;
+              this.reloadData();
+            } else {
+              this.terminal.write(`${msg}`);
+            }
           },
           {
             error(error) {
@@ -852,6 +876,7 @@ export default {
             }
           }
         );
+      return true;
     }
   }
 };

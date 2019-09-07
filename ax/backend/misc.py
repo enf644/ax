@@ -8,16 +8,18 @@ import shutil
 from pathlib import Path
 from datetime import datetime
 import graphene
-import graphene_sqlalchemy
+# import graphene_sqlalchemy
 import pytz
 import yaml
 from loguru import logger
+
 
 this = sys.modules[__name__]
 root_path = None
 timezone = None
 tmp_root_dir = None
 uploads_root_dir = None
+email_sender = None
 
 
 def init_misc(timezone_name, tmp_absolute_path, uploads_absolute_path) -> None:
@@ -30,6 +32,10 @@ def init_misc(timezone_name, tmp_absolute_path, uploads_absolute_path) -> None:
         if not server_is_app_engine():
             if not os.path.exists(this.uploads_root_dir):
                 os.makedirs(this.uploads_root_dir)
+
+        if not os.access(this.uploads_root_dir, os.W_OK):
+            raise PermissionError(
+                f'Cant write to directory - {this.uploads_root_dir}')
     except Exception:
         logger.exception(
             'Uploads folder does not exist and Ax cant create it')
@@ -131,9 +137,10 @@ def load_configuration() -> None:
                 raise ValueError(err)
 
 
-def convert_column_to_string(type, column, registry=None):
+def convert_column_to_string(type, column, registry=None):  # pylint: disable=redefined-builtin
     """This functions is needed to convert UUID column to String column
     for SQL Alchemy"""
+    del type, column, registry
     return graphene.String
 
 

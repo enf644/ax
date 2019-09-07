@@ -22,6 +22,7 @@ import backend.dialects as ax_dialects
 import backend.pubsub as ax_pubsub
 import backend.misc as ax_misc
 import backend.scheduler as ax_scheduler
+import backend.emails as ax_emails
 
 import backend.cache as ax_cache
 from backend.schemas.types import Action, Form, ConsoleMessage, \
@@ -76,12 +77,20 @@ class ConsoleSender:
     """ Used to send ax_console web socket messages to AxForm"""
     def __init__(self, modal_guid):
         self.modal_guid = modal_guid
+        self.console_was_used = False
 
     def __call__(self, msg):
+        self.console_was_used = True
         console_func = partial(console_log, msg=msg, modal_guid=self.modal_guid)
         this.action_loop.call_soon_threadsafe(console_func)
         asyncio.ensure_future(console_log(msg=msg, modal_guid=self.modal_guid),
                               loop=this.action_loop)
+
+    def check_was_used(self):
+        """ If console was used once - this will return true
+        Used in detecting if exception or syntex error must be outputed to ax
+        console """
+        return self.console_was_used
 
 
 class ActionExecuter:
@@ -202,6 +211,7 @@ async def do_exec(db_session, action, form, arguments=None, modal_guid=None):
     ax.schema = ax_schema.schema
     ax.sql = ax_dialects.dialect.custom_query
     ax.print = ConsoleSender(modal_guid=modal_guid)
+    ax.email = ax_emails.email_sender
     ax.paths.uploads = ax_misc.uploads_root_dir
     ax.paths.tmp = ax_misc.tmp_root_dir
     ax.add_action_job = ax_scheduler.add_action_job
@@ -243,6 +253,9 @@ async def do_exec(db_session, action, form, arguments=None, modal_guid=None):
             },
             "abort": True
         }
+        if ax.print.check_was_used():
+            err = json.dumps(ret_data, indent=4, sort_keys=True)
+            ax.print('\n\n----- SYNTAX ERROR ------\n\n' + err)
         return ret_data
     except Exception as err:    # pylint: disable=broad-except
         logger.error(err)
@@ -270,6 +283,9 @@ async def do_exec(db_session, action, form, arguments=None, modal_guid=None):
             },
             "abort": True
         }
+        if ax.print.check_was_used():
+            err = json.dumps(ret_data, indent=4, sort_keys=True)
+            ax.print('\n\n----- EXCEPTION ------\n\n' + err)
         return ret_data
 
 
@@ -382,7 +398,7 @@ async def execute_action(
             AxGrid.vue will reload data of grid
 
     Args:
-        row_guid (str): Guid of row that is opened
+        row_guid (str): Guid of row that is opened (null if new row)
         form_guid (str): Guid of AxForm that is opened
         form_db_name (str): db_name of AxForm that is opened.
             (Form guid or db_name must be specified)
@@ -594,6 +610,7 @@ async def execute_action(
                 aiopubsub.Key('do_action'), notify_message)
 
             await ax_cache.cache.delete(f'lock_{row_guid}')
+            console_log('ax_console::reload', modal_guid)
             return {
                 "form": tobe_form,
                 "new_guid": return_guid,

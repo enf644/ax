@@ -2,7 +2,7 @@
   <span>
     <slot v-show='false'></slot>
     <v-chip :key='item.guid' class='chip' v-for='item in axItems'>
-      <v-avatar class='grey'>
+      <v-avatar class='grey' left>
         <i :class='`ax-chip-icon fas fa-${formIcon}`'></i>
       </v-avatar>
       {{item.axLabel}}

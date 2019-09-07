@@ -12,7 +12,8 @@ export default {
   props: {
     roleGuid: null,
     fieldGuid: null,
-    stateGuid: null
+    stateGuid: null,
+    parent: null
   },
   data: () => ({}),
   computed: {
@@ -40,27 +41,56 @@ export default {
       ).isVirtual;
     },
     isTab() {
+      // if fieldGuid is null - then it is all_fields perm
+      if (this.fieldGuid == null) return true;
+
       return this.$store.state.form.fields.find(
         field => field.guid === this.fieldGuid
       ).isTab;
+    },
+    parentPermExists() {
+      if (this.fieldGuid == null) return false;
+
+      const allPerm = this.$store.state.workflow.permissions.find(
+        perm => perm.roleGuid === this.roleGuid
+          && perm.fieldGuid === null
+          && perm.stateGuid === this.stateGuid
+      );
+
+      if (allPerm) return true;
+
+      if (this.parent) {
+        const tabPerm = this.$store.state.workflow.permissions.find(
+          perm => perm.roleGuid === this.roleGuid
+            && perm.fieldGuid === this.parent
+            && perm.stateGuid === this.stateGuid
+        );
+        if (tabPerm) return true;
+      }
+
+      return false;
     }
   },
   methods: {
     getHiddenClass() {
       let addedClass = '';
       if (this.isTab) addedClass += ' tab';
+      if (this.parentPermExists) addedClass += ' disabled';
       else if (!this.read && !this.edit) addedClass += ' redIcon';
+
       return `fas fa-ban switch${addedClass}`;
     },
     getReadClass() {
       let addedClass = '';
       if (this.isTab) addedClass += ' tab';
+      if (this.parentPermExists) addedClass += ' disabled';
       else if (this.read && !this.edit) addedClass += ' blueIcon';
       return `fas fa-eye switch${addedClass}`;
     },
     getEditClass() {
       let addedClass = '';
       if (this.isTab) addedClass += ' tab';
+      if (this.parentPermExists) addedClass += ' disabled';
       else if (this.edit) addedClass += ' greenIcon';
       return `fas fa-pencil-alt switch${addedClass}`;
     },
@@ -78,6 +108,7 @@ export default {
           `<i class="fas fa-pencil-alt"></i> &nbsp ${msg}`
         );
       });
+      return true;
     }
   }
 };
@@ -106,6 +137,10 @@ i {
 }
 
 .tab {
-  color: #555;
+  font-size: 18px;
+}
+
+.disabled {
+  /* color: #555; */
 }
 </style>

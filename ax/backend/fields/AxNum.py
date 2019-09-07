@@ -79,3 +79,8 @@ async def before_insert(db_session, field, before_form, tobe_form, action,
         field.value = json.dumps(ret_data)
 
     return field.value
+
+man = """
+SELECT *
+FROM "Wine" WHERE 'asd' 
+"""

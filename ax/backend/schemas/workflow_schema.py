@@ -41,9 +41,11 @@ class CreateState(graphene.Mutation):
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "workflow_schema -> CreateState"
         with ax_model.try_catch(info.context['session'], err) as db_session:
+            ax_form_guid = uuid.UUID(args.get('form_guid'))
+
             new_state = AxState()
             new_state.name = args.get('name')
-            new_state.form_guid = args.get('form_guid')
+            new_state.form_guid = ax_form_guid
             new_state.x = args.get('x')
             new_state.y = args.get('y')
 
@@ -55,14 +57,14 @@ class CreateState(graphene.Mutation):
             if args.get('update'):
                 update_action = AxAction()
                 update_action.name = args.get('update')
-                update_action.form_guid = uuid.UUID(args.get('form_guid'))
+                update_action.form_guid = ax_form_guid
                 update_action.from_state_guid = new_state.guid
                 update_action.to_state_guid = new_state.guid
                 db_session.add(update_action)
 
             # Add default admin role
             admin_role = db_session.query(AxRole).filter(
-                AxRole.form_guid == uuid.UUID(args.get('form_guid'))
+                AxRole.form_guid == ax_form_guid
             ).filter(
                 AxRole.is_admin.is_(True)
             ).first()
@@ -75,20 +77,15 @@ class CreateState(graphene.Mutation):
                 state2role.role_guid = admin_role.guid
                 db_session.add(state2role)
 
-                ax_form = db_session.query(AxForm).filter(
-                    AxForm.guid == uuid.UUID(args.get('form_guid'))
-                ).first()
-
-                for field in ax_form.fields:
-                    perm = AxRoleFieldPermission()
-                    perm.form_guid = ax_form.guid
-                    perm.state_guid = new_state.guid
-                    perm.role_guid = admin_role.guid
-                    perm.field_guid = field.guid
-                    perm.read = True
-                    perm.edit = True
-                    db_session.add(perm)
-                    permissions.append(perm)
+                perm = AxRoleFieldPermission()
+                perm.form_guid = ax_form_guid
+                perm.state_guid = new_state.guid
+                perm.role_guid = admin_role.guid
+                perm.field_guid = None
+                perm.read = True
+                perm.edit = True
+                db_session.add(perm)
+                permissions.append(perm)
 
             return CreateState(
                 state=new_state,
@@ -465,7 +462,7 @@ class SetStatePermission(graphene.Mutation):
         form_guid = graphene.String()
         state_guid = graphene.String()
         role_guid = graphene.String()
-        field_guid = graphene.String()
+        field_guid = graphene.String(required=False, default_value=None)
         read = graphene.Boolean()
         edit = graphene.Boolean()
 
@@ -483,42 +480,93 @@ class SetStatePermission(graphene.Mutation):
             edit = args.get('edit')
 
             current_fields_guids = []
+            ax_field_guid = None
+            ax_field = None
+            if field_guid:
+                ax_field = db_session.query(AxField).filter(
+                    AxField.guid == uuid.UUID(field_guid)).first()
+                ax_field_guid = ax_field.guid
 
-            ax_field = db_session.query(AxField).filter(
-                AxField.guid == uuid.UUID(field_guid)).first()
-
-            if not ax_field.is_tab:
-                current_fields_guids.append(ax_field.guid)
+            # If field_guid is null, then access is set for whole form
+            # We must delete all fields permissions
+            if not ax_field:
+                db_session.query(
+                    AxRoleFieldPermission
+                ).filter(
+                    AxRoleFieldPermission.state_guid == uuid.UUID(state_guid)
+                ).filter(
+                    AxRoleFieldPermission.role_guid == uuid.UUID(role_guid)
+                ).delete()
             else:
-                for field in ax_field.form.fields:
-                    if field.parent == ax_field.guid:
-                        current_fields_guids.append(field.guid)
-
-            for current_guid in current_fields_guids:
-                ax_perm = db_session.query(
+                # if field or tab clicked - we must delete permission fo all fields
+                db_session.query(
                     AxRoleFieldPermission
                 ).filter(
                     AxRoleFieldPermission.state_guid == uuid.UUID(state_guid)
                 ).filter(
                     AxRoleFieldPermission.role_guid == uuid.UUID(role_guid)
                 ).filter(
-                    AxRoleFieldPermission.field_guid == current_guid
-                ).first()
+                    AxRoleFieldPermission.field_guid.is_(None)
+                ).delete()
 
-                if ax_perm is None:
-                    ax_perm = AxRoleFieldPermission()
-                    ax_perm.form_guid = uuid.UUID(form_guid)
-                    ax_perm.role_guid = uuid.UUID(role_guid)
-                    ax_perm.field_guid = current_guid
-                    ax_perm.state_guid = uuid.UUID(state_guid)
-                    ax_perm.read = read
-                    ax_perm.edit = edit
-                    db_session.add(ax_perm)
-                else:
-                    ax_perm.read = read
-                    ax_perm.edit = edit
+            # If field is tab - web must delete all permission for fields
+            # of this tab
+            if ax_field and ax_field.is_tab:
+                tab_fields = db_session.query(AxField).filter(
+                    AxField.parent == ax_field_guid
+                ).all()
+                tab_fields_guids = [fld.guid for fld in tab_fields]
 
-                db_session.flush()
+                tab_perms = db_session.query(
+                    AxRoleFieldPermission
+                ).filter(
+                    AxRoleFieldPermission.state_guid == uuid.UUID(state_guid)
+                ).filter(
+                    AxRoleFieldPermission.role_guid == uuid.UUID(role_guid)
+                ).filter(
+                    AxRoleFieldPermission.field_guid.in_(tab_fields_guids)
+                ).all()
+
+                for perm in tab_perms:
+                    db_session.delete(perm)
+
+            # If field is not tab - web must delete tab permission
+            if ax_field and not ax_field.is_tab:
+                db_session.query(
+                    AxRoleFieldPermission
+                ).filter(
+                    AxRoleFieldPermission.state_guid == uuid.UUID(state_guid)
+                ).filter(
+                    AxRoleFieldPermission.role_guid == uuid.UUID(role_guid)
+                ).filter(
+                    AxRoleFieldPermission.field_guid == ax_field.parent
+                ).delete()
+
+
+            ax_perm = db_session.query(
+                AxRoleFieldPermission
+            ).filter(
+                AxRoleFieldPermission.state_guid == uuid.UUID(state_guid)
+            ).filter(
+                AxRoleFieldPermission.role_guid == uuid.UUID(role_guid)
+            ).filter(
+                AxRoleFieldPermission.field_guid == ax_field_guid
+            ).first()
+
+            if ax_perm is None:
+                ax_perm = AxRoleFieldPermission()
+                ax_perm.form_guid = uuid.UUID(form_guid)
+                ax_perm.role_guid = uuid.UUID(role_guid)
+                ax_perm.field_guid = ax_field_guid
+                ax_perm.state_guid = uuid.UUID(state_guid)
+                ax_perm.read = read
+                ax_perm.edit = edit
+                db_session.add(ax_perm)
+            else:
+                ax_perm.read = read
+                ax_perm.edit = edit
+
+            db_session.flush()
 
             return_permissions = db_session.query(
                 AxRoleFieldPermission

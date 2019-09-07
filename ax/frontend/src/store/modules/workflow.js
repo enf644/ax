@@ -256,7 +256,7 @@ const DELETE_ROLE_FROM_ACTION = gql`
 `;
 
 const SET_STATE_PERMISSION = gql`
-  mutation ($formGuid: String!, $stateGuid: String!, $roleGuid: String!, $fieldGuid: String!, $read: Boolean!, $edit: Boolean!) {
+  mutation ($formGuid: String!, $stateGuid: String!, $roleGuid: String!, $fieldGuid: String, $read: Boolean!, $edit: Boolean!) {
     setStatePermission(formGuid: $formGuid, stateGuid: $stateGuid, roleGuid: $roleGuid, fieldGuid: $fieldGuid, read: $read, edit: $edit) {
       permissions {
         guid,

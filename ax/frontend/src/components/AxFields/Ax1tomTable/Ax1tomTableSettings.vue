@@ -1,6 +1,6 @@
 <template>
   <AxFieldSettings :guid='guid' :options='changedOptions' @closed='$emit("closed")'>
-    <br>
+    <br />
     <v-autocomplete
       :items='axForms'
       :label='locale("types.Ax1to1.settings-form-select")'
@@ -15,14 +15,14 @@
     >
       <template v-slot:selection='{ item, selected }'>
         <v-chip @click:close='clearForm()' close>
-          <v-avatar class='grey'>
+          <v-avatar class='grey' left>
             <i :class='`ax-chip-icon fas fa-${item.icon}`'></i>
           </v-avatar>
           {{item.name}}
         </v-chip>
       </template>
     </v-autocomplete>
-    <br>
+    <br />
     <v-autocomplete
       :hint='locale("types.Ax1tomTable.settings-inline-grid-hint")'
       :items='axGrids'
@@ -37,14 +37,14 @@
     >
       <template v-slot:selection='{ item, selected }'>
         <v-chip @click:close='clearInlineGrid()' close>
-          <v-avatar class='grey'>
+          <v-avatar class='grey' left>
             <i :class='`ax-chip-icon fas fa-columns`'></i>
           </v-avatar>
           {{item.name}}
         </v-chip>
       </template>
     </v-autocomplete>
-    <br>
+    <br />
     <v-autocomplete
       :hint='locale("types.Ax1to1.settings-grid-hint")'
       :items='axGrids'
@@ -59,14 +59,14 @@
     >
       <template v-slot:selection='{ item, selected }'>
         <v-chip @click:close='clearGrid()' close>
-          <v-avatar class='grey'>
+          <v-avatar class='grey' left>
             <i :class='`ax-chip-icon fas fa-columns`'></i>
           </v-avatar>
           {{item.name}}
         </v-chip>
       </template>
     </v-autocomplete>
-    <br>
+    <br />
     {{locale("types.Ax1tomTable.settings-inline-height")}}
     <v-slider max='1000' min='300' thumb-label v-model='changedOptions.inline_height'></v-slider>
     {{locale("types.Ax1to1.settings-height")}}

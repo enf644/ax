@@ -103,7 +103,6 @@ def init_graphql_view():  # pylint: disable=unused-variable
 def init_routes(sanic_app, deck_path=None):
     """Innitiate all Ax routes"""
     try:
-
         sanic_app.static('/uploads', str(ax_misc.path('uploads')))
         sanic_app.static('/static', str(ax_misc.path('dist/ax/static')))
         sanic_app.static('/stats', str(ax_misc.path('dist/ax/stats.html')))

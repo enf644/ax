@@ -123,6 +123,11 @@ def clear_pipy_dist() -> None:
         filelist = [f for f in os.listdir(str(this.setup_path / 'dist'))]
         for file in filelist:
             os.remove(os.path.join(str(this.setup_path / 'dist'), file))
+
+        filelist = [f for f in os.listdir(str(this.setup_path / 'build'))]
+        for file in filelist:
+            os.remove(os.path.join(str(this.setup_path / 'build'), file))
+
     except Exception:
         logger.exception('Failed clearing /dist folder')
         raise

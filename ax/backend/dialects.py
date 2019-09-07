@@ -258,7 +258,8 @@ class PorstgreDialect(object):
             for row in result:
                 clean_row = {
                     "guid": row["guid"],
-                    "axState": row["axState"]
+                    "axState": row["axState"],
+                    "axLabel": row['axLabel']
                 }
                 for field in ax_form.db_fields:
                     clean_row[field.db_name] = await self.get_value(
@@ -559,7 +560,7 @@ class SqliteDialect(PorstgreDialect):
         if "BLOB" in type_name:
             ret_val = f"LENGTH({db_name}) as \"{db_name}\""
         else:
-            ret_val = f'"db_name"'
+            ret_val = db_name
         return ret_val
 
     async def get_value_sql(self, type_name, db_name):

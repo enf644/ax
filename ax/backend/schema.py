@@ -166,11 +166,11 @@ def make_resolver(db_name, type_class):
     return resolver
 
 
-def init_schema():
+def init_schema(db_session):
     """Initiate GQL schema. Create dynamic part of schema and combine it with
     static part take from schemas folder"""
     error_msg = "Schema -> init_schema. Error initiating GraphQL shcema."
-    with ax_model.scoped_session(error_msg) as db_session:
+    with ax_model.try_catch(db_session, error_msg) as db_session:
         # Create typeClass based on each AxForm
         this.schema = None
         type_classes = {}
@@ -250,3 +250,10 @@ def init_schema():
             types=all_types,
             subscription=Subscription
         )
+
+
+def init_schema_standalone():
+    """ Initiate GQL schema without db_session """
+    error_msg = "Schema -> init_schema. Error initiating GraphQL shcema."
+    with ax_model.scoped_session(error_msg) as db_session:
+        init_schema(db_session)

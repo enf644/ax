@@ -227,7 +227,7 @@ class CreateGrid(graphene.Mutation):
             ax_grid.is_default_view = False
             db_session.add(ax_grid)
             db_session.commit()
-            ax_schema.init_schema()
+            ax_schema.init_schema(db_session)
             return CreateGrid(grid=ax_grid, ok=True)
 
 
@@ -258,7 +258,7 @@ class DeleteGrid(graphene.Mutation):
 
             db_session.delete(ax_grid)
             db_session.commit()
-            ax_schema.init_schema()
+            ax_schema.init_schema(db_session)
             tom_sync_grid(db_session=db_session,
                           form_db_name=form_db_name,
                           old_db_name=old_grid_db_name,
@@ -322,7 +322,7 @@ class UpdateGrid(graphene.Mutation):
             db_session.commit()
 
             if schema_reload_needed:
-                ax_schema.init_schema()
+                ax_schema.init_schema(db_session)
 
             if tom_sync_needed:
                 tom_sync_grid(

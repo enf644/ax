@@ -41,7 +41,7 @@
             </th>
           </thead>
           <tbody>
-            <tr :key='field.guid' v-for='field in axFields'>
+            <tr :key='"f_" + field.guid' v-for='field in axFields'>
               <th>
                 <b v-if='field.isTab'>{{ field.name }}</b>
                 <span v-else>&nbsp;&nbsp;&nbsp; {{ field.name }}</span>
@@ -49,6 +49,7 @@
               <td :key='fieldRole.guid' v-for='fieldRole in axRoles'>
                 <ThePermSwitch
                   :fieldGuid='field.guid'
+                  :parent='field.parent'
                   :roleGuid='fieldRole.guid'
                   :stateGuid='guid'
                 />

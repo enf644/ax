@@ -91,7 +91,7 @@ def init_model(dialect: str, host: str, port: str, login: str, password: str,
                 this.db_url = 'sqlite:///' + db_path
 
             logger.debug('DB url = {url}', url=this.db_url)
-            this.engine = create_engine(this.db_url)
+            this.engine = create_engine(this.db_url, pool_threadlocal=True)
         elif dialect == 'postgre':
             this.db_url = (
                 f'postgresql://{login}:{password}@{host}:{port}/{database}')

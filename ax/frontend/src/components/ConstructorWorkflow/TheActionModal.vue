@@ -30,7 +30,7 @@
       <br />
       <h3>{{$t("workflow.action.settings-roles-list")}}:</h3>
       <v-chip :key='role.guid' @click:close='removeRole(role)' close v-for='role in axRoles'>
-        <v-avatar :style='{ background: role.color }'>
+        <v-avatar :style='{ background: role.color }' left>
           <i :class='getRoleIconClass(role)'></i>
         </v-avatar>
         {{ role.name }}

@@ -2,7 +2,7 @@
   <span>
     <slot v-show='false'></slot>
     <v-chip :key='item.guid' class='chip' v-for='item in axItems'>
-      <v-avatar class='grey'>
+      <v-avatar class='grey' left>
         <i :class='`ax-chip-icon fas fa-${formIcon}`'></i>
       </v-avatar>
       {{item.axLabel}}
@@ -22,14 +22,14 @@
 import uuid4 from 'uuid4';
 import gql from 'graphql-tag';
 import apolloClient from '../../../apollo.js';
-import AxForm from '@/components/AxForm.vue';
+// import AxForm from '@/components/AxForm.vue';
 
 export default {
   name: 'Ax1to1Column',
   props: {
     options_json: null
   },
-  components: { AxForm },
+  components: {},
   data: () => ({
     value: [],
     options: null,

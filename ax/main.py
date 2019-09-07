@@ -40,6 +40,7 @@ import backend.scheduler as ax_scheduler
 import backend.migration as ax_migration
 import backend.routes as ax_routes
 import backend.dialects as ax_dialects
+import backend.emails as ax_emails
 
 # pylint: enable=wrong-import-position
 
@@ -106,7 +107,7 @@ def init_ax():
     # Check if database schema needs update
     ax_migration.init_migration()
     # Initiate gql schema.  Depends on cache and pubsub
-    ax_schema.init_schema()
+    ax_schema.init_schema_standalone()
 
     # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
     CORS(app, automatic_options=True)  # TODO limit CORS to api folder
@@ -131,6 +132,15 @@ def init_ax():
     )
     # Initiate SQL dialects module. Different SQL queries for differents DBs
     ax_dialects.init_dialects(os.environ.get('AX_DB_DIALECT') or 'sqlite')
+
+    # Initiate email sender
+    ax_emails.init_email(
+        smtp_host=os.environ.get('AX_SMTP_HOST'),
+        smtp_login=os.environ.get('AX_SMTP_LOGIN'),
+        smtp_password=os.environ.get('AX_SMTP_PASSWORD'),
+        port=os.environ.get('AX_SMTP_PORT'),
+        ssl=os.environ.get('AX_SMTP_SSL')
+    )
 
 
 ax_logo = """

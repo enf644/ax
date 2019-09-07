@@ -15,7 +15,7 @@
     >
       <template v-slot:selection='{ item, selected }'>
         <v-chip @click:close='clearForm()' close>
-          <v-avatar class='grey'>
+          <v-avatar class='grey' left>
             <i :class='`ax-chip-icon fas fa-${item.icon}`'></i>
           </v-avatar>
           {{item.name}}
@@ -37,7 +37,7 @@
     >
       <template v-slot:selection='{ item, selected }'>
         <v-chip @click:close='clearGrid()' close>
-          <v-avatar class='grey'>
+          <v-avatar class='grey' left>
             <i :class='`ax-chip-icon fas fa-columns`'></i>
           </v-avatar>
           {{item.name}}

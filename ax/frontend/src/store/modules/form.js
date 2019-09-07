@@ -324,6 +324,11 @@ const mutations = {
 const getters = {
   fieldsTabSorted(state) {
     const retFields = [];
+    retFields.push({
+      guid: null,
+      name: 'All fields',
+      isTab: true
+    });
     const tabs = state.fields.filter(field => field.isTab).sort(field => field.position);
     tabs.forEach(tab => {
       retFields.push(tab);

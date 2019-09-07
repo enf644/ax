@@ -59,7 +59,7 @@ def create_tables() -> None:
             logger.error(msg)
             raise Exception(msg)
 
-        ax_model.Base.query = db_session.query_property()
+        # ax_model.Base.query = db_session.query_property()
         ax_model.Base.metadata.create_all(ax_model.engine)
         first_version = AxAlembicVersion()
         first_version.version_num = os.environ.get('AX_DB_REVISION')

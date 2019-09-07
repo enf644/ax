@@ -1372,10 +1372,24 @@ export default {
 
     updateModalAction(doClose = true) {
       const actionGuid = this.$refs.actionModal.currentGuid;
+      let isSelfAction = false;
+      this.$store.state.workflow.actions.forEach(action => {
+        if (
+          action.guid === actionGuid
+          && action.fromStateGuid === action.toStateGuid
+        ) {
+          isSelfAction = action.toStateGuid;
+        }
+      });
+
       setTimeout(() => {
-        this.redrawSingleAction(actionGuid);
+        if (isSelfAction) {
+          this.redrawSingleState(isSelfAction);
+        } else {
+          this.redrawSingleAction(actionGuid);
+        }
         if (doClose) this.closeModal();
-      }, 100);
+      }, 200);
     },
 
     async handleStateDelete(guid) {
