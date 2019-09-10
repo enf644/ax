@@ -1,10 +1,24 @@
 <template>
-  <div class='ax-grid-app' id='ax-grid'>
-    <v-btn @click='reloadGrid' class='reload-btn' icon text>
+  <div class='ax-grid-app' id='ax-grid' ref='gridWrapper'>
+    <v-btn
+      :class='{"reload-btn": !isTomMode,  "reload-btn-tom": isTomMode}'
+      @click='reloadGrid'
+      class='reload-btn'
+      icon
+      text
+    >
       <i class='fas fa-redo-alt'></i>
     </v-btn>
 
-    <v-sheet :class='sheetClass' elevation='5' light ref='sheet'>
+    <v-alert :value='this.gqlException' type='error'>{{locale("grids.error-in-query")}}</v-alert>
+
+    <v-sheet
+      :class='sheetClass'
+      elevation='5'
+      light
+      ref='sheet'
+      v-show='this.gqlException == false'
+    >
       <div class='header'>
         <div class='grid-title' v-show='titleEnabled'>
           <i :class='`fas fa-${this.formIcon}`'></i>
@@ -89,7 +103,10 @@ export default {
     tom_inline_mode: null,
     preselect: null,
     title: null,
-    guids: null
+    guids: null,
+    arguments: null,
+    width: null,
+    height: null
   },
   data() {
     return {
@@ -109,10 +126,19 @@ export default {
       quickSearch: null,
       gridInitialized: false,
       modalGuid: null,
-      actions: null
+      actions: null,
+      gqlException: false
     };
   },
   asyncComputed: {
+    rawArguments() {
+      if (!this.arguments) return null;
+      if (typeof this.arguments === 'string') return this.arguments;
+      if (typeof this.arguments === 'object') {
+        return JSON.stringify(this.arguments);
+      }
+      return null;
+    },
     columnDefs() {
       try {
         if (!this.options || !this.columns) return null;
@@ -221,6 +247,12 @@ export default {
     }
   },
   computed: {
+    // agGridStyle() {
+    //   let retStyle = '';
+    //   if (this.width) retStyle += `width: ${this.width}`;
+    //   if (this.height) retStyle += ` height: ${this.height}`;
+    //   return retStyle;
+    // },
     sheetClass() {
       if (this.options && this.options.enableFlatMode) return 'sheet-flat';
       return 'sheet';
@@ -395,7 +427,7 @@ export default {
           $currentState: String
           $updateTime: String
         ) {
-          grid(
+          axGrid(
             formDbName: $formDbName
             gridDbName: $gridDbName
             updateTime: $updateTime
@@ -429,7 +461,7 @@ export default {
             optionsJson
             isDefaultView
           }
-          form(dbName: $formDbName, updateTime: $updateTime) {
+          axForm(dbName: $formDbName, updateTime: $updateTime) {
             name
             icon
           }
@@ -458,13 +490,13 @@ export default {
           }
         })
         .then(data => {
-          const gridData = data.data.grid;
+          const gridData = data.data.axGrid;
           this.guid = gridData.guid;
           this.name = gridData.name;
           this.dbName = gridData.dbName;
           this.formGuid = gridData.formGuid;
-          this.formName = data.data.form.name;
-          this.formIcon = data.data.form.icon;
+          this.formName = data.data.axForm.name;
+          this.formIcon = data.data.axForm.icon;
           this.isDefaultView = gridData.isDefaultView;
           this.options = JSON.parse(gridData.optionsJson);
           this.columns = gridData.columns
@@ -490,12 +522,14 @@ export default {
       }
 
       const GRID_DATA = placeholder => gql`
-        query ($updateTime: String, $quicksearch: String, $guids: String) {
+        query ($updateTime: String, $quicksearch: String, $guids: String, $arguments: String) {
           ${this.viewDbName} (
             updateTime: $updateTime, 
             quicksearch: $quicksearch, 
-            guids: $guids) {
-              ${placeholder}
+            guids: $guids,
+            arguments: $arguments
+          ) {
+            ${placeholder}
           }
         }
       `;
@@ -505,16 +539,21 @@ export default {
       });
       const dataQuery = GRID_DATA(placeholder);
 
+      // if quicksearch or guids is not null - the grids python code will not be executed!
+      // if quicksearch - then it is tom_inline.
+      // if guids - then it is Ax1omTable
       apolloClient
         .query({
           query: dataQuery,
           variables: {
             updateTime: Date.now(),
             quicksearch: impossibleGuid,
-            guids: this.guidsString
+            guids: this.guidsString,
+            arguments: this.rawArguments
           }
         })
         .then(data => {
+          this.gqlException = false;
           this.rowData = data.data[this.viewDbName];
           if (!this.gridInitialized) this.initAgGrid();
           else {
@@ -525,11 +564,15 @@ export default {
           // this.gridObj.gridOptions.api.setRowData(this.rowData);
         })
         .catch(error => {
+          this.gqlException = true;
           logger.error(`Error in AxGrid => loadData apollo client => ${error}`);
         });
     },
     initAgGrid() {
       try {
+        if (this.width) this.$refs.gridWrapper.style.width = this.width;
+        if (this.height) this.$refs.gridWrapper.style.height = this.height;
+
         const gridOptions = {
           defaultColDef: {
             sortable: this.options.enableSorting,
@@ -662,6 +705,13 @@ export default {
 .reload-btn {
   position: absolute;
   right: 10px;
+  top: 10px;
+  z-index: 100;
+}
+
+.reload-btn-tom {
+  position: absolute;
+  right: 50px;
   top: 10px;
   z-index: 100;
 }

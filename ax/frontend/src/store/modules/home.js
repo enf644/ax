@@ -69,6 +69,17 @@ const CREATE_FORM = gql`
         parent,
         position,
         icon,
+        grids {
+          edges {
+            node {
+              guid,
+              name,
+              dbName,
+              position,
+              isDefaultView
+            }
+          }
+        },        
         tomLabel        
       },
       avalible,

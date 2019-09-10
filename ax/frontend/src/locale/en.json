@@ -144,10 +144,11 @@
         "grid-deleted-toast": "Grid deleted",
         "grid-created-toast": "Grid created",
         "grid-is-default-view": "This grid is set as default view",
-        "serer-filter-btn": "Server filters",
-        "server-filter-header": "Server filters",
+        "query-modal-btn": "Query constructor",
+        "query-builder-header": "Query constructor",
         "select-relation": "Select",
-        "open-select-dialog": "Add relation"
+        "open-select-dialog": "Add relation",
+        "error-in-query": "Error occurred while querying data"
     },
     "workflow": {
         "state": {

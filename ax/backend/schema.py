@@ -8,10 +8,12 @@
 """
 import sys
 import graphene
-# from loguru import logger
+from loguru import logger
 from sqlalchemy import literal
 from graphene_sqlalchemy import SQLAlchemyConnectionField
+from dotmap import DotMap
 import ujson as json
+
 from backend.schemas.users_schema import UsersQuery
 from backend.schemas.users_schema import UsersMutations, UsersSubscription
 from backend.schemas.home_schema import HomeQuery, HomeMutations
@@ -93,6 +95,31 @@ class Subscription(UsersSubscription, ActionSubscription, graphene.ObjectType):
     """Combines all schemas subscription"""
 
 
+def exec_grid_code(form, grid, arguments=None):
+    """ Execute python code to get SQL query """
+    localz = dict()
+    ax = DotMap()  # javascript style dicts item['guid'] == item.guid
+    ax.row.guid = form.row_guid
+    ax.arguments = arguments
+    ax.form = form
+    ax.grid = grid
+    ax.sql = ax_dialects.dialect.custom_query
+    localz['ax'] = ax
+
+    try:
+        exec(str(grid.code), globals(), localz)   # pylint: disable=exec-used
+        ret_ax = localz['ax']
+        return ret_ax.query
+    except SyntaxError as err:
+        logger.exception(
+            f'Error in query for [grid.name] - SyntaxError - {err}')
+        raise
+    except Exception as err:    # pylint: disable=broad-except
+        logger.exception(
+            f'Error in query for [grid.name] - SyntaxError - {err}')
+        raise
+
+
 def make_resolver(db_name, type_class):
     """ Dynamicly create resolver for GrapQL query based on
         db_name - db_name of AxForm + db_name of AxGrid.
@@ -106,7 +133,8 @@ def make_resolver(db_name, type_class):
     """
 
     async def resolver(
-            self, info, update_time=None, quicksearch=None, guids=None):
+            self, info, arguments=None, update_time=None, quicksearch=None,
+            guids=None):
         del update_time, self
         err = f"Schema -> Resolver for {db_name}"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -145,12 +173,31 @@ def make_resolver(db_name, type_class):
 
             # select * from table
             # TODO Add paging
-            results = await ax_dialects.dialect.select_all(
-                db_session=db_session,
-                ax_form=ax_form,
-                quicksearch=quicksearch,
-                server_filter=server_filter,
-                guids=guids)
+            if quicksearch or guids:
+                results = await ax_dialects.dialect.select_all(
+                    db_session=db_session,
+                    ax_form=ax_form,
+                    quicksearch=quicksearch,
+                    server_filter=server_filter,
+                    guids=guids)
+            else:
+                arguments_dict = None
+                if arguments:
+                    try:
+                        arguments_dict = json.loads(arguments)
+                    except Exception as err:
+                        logger.exception(
+                            f'Error reading arguments for grid query - {err}')
+                        raise
+
+                sql = exec_grid_code(
+                    form=ax_form, grid=grid_to_use, arguments=arguments_dict)
+
+                results = await ax_dialects.dialect.select_custom_query(
+                    db_session=db_session,
+                    ax_form=ax_form,
+                    sql=sql,
+                    arguments=arguments_dict)
 
             result_items = []
             for row in results:
@@ -235,6 +282,8 @@ def init_schema(db_session):
                 quicksearch=graphene.Argument(
                     type=graphene.String, required=False),
                 guids=graphene.Argument(
+                    type=graphene.String, required=False),
+                arguments=graphene.Argument(
                     type=graphene.String, required=False)
             )
 

@@ -140,8 +140,8 @@ export default {
     },
     openFormModal(item) {
       if (
-        this.options.enableFormModal ||
-        this.options.enableFormModal === undefined
+        this.options.enableFormModal
+        || this.options.enableFormModal === undefined
       ) {
         this.activeItemGuid = item.guid;
         this.$modal.show(`tom-form-${this.modalGuid}`);

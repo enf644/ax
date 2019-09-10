@@ -3,27 +3,27 @@
     <h3>{{$t("form.columns-header")}}:</h3>
     <div data-cy='fields-tree' ref='tree'></div>
 
-    <br>
+    <br />
     <v-divider></v-divider>
-    <br>
+    <br />
 
-    <v-badge class='drawer-toggle' color='blue-grey' overlap>
+    <v-badge class='drawer-toggle' color='blue-grey' overlap v-model='queryWasModified'>
       <template v-slot:badge>
-        <span class='drawer-toggle-errors'>{{serverFilterRulesCount}}</span>
+        <span class='drawer-toggle-errors'>{{queryWasModified}}</span>
       </template>
-      <v-btn @click='openServerFilterModal' small>
+      <v-btn @click='openQueryModal' small>
         <i class='fas fa-filter'></i>
         &nbsp;
-        {{$t("grids.serer-filter-btn")}}
+        {{$t("grids.query-modal-btn")}}
       </v-btn>
     </v-badge>
 
-    <modal adaptive height='auto' name='server-filter' scrollable width='1000px'>
-      <TheServerFilter @close='closeServerFilterModal'/>
+    <modal adaptive height='auto' name='query-modal' scrollable width='1000px'>
+      <TheQueryModal @close='closeQueryModal' />
     </modal>
 
-    <br>
-    <br>
+    <br />
+    <br />
 
     <v-switch
       :label='this.$t("grids.options-quick-search")'
@@ -122,7 +122,7 @@
 import $ from 'jquery';
 import 'jstree/dist/jstree.js';
 import 'jstree/dist/themes/default/style.css';
-import TheServerFilter from '@/components/ConstructorGrids/TheServerFilter.vue';
+import TheQueryModal from '@/components/ConstructorGrids/TheQueryModal.vue';
 
 export default {
   name: 'admin-grids-drawer-second',
@@ -132,7 +132,7 @@ export default {
     optionsLoaded: false
   }),
   components: {
-    TheServerFilter
+    TheQueryModal
   },
   computed: {
     columns() {
@@ -144,8 +144,8 @@ export default {
     options() {
       return this.$store.state.grids.options;
     },
-    serverFilterRulesCount() {
-      return this.$store.getters['grids/serverFilterRulesCount'];
+    queryWasModified() {
+      return false;
     },
     updateTime() {
       return this.$store.state.grids.updateTime;
@@ -182,11 +182,11 @@ export default {
     // this.options = this.$store.state.grids.options;
   },
   methods: {
-    openServerFilterModal() {
-      this.$modal.show('server-filter');
+    openQueryModal() {
+      this.$modal.show('query-modal');
     },
-    closeServerFilterModal() {
-      this.$modal.hide('server-filter');
+    closeQueryModal() {
+      this.$modal.hide('query-modal');
     },
     saveOptions() {
       if (this.$store.state.grids.loadingDone) {

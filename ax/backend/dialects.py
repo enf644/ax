@@ -182,7 +182,7 @@ class PorstgreDialect(object):
 
 
     async def select_all(self, db_session, ax_form, quicksearch=None,
-                         server_filter=None, guids=None):
+                         guids=None):
         """ Select * from table
 
         Args:
@@ -219,15 +219,12 @@ class PorstgreDialect(object):
                     f"AND {tom_name} LIKE ('%' || :quicksearch || '%') "
                 )
 
-            serverfilter_sql = ''
-            if server_filter and server_filter["params"]:
-                serverfilter_sql = f"AND ({server_filter['sql']})"
-                for key, param in server_filter["params"].items():
-                    sql_params[key] = param
-
             guids_sql = ''
             if guids:
                 guids_array = json.loads(guids)['items']
+                if isinstance(guids_array, str):
+                    guids_array = json.loads(guids_array)
+
                 guids_string = ''
                 if guids_array:
                     for idx, guid in enumerate(guids_array):
@@ -245,15 +242,17 @@ class PorstgreDialect(object):
                     guids_string = ", ".join(
                         "'" + item + "'" for item in guids_array)
                     guids_sql = f"OR guid IN ({guids_string})"
-                    if not quicksearch_sql and not serverfilter_sql:
+                    if not quicksearch_sql:
                         guids_sql = f"AND guid IN ({guids_string})"
             sql = (
                 f'SELECT guid, "axState", {fields_sql}'
                 f', {tom_name} as "axLabel" FROM "{ax_form.db_name}"'
-                f' WHERE (1=1 {quicksearch_sql} {serverfilter_sql}) {guids_sql}'
+                f' WHERE (1=1 {quicksearch_sql}) {guids_sql}'
             )
 
             result = db_session.execute(sql, sql_params).fetchall()
+            # Some values must be converted before returning to GQL
+            # Example - we need to do json.dumps before returning JSON field
             clean_result = []
             for row in result:
                 clean_row = {
@@ -272,6 +271,58 @@ class PorstgreDialect(object):
             logger.exception(
                 f"Error executing SQL - select_all - {sql}")
             raise
+
+
+
+
+    async def select_custom_query(
+            self, db_session, ax_form, sql, arguments=None):
+        """ Custom select query that used in AxGrid and grid_schema
+
+        Args:
+            db_session: SqlAlchemy session
+            ax_form (AxForm): Current AxForm
+            sql (str): Query that must be executed
+            arguments (Dict): SQL query arguments
+
+        Returns:
+            List(Dict): Result of SqlAlchemy query. List of rows
+        """
+        try:
+            tom_name = await self.get_tom_sql(
+                form_db_name=ax_form.db_name,
+                form_name=ax_form.name,
+                tom_label=ax_form.tom_label,
+                fields=ax_form.db_fields)
+
+            db_fields_sql = ", ".join(
+                '"' + field.db_name + '"' for field in ax_form.db_fields)
+            fields_sql = (
+                f'"guid", "axState", {db_fields_sql}, {tom_name} as "axLabel"')
+            final_sql = sql.replace('<ax_fields>', fields_sql)
+
+            result = db_session.execute(final_sql, arguments).fetchall()
+            # Some values must be converted before returning to GQL
+            # Example - we need to do json.dumps before returning JSON field
+            clean_result = []
+            for row in result:
+                clean_row = {
+                    "guid": row["guid"],
+                    "axState": row["axState"],
+                    "axLabel": row['axLabel']
+                }
+                for field in ax_form.db_fields:
+                    clean_row[field.db_name] = await self.get_value(
+                        field.field_type.value_type, row[field.db_name])
+                clean_result.append(clean_row)
+
+            return clean_result
+            # names = [row[0] for row in result]
+        except Exception:
+            logger.exception(
+                f"Error executing SQL - select_all - {sql}")
+            raise
+
 
 
 

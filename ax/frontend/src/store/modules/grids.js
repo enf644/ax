@@ -26,7 +26,7 @@ const ColumnFragment = gql`
 
 const GET_GRID_DATA = gql`
   query ($formDbName: String!, $gridDbName: String!, $updateTime: String) {
-    grid (formDbName: $formDbName, gridDbName: $gridDbName, updateTime: $updateTime) {
+    axGrid (formDbName: $formDbName, gridDbName: $gridDbName, updateTime: $updateTime) {
       guid,
       name,
       dbName,
@@ -38,6 +38,7 @@ const GET_GRID_DATA = gql`
           }
         }
       },
+      code,
       optionsJson,
       isDefaultView,
     }
@@ -85,6 +86,7 @@ const CREATE_GRID = gql`
         name,
         dbName,
         formGuid,
+        code,
         optionsJson,
         isDefaultView,
         columns {
@@ -113,13 +115,14 @@ const DELETE_GRID = gql`
 
 
 const UPDATE_GRID = gql`
-  mutation ($guid: String!, $name: String!, $dbName: String, $optionsJson: String, $isDefaultView: Boolean) {
-    updateGrid(guid: $guid, name: $name, dbName: $dbName, optionsJson: $optionsJson, isDefaultView: $isDefaultView) {
+  mutation ($guid: String!, $name: String!, $dbName: String, $optionsJson: String, $isDefaultView: Boolean, $code: String) {
+    updateGrid(guid: $guid, name: $name, dbName: $dbName, optionsJson: $optionsJson, isDefaultView: $isDefaultView, code: $code) {
       grid {
         guid,
         name,
         dbName,
         formGuid,
+        code,
         optionsJson,
         isDefaultView,
         columns {
@@ -145,6 +148,7 @@ const mutations = {
       state.dbName = grid.dbName;
       state.formGuid = grid.formGuid;
       state.options = JSON.parse(grid.optionsJson);
+      state.code = grid.code;
       state.isDefaultView = grid.isDefaultView;
       state.columns = grid.columns ? grid.columns.edges.map(edge => edge.node) : null;
     } else {
@@ -153,6 +157,7 @@ const mutations = {
       state.dbName = null;
       state.formGuid = null;
       state.options = null;
+      state.code = null;
       state.isDefaultView = null;
       state.columns = [];
     }
@@ -209,8 +214,10 @@ const mutations = {
   },
   setFormDbName(state, formDbName) {
     state.formDbName = formDbName;
+  },
+  setCode(state, code) {
+    state.code = code;
   }
-
 };
 
 const getters = {
@@ -329,8 +336,8 @@ const actions = {
       }
     })
       .then(data => {
-        if (data.data.grid) {
-          context.commit('setGridData', data.data.grid);
+        if (data.data.axGrid) {
+          context.commit('setGridData', data.data.axGrid);
           context.commit('setUpdateTime', Date.now());
         } else {
           logger.error(`Cant find grid => ${payload.gridDbName}`);
@@ -442,6 +449,7 @@ const actions = {
         name: currentName,
         dbName: currentDbName,
         optionsJson: currentOptionsJson,
+        code: context.state.code,
         isDefaultView: currentIsDefaultView
       }
     })
@@ -498,6 +506,7 @@ const state = {
   formDbName: null,
   name: null,
   dbName: null,
+  code: null,
   options: {},
   isDefaultView: null,
   columns: [],

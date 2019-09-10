@@ -62,7 +62,7 @@
 
 <script>
 export default {
-  name: 'TheGridSettings',
+  name: 'TheGridModal',
   data() {
     return {
       guid: null,

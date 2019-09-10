@@ -15,6 +15,7 @@ from backend.model import GUID, AxForm, AxField, AxGrid, AxAction, AxState, \
 import backend.model as ax_model
 # import backend.cache as ax_cache
 import backend.dialects as ax_dialects
+from backend.schemas.grids_schema import get_default_grid_code
 import backend.misc as ax_misc
 from backend.schemas.types import Form, PositionInput
 
@@ -101,6 +102,7 @@ async def create_default_grid(db_session, ax_form, name):
         ax_grid.name = name
         ax_grid.db_name = 'Default'
         ax_grid.form_guid = ax_form.guid
+        ax_grid.code = get_default_grid_code(ax_form.db_name);
         ax_grid.position = 1
 
         default_options = {

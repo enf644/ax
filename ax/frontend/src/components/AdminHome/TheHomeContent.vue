@@ -19,6 +19,8 @@
       <br />
       <!-- <ax-form form='Wine'></ax-form> -->
       <!-- <AxForm db_name='Wine'></AxForm> -->
+      <!-- <AxGrid arguments='{"num":1}' form='Marathon' grid='Custom' height='400px' width='100%'></AxGrid> -->
+      <!-- <AxGrid :arguments='gridArgs' form='Marathon' grid='Custom' height='400px' width='100%'></AxGrid> -->
       <ax-test></ax-test>
     </v-sheet>
   </div>
@@ -26,10 +28,16 @@
 
 <script>
 // import AxForm from '@/components/AxForm.vue';
+// import AxGrid from '@/components/AxGrid.vue';
 
 export default {
   name: 'admin-toolbar',
-  components: {},
+  components: {  },
+  data: () => ({
+    gridArgs: {
+      num: 1
+    }
+  }),
   created() {
     // this.$log.info(this.$language.available);
     // if (!this.$store.state.users.isUsersLoaded) {

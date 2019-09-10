@@ -5,15 +5,23 @@ Sea schema.py for more info.
 """
 import uuid
 import graphene
-# from loguru import logger
+from loguru import logger
 import ujson as json
+
 from backend.model import AxForm, AxGrid, AxColumn, AxField
+import backend.dialects as ax_dialects
 import backend.model as ax_model
 
 
 # import backend.cache as ax_cache # TODO use cache!
 from backend.schemas.types import Grid, Column, PositionInput
 
+
+def get_default_grid_code(db_name):
+    code = f"""ax.query = \"\"\"
+    SELECT <ax_fields> FROM "{db_name}";
+\"\"\""""
+    return code
 
 def tom_sync_grid(db_session, form_db_name, old_db_name, new_db_name):
     """ Relation fields such as Ax1to1, Ax1tom and Ax1tomTable are using
@@ -209,6 +217,7 @@ class CreateGrid(graphene.Mutation):
             ax_grid.name = cur_name
             ax_grid.db_name = db_name + str(cur_num)
             ax_grid.form_guid = ax_form.guid
+            ax_grid.code = get_default_grid_code(ax_form.db_name)
             ax_grid.position = len(ax_form.grids) + 1
 
             default_options = {
@@ -273,6 +282,7 @@ class UpdateGrid(graphene.Mutation):
         name = graphene.String()
         db_name = graphene.String()
         options_json = graphene.String()
+        code = graphene.String()
         is_default_view = graphene.Boolean()
 
     ok = graphene.Boolean()
@@ -286,6 +296,7 @@ class UpdateGrid(graphene.Mutation):
             name = args.get('name')
             db_name = args.get('db_name')
             options_json = args.get('options_json')
+            code = args.get('code')
             is_default_view = args.get('is_default_view')
             schema_reload_needed = False
             tom_sync_needed = False
@@ -306,6 +317,9 @@ class UpdateGrid(graphene.Mutation):
 
             if options_json:
                 ax_grid.options_json = options_json
+
+            if code:
+                ax_grid.code = code
 
             if is_default_view:
                 all_grids = db_session.query(AxGrid).filter(
@@ -336,7 +350,7 @@ class UpdateGrid(graphene.Mutation):
 
 class GridsQuery(graphene.ObjectType):
     """Query all data of AxGrid and related classes"""
-    grid = graphene.Field(
+    ax_grid = graphene.Field(
         Grid,
         form_db_name=graphene.Argument(type=graphene.String, required=True),
         grid_db_name=graphene.Argument(type=graphene.String, required=True),
@@ -347,7 +361,7 @@ class GridsQuery(graphene.ObjectType):
         form_db_name=graphene.Argument(type=graphene.String, required=True)
     )
 
-    async def resolve_grid(
+    async def resolve_ax_grid(
             self, info, form_db_name, grid_db_name, update_time=None):
         """Get AxGrid by form db_name and grid db_name"""
         del update_time

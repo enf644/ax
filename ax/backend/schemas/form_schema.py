@@ -9,7 +9,7 @@ import graphene
 # from loguru import logger
 # from sqlalchemy.exc import DatabaseError
 from backend.model import AxForm, AxField, AxFieldType, \
-    AxRoleFieldPermission, AxColumn, AxRole
+    AxRoleFieldPermission, AxColumn
 import backend.model as ax_model
 import backend.dialects as ax_dialects
 from backend.schemas.types import Form, Field, PositionInput, \
@@ -234,9 +234,9 @@ class CreateField(graphene.Mutation):
                         field.parent = current_parent
 
             # add permission for default admin role on every state
-            admin_role = db_session.query(AxRole).filter(
-                AxRole.is_admin.is_(True)
-            ).filter(AxRole.form_guid == ax_form.guid).first()
+            # admin_role = db_session.query(AxRole).filter(
+            #     AxRole.is_admin.is_(True)
+            # ).filter(AxRole.form_guid == ax_form.guid).first()
 
             permissions = []
             # for state in ax_form.states:
@@ -250,7 +250,7 @@ class CreateField(graphene.Mutation):
             #     db_session.add(perm)
             #     permissions.append(perm)
 
-            db_session.flush()
+            db_session.commit()
             ax_schema.init_schema(db_session)  # re-create GQL schema
 
             ok = True
@@ -431,7 +431,7 @@ class ChangeFieldsPositions(graphene.Mutation):
 class FormQuery(graphene.ObjectType):
     """Query all data of AxForm and related classes"""
     # all_fields = graphene.List(Field, form_field=graphene.String())
-    form = graphene.Field(
+    ax_form = graphene.Field(
         Form,
         db_name=graphene.Argument(type=graphene.String, required=True),
         update_time=graphene.Argument(type=graphene.String, required=False)
@@ -443,7 +443,7 @@ class FormQuery(graphene.ObjectType):
         update_time=graphene.Argument(type=graphene.String, required=False)
     )
 
-    async def resolve_form(self, info, db_name=None, update_time=None):
+    async def resolve_ax_form(self, info, db_name=None, update_time=None):
         """ Get AxForm by db_name
 
         Args:

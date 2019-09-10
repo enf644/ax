@@ -33,7 +33,7 @@ const FieldFragment = gql`
 
 const GET_FORM_DATA = gql`
   query ($dbName: String!, $updateTime: String) {
-    form (dbName: $dbName, updateTime: $updateTime) {
+    axForm (dbName: $dbName, updateTime: $updateTime) {
       guid,
       name,
       dbName,
@@ -453,9 +453,9 @@ const actions = {
       }
     })
       .then(data => {
-        if (data.data.form) {
-          context.commit('setFormData', data.data.form);
-          context.commit('workflow/setWorkflowData', data.data.form, { root: true });
+        if (data.data.axForm) {
+          context.commit('setFormData', data.data.axForm);
+          context.commit('workflow/setWorkflowData', data.data.axForm, { root: true });
         } else {
           logger.error(`Cant find form => ${payload.dbName}`);
           const url = '/admin/home';

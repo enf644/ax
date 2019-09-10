@@ -382,7 +382,8 @@ class AxGrid(Base):
     db_name = Column(String(255))
     position = Column(Integer())    # Position in tree
     options_json = Column(String(2000))  # JSON key/value see
-    # TheConstructorGridsDrawerSecond.vue
+                                        # TheConstructorGridsDrawerSecond.vue
+    code = Column(Text(convert_unicode=True)) # code to build SQL query
     # Columns widths stored here too
     form_guid = Column(GUID(), ForeignKey('_ax_forms.guid'))
     form = relationship("AxForm")

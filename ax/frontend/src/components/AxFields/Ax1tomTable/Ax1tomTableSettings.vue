@@ -135,6 +135,7 @@ export default {
         form => form.dbName === this.changedOptions.form
       );
       if (selectedForm) {
+        // console.log(selectedForm);
         const defaultGrid = selectedForm.grids.edges.find(
           edge => edge.node.isDefaultView
         );

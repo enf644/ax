@@ -573,8 +573,14 @@ AX 0.2:
             ✔ Echo for monit restart @done(19-08-31 10:03)
             ✔ Refresh in AxGrid @done(19-09-07 15:36)
             ✔ Email sender - settings from app.yaml, separete function. @done(19-09-07 18:36)
-            ☐ AxGrid takes sql code and arguments
+            ✔ AxGrid takes python code to generate SQL and arguments @done(19-09-10 10:49)
+                ✔ Enter and save python code with sql query @done(19-09-09 12:09)
+                ✔ grid schema exec to get sql query @done(19-09-09 12:09)
+                ✔ grid schema takes arguments that used in query @done(19-09-09 18:23)
+                ✔ AxGrid takes arguments that are passed to gql @done(19-09-10 10:49)
             ☐ Custom code AxField
+            ☐ Update all npm and pip libs
+            ☐ Make npm run serve faster!
     ☐ USERS
         ☐ GAuth - зачем?
         ☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
@@ -600,14 +606,14 @@ AX 0.2:
         ☐ Create marketplace application
     ☐ GLOBAL FROGS
         ☐ Different sorting and filtering for different types
-            ☐ Server filter - must be loaded dynamicly
+            ✘ Server filter - must be loaded dynamicly @cancelled(19-09-08 21:11)
             ☐ Grid filter - must be loaded dynamicly
         ☐ Add clould logger for python and vue
         ☐ Product usage statistics
     ☐ ALL FIELDS v1
         ☐ Identification
-            ☐ GuId
-            ☐ Numeration *
+            ✔ GuId @done(19-09-08 21:26)
+            ✔ Numeration * @done(19-09-08 21:26)
         ☐ Decoration
             ☐ Header
             ☐ Text
@@ -620,7 +626,7 @@ AX 0.2:
             ☐ Decimal
             ☐ Int Slider
         ☐ Boolean
-            ☐ Checkbox
+            ✔ Checkbox @done(19-09-08 21:26)
             ☐ Switch
             ☐ 2D radio survey
         ☐ Payment
@@ -642,7 +648,7 @@ AX 0.2:
             ☐ Radio
             ☐ Tags input
         ☐ Text
-            ☐ Simple text				
+            ✔ Simple text @done(19-09-08 21:27)
             ☐ WYSIWYG
             ☐ Markdown editor
             ☐ Code highlite
@@ -745,10 +751,26 @@ NEW FROGS TODOS:
     ✔ Discover why ripple effects are not working in chrome @done(19-02-13 07:24)
     ✔ Minification not working with vue-custom-element. https://github.com/karol-f/vue-custom-element/issues/159 @done(19-03-01 19:34)
     ✔ Vuetify - include only components that are used @done(19-03-01 02:00)
+    ✔ AxFrom - size transition caouses a ton of resize events that are captured by handleResize @done(19-04-17 09:37)
+    ✔ Error -> if you click fast enoth - setRedirectUrl action does not work @done(19-06-07 16:55)
+    ✔ If field is virtual of readonly - hide hint and required settings @done(19-07-02 12:39)
+    ✔ Change AsyncioPubsub to production pubsub implementation @done(19-05-02 09:37)
+    ☐ `[IMPORTANT]` Roboto font not working with webpack. Replace CDN dependency
+    ☐ `[IMPORTANT]` Replace CDN dependency for wont-awesome
+    ☐ Paging in AxGrid `[IMPORTANT]` 
+    ☐ SSL - apollo, uppy, other ! `[IMPORTANT]`
+    ☐ Error toasts everywhere!! `[IMPORTANT]`
+    ☐ QueuePool limit of size 20 overflow 0 reached, connection timed out, timeout 30 [`IMPORTANT`]
+        ✔ Display number of connections @done(19-09-01 10:23)
+    ☐ Database is locked in sqlite `[IMPORTANT]`
+    ☐ Only 1 worker is working - test with 4 workers `[IMPORTANT]`
+        ☐ Pubsub probably wont work, move to redis?
+        ☐ GQL schema reset will not work - edit throw pubsub?
+        ☐ Cache and record labels probavly wont work - move to redis?
     ☐ Disable maximise on double click on split-panes
     ☐ Discover minimum window size for ax admin. Output warning if window is less then minimum
-    ☐ Python unit-test - сделать и прогнать
-    ☐ `[IMPORTANT]` Webpack - additional minification
+    ✘ Python unit-test - сделать и прогнать @cancelled(19-09-08 21:22)
+    ☐ Webpack - additional minification
         ☐ Roboto - load only one, include in js
         ☐ Font-awesome - only regular, include in js
             ☐ https://github.com/FortAwesome/vue-fontawesome
@@ -756,7 +778,6 @@ NEW FROGS TODOS:
         ☐ Include images in js
     ☐ Margins in ax-form and ax-grid must be responsive. 0% on mobile
     ☐ Do Lazy loading with webpack - load grid first, then form.
-    ✔ Change AsyncioPubsub to production pubsub implementation @done(19-05-02 09:37)
     ☐ Setup must set data in many files:
         ☐ apollo.js - ip, port
         ✔ alembic - database @done(19-03-12 09:25)
@@ -764,33 +785,21 @@ NEW FROGS TODOS:
         ✔ scheduler - UTC zone from app.yaml @done(19-03-12 09:25)
         ☐ model - database constring, set binary=False if DB have uuid type
         ☐ package.json
-    ☐ `[IMPORTANT]` Websockets not working in App Engine Standard! https://issuetracker.google.com/issues/35886348
-    ☐ `[IMPORTANT]` Roboto font not working with webpack. Replace CDN dependency
-    ☐ `[IMPORTANT]` Replace CDN dependency for wont-awesome
+    ☐ Websockets not working in App Engine Standard! https://issuetracker.google.com/issues/35886348
     ☐ Remember opened nodes is JsTree
-    ☐ `[IMPORTANT]`  Security for all admin actions. Only admin can make gql queries
     ☐ AdminHome - if no forms created - output message
     ☐ Cant delete last tab and last field in AxForm
     ☐ Jstree - remember opened nodes
     ☐ If form does not exist, but someone entered via url - must be error
-    ✔ AxFrom - size transition caouses a ton of resize events that are captured by handleResize @done(19-04-17 09:37)
-    ☐ Paging in AxGrid
     ☐ Close icon in form values preview
-    ✔ Error -> if you click fast enoth - setRedirectUrl action does not work @done(19-06-07 16:55)
     ☐ Every gql query error must be visible for user - popup or error toast
     ☐ Hints for every grid constructor option
-    ☐ SSL - apollo, uppy, other ! `[IMPORTANT]`
     ☐ if field removed - remove all files from /uploads/from_files
-    ✔ If field is virtual of readonly - hide hint and required settings @done(19-07-02 12:39)
     ☐ Some fields can be added only once to form - AxNum, AxChangelog
     ☐ Form constructor - when field is dragged to folder - the folder is focused edited and selected
-    ☐ Error toasts everywhere!! `[IMPORTANT]`
     ☐ Long names for form tabs - limit is too small!
     ☐ Del key when editing field names - tryes to delete whole field
-    ☐ Database is locked in sqlite `[IMPORTANT]`
     ☐ If app engine -> disable Web-sockets
-    ☐ QueuePool limit of size 20 overflow 0 reached, connection timed out, timeout 30 [`IMPORTANT`]
-        ✔ Display number of connections @done(19-09-01 10:23)
     ☐ What if database already exists?            
     ☐ If error accured while executing field before/after code -> the exception must be seen in modal for user
 
@@ -823,6 +832,7 @@ NEW FEATURES:
     ☐ favico for each form must be different - same as font-awesome icon
     ☐ Dynamic title and favico - changes for different AxForms
     ☐ Ax and deck must use same node_modules
+    ☐ AxGrid constructor - custom fields. Tree with column types - dragged to grid and enter name and db_name. Db_name must be specified in query.
 
     
 MAYBE LATER:

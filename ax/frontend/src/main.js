@@ -75,7 +75,13 @@ Vue.use(AsyncComputed);
 Vue.config.productionTip = false;
 
 const gridPromise = () => import(/* webpackChunkName: "ax-grid" */ './components/AxGrid.vue').then(m => m.default);
-Vue.customElement('ax-grid', gridPromise, { props: ['form', 'grid', 'update_time'] });
+Vue.customElement(
+  'ax-grid',
+  gridPromise,
+  {
+    props: ['form', 'grid', 'update_time', 'arguments', 'width', 'height']
+  }
+);
 
 const formPromise = () => import(/* webpackChunkName: "ax-form" */ './components/AxForm.vue').then(m => m.default);
 Vue.customElement('ax-form', formPromise, { props: ['db_name', 'row_guid', 'update_time', 'opened_tab'] });

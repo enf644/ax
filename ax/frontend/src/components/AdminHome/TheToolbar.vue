@@ -6,114 +6,113 @@
       </router-link>
     </v-toolbar-title>
 
-    <v-layout align-center class='breadcrumbs' fill-height justify-start>
-      <div class='buttons-div'>
-        <v-btn
-          :disabled='isNotConstructorPath'
-          :to='"/admin/" + this.$route.params.db_name + "/form"'
-          class='constructor-button'
-          small
-          text
-        >
-          <i class='fab fa-wpforms'></i>
-          &nbsp; {{$t("home.toolbar.form-btn")}}
-        </v-btn>
-        <v-btn
-          :disabled='isNotConstructorPath'
-          :to='"/admin/" + this.$route.params.db_name + "/workflow"'
-          class='constructor-button'
-          small
-          text
-        >
-          <i class='fas fa-project-diagram'></i>
-          &nbsp; {{$t("home.toolbar.workflow-btn")}}
-        </v-btn>
-        <v-btn
-          :disabled='isNotConstructorPath'
-          :to='"/admin/" + this.$route.params.db_name + "/grids/" + defaultGridDbName'
-          class='constructor-button'
-          small
-          text
-        >
-          <i class='fas fa-columns'></i>
-          &nbsp; {{$t("home.toolbar.grids-btn")}}
-        </v-btn>
-      </div>
-
-      <div
-        class='current-form-breadcrumb'
-        cy-data='current-form-breadcrumb'
-        v-show='currentFormDbName'
+    <!-- <v-row no-gutters class='breadcrumbs'> -->
+    <div class='buttons-div'>
+      <v-btn
+        :disabled='isNotConstructorPath'
+        :to='"/admin/" + this.$route.params.db_name + "/form"'
+        class='constructor-button'
+        small
+        text
       >
-        <i class='fas fa-angle-right breadcrumb-devider'></i>
-        <i :class='[currentFormIconClass]'></i>
-        {{this.currentFormName}}
+        <i class='fab fa-wpforms'></i>
+        &nbsp; {{$t("home.toolbar.form-btn")}}
+      </v-btn>
+      <v-btn
+        :disabled='isNotConstructorPath'
+        :to='"/admin/" + this.$route.params.db_name + "/workflow"'
+        class='constructor-button'
+        small
+        text
+      >
+        <i class='fas fa-project-diagram'></i>
+        &nbsp; {{$t("home.toolbar.workflow-btn")}}
+      </v-btn>
+      <v-btn
+        :disabled='isNotConstructorPath'
+        :to='"/admin/" + this.$route.params.db_name + "/grids/" + defaultGridDbName'
+        class='constructor-button'
+        small
+        text
+      >
+        <i class='fas fa-columns'></i>
+        &nbsp; {{$t("home.toolbar.grids-btn")}}
+      </v-btn>
+    </div>
+
+    <div
+      class='current-form-breadcrumb'
+      cy-data='current-form-breadcrumb'
+      id='grids-toolbar'
+      v-show='currentFormDbName'
+    >
+      <i class='fas fa-angle-right breadcrumb-devider'></i>
+      <i :class='[currentFormIconClass]'></i>
+      {{this.currentFormName}}
+      <v-btn
+        @click='openFormModal'
+        class='breadcrumbs-action'
+        color='black'
+        cy-data='update-form-btn'
+        icon
+        text
+      >
+        <i class='fas fa-cog breadcrumbs-action-i'></i>
+      </v-btn>
+    </div>
+
+    <modal adaptive height='auto' name='update-form' scrollable>
+      <TheNewForm :guid='this.$store.state.form.guid' @created='closeFormModal' />
+    </modal>
+
+    <v-menu offset-y>
+      <template v-slot:activator='{ on }'>
         <v-btn
-          @click='openFormModal'
+          @click='openGridModal'
           class='breadcrumbs-action'
           color='black'
-          cy-data='update-form-btn'
+          cy-data
           icon
           text
+          v-show='isGridsRoute'
         >
           <i class='fas fa-cog breadcrumbs-action-i'></i>
         </v-btn>
-      </div>
 
-      <modal adaptive height='auto' name='update-form' scrollable>
-        <TheNewForm :guid='this.$store.state.form.guid' @created='closeFormModal' />
-      </modal>
-
-      <v-menu offset-y>
-        <template v-slot:activator='{ on }'>
-          <i class='fas fa-angle-right breadcrumb-devider' v-show='isGridsRoute'></i>
-          <div class='grid-select' v-on='on' v-show='isGridsRoute'>
-            {{currentGridName}}
-            <span class='very-small'>total: {{totalGrids}}</span>
-            <i class='fas fa-caret-down'></i>
-          </div>
-          <v-btn
-            @click='openGridModal'
-            class='breadcrumbs-action'
-            color='black'
-            cy-data
-            icon
-            text
-            v-show='isGridsRoute'
+        <div class='grid-select' v-on='on' v-show='isGridsRoute'>
+          {{currentGridName}}
+          <span class='very-small'>total: {{totalGrids}}</span>
+          <i class='fas fa-caret-down'></i>
+        </div>
+        <i class='fas fa-angle-right breadcrumb-devider' v-show='isGridsRoute'></i>
+      </template>
+      <v-card class='grids-card'>
+        <v-list>
+          <v-list-item
+            :key='index'
+            @click='gotoGrid(grid.dbName)'
+            v-for='(grid, index) in allGrids'
           >
-            <i class='fas fa-cog breadcrumbs-action-i'></i>
-          </v-btn>
-        </template>
-        <v-card class='grids-card'>
-          <v-list>
-            <v-list-item
-              :key='index'
-              @click='gotoGrid(grid.dbName)'
-              v-for='(grid, index) in allGrids'
-            >
-              <v-list-item-title>
-                {{ grid.name }}
-                &nbsp;
-                <i
-                  class='far fa-star'
-                  v-show='grid.isDefaultView'
-                ></i>
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
+            <v-list-item-title>
+              {{ grid.name }}
+              &nbsp;
+              <i class='far fa-star' v-show='grid.isDefaultView'></i>
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
 
-          <v-btn @click='createGrid' small>
-            <i class='fas fa-plus'></i>
-            &nbsp;
-            {{$t("home.create-new-grid-btn")}}
-          </v-btn>
-        </v-card>
-      </v-menu>
+        <v-btn @click='createGrid' small>
+          <i class='fas fa-plus'></i>
+          &nbsp;
+          {{$t("home.create-new-grid-btn")}}
+        </v-btn>
+      </v-card>
+    </v-menu>
 
-      <modal adaptive height='auto' name='update-grid' scrollable>
-        <TheGridSettings :guid='this.$store.state.grids.guid' @updated='closeGridModal' />
-      </modal>
-    </v-layout>
+    <modal adaptive height='auto' name='update-grid' scrollable>
+      <TheGridModal :guid='this.$store.state.grids.guid' @updated='closeGridModal' />
+    </modal>
+
     <v-spacer></v-spacer>
     <transition enter-active-class='animated fadeIn faster' name='fade'></transition>
     <div>
@@ -126,13 +125,13 @@
 
 <script>
 import TheNewForm from '@/components/AdminHome/TheNewForm.vue';
-import TheGridSettings from '@/components/ConstructorGrids/TheGridSettings.vue';
+import TheGridModal from '@/components/ConstructorGrids/TheGridModal.vue';
 
 export default {
   name: 'admin-toolbar',
   components: {
     TheNewForm,
-    TheGridSettings
+    TheGridModal
   },
   computed: {
     allGrids() {
@@ -231,7 +230,7 @@ export default {
 }
 .breadcrumb-devider {
   margin: 0px 30px 0px 30px;
-  color: #c0c0c0;
+  color: #eee;
 }
 .breadcrumbs-ico {
   margin-right: 5px;
@@ -283,7 +282,7 @@ export default {
   /* margin-left: 60px; */
   margin-right: 20px;
   padding-right: 20px;
-  background: #eee;
+  /* background: #eee; */
   white-space: nowrap;
 }
 .constructor-button {

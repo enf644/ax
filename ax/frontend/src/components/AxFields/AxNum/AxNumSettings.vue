@@ -62,13 +62,13 @@ export default {
       this.changedPrivateOptions = this.privateOptions;
     }
     if (!this.changedPrivateOptions.algorithm) {
-      this.changedPrivateOptions.algorithm = '# first value of counter';
+      this.changedPrivateOptions.algorithm = '\n# first value of counter';
       this.changedPrivateOptions.algorithm += 'if not ax_counter:';
       this.changedPrivateOptions.algorithm += '\n    ax_counter=1';
       this.changedPrivateOptions.algorithm
         += '# ax_num will be the value of field';
       this.changedPrivateOptions.algorithm += '\nax_num=f"{ax_counter}"';
-      this.changedPrivateOptions.algorithm += '# Increment counter';
+      this.changedPrivateOptions.algorithm += '\n# Increment counter';
       this.changedPrivateOptions.algorithm
         += '\nax_counter=str(int(ax_counter) + 1)';
     }
