@@ -5,11 +5,11 @@ Sea schema.py for more info.
 """
 import uuid
 import graphene
-from loguru import logger
+# from loguru import logger
 import ujson as json
 
 from backend.model import AxForm, AxGrid, AxColumn, AxField
-import backend.dialects as ax_dialects
+# import backend.dialects as ax_dialects
 import backend.model as ax_model
 
 
@@ -18,10 +18,14 @@ from backend.schemas.types import Grid, Column, PositionInput
 
 
 def get_default_grid_code(db_name):
+    """ Returns default code for grid.
+        Used in createTable (grids_schema)
+        and createForm (home_schema)  """
     code = f"""ax.query = \"\"\"
     SELECT <ax_fields> FROM "{db_name}";
 \"\"\""""
     return code
+
 
 def tom_sync_grid(db_session, form_db_name, old_db_name, new_db_name):
     """ Relation fields such as Ax1to1, Ax1tom and Ax1tomTable are using
@@ -323,8 +327,8 @@ class UpdateGrid(graphene.Mutation):
 
             if is_default_view:
                 all_grids = db_session.query(AxGrid).filter(
-                    AxGrid.form_guid == ax_grid.form_guid
-                    and AxGrid.guid != ax_grid.guid
+                    AxGrid.form_guid == ax_grid.form_guid and
+                    AxGrid.guid != ax_grid.guid
                 ).all()
 
                 for grid in all_grids:
@@ -381,7 +385,7 @@ class GridsQuery(graphene.ObjectType):
             for column in grid.columns:
                 if column.field.field_type.is_virtual:
                     column.field.db_name = (
-                        column.field.field_type.default_db_name)
+                        column.field.field_type.is_virtual)
 
             return grid
 

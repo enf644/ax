@@ -857,18 +857,21 @@ export default {
         })
         .subscribe(
           data => {
-            if (!this.terminalIsAvalible) {
-              this.terminalIsAvalible = true;
-              this.openTerminalModal();
-            }
             const msg = data.data.consoleNotify.text;
             // console.log(msg);
             if (msg === 'ax_console::reload' && this.doActionTimeout) {
               this.doActionTimeout = false;
               this.reloadData();
+            } else if (msg === 'ax_console::reload') {
+              return false;
             } else {
+              if (!this.terminalIsAvalible) {
+                this.terminalIsAvalible = true;
+                this.openTerminalModal();
+              }
               this.terminal.write(`${msg}`);
             }
+            return true;
           },
           {
             error(error) {

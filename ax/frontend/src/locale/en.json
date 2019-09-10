@@ -231,6 +231,7 @@
         "group-files": "Files",
         "group-users": "Users",
         "group-communication": "Communication",
+        "group-decoration": "Decoration",
         "AxGuid": {
             "name": "Guid"
         },
@@ -345,6 +346,10 @@
         },
         "AxComments": {
             "name": "Comments"
+        },
+        "AxHtml": {
+            "name": "Custom html",
+            "settings-code": "Html"
         }
     }
 }

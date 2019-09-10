@@ -155,19 +155,6 @@ async def get_actions(form, current_state=None):
     return ret_actions
 
 
-async def aexec(code, localz, **kwargs):
-    """ This function wraps python code from AxAction with async function
-    and runs it """
-    # Restore globals later
-    args = ", ".join(list(kwargs.keys()))
-    code_from_action = code.replace("\n", "\n    ")
-    async_code = (f"async def func({args}):"
-                  f"\n    {code_from_action}"
-                  f"\n    return ax")
-    exec(async_code, {}, localz)    # pylint: disable=exec-used
-    # Don't expect it to return from the coro.
-    result = await localz["func"](**kwargs)
-    return result
 
 
 
@@ -225,7 +212,8 @@ async def do_exec(db_session, action, form, arguments=None, modal_guid=None):
     try:
         # exec(str(action.code), globals(), localz)   # pylint: disable=exec-used
         # await eval('exec(str(action.code), globals(), localz)')
-        ret_ax = await aexec(code=str(action.code), localz=localz, ax=ax)
+        ret_ax = await ax_misc.aexec(
+            code=str(action.code), localz=localz, ax=ax)
         ret_ax = localz['ax']
 
         ret_data = {
@@ -610,7 +598,7 @@ async def execute_action(
                 aiopubsub.Key('do_action'), notify_message)
 
             await ax_cache.cache.delete(f'lock_{row_guid}')
-            console_log('ax_console::reload', modal_guid)
+            await console_log('ax_console::reload', modal_guid)
             return {
                 "form": tobe_form,
                 "new_guid": return_guid,

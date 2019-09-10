@@ -1,8 +1,7 @@
 """AxNum field type functions - before, after / insert, update, delete"""
-import sys
-import traceback
 import ujson as json
 from backend.model import AxMetric
+import backend.misc as ax_misc
 
 
 async def before_insert(db_session, field, before_form, tobe_form, action,
@@ -12,7 +11,7 @@ async def before_insert(db_session, field, before_form, tobe_form, action,
 
     Returns:
         Object: Returns updated value of current field"""
-    del before_form, action, current_user, tobe_form
+    del before_form, action, current_user
 
     if not field.private_options_json or field.private_options_json == '{}':
         return None
@@ -40,47 +39,15 @@ async def before_insert(db_session, field, before_form, tobe_form, action,
         current_counter.value = None
         db_session.add(current_counter)
 
-    localz = dict()
-    localz['ax_counter'] = current_value
-    localz['ax_num'] = current_value
+    arguments = {
+        "counter": current_value
+    }
 
-    try:
-        exec(code, globals(), localz)  # pylint: disable=W0122
-        current_counter.value = localz['ax_counter']
-        field.needs_sql_update = True
-        field.value = localz['ax_num']
-    except SyntaxError as err:
-        error_class = err.__class__.__name__
-        detail = err.args[0]
-        line_number = err.lineno
-        ret_data = {
-            "exception": {
-                "error_class": error_class,
-                "line_number": line_number,
-                "detail": detail
-            },
-        }
-        field.value = json.dumps(ret_data)
-    except Exception as err:  # pylint: disable=W0703
-        error_class = err.__class__.__name__
-        detail = err.args[0]
-        cl, exc, tb = sys.exc_info()
-        del cl, exc
-        line_number = traceback.extract_tb(tb)[-1][1]
-        del tb
-        ret_data = {
-            "exception": {
-                "error_class": error_class,
-                "line_number": line_number,
-                "action_name": action.name,
-                "detail": detail
-            }
-        }
-        field.value = json.dumps(ret_data)
+    ax = await ax_misc.execute_field_code(
+        code=code, form=tobe_form, arguments=arguments)
+
+    field.needs_sql_update = True
+    field.value = ax.value
+    current_counter.value = ax.counter
 
     return field.value
-
-man = """
-SELECT *
-FROM "Wine" WHERE 'asd' 
-"""

@@ -578,9 +578,13 @@ AX 0.2:
                 ✔ grid schema exec to get sql query @done(19-09-09 12:09)
                 ✔ grid schema takes arguments that used in query @done(19-09-09 18:23)
                 ✔ AxGrid takes arguments that are passed to gql @done(19-09-10 10:49)
-            ☐ Custom code AxField
-            ☐ Update all npm and pip libs
+            ✔ AxHtml @done(19-09-10 18:48)
+                ✔ Field components @done(19-09-10 13:02)
+                ✔ Python code is saved @done(19-09-10 18:47)
+                ✔ Python code is runned before form is displayed. Html displayed. @done(19-09-10 18:47)
+            ✔ Upgrade AxNum - form values in python code @done(19-09-10 18:48)
             ☐ Make npm run serve faster!
+            ☐ Update all npm and pip libs
     ☐ USERS
         ☐ GAuth - зачем?
         ☐ Админ дает доступ пользователю или группе на Папку в списке объектов.

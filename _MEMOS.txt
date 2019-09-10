@@ -1,4 +1,11 @@
 
+
+DB CHANGES
+    AxGrid -> + code
+    AxGrid -> - server_filter
+    AxFieldType -> + is_display_backend_avalible
+
+
 THINK ABOUT
     Подумать над шрифтом Segoi UI
     ☐ https://swagger.io/

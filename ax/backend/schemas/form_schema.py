@@ -3,22 +3,57 @@ Defines manipulation with form AxForm.
 All mutations are used in form constructor - create/update/delete for Tab, Field
 Query form_data is used in AxForm.vue as main form query.
 """
-
+import os
 import uuid
 import graphene
 # from loguru import logger
 # from sqlalchemy.exc import DatabaseError
+import ujson as json
+
 from backend.model import AxForm, AxField, AxFieldType, \
     AxRoleFieldPermission, AxColumn
 import backend.model as ax_model
+import backend.misc as ax_misc
 import backend.dialects as ax_dialects
+
 from backend.schemas.types import Form, Field, PositionInput, \
     RoleFieldPermission
 import backend.schemas.action_schema as action_schema
-import ujson as json
+import backend.fields.AxHtml as AxFieldAxHtml  # pylint: disable=unused-import
 
 
-async def set_form_values(db_session, ax_form, row_guid):
+async def exec_display_backend(db_session, field, form, current_user):
+    """ Executes one fields backend code before_display() """
+    tag = field.field_type.tag
+    field_py_file_path = f"backend/fields/{tag}.py"
+    function_name = "before_display"
+
+    if os.path.exists(ax_misc.path(field_py_file_path)):
+        field_py = globals()[f'AxField{tag}']
+        if field_py and hasattr(field_py, function_name):
+            method_to_call = getattr(field_py, function_name)
+            new_value = await method_to_call(
+                db_session=db_session,
+                field=field,
+                form=form,
+                current_user=current_user)
+            return new_value
+    return field.value
+
+
+async def execute_before_display(db_session, ax_form, current_user):
+    """ for each field - execute before_display() if needed """
+    for field in ax_form.no_tab_fields:
+        if field.field_type.is_display_backend_avalible:
+            field.value = await exec_display_backend(
+                db_session=db_session,
+                field=field,
+                form=ax_form,
+                current_user=current_user)
+    return ax_form
+
+
+async def set_form_values(db_session, ax_form, row_guid, current_user):
     """ Select row from DB and set AxForm.fields values, state and rowGuid
 
     Args:
@@ -48,9 +83,16 @@ async def set_form_values(db_session, ax_form, row_guid):
                 field.value = await ax_dialects.dialect.get_value(
                     type_name=field.field_type.value_type,
                     value=result[0][field.db_name])
-            if field.is_tab is False and field.is_virtual:
-                field.value = result[0][field.field_type.default_db_name]
 
+                if field.is_virtual:
+                    field.value = result[0][field.field_type.default_db_name]
+
+                if field.field_type.is_display_backend_avalible:
+                    field.value = await exec_display_backend(
+                        db_session=db_session,
+                        field=field,
+                        form=ax_form,
+                        current_user=current_user)
     return ax_form
 
 
@@ -214,7 +256,7 @@ class CreateField(graphene.Mutation):
 
             db_session.add(ax_field)
 
-            if ax_field_type.is_virtual is False:
+            if not ax_field_type.is_virtual:
                 await ax_dialects.dialect.add_column(
                     db_session=db_session,
                     table=ax_form.db_name,
@@ -472,6 +514,7 @@ class FormQuery(graphene.ObjectType):
         Returns:
             AxForm: Form with field values, avaluble actions, state, row_guid
         """
+        current_user = None
         err = 'Error in gql query - form_schema -> resolve_form_data'
         with ax_model.try_catch(
                 info.context['session'], err, no_commit=True) as db_session:
@@ -483,7 +526,15 @@ class FormQuery(graphene.ObjectType):
 
             if row_guid is not None:
                 ax_form = await set_form_values(
-                    db_session=db_session, ax_form=ax_form, row_guid=row_guid)
+                    db_session=db_session,
+                    ax_form=ax_form,
+                    row_guid=row_guid,
+                    current_user=current_user)
+
+            ax_form = await execute_before_display(
+                db_session=db_session,
+                ax_form=ax_form,
+                current_user=current_user)
 
             ax_form.avalible_actions = await action_schema.get_actions(
                 form=ax_form,

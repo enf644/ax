@@ -220,7 +220,7 @@ class AxForm(Base):
         """Only AxFields that are database columns"""
         db_fields = []
         for field in self.fields:
-            if field.is_tab is False and field.field_type.is_virtual is False:
+            if field.is_tab is False and not field.field_type.is_virtual:
                 db_fields.append(field)
         return db_fields
 
@@ -266,7 +266,7 @@ class AxFieldType(Base):
                       default=False)  # Used in types tree
     # virtual meens that field is calculated, not stored in database
     # DB column is not created
-    is_virtual = Column(Boolean, unique=False, default=False)
+    is_virtual = Column(String(255), nullable=True, default=None)
     # readonly meens that field is set by backend or action.
     # DB column is created but data does not come from form.
     is_readonly = Column(Boolean, unique=False, default=False)
@@ -283,6 +283,9 @@ class AxFieldType(Base):
     is_updated_always = Column(Boolean, unique=False, default=False)
     # True meens that current field type always must be displayed as whole row
     is_always_whole_row = Column(Boolean, unique=False, default=False)
+    # True if fields type have python code that must be executed before form
+    # is displayed. Check backend/fields/ for more info
+    is_display_backend_avalible = Column(Boolean, unique=False, default=False)
 
     def __init__(self,
                  tag, name=None,
@@ -293,10 +296,11 @@ class AxFieldType(Base):
                  parent="",
                  icon="",
                  comparator="",
-                 is_virtual=False,
+                 is_virtual=None,
                  is_readonly=False,
                  is_inline_editable=False,
                  is_backend_available=False,
+                 is_display_backend_avalible=False,
                  is_columnn_avalible=False,
                  is_updated_always=False,
                  is_group=False,
@@ -316,6 +320,7 @@ class AxFieldType(Base):
         self.is_readonly = is_readonly
         self.is_inline_editable = is_inline_editable
         self.is_backend_available = is_backend_available
+        self.is_display_backend_avalible = is_display_backend_avalible
         self.is_columnn_avalible = is_columnn_avalible
         self.is_updated_always = is_updated_always
         self.is_always_whole_row = is_always_whole_row
@@ -351,7 +356,9 @@ class AxField(Base):
     @property
     def is_virtual(self):
         """Is current fieldtype is Virtual (calculated field)"""
-        return self.field_type.is_virtual
+        if self.field_type.is_virtual:
+            return True
+        return False
 
     @property
     def options(self):

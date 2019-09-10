@@ -62,15 +62,15 @@ export default {
       this.changedPrivateOptions = this.privateOptions;
     }
     if (!this.changedPrivateOptions.algorithm) {
-      this.changedPrivateOptions.algorithm = '\n# first value of counter';
-      this.changedPrivateOptions.algorithm += 'if not ax_counter:';
-      this.changedPrivateOptions.algorithm += '\n    ax_counter=1';
+      this.changedPrivateOptions.algorithm = '# first value of counter\n';
+      this.changedPrivateOptions.algorithm += 'if not ax.counter:\n';
+      this.changedPrivateOptions.algorithm += '    ax.counter=1\n';
       this.changedPrivateOptions.algorithm
-        += '# ax_num will be the value of field';
-      this.changedPrivateOptions.algorithm += '\nax_num=f"{ax_counter}"';
-      this.changedPrivateOptions.algorithm += '\n# Increment counter';
+        += '# ax.value will be registration number\n';
+      this.changedPrivateOptions.algorithm += 'ax.value=f"{ax.counter}"\n';
+      this.changedPrivateOptions.algorithm += '# Increment counter\n';
       this.changedPrivateOptions.algorithm
-        += '\nax_counter=str(int(ax_counter) + 1)';
+        += 'ax.counter=str(int(ax.counter) + 1)';
     }
     if (!this.changedPrivateOptions.counterKey) {
       this.changedPrivateOptions.counterKey = this.formGuid;

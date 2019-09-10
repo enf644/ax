@@ -82,9 +82,9 @@ def create_field_types() -> None:
             db_session.add(AxFieldType(
                 tag="AxGuid",
                 parent="group-id",
-                default_db_name="guid",
+                default_db_name="rowGuid",
                 position=1,
-                is_virtual=True,
+                is_virtual="guid",
                 comparator="",
                 icon="key"))
             db_session.add(AxFieldType(
@@ -106,9 +106,9 @@ def create_field_types() -> None:
             db_session.add(AxFieldType(
                 tag="AxState",
                 parent="group-process",
-                default_db_name="axState",
+                default_db_name="rowState",
                 position=1,
-                is_virtual=True,
+                is_virtual="axState",
                 icon="code-branch"))
             db_session.add(AxFieldType(
                 tag="AxChangelog",
@@ -155,12 +155,27 @@ def create_field_types() -> None:
                 is_inline_editable=True,
                 icon="font"))
 
+            # Decoration
+            db_session.add(AxFieldType(
+                tag='group-decoration',
+                is_group=True,
+                position=4,
+                icon="code"))
+            db_session.add(AxFieldType(
+                tag="AxHtml",
+                parent="group-decoration",
+                default_db_name="html",
+                position=1,
+                is_virtual="guid",
+                is_display_backend_avalible=True,
+                icon="code"))
+
             # Text
             db_session.add(AxFieldType(
                 tag='group-text',
                 name="types.text",
                 is_group=True,
-                position=4,
+                position=5,
                 icon="align-left"))
             db_session.add(AxFieldType(
                 tag="AxText",
@@ -183,7 +198,7 @@ def create_field_types() -> None:
             db_session.add(AxFieldType(
                 tag='group-number',
                 is_group=True,
-                position=5,
+                position=6,
                 icon="hashtag"))
             db_session.add(AxFieldType(
                 tag="AxInteger",
@@ -219,7 +234,7 @@ def create_field_types() -> None:
             db_session.add(AxFieldType(
                 tag='group-boolean',
                 is_group=True,
-                position=6,
+                position=7,
                 icon="toggle-on"))
             db_session.add(AxFieldType(
                 tag="AxCheckbox",
@@ -235,7 +250,7 @@ def create_field_types() -> None:
             db_session.add(AxFieldType(
                 tag='group-relationship',
                 is_group=True,
-                position=7,
+                position=8,
                 icon="link"))
             db_session.add(AxFieldType(
                 tag="Ax1to1",
@@ -274,7 +289,7 @@ def create_field_types() -> None:
             db_session.add(AxFieldType(
                 tag='group-date',
                 is_group=True,
-                position=8,
+                position=9,
                 icon="calendar"))
             db_session.add(AxFieldType(
                 tag="AxDate",
@@ -290,7 +305,7 @@ def create_field_types() -> None:
             db_session.add(AxFieldType(
                 tag='group-list',
                 is_group=True,
-                position=9,
+                position=10,
                 icon="list"))
             db_session.add(AxFieldType(
                 tag="AxChoise",
@@ -313,7 +328,7 @@ def create_field_types() -> None:
             db_session.add(AxFieldType(
                 tag='group-images',
                 is_group=True,
-                position=10,
+                position=11,
                 icon="image"))
             db_session.add(AxFieldType(
                 tag="AxImageCropDb",
@@ -328,7 +343,7 @@ def create_field_types() -> None:
             db_session.add(AxFieldType(
                 tag='group-files',
                 is_group=True,
-                position=11,
+                position=12,
                 icon="file"))
             db_session.add(AxFieldType(
                 tag="AxFiles",
@@ -343,7 +358,7 @@ def create_field_types() -> None:
             db_session.add(AxFieldType(
                 tag='group-users',
                 is_group=True,
-                position=12,
+                position=13,
                 icon="user"))
             db_session.add(AxFieldType(
                 tag="AxUsers",
@@ -358,7 +373,7 @@ def create_field_types() -> None:
             db_session.add(AxFieldType(
                 tag='group-communication',
                 is_group=True,
-                position=13,
+                position=14,
                 icon="comments"))
             db_session.add(AxFieldType(
                 tag="AxComments",
@@ -369,6 +384,8 @@ def create_field_types() -> None:
                 is_always_whole_row=True,
                 is_backend_available=True,
                 icon="comments"))
+
+            db_session.commit()
     except Exception:
         logger.exception('Failed creating default AxFieldTypes')
         raise
