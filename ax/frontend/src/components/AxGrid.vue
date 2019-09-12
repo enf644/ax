@@ -309,11 +309,7 @@ export default {
       return `${themeClass} grid`;
     },
     isToxModal() {
-      if (
-        this.tom_mode !== undefined
-        || this.tom_inline_mode !== undefined
-        || this.to1_mode !== undefined
-      ) {
+      if (this.tom_mode !== undefined || this.to1_mode !== undefined) {
         return true;
       }
       return false;

@@ -590,6 +590,8 @@ AX 0.2:
                 ☐ code save toast z-index
                 ☐ Field drag - open tree
                 ☐ Tree style - branch margin
+                ☐ Create form, add 1tom - cant select grid
+                ☐ If no rows in AxGrid - loading is shown
             ☐ Discover postgre connection build up
     ☐ USERS
         ☐ GAuth - зачем?
