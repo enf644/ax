@@ -189,10 +189,6 @@ class PorstgreDialect(object):
             db_session: SqlAlchemy session
             ax_form (AxForm): Current AxForm
             quicksearch (str, optional): Search string from AxGrid.vue
-            server_filter (Dict, optional): Dicts with current grid server-
-            filter. Constructed by query builder javascript plugin:
-                sql (str): Sql expression with params, like 'price > :price'
-                params (str): Sql params of query. lile {'price': 20000}
             guids (str, optional): JSON containing list of guids, that must be
                 selected. Used in 1tom fields. Where you need to display only
                 selected guids.
@@ -289,6 +285,9 @@ class PorstgreDialect(object):
             List(Dict): Result of SqlAlchemy query. List of rows
         """
         try:
+            if not sql:
+                return None
+
             tom_name = await self.get_tom_sql(
                 form_db_name=ax_form.db_name,
                 form_name=ax_form.name,
@@ -300,6 +299,7 @@ class PorstgreDialect(object):
             fields_sql = (
                 f'"guid", "axState", {db_fields_sql}, {tom_name} as "axLabel"')
             final_sql = sql.replace('<ax_fields>', fields_sql)
+            final_sql = final_sql.replace('<ax_table>', ax_form.db_name)
 
             result = db_session.execute(final_sql, arguments).fetchall()
             # Some values must be converted before returning to GQL
@@ -348,8 +348,11 @@ class PorstgreDialect(object):
                     num_fields.append(field)
             fields_string = '"guid", "axState"'
             for field in fields_list:
+                field_db_name = field.db_name
+                if field.field_type.is_virtual:
+                    field_db_name = field.field_type.virtual_source
                 field_name = await self.get_select_sql(
-                    field.field_type.value_type, field.db_name)
+                    field.field_type.value_type, field_db_name)
                 fields_string += f', "{field_name}"'
 
             sql = None

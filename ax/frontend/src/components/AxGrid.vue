@@ -1,7 +1,7 @@
 <template>
   <div class='ax-grid-app' id='ax-grid' ref='gridWrapper'>
     <v-btn
-      :class='{"reload-btn": !isTomMode,  "reload-btn-tom": isTomMode}'
+      :class='{"reload-btn": !isToxModal,  "reload-btn-tom": isToxModal}'
       @click='reloadGrid'
       class='reload-btn'
       icon
@@ -10,7 +10,10 @@
       <i class='fas fa-redo-alt'></i>
     </v-btn>
 
-    <v-alert :value='this.gqlException' type='error'>{{locale("grids.error-in-query")}}</v-alert>
+    <v-alert
+      :value='this.gqlException'
+      type='error'
+    >{{locale("grids.error-in-query")}} {{this.form}} {{this.grid}}</v-alert>
 
     <v-sheet
       :class='sheetClass'
@@ -207,9 +210,14 @@ export default {
           // column.field.fieldType.tag
           // params.value
 
+          let fieldDbName = column.field.dbName;
+          if (column.field.fieldType.isVirtual) {
+            fieldDbName = column.field.fieldType.virtualSource;
+          }
+
           columnDefs.push({
             headerName: column.field.name,
-            field: column.field.dbName,
+            field: fieldDbName,
             width: currentWidth,
             pinned: currentPinned,
             cellRenderer: renderer,
@@ -299,6 +307,16 @@ export default {
         }
       }
       return `${themeClass} grid`;
+    },
+    isToxModal() {
+      if (
+        this.tom_mode !== undefined
+        || this.tom_inline_mode !== undefined
+        || this.to1_mode !== undefined
+      ) {
+        return true;
+      }
+      return false;
     },
     isTomMode() {
       return this.tom_mode !== undefined;
@@ -448,6 +466,8 @@ export default {
                     fieldType {
                       tag
                       icon
+                      isVirtual
+                      virtualSource
                       isColumnnAvalible
                     }
                     optionsJson
@@ -535,7 +555,11 @@ export default {
       `;
       let placeholder = 'guid';
       this.columns.forEach(column => {
-        placeholder += `, ${column.field.dbName}`;
+        let fieldDbName = column.field.dbName;
+        if (column.field.fieldType.isVirtual) {
+          fieldDbName = column.field.fieldType.virtualSource;
+        }
+        placeholder += `, ${fieldDbName}`;
       });
       const dataQuery = GRID_DATA(placeholder);
 

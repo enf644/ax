@@ -452,6 +452,7 @@ export default {
                     icon
                     valueType
                     isVirtual
+                    virtualSource
                     isReadonly
                   }
                   isTab

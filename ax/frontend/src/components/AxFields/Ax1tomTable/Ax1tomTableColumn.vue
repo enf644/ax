@@ -62,7 +62,7 @@ export default {
               guid
               axLabel
           }
-          form (dbName: $dbName) {
+          axForm (dbName: $dbName) {
               name
               icon
           }          
@@ -81,7 +81,7 @@ export default {
         })
         .then(data => {
           this.axItems = data.data[this.viewDbName];
-          this.formIcon = data.data.form.icon;
+          this.formIcon = data.data.axForm.icon;
         })
         .catch(error => {
           this.$log.error(

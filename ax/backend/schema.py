@@ -108,16 +108,19 @@ def exec_grid_code(form, grid, arguments=None):
 
     try:
         exec(str(grid.code), globals(), localz)   # pylint: disable=exec-used
+        ret_query = None
         ret_ax = localz['ax']
-        return ret_ax.query
+        if ret_ax and ret_ax.query:
+            ret_query = str(ret_ax.query)
+        return ret_query
     except SyntaxError as err:
         logger.exception(
             f'Error in query for [grid.name] - SyntaxError - {err}')
-        raise
+        return None
     except Exception as err:    # pylint: disable=broad-except
         logger.exception(
             f'Error in query for [grid.name] - SyntaxError - {err}')
-        raise
+        return None
 
 
 def make_resolver(db_name, type_class):
@@ -162,15 +165,13 @@ def make_resolver(db_name, type_class):
                 return None
 
             grid_options = json.loads(grid_to_use.options_json)
-            server_filter = None
-            if 'serverFilter' in grid_options:
-                server_filter = grid_options['serverFilter']
 
             # TODO add permission checks
             allowed_fields = []
             for field in ax_form.db_fields:
                 allowed_fields.append(field.db_name)
 
+            results = None
             # select * from table
             # TODO Add paging
             if quicksearch or guids:
@@ -178,7 +179,6 @@ def make_resolver(db_name, type_class):
                     db_session=db_session,
                     ax_form=ax_form,
                     quicksearch=quicksearch,
-                    server_filter=server_filter,
                     guids=guids)
             else:
                 arguments_dict = None
@@ -198,6 +198,9 @@ def make_resolver(db_name, type_class):
                     ax_form=ax_form,
                     sql=sql,
                     arguments=arguments_dict)
+
+            if not results:
+                return None
 
             result_items = []
             for row in results:

@@ -1,9 +1,22 @@
 
 
 DB CHANGES
-    AxGrid -> + code
+    AxGrid -> + code TEXT
     AxGrid -> - server_filter
-    AxFieldType -> + is_display_backend_avalible
+    AxFieldType -> + is_display_backend_avalible BOOL
+    AxFieldType -> + virtual_source STR255
+
+#	tag	is_virtual	virtual_source
+1	AxGuid	1	guid
+2	AxState	1	axState
+3	AxHtml	1	guid
+
+
+UPDATE "_ax_field_types" SET "virtual_source"='guid' WHERE "tag"='AxGuid'
+UPDATE "_ax_field_types" SET "virtual_source"='axState' WHERE "tag"='AxState'
+
+
+UPDATE "_ax_field_types" SET "virtual_source"='guid' WHERE "tag"='AxHtml'
 
 
 THINK ABOUT

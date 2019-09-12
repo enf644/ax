@@ -56,8 +56,8 @@
         <v-btn
           @click='openIconPicker'
           data-cy='new-form-icon-btn'
-          text
           small
+          text
           v-if='this.$route.params.db_name'
         >
           <i :class='[iconClass]' key='formIcon'></i>
@@ -71,8 +71,8 @@
           @click='deleteForm'
           color='error'
           data-cy='delete-form-btn'
-          text
           small
+          text
           v-if='this.$route.params.db_name'
         >
           <i class='fas fa-trash-alt'></i>
@@ -202,6 +202,9 @@ export default {
     updateForm(e) {
       e.preventDefault();
       if (this.$refs.form.validate()) {
+        let dbNameChanged = false;
+        if (this.dbName !== this.$store.state.form.dbName) dbNameChanged = true;
+
         this.$store
           .dispatch('home/updateForm', {
             guid: this.guid,
@@ -211,7 +214,18 @@ export default {
             tomLabel: this.tomLabel
           })
           .then(() => {
-            this.$store.commit('form/setUpdateTime', Date.now());
+            if (dbNameChanged) {
+              // console.log(`${this.dbName} != ${this.$store.state.form.dbName}`);
+              const url = `/admin/${this.dbName}/form`;
+              // const url = '/admin/home';
+              this.$store.commit('home/setRedirectNeededUrl', url);
+              // this.$router.push({ path: `/admin/${this.dbName}/form` });
+              this.$store.commit('home/setModalMustClose', true);
+              this.$store.commit('home/setDbNameChanged', null);
+            } else {
+              this.$store.commit('form/setUpdateTime', Date.now());
+              this.$store.commit('home/setModalMustClose', true);
+            }
           });
       }
     },

@@ -221,14 +221,6 @@ const mutations = {
 };
 
 const getters = {
-  serverFilterRulesCount(state) {
-    if (state.options.serverFilter
-      && state.options.serverFilterRules.rules
-      && state.options.serverFilterRules.rules.length > 0) {
-      return state.options.serverFilterRules.rules.length;
-    }
-    return 0;
-  },
   columnTreeData(state) {
     const treeData = [];
     const columnsText = `<i class='fas fa-columns' ></i> &nbsp; ${i18n.t('grids.columns')}`;
@@ -247,81 +239,6 @@ const getters = {
       treeData.push(node);
     });
     return treeData;
-  },
-
-  serverFilterData(state) {
-    const filters = [
-      {
-        id: 'guid',
-        label: 'Guid',
-        type: 'string'
-      },
-      {
-        id: 'axState',
-        label: 'Workflow state',
-        type: 'string'
-      }
-    ];
-
-    state.columns.forEach(column => {
-      let theType = 'string';
-      let operators = [];
-      const theInput = 'text';
-      let values = [];
-      const valueTypeName = column.field.fieldType.valueType.toUpperCase();
-
-      if (valueTypeName.includes('INT')) {
-        theType = 'integer';
-        operators = ['equal', 'not_equal', 'in', 'not_in', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'between', 'not_between', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null'];
-      }
-      if (valueTypeName.includes('FLOAT')) {
-        theType = 'double';
-        operators = ['equal', 'not_equal', 'in', 'not_in', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'between', 'not_between', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null'];
-      }
-      if (valueTypeName.includes('DOUBLE')) {
-        theType = 'double';
-        operators = ['equal', 'not_equal', 'in', 'not_in', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'between', 'not_between', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null'];
-      }
-      if (valueTypeName.includes('DECIMAL')) {
-        theType = 'double';
-        operators = ['equal', 'not_equal', 'in', 'not_in', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'between', 'not_between', 'not_ends_with', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null'];
-      }
-      if (valueTypeName.includes('DATE')) {
-        theType = 'date';
-        operators = ['equal', 'not_equal', 'in', 'not_in', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'between', 'not_between', 'begins_with', 'not_begins_with', 'contains', 'not_contains', 'ends_with', 'not_ends_with', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null'];
-      }
-      if (valueTypeName.includes('TIME')) {
-        theType = 'date';
-        operators = ['equal', 'not_equal', 'in', 'not_in', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'between', 'not_between', 'begins_with', 'not_begins_with', 'contains', 'not_contains', 'ends_with', 'not_ends_with', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null'];
-      }
-      if (valueTypeName.includes('VARCHAR')) {
-        theType = 'string';
-        operators = ['equal', 'not_equal', 'in', 'not_in', 'begins_with', 'not_begins_with', 'contains', 'not_contains', 'ends_with', 'not_ends_with', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null'];
-      }
-      if (valueTypeName.includes('TEXT')) {
-        theType = 'string';
-        operators = ['equal', 'not_equal', 'in', 'not_in', 'begins_with', 'not_begins_with', 'contains', 'not_contains', 'ends_with', 'not_ends_with', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null'];
-      }
-      if (valueTypeName.includes('BOOL')) {
-        theType = 'boolean';
-        operators = ['equal', 'not_equal', 'is_null', 'is_not_null'];
-        values = [
-          { 1: 'True' },
-          { 0: 'False' }
-        ];
-      }
-
-      const newFilter = {
-        id: column.field.dbName,
-        label: column.field.name,
-        type: theType,
-        operators,
-        input: theInput,
-        values
-      };
-      filters.push(newFilter);
-    });
-    return filters;
   }
 };
 

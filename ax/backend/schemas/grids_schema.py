@@ -22,7 +22,7 @@ def get_default_grid_code(db_name):
         Used in createTable (grids_schema)
         and createForm (home_schema)  """
     code = f"""ax.query = \"\"\"
-    SELECT <ax_fields> FROM "{db_name}";
+    SELECT <ax_fields> FROM "<ax_table>";
 \"\"\""""
     return code
 
@@ -382,10 +382,11 @@ class GridsQuery(graphene.ObjectType):
 
             # if field is_virtual - we must switch current dbName with
             # field_type.default_db_name
-            for column in grid.columns:
-                if column.field.field_type.is_virtual:
-                    column.field.db_name = (
-                        column.field.field_type.is_virtual)
+            # if grid:
+            #     for column in grid.columns:
+            #         if column.field.field_type.is_virtual:
+            #             column.field.db_name = (
+            #                 column.field.field_type.virtual_source)
 
             return grid
 

@@ -109,6 +109,9 @@ def init_routes(sanic_app, deck_path=None):
         sanic_app.static(
             '/test_webpack', str(ax_misc.path('dist/ax/test.html')))
 
+        sanic_app.static(
+            '/editor.worker.js', str(ax_misc.path('dist/ax/editor.worker.js')))
+
         deck_dist_path = str(ax_misc.path('dist/deck'))
         if deck_path:
             deck_dist_path = deck_path
@@ -163,10 +166,12 @@ def init_routes(sanic_app, deck_path=None):
                 ax_form = db_session.query(AxForm).filter(
                     AxForm.guid == uuid.UUID(form_guid)
                 ).first()
+                current_user = None
                 ax_form = await form_schema.set_form_values(
                     db_session=db_session,
                     ax_form=ax_form,
-                    row_guid=row_guid)
+                    row_guid=row_guid,
+                    current_user=current_user)
 
                 # Get values from row, field
                 field_values = None

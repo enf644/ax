@@ -27,45 +27,74 @@ module.exports = {
   },
   runtimeCompiler: false,
   configureWebpack: () => {
-    const conf = {
-      // devtool: 'source-map',
-      output: {
-        filename: 'static/js/ax-bundle.js',
-        pathinfo: false
-      },
-      optimization: {
-        minimizer: [new TerserPlugin()],
-        minimize: true,
-        // removeAvailableModules: false,
-        removeEmptyChunks: false,
-        splitChunks: false
-      },
-      module: {
-        rules: []
-      },
-      plugins: [
-        new webpack.optimize.LimitChunkCountPlugin({
-          maxChunks: 1
-        }),
-        // new Visualizer(),
-        new VuetifyLoaderPlugin(),
-        new MonocoEditorPlugin({
-          languages: ['json', 'python', 'markdown', 'yaml']
-        })
-      ]
-    };
+    let conf = {};
 
     if (process.env.NODE_ENV === 'production') {
-      // mutate config for production...
+      // --- PRODUCTION CONFIG -----
+      conf = {
+        // devtool: 'source-map',
+        output: {
+          filename: 'static/js/ax-bundle.js',
+          pathinfo: false
+        },
+        optimization: {
+          minimizer: [new TerserPlugin()],
+          minimize: true,
+          // removeAvailableModules: false,
+          removeEmptyChunks: false,
+          splitChunks: false
+        },
+        module: {
+          rules: []
+        },
+        plugins: [
+          new webpack.optimize.LimitChunkCountPlugin({
+            maxChunks: 1
+          }),
+          // new Visualizer(),
+          new VuetifyLoaderPlugin(),
+          new MonocoEditorPlugin({
+            languages: ['json', 'python', 'markdown', 'yaml']
+          })
+        ]
+      };
     } else {
-      delete conf.optimization.splitChunks;
-      conf.optimization.minimize = false;
+      // --- DEVELOPMENT CONFIG -----
+      // delete conf.optimization.splitChunks;
+      // conf.optimization.minimize = false;
+      conf = {
+        output: {
+          pathinfo: false
+        },
+        optimization: {
+          removeAvailableModules: false,
+          removeEmptyChunks: false,
+          splitChunks: false
+        },
+        module: {
+          rules: []
+        },
+        plugins: [
+          new VuetifyLoaderPlugin(),
+          new MonocoEditorPlugin({
+            languages: ['json', 'python', 'markdown', 'yaml']
+          })
+        ]
+      };
     }
 
     return conf;
   },
   filenameHashing: false,
   chainWebpack: config => {
+    config.module
+      .rule('vue')
+      .use('vue-loader')
+      .loader('vue-loader')
+      .tap(options => {
+        options.prettify = false;
+        return options;
+      });
     config.optimization.delete('splitChunks');
   }
 };

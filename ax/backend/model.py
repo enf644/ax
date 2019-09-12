@@ -266,7 +266,8 @@ class AxFieldType(Base):
                       default=False)  # Used in types tree
     # virtual meens that field is calculated, not stored in database
     # DB column is not created
-    is_virtual = Column(String(255), nullable=True, default=None)
+    is_virtual = Column(Boolean, unique=False, default=False)
+    virtual_source = Column(String(255))
     # readonly meens that field is set by backend or action.
     # DB column is created but data does not come from form.
     is_readonly = Column(Boolean, unique=False, default=False)
@@ -296,7 +297,8 @@ class AxFieldType(Base):
                  parent="",
                  icon="",
                  comparator="",
-                 is_virtual=None,
+                 virtual_source=None,
+                 is_virtual=False,
                  is_readonly=False,
                  is_inline_editable=False,
                  is_backend_available=False,
@@ -316,6 +318,7 @@ class AxFieldType(Base):
         self.is_group = is_group
         self.comparator = comparator
         self.icon = icon
+        self.virtual_source = virtual_source
         self.is_virtual = is_virtual
         self.is_readonly = is_readonly
         self.is_inline_editable = is_inline_editable

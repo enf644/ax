@@ -84,7 +84,8 @@ def create_field_types() -> None:
                 parent="group-id",
                 default_db_name="rowGuid",
                 position=1,
-                is_virtual="guid",
+                is_virtual=True,
+                virtual_source='guid',
                 comparator="",
                 icon="key"))
             db_session.add(AxFieldType(
@@ -108,7 +109,8 @@ def create_field_types() -> None:
                 parent="group-process",
                 default_db_name="rowState",
                 position=1,
-                is_virtual="axState",
+                is_virtual=True,
+                virtual_source='axState',
                 icon="code-branch"))
             db_session.add(AxFieldType(
                 tag="AxChangelog",
@@ -166,7 +168,8 @@ def create_field_types() -> None:
                 parent="group-decoration",
                 default_db_name="html",
                 position=1,
-                is_virtual="guid",
+                is_virtual=True,
+                virtual_source='guid',
                 is_display_backend_avalible=True,
                 icon="code"))
 

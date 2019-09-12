@@ -583,8 +583,14 @@ AX 0.2:
                 ✔ Python code is saved @done(19-09-10 18:47)
                 ✔ Python code is runned before form is displayed. Html displayed. @done(19-09-10 18:47)
             ✔ Upgrade AxNum - form values in python code @done(19-09-10 18:48)
-            ☐ Make npm run serve faster!
+            ✔ Upgrade winepower ax version @done(19-09-12 11:13)
+            ✔ Make npm run serve faster! @done(19-09-12 12:32)
             ☐ Update all npm and pip libs
+            ☐ Frogs
+                ☐ code save toast z-index
+                ☐ Field drag - open tree
+                ☐ Tree style - branch margin
+            ☐ Discover postgre connection build up
     ☐ USERS
         ☐ GAuth - зачем?
         ☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
@@ -837,6 +843,7 @@ NEW FEATURES:
     ☐ Dynamic title and favico - changes for different AxForms
     ☐ Ax and deck must use same node_modules
     ☐ AxGrid constructor - custom fields. Tree with column types - dragged to grid and enter name and db_name. Db_name must be specified in query.
+    ☐ Quicksearch in 1tom -> must not be case sansitive
 
     
 MAYBE LATER:

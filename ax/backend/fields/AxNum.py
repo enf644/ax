@@ -1,7 +1,7 @@
 """AxNum field type functions - before, after / insert, update, delete"""
 import ujson as json
 from backend.model import AxMetric
-import backend.misc as ax_misc
+import backend.exec as ax_exec
 
 
 async def before_insert(db_session, field, before_form, tobe_form, action,
@@ -43,7 +43,7 @@ async def before_insert(db_session, field, before_form, tobe_form, action,
         "counter": current_value
     }
 
-    ax = await ax_misc.execute_field_code(
+    ax = await ax_exec.execute_field_code(
         code=code, form=tobe_form, arguments=arguments)
 
     field.needs_sql_update = True

@@ -78,14 +78,14 @@ async def set_form_values(db_session, ax_form, row_guid, current_user):
         ax_form.current_state_name = result[0]['axState']
         ax_form.row_guid = result[0]['guid']
         # populate each AxField with data
-        for field in ax_form.fields:
-            if field in allowed_fields:
-                field.value = await ax_dialects.dialect.get_value(
-                    type_name=field.field_type.value_type,
-                    value=result[0][field.db_name])
-
+        for field in ax_form.no_tab_fields:
+            if field in allowed_fields or field.field_type.is_virtual:
                 if field.is_virtual:
-                    field.value = result[0][field.field_type.default_db_name]
+                    field.value = result[0][field.field_type.virtual_source]
+                else:
+                    field.value = await ax_dialects.dialect.get_value(
+                        type_name=field.field_type.value_type,
+                        value=result[0][field.db_name])
 
                 if field.field_type.is_display_backend_avalible:
                     field.value = await exec_display_backend(
@@ -500,7 +500,12 @@ class FormQuery(graphene.ObjectType):
         with ax_model.try_catch(
                 info.context['session'], err, no_commit=True):
             query = Form.get_query(info=info)
-            return query.filter(AxForm.db_name == db_name).first()
+            result = query.filter(AxForm.db_name == db_name)
+            # return None
+            ret_result = None
+            if result:
+                ret_result = result.first()
+            return ret_result
 
     async def resolve_form_data(
             self, info, db_name=None, row_guid=None, update_time=None):
@@ -523,6 +528,9 @@ class FormQuery(graphene.ObjectType):
 
             query = Form.get_query(info=info)
             ax_form = query.filter(AxForm.db_name == db_name).first()
+
+            if not ax_form:
+                return None
 
             if row_guid is not None:
                 ax_form = await set_form_values(

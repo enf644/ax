@@ -46,7 +46,7 @@ export default {
           gridDbName: newValue,
           updateTime: Date.now()
         });
-        this.$store.commit('grids/setFormDbName', this.currentFormDbName);
+        this.$store.commit('grids/setFormDbName', this.$route.params.db_name);
       }
     },
     redirectNeededUrl(newValue) {

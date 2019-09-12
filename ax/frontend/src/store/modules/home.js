@@ -335,22 +335,24 @@ const getters = {
         treeData.push(node);
         const grids = form.grids ? form.grids.edges.map(edge => edge.node) : null;
         // console.log(grids);
-        grids.forEach(grid => {
-          if (!grid.isDefaultView) {
-            const gridNode = {
-              id: grid.guid,
-              parent: form.guid,
-              text: `${grid.name}`,
-              type: 'default',
-              data: {
-                position: form.position,
-                form: form.dbName,
-                grid: grid.dbName
-              }
-            };
-            treeData.push(gridNode);
-          }
-        });
+        if (grids) {
+          grids.forEach(grid => {
+            if (!grid.isDefaultView) {
+              const gridNode = {
+                id: grid.guid,
+                parent: form.guid,
+                text: `${grid.name}`,
+                type: 'default',
+                data: {
+                  position: form.position,
+                  form: form.dbName,
+                  grid: grid.dbName
+                }
+              };
+              treeData.push(gridNode);
+            }
+          });
+        }
       }
     });
     // console.log(treeData);

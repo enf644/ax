@@ -150,8 +150,8 @@ export default {
     },
     openFormModal(item) {
       if (
-        this.options.enableFormModal ||
-        this.options.enableFormModal === undefined
+        this.options.enableFormModal
+        || this.options.enableFormModal === undefined
       ) {
         this.activeItemGuid = item.guid;
         this.$modal.show(`tom-form-${this.modalGuid}`);
@@ -207,7 +207,7 @@ export default {
               guid
               axLabel
           }
-          form (dbName: $dbName) {
+          axForm (dbName: $dbName) {
               name
               icon
           }          
@@ -226,7 +226,7 @@ export default {
         })
         .then(data => {
           this.axItems = data.data[this.viewDbName];
-          this.formIcon = data.data.form.icon;
+          this.formIcon = data.data.axForm.icon;
 
           // We re-create values incase some of items were deleted or permission was denied.
           const checkedValues = [];
