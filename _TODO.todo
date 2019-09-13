@@ -586,7 +586,7 @@ AX 0.2:
             ✔ Upgrade winepower ax version @done(19-09-12 11:13)
             ✔ Make npm run serve faster! @done(19-09-12 12:32)
             ✔ Update all npm @done(19-09-13 10:49)
-            ☐ Update all pip libs
+            ✔ Update all pip libs @done(19-09-13 11:13)
             ☐ Frogs
                 ☐ code save toast z-index
                 ☐ Field drag - open tree
