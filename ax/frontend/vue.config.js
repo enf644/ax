@@ -8,13 +8,13 @@ module.exports = {
   outputDir: '../dist/ax',
   assetsDir: 'static',
   css: {
-    extract: false
-    // loaderOptions: {
-    //   sass: {
-    //     implementation: require('sass'),
-    //     fiber: require('fibers')
-    //   }
-    // }
+    extract: false,
+    loaderOptions: {
+      sass: {
+        implementation: require('sass'),
+        fiber: require('fibers')
+      }
+    }
   },
   devServer: {
     disableHostCheck: true,

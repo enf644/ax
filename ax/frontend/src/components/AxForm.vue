@@ -211,10 +211,9 @@ import gql from 'graphql-tag';
 import uuid4 from 'uuid4';
 import { Terminal } from 'xterm';
 import { WebLinksAddon } from 'xterm-addon-web-links';
-// import { FitAddon } from 'xterm-addon-fit';
-// import { SearchAddon } from 'xterm-addon-search';
-import * as fit from 'xterm/lib/addons/fit/fit';
-import 'xterm/dist/xterm.css';
+import { FitAddon } from 'xterm-addon-fit';
+import { SearchAddon } from 'xterm-addon-search';
+import 'xterm/css/xterm.css';
 
 // import { settings } from 'cluster';
 
@@ -330,22 +329,16 @@ export default {
       return i18n.t(key, values);
     },
     initiateTerminal() {
-      Terminal.applyAddon(fit);
       this.terminal = new Terminal({
         fontSize: 14,
         fontFamily: 'Consolas, courier-new, courier, sans-serif'
       });
 
-      // #d4d4d4 vs code white color
       this.terminal.setOption('theme', { background: '#1e1e1e' });
       this.terminal.setOption('cursorBlink', false);
       this.terminal.setOption('convertEol', true);
-      this.terminal.loadAddon(new WebLinksAddon());
-      // this.terminal.on('data', data => {
-      //   this.terminal.write(data);
-      // });
-      // this.terminal.loadAddon(new FitAddon());
-      // this.terminal.loadAddon(new SearchAddon());
+      this.terminal.loadAddon(new FitAddon());
+      this.terminal.loadAddon(new SearchAddon());
     },
     reloadData() {
       setTimeout(() => {
