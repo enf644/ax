@@ -230,6 +230,9 @@ const mutations = {
   setRedirectNeededUrl(state, url) {
     state.redirectNeededUrl = url;
   },
+  setRedirectFromUrl(state, url) {
+    state.redirectFromUrl = url;
+  },
   addGrid(state, grid) {
     state.forms.forEach(form => {
       if (form.guid === grid.formGuid) {
@@ -531,7 +534,9 @@ const state = {
   modalMustClose: false,
   positionChangedFlag: false,
   dbNameChanged: false,
-  redirectNeededUrl: null
+  redirectNeededUrl: null,
+  redirectFromUrl: null,
+  currentUser: null
 };
 
 export default {

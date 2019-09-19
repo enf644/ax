@@ -7,21 +7,18 @@
 
       <br />
 
-      <v-btn
+      <!-- <v-btn
         @click='createNewUser'
         color='success'
         data-cy='add-new-user'
-      >{{$t("users.add-new-user")}}</v-btn>
+      >{{$t("users.add-new-user")}}</v-btn>-->
 
-      <br />
-      <br />
-      <h1>{{ $t("hello")}}</h1>
       <br />
       <!-- <ax-form form='Wine'></ax-form> -->
       <!-- <AxForm db_name='Wine'></AxForm> -->
       <!-- <AxGrid arguments='{"num":1}' form='Marathon' grid='Custom' height='400px' width='100%'></AxGrid> -->
       <!-- <AxGrid :arguments='gridArgs' form='Marathon' grid='Custom' height='400px' width='100%'></AxGrid> -->
-      <ax-test></ax-test>
+      <!-- <ax-test></ax-test> -->
     </v-sheet>
   </div>
 </template>
@@ -32,7 +29,7 @@
 
 export default {
   name: 'admin-toolbar',
-  components: {  },
+  components: {},
   data: () => ({
     gridArgs: {
       num: 1

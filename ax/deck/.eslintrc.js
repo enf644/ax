@@ -9,7 +9,7 @@ module.exports = {
   ],
   "rules": {
     "linebreak-style": 0,
-    "singleQuotes": true,
+    "singleQuotes": 0,
     "comma-dangle": ["error", "never"],
     'import/no-unresolved': "off",
     'import/extensions': "off",

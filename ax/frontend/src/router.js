@@ -4,6 +4,7 @@ import Test from './views/Test.vue';
 
 const AdminLayout = () => import(/* webpackChunkName: "ax-admin" */ './views/AdminLayout.vue');
 const AdminHome = () => import(/* webpackChunkName: "ax-admin" */ './views/AdminHome.vue');
+const AdminSignin = () => import(/* webpackChunkName: "ax-admin" */ './views/AdminSignin.vue');
 const GridsExplorer = () => import(/* webpackChunkName: "ax-admin" */ './views/GridsExplorer.vue');
 const ConstructorForm = () => import(/* webpackChunkName: "ax-admin" */ './views/ConstructorForm.vue');
 const ConstructorWorkflow = () => import(/* webpackChunkName: "ax-admin" */ './views/ConstructorWorkflow.vue');
@@ -76,6 +77,11 @@ export default new Router({
           component: PagesDesigner
         }
       ]
+    },
+    {
+      path: '/signin',
+      name: 'admin-signin',
+      component: AdminSignin
     },
     {
       path: '/form/:db_name',

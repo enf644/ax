@@ -614,6 +614,7 @@ class HomeQuery(graphene.ObjectType):
             type=graphene.String, required=False)
     )
     sql_status = graphene.String()
+    ping = graphene.String()    
 
     async def resolve_all_forms(self, info, update_time):
         """Get all users"""
@@ -630,6 +631,12 @@ class HomeQuery(graphene.ObjectType):
         """ - """
         del info
         return ax_model.engine.pool.status()
+
+
+    def resolve_ping(self, info):
+        """ - """
+        del info
+        return "Pong"
 
 
 class HomeMutations(graphene.ObjectType):

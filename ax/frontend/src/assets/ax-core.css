@@ -179,6 +179,10 @@ a {
     height: 42px !important;
 }
 
+.jstree-node {
+    margin-left: 0px !important;
+}
+
 /************ Jstree styles } ***************/
 
 /****************** D3 styles { *************************/

@@ -3,7 +3,7 @@
     <h3>{{$t("form.fields-header")}}:</h3>
     <div data-cy='fields-tree' ref='tree'></div>
 
-    <br>
+    <br />
     <v-btn @click='createTab' data-cy='add-tab-btn' small>
       <i class='far fa-folder'></i>
       &nbsp; {{$t("form.add-tab")}}
@@ -140,7 +140,7 @@ export default {
       const guidId = `#${guid}`;
       setTimeout(() => {
         $(this.$refs.tree).jstree('open_node', $(guidId), false, true);
-      }, 300);
+      }, 400);
     },
     createField(e, data) {
       this.$nextTick(() => {

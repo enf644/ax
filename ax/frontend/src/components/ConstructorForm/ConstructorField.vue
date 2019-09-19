@@ -48,6 +48,7 @@ export default {
   data: () => ({
     currentName: null,
     currentDbName: null,
+    okDbName: null,
     component: null
   }),
   computed: {
@@ -69,19 +70,28 @@ export default {
         let isCorrectDbName = /^([a-z0-9]+)*([A-Z][a-z0-9]*)*$/.test(newValue);
 
         store.state.form.fields.forEach(field => {
-          if (dbName === field.dbName) isCorrectDbName = false;
+          if (dbName === field.dbName && this.guid !== field.guid) {
+            isCorrectDbName = false;
+            console.log(field.dbName);
+          }
         });
         if (dbName === 'axState') isCorrectDbName = false;
         if (dbName === 'axLabel') isCorrectDbName = false;
 
-        if (!isCorrectDbName) this.currentDbName = oldValue;
-        else this.currentDbName = dbName;
+        if (!isCorrectDbName) {
+          this.currentDbName = this.okDbName;
+          console.log(`${this.currentDbName} -> ${this.okDbName}`);
+        } else {
+          this.currentDbName = dbName;
+          this.okDbName = dbName;
+        }
       }
     }
   },
   created() {
     this.currentName = this.name;
     this.currentDbName = this.db_name;
+    this.okDbName = this.db_name;
   },
   mounted() {
     if (store.state.form.createdFieldGuid === this.guid) this.focusName();
@@ -122,6 +132,7 @@ export default {
         });
     },
     async applyDbChange() {
+      if (!this.currentDbName) this.currentDbName = this.db_name;
       store.commit('form/setIsNameChangeOperation', true);
       store
         .dispatch('form/updateField', {

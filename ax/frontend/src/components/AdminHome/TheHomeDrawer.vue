@@ -12,7 +12,7 @@
     <modal adaptive class='mb-3' height='auto' name='new-form' scrollable>
       <TheNewForm @created='closeFormModal' />
     </modal>
-
+    <br />
     <v-btn @click='openFolderModal()' data-cy='create-folder-btn' small>
       <i class='far fa-folder'></i>
       &nbsp; {{$t("home.create-folder-btn")}}
@@ -166,8 +166,8 @@ export default {
             }
           },
           sort(a, b) {
-            return this.get_node(a).data.position
-              > this.get_node(b).data.position
+            return this.get_node(a).data.position >
+              this.get_node(b).data.position
               ? 1
               : -1;
           }

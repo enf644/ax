@@ -9,6 +9,7 @@ import home from './modules/home';
 import test from './modules/test';
 import users from './modules/users';
 import workflow from './modules/workflow';
+import auth from './modules/auth';
 import createLogger from 'vuex/dist/logger';
 
 Vue.use(Vuex);
@@ -23,7 +24,8 @@ const store = new Vuex.Store({
     home,
     users,
     test,
-    workflow
+    workflow,
+    auth
   },
   strict: debug,
   plugins: debug ? [createLogger()] : []
@@ -37,7 +39,8 @@ if (module.hot) {
     './modules/home',
     './modules/users',
     './modules/test',
-    './modules/workflow'
+    './modules/workflow',
+    './modules/auth'
   ], () => {
     const newPages = require('./modules/pages').default;
     const newForm = require('./modules/form').default;
@@ -46,6 +49,7 @@ if (module.hot) {
     const newUsers = require('./modules/users').default;
     const newTest = require('./modules/test').default;
     const newWorkflow = require('./modules/workflow').default;
+    const newAuth = require('./modules/auth').default;
     store.hotUpdate({
       modules: {
         pages: newPages,
@@ -54,7 +58,8 @@ if (module.hot) {
         home: newHome,
         users: newUsers,
         test: newTest,
-        workflow: newWorkflow
+        workflow: newWorkflow,
+        auth: newAuth
       }
     });
   });

@@ -120,14 +120,15 @@ def save_db_revision() -> None:
 def clear_pipy_dist() -> None:
     """Deletes all previos compiled packages"""
     try:
-        filelist = [f for f in os.listdir(str(this.setup_path / 'dist'))]
-        for file in filelist:
-            os.remove(os.path.join(str(this.setup_path / 'dist'), file))
+        # filelist = [f for f in os.listdir(str(this.setup_path / 'dist'))]
+        # for file in filelist:
+        #     os.remove(os.path.join(str(this.setup_path / 'dist'), file))
 
-        filelist = [f for f in os.listdir(str(this.setup_path / 'build'))]
-        for file in filelist:
-            os.remove(os.path.join(str(this.setup_path / 'build'), file))
-
+        # filelist = [f for f in os.listdir(str(this.setup_path / 'build'))]
+        # for file in filelist:
+        #     os.remove(os.path.join(str(this.setup_path / 'build'), file))
+        cmd = 'python setup.py clean --all'
+        subprocess.check_call(cmd, shell=True, cwd=str(this.setup_path))
     except Exception:
         logger.exception('Failed clearing /dist folder')
         raise

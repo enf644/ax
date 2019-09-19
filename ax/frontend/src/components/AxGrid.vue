@@ -169,8 +169,8 @@ export default {
 
           // set width
           if (
-            this.options.widths
-            && Object.prototype.hasOwnProperty.call(
+            this.options.widths &&
+            Object.prototype.hasOwnProperty.call(
               this.options.widths,
               columnModelName
             )
@@ -202,7 +202,8 @@ export default {
             Vue.customElement(kebabName, columnPromise, {
               props: ['options_json']
             });
-            renderer = params => `<${kebabName} options_json='${column.field.optionsJson}'>${params.value}</${kebabName}>`;
+            renderer = params =>
+              `<${kebabName} options_json='${column.field.optionsJson}'>${params.value}</${kebabName}>`;
           } else {
             renderer = params => params.value;
           }
@@ -288,20 +289,20 @@ export default {
       const themeClass = 'ag-theme-material';
       if (this.options) {
         if (
-          (this.options.enableQuickSearch || this.options.enableTitle)
-          && (this.options.enableActions || this.isTomInlineMode)
+          (this.options.enableQuickSearch || this.options.enableTitle) &&
+          (this.options.enableActions || this.isTomInlineMode)
         ) {
           return `${themeClass} grid-search-actions`;
         }
         if (
-          (this.options.enableQuickSearch || this.options.enableTitle)
-          && !(this.options.enableActions || this.isTomInlineMode)
+          (this.options.enableQuickSearch || this.options.enableTitle) &&
+          !(this.options.enableActions || this.isTomInlineMode)
         ) {
           return `${themeClass} grid-search`;
         }
         if (
-          !(this.options.enableQuickSearch || this.options.enableTitle)
-          && (this.options.enableActions || this.isTomInlineMode)
+          !(this.options.enableQuickSearch || this.options.enableTitle) &&
+          (this.options.enableActions || this.isTomInlineMode)
         ) {
           return `${themeClass} grid-actions`;
         }
@@ -575,8 +576,13 @@ export default {
         .then(data => {
           this.gqlException = false;
           this.rowData = data.data[this.viewDbName];
+
           if (!this.gridInitialized) this.initAgGrid();
           else {
+            if (this.rowData == null) {
+              this.gridObj.gridOptions.api.showNoRowsOverlay();
+            }
+
             const filterModel = this.gridObj.gridOptions.api.getFilterModel();
             this.gridObj.gridOptions.api.setRowData(this.rowData);
             this.gridObj.gridOptions.api.setFilterModel(filterModel);
@@ -663,6 +669,11 @@ export default {
           };
           if (this.gridInitialized) this.$emit('modify', eventData);
         };
+
+        if (this.rowData == null) {
+          this.gridObj.gridOptions.api.showNoRowsOverlay();
+        }
+
         this.gridInitialized = true;
 
         setTimeout(() => {

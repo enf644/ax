@@ -37,11 +37,15 @@ import Vuetify, {
 // import 'vuetify/src/stylus/app.styl';
 import VuetifyDialog from 'vuetify-dialog';
 import 'vuetify-dialog/dist/vuetify-dialog.css';
-
 import App from './App.vue';
 import router from './router';
-import store from './store';
 import i18n from './locale.js';
+
+import VueCookies from 'vue-cookies'
+Vue.use(VueCookies)
+VueCookies.config('7d')
+
+import store from './store';
 import AxTest from './components/AxTest.vue';
 
 // Dev dependencies

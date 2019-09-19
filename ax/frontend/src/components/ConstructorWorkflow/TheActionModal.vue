@@ -338,7 +338,7 @@ export default {
   max-height: 100%;
   top: 0px;
   left: 0px;
-  z-index: 1000;
+  z-index: 200;
   overflow: hidden;
 }
 </style>

@@ -164,9 +164,8 @@ def make_resolver(db_name, type_class):
             if not grid_to_use:
                 return None
 
-            grid_options = json.loads(grid_to_use.options_json)
-
             # TODO add permission checks
+            user = info.context['user']
             allowed_fields = []
             for field in ax_form.db_fields:
                 allowed_fields.append(field.db_name)

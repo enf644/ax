@@ -48,12 +48,7 @@ export default {
     fullScreenMode: false
   }),
   // components: { MonacoEditor },
-  computed: {
-    monacoWrapperClass() {
-      if (this.fullScreenMode) return 'monacoWrapperFullScreen';
-      return 'monacoWrapper';
-    }
-  },
+  computed: {},
   mounted() {
     this.code = this.$store.state.grids.code;
   },

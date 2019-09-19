@@ -1,6 +1,6 @@
 """Defines Users Scheme and all mutations"""
 
-import asyncio
+# import asyncio
 import graphene
 # from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyConnectionField
@@ -11,7 +11,7 @@ import aiopubsub
 from backend.misc import convert_column_to_string
 from backend.model import AxUser, GUID
 import backend.model as ax_model
-import backend.cache as ax_cache
+# import backend.cache as ax_cache
 import backend.pubsub as ax_pubsub
 from backend.schemas.types import User
 
@@ -84,10 +84,9 @@ class ChangeUserName(graphene.Mutation):
 
 class UsersQuery(graphene.ObjectType):
     """AxUser queryes"""
-    user = SQLAlchemyConnectionField(User)
+    ax_user = SQLAlchemyConnectionField(User)
     find_user = graphene.Field(lambda: User, email=graphene.String())
     all_users = graphene.List(User)
-    ping = graphene.String()
 
     async def resolve_all_users(self, info):
         """Get all users"""
@@ -96,14 +95,12 @@ class UsersQuery(graphene.ObjectType):
                 info.context['session'], err, no_commit=True):
             query = User.get_query(info)  # SQLAlchemy query
             user_list = query.all()
-            await ax_cache.cache.set('user_list', user_list)
             return user_list
 
     def resolve_find_user(self, args, context, info):
         """default find method"""
         err = 'Error in GQL query - find_user.'
-        with ax_model.try_catch(
-                info.context['session'], err, no_commit=True):
+        with ax_model.try_catch(info.context['session'], err, no_commit=True):
             del info
             query = User.get_query(context)
             email = args.get('email')
@@ -111,30 +108,9 @@ class UsersQuery(graphene.ObjectType):
             # eg: filter(and_(param1, param2)).first()
             return query.filter(AxUser.email == email).first()
 
-    def resolve_ping(self, info):
-        """ - """
-        del info
-        return "Pong"
-
 
 class UsersSubscription(graphene.ObjectType):
     """GraphQL subscriptions"""
-    mutation_example = graphene.Field(User)
-    test_sub = graphene.String()
-
-    async def resolve_mutation_example(self, info):
-        """Subscribe to adding new user"""
-        del info
-        try:
-            subscriber = aiopubsub.Subscriber(
-                ax_pubsub.hub, 'new_user_subscriber')
-            subscriber.subscribe(aiopubsub.Key('new_user'))
-            while True:
-                key, payload = await subscriber.consume()
-                del key
-                yield payload
-        except asyncio.CancelledError:
-            await subscriber.remove_all_listeners()
 
 
 class UsersMutations(graphene.ObjectType):

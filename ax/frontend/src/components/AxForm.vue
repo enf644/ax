@@ -339,6 +339,7 @@ export default {
       this.terminal.setOption('convertEol', true);
       this.terminal.loadAddon(new FitAddon());
       this.terminal.loadAddon(new SearchAddon());
+      this.terminal.loadAddon(new WebLinksAddon());
     },
     reloadData() {
       setTimeout(() => {

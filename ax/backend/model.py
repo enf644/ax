@@ -43,7 +43,7 @@ def scoped_session(error_msg=None):
         session.commit()
     except:
         if error_msg:
-            logger.exception(f'⛏⁉️ - {error_msg}')
+            logger.exception(f'scoped_sesion -> {error_msg}')
         session.rollback()
         raise
     finally:
@@ -60,7 +60,7 @@ def try_catch(db_session, error_msg=None, no_commit=False):
             db_session.commit()
     except:
         if error_msg:
-            logger.exception(f'catch - {error_msg}')
+            logger.exception(f'{error_msg}')
         db_session.rollback()
         raise
 
@@ -432,6 +432,8 @@ class AxUser(Base):
     guid = Column(GUID(), primary_key=True,
                   default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String(255))
+    short_name = Column(String(255))
+    info = Column(Text(convert_unicode=True))
     email = Column(String(255))
     password = Column(String(255))
     is_group = Column(Boolean, unique=False, default=False)
@@ -440,6 +442,7 @@ class AxUser(Base):
     is_all_users = Column(Boolean, unique=False, default=False)
     is_anon = Column(Boolean, unique=False, default=False)
     parent = Column(GUID())
+    avatar = Column(LargeBinary)
     position = Column(Integer)
     users = relationship(
         "AxUser",

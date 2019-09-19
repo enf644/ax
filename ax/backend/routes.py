@@ -7,22 +7,20 @@ import uuid
 
 from sanic import response
 from loguru import logger
-# import aiopubsub
-from graphql_ws.websockets_lib import WsLibSubscriptionServer
-from sanic_graphql import GraphQLView
 from graphql.execution.executors.asyncio import AsyncioExecutor
+from graphql_ws.websockets_lib import WsLibSubscriptionServer
 import ujson as json
 
+from backend.graphqlview import GraphQLView
 import backend.cache as ax_cache
 import backend.schema as ax_schema
 import backend.misc as ax_misc
-# import backend.pubsub as ax_pubsub
 from backend.tus import tus_bp
 import backend.model as ax_model
 from backend.model import AxForm, AxField
 import backend.schemas.form_schema as form_schema
-# import backend.scheduler as ax_scheduler
 import backend.dialects as ax_dialects
+
 
 this = sys.modules[__name__]
 
@@ -33,71 +31,34 @@ graphql_view = None
 dummy_view = None
 
 
-class AxGraphQLView(GraphQLView):
-    """ Extends GraphQLView to output GQL errors and schema updates"""
+# class AxGraphQLView(GraphQLView):
+#     """ Extends GraphQLView to output GQL errors and schema updates"""
+#     decorators = [inject_user(), ax_auth.ax_protected()]
 
-    def __init__(self, **kwargs):
-        db_session = ax_model.Session()
-        super().__init__(
-            schema=ax_schema.schema,
-            graphiql=False,
-            enable_async=True,
-            executor=AsyncioExecutor(loop=this.loop),
-            context={'session': db_session}
-        )
+#     def __init__(self, **kwargs):
+#         super().__init__(
+#             schema=ax_schema.schema,
+#             graphiql=False,
+#             enable_async=True,
+#             executor=AsyncioExecutor(loop=this.loop)
+#         )
 
-    @staticmethod
-    def format_error(error):
-        """ This method is required for showing graphql errors """
-        logger.error(error)
-        return GraphQLView.format_error(error)
+#     @staticmethod
+#     def format_error(error):
+#         """ This method is required for showing graphql errors """
+#         logger.error(error)
+#         return GraphQLView.format_error(error)
 
 
 def init_graphql_view():  # pylint: disable=unused-variable
     """Initiate graphql"""
-    this.graphql_view = AxGraphQLView.as_view()
+    this.graphql_view = GraphQLView.as_view(
+        schema=ax_schema.schema,
+        graphiql=False,
+        enable_async=True,
+        executor=AsyncioExecutor(loop=this.loop)
+    )
     this.app.add_route(this.graphql_view, '/api/graphql')
-
-
-# async def do_action():
-#     """ Test function """
-#     from backend.schema import schema
-
-#     values = {
-#         "searchString": "Chateau Lafite Rothschild 1996",
-#         "supplier": "9c198568469447268d62b395badeb71f",
-#         "loader": "0eb38c45e9954442995c6205f2e3f7eb"
-#     }
-
-#     query = f"""
-#         mutation(
-#             $formDbName: String,
-#             $actionDbName: String,
-#             $values: String
-#         ){{
-#             doAction(
-#                 formDbName: $formDbName
-#                 actionDbName: $actionDbName
-#                 values: $values
-#             ) {{
-#                 form {{
-#                 guid
-#                 dbName
-#                 }}
-#                 newGuid
-#                 messages
-#                 ok
-#             }}
-#         }}
-#     """
-#     variables = {
-#         "formDbName": "Stock",
-#         "actionDbName": "addDraft",
-#         "values": json.dumps(values)
-#     }
-#     result = schema.execute(query, variables=variables)
-#     test_str = json.dumps(result.data, sort_keys=True, indent=4)
-#     print(test_str)
 
 
 def init_routes(sanic_app, deck_path=None):

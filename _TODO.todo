@@ -1,4 +1,4 @@
-REFACTORING ROUND ONE:
+ROUND ONE:
 	Переделать Workflow constructor:
 		✔ Дорабатываем демо @done(19-02-04 10:29)
 			✔ ++++ Повторить демо локально - https://gist.github.com/davidmr001/1e9e9d619d5cbbe6f1170b57990d1e0f @done(19-02-04 10:29)
@@ -515,7 +515,7 @@ AX 0.2:
                 ✔ AxForm - after delete -> display empty message @done(19-07-03 17:38)
                 ✔ After action -> display toast in standalone form @done(19-07-03 17:48)
             ✔ Error -> Delete field, column in grid stays @done(19-07-03 18:11)
-    ☐ WINEPOWER MILESTONE
+    ✔ WINEPOWER MILESTONE @done(19-09-13 17:58)
         ✔ Comment every def and gql method like ax_misc @done(19-07-05 10:24)
         ✘ Try catch for every vue method @cancelled(19-07-05 11:23)
         ✔ Fix ALL pylint and jslint errors, warnings and info @done(19-07-05 11:54)
@@ -542,7 +542,7 @@ AX 0.2:
         ✔ Two working versions on same machine - sqlite + postgre @done(19-08-06 18:50)
             ✔ Check if settings works with sqlite file path @done(19-08-06 18:50)
             ✔ Publish to pypi, install, run sqlite version. @done(19-08-06 18:50)
-    ☐ Working Winepower.ru on postgre
+    ✔ Working Winepower.ru on postgre @done(19-09-13 17:57)
             ✔ Upload data object to yandex @done(19-08-11 10:22)
             ✔ Parse new wineart catalog @done(19-08-12 14:24)
             ✔ Install new AX version @done(19-08-12 14:24)
@@ -550,8 +550,7 @@ AX 0.2:
             ✔ winepower vue works locally using vps backend @done(19-08-12 14:24)
             ✔ Upload winepower vue as data object @done(19-08-12 14:29)
             ✔ Configure winepower.ru domain @done(19-08-15 15:30)
-            ☐ Backup automation
-        ☐ Simple authorisation
+            ✘ Backup automation @cancelled(19-09-13 17:57)
         ✔ Errors @done(19-09-07 15:22)
             ✔ Check on small screen - everything must show properly @done(19-08-12 14:30)
             ✔ Take uploads folder from app.yaml @done(19-08-18 11:16)
@@ -569,7 +568,7 @@ AX 0.2:
             ✔ Action is taking long, console is working. But item is not refreshed. @done(19-09-07 12:14)
             ✔ favicon @done(19-09-07 12:14)
             ✔ If action performed - message subscribtion is dubbled @done(19-09-07 15:22)
-        ☐ Reuired fetures
+        ✔ Reuired fetures @done(19-09-13 17:57)
             ✔ Echo for monit restart @done(19-08-31 10:03)
             ✔ Refresh in AxGrid @done(19-09-07 15:36)
             ✔ Email sender - settings from app.yaml, separete function. @done(19-09-07 18:36)
@@ -587,23 +586,57 @@ AX 0.2:
             ✔ Make npm run serve faster! @done(19-09-12 12:32)
             ✔ Update all npm @done(19-09-13 10:49)
             ✔ Update all pip libs @done(19-09-13 11:13)
-            ☐ Frogs
-                ☐ code save toast z-index
-                ☐ Field drag - open tree
-                ☐ Tree style - branch margin
-                ☐ Create form, add 1tom - cant select grid
-                ☐ If no rows in AxGrid - loading is shown
-            ☐ Discover postgre connection build up
+            ✔ Frogs @done(19-09-13 17:57)
+                ✔ code save toast z-index @done(19-09-13 11:45)
+                ✔ Field drag - open tree @done(19-09-13 12:23)
+                ✔ Tree style - branch margin @done(19-09-13 12:45)
+                ✔ If no rows in AxGrid - loading is shown @done(19-09-13 13:02)
+                ✔ Try russian in db_name field @done(19-09-13 17:57)
+            ✔ Discover postgre connection build up @done(19-09-13 17:03)
     ☐ USERS
-        ☐ GAuth - зачем?
-        ☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
-            ☐ Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные
+        ✔ Choose lib @done(19-09-15 08:35)
+        ✔ Sign in form @done(19-09-15 08:35)
+        ✔ Auth for gql @done(19-09-18 19:05)
+            ✔ Auth and store tokens @done(19-09-16 13:53)
+            ✔ Send apollo gql requests with tokens in headers @done(19-09-17 09:29)
+            ✔ Inject user in graphql view, get user guid @done(19-09-17 09:29)
+            ✔ If token recieved and it is not valid -> 401 -> client must retry @done(19-09-17 17:48)
+            ✔ If token not recieved -> anon user @done(19-09-17 18:00)
+            ✔ Admin. If no access token in storage -> redirect to Signin. @done(19-09-18 10:30)
+            ✔ If refresh token failed -> delete all tokens from cookies and vuex, redirect to Signin. @done(19-09-18 10:30)
+            ✔ Admin -> Logout @done(19-09-18 10:30)
+            ✔ Login backlink @done(19-09-18 19:05)
+        ✔ Auth for routes @done(19-09-18 10:30)
+        ✔ User model @done(19-09-19 09:42)
+        ☐ All Users
+            ☐ Insert, update, delete user schema
+            ☐ UsersModal - add, update, delete user
+            ☐ View with ag-grid
+            ☐ Custom gql query
+        ☐ Groups list
+            ☐ Groups gql query
+            ☐ Jstree
+            ☐ User Group modal
         ☐ Roles modal - add users
+        ☐ Create default users on install - admin, anon, all_users
+        ☐ auth.py takes users from database
+        ☐ AxGrid, AxForm -> auth needed setting
+        ☐ AxGrid, AxForm -> sign in dialog when not logged and anon icon if showing 
     ☐ PERMISSION SYSTEM
-        ☐ GraphQL authorisation
+        ☐ When user logs in - his perms are stored in cache. form -> perms list
+        ✔ GraphQL authorisation @done(19-09-18 18:13)
         ☐ Every GQL mutation needs permissions
+            ☐ All admin routes checks if user is admin. Is_admin is stored in jwt.
+            ☐ Select one schema authorisation. (formData)
+            ☐ Select all schema authorisation.
         ☐ AxForm fields permissions
         ☐ Action permissions
+    ☐ PAGES DESIGNER
+        ✔ Routes work with static content @done(19-08-15 14:09)
+        ✔ Routes take path from app.yaml so it can be configured @done(19-08-15 16:48)
+        ☐ Vue application - WPA
+        ☐ Create marketplace application
+    ☐ PHOTO PROJECT
 	☐ MARKETPLACE
 		☐ Dump application to yaml
         ☐ Install application from yaml
@@ -611,12 +644,7 @@ AX 0.2:
         ☐ Git integration
         ☐ Pages in application?
         ☐ Application catalog
-        ☐ Install from git repository (pages use gitcdn)
-    ☐ PAGES DESIGNER
-        ✔ Routes work with static content @done(19-08-15 14:09)
-        ✔ Routes take path from app.yaml so it can be configured @done(19-08-15 16:48)
-        ☐ Vue application - WPA
-        ☐ Create marketplace application
+        ☐ Install from git repository (pages use gitcdn)        
     ☐ GLOBAL FROGS
         ☐ Different sorting and filtering for different types
             ✘ Server filter - must be loaded dynamicly @cancelled(19-09-08 21:11)
@@ -760,7 +788,7 @@ Additional versions:
 
 
 
-NEW FROGS TODOS:
+FROGS TODOS:
     ✔ Discover why ripple effects are not working in chrome @done(19-02-13 07:24)
     ✔ Minification not working with vue-custom-element. https://github.com/karol-f/vue-custom-element/issues/159 @done(19-03-01 19:34)
     ✔ Vuetify - include only components that are used @done(19-03-01 02:00)
@@ -768,13 +796,13 @@ NEW FROGS TODOS:
     ✔ Error -> if you click fast enoth - setRedirectUrl action does not work @done(19-06-07 16:55)
     ✔ If field is virtual of readonly - hide hint and required settings @done(19-07-02 12:39)
     ✔ Change AsyncioPubsub to production pubsub implementation @done(19-05-02 09:37)
+    ✔ QueuePool limit of size 20 overflow 0 reached, connection timed out, timeout 30 @done(19-09-13 17:59)
+        ✔ Display number of connections @done(19-09-01 10:23)
     ☐ `[IMPORTANT]` Roboto font not working with webpack. Replace CDN dependency
     ☐ `[IMPORTANT]` Replace CDN dependency for wont-awesome
     ☐ Paging in AxGrid `[IMPORTANT]` 
     ☐ SSL - apollo, uppy, other ! `[IMPORTANT]`
     ☐ Error toasts everywhere!! `[IMPORTANT]`
-    ☐ QueuePool limit of size 20 overflow 0 reached, connection timed out, timeout 30 [`IMPORTANT`]
-        ✔ Display number of connections @done(19-09-01 10:23)
     ☐ Database is locked in sqlite `[IMPORTANT]`
     ☐ Only 1 worker is working - test with 4 workers `[IMPORTANT]`
         ☐ Pubsub probably wont work, move to redis?
@@ -818,7 +846,7 @@ NEW FROGS TODOS:
 
 
 
-NEW FEATURES:
+FEATURES:
     ☐ Use simple grid (no need for 700kb ag-grid)
     ☐ Remember the width of constructor drawers in cookies
     ☐ Allow one level of subfolders for AxForm - https://vuetifyjs.com/en/components/lists#expansion-lists
@@ -847,7 +875,25 @@ NEW FEATURES:
     ☐ Ax and deck must use same node_modules
     ☐ AxGrid constructor - custom fields. Tree with column types - dragged to grid and enter name and db_name. Db_name must be specified in query.
     ☐ Quicksearch in 1tom -> must not be case sansitive
-
+    ☐ GAuth - зачем?
+    ☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
+        ☐ Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные
+    ☐ Form and grid constructors can be used with keyboard only
+    ☐ All activities in admin are logged
+    ☐ Users -> List of Substitute users
+    ☐ Javascript in actions - executed after action is complete. Is param of ax-form
+    ☐ URL for executing actions. Can be placed inside emails
+    ☐ Deck -> Unread message counter
+	☐ Default tab at state settings
+    ☐ Form constructor -> save entered values on form preview
+    ☐ Form constructor -> delete field by drag-drop
+    ☐ Ax-Field - tomConnected - Connected lists. Choose one to reveal next.
+    ☐ One database can be used for authorisation of multiple AX installations
+    ☐ AxGrid -> Right-click menu in grid, copy action, Export to excel
+    ☐ Group action. Multiple row can be selected in AxGrid to perform same action.
+    ☐ Conditions in workflow
+    ☐ Timers in workflo
+    ☐ Resources monitoring
     
 MAYBE LATER:
     ☐ python autodoc
@@ -1002,167 +1048,69 @@ Every new version checklist:
 ============================================================================================
 
 
-AX SAAS BETA:
-	☐ DEPLOY
-		☐ Очередь вместо ajax запроса.
-	☐ BACKEND
-		☐ Сон и пробуждение неак��ивных контейнеров
-	☐ Производительность и Масштабируемость
-		☐ Отслеживание ресурсов сервера
-		☐ Отслеживание открытых контейнеров
-	☐ Инструкции для разработчиков
-		☐ Как собрать приложение из git и запустить - pip, app get, git, bower, bower_installer
-		☐ Как работает билд скрипт 
-		☐ Как паблишить новую версию core и market
-		☐ App Engine - логи, instances, versions
-		☐ Как работает Ax.Market		
-	☐ Сайт
-		☐ Лендинг
-		☐ Регистрация и вход клиента
-		☐ Tutorial - анимированные шаги как инструкция
-	☐ Бэк енд
-		☐ Отслеживание оплаты
-		☐ Отслеживание ��есурсов
-		☐ Стратегия изменений
-		☐ Выкладываение в Google Apps Market		
-	☐ Tutorial
-		☐ Form-constructor
-		☐ Process-constructor
-		☐ Grid-constructor
-		☐ Dashboard-constuctor
-		☐ Users
-		☐ Ax-marketplace
-	☐ ПРОЦЕССЫ
-		☐ Условия
-		☐ Действия по таймеру или условию		
-	☐ PYTHON в действиях 
-		☐ Autocomplete при написании кода
-		☐ Debug
-		☐ Log
-	☐ Групповые действия
-		☐ Исполнение онлайн или в очереди
-	☐ AX MARKETPLACE
-		☐ Пользователи могут предлагать пред-настроенные Ax БД в виде дампа. За деньги или бесплатно.
-		☐ Приложение это
-			☐ SQL
-			☐ web-elements полей
-			☐ Серверные скрипты через pip
-	☐ Features
-		☐ Right-click menu in grid
-		☐ Copy action
-		☐ Export to excel
-
-OLD FEATURES:
-	☐ Редактировать объект можно исключительно клавиатурой
-	☐ Сообщение при создании - ИД созданной записи
-	☐ Удаление нескольких объектов через правый клик 
-	☐ Разные фильтры в гриде под разные типы данных - текст\число\дата
-	☐ Логирование всех действий в админке
-	☐ Features полей
-		☐ MtoM
-			☐ Settings - Максимальное количество элементотв
-			☐ Удаление выбранных элементов в 1om_view
-		☐ M:M Table
-			☐ Добавление новой строчки при открытом mtom
-			☐ При добавлении 1тоМ возможность указать default view
-	☐ Список замещающих
-	☐ Javascript в действиях - выполняется после выполнения действий на клиенте.
-	☐ URL для совершения действия. Можно вставлять в письма из action.
-	☐ Рядом с линком грида - счетчик строк в гриде (кол-во непрачитанных, кол-во всего)
-	☐ Default tab at state settings - настройка в статусе - дефалтная закладка.
-	☐ Form constructor - save entered values on form preview
-	☐ Grid constructor - опции размера формы - эмуляция экрана
-	☐ Grid constructor - опции modalSize
-	☐ Если при загрузке grid options возникает exception - сбрасывать настройки на defaultные
-	☐ Удаление колонки - дроп на drawer,	дроп на drawer для form constructor
-	☐ Form constructor - поиск по типам полей
-	☐ Ax-Field - 1toM - Связанные списки - выбераем один, ставится серверный фильтр на следующий. Тоже самое при изменении процесса - грид не обновляется.
-	☐ Form-constuctor - выбор иконки плагином - https://farbelous.github.io/fontawesome-iconpicker/
-	☐ Подсказка для ax-string
-	☐ Сделать прямые стрелки для Action по умолчанию
-	☐ Workflow editor - сделать Объект all. Если действие идет от алл - значит действие доступно на любом статусе.
-	☐ Возможность использовать одну БД для авторизации пользователей в нескольких установках Axy (Несколько БД)
-	☐ Наследование объектов. Объекты унаследованные от одного источника можно отображать в одном гриде.
-	☐ В гриде можно отображать данные нескольких форм, если у них есть одинаковые поля.
-
-
-
-
-PROBLEMS:
-	☐ ++++ Если переименовать поле - слитают все view. Нужно перекликивать
-	☐ ++++ Несколько гридов на странице
-	☐ ++++ iron-ajax изменен! Нужно сделать свой элемент. Вроде для удаленного доступа. ret_url = "http://araxy-enf644.c9.io" + ret_url
-	☐ Кэширование в IE10
-	☐ escape string при Insert и update - сейча�� тупа replace стоит
-	☐ Сабмит в форме 2 раза
-	☐ http://stackoverflow.com/questions/24956894/sql-alchemy-queuepool-limit-overflow
-	☐ Во всех полях Polymer.IronValidatableBehavior не работает - все проверяется в ax-form вручную.
-	☐ Form-constructor работатет на async с замедлением. Жесткой связи событий нет. МОжет не работать на медлен��ом соединении.
-	☐ Process-constructor - может потеряться json go.js процесса!
-
 
 
 ALL AX FIELDS:
 	☐ Identification
-		☐ GuId
-		☐ Numeration    `[COMPLEX]`
+		✔ GuId @done(19-09-14 09:03)
+		✔ Numeration `[COMPLEX]` @done(19-09-14 09:03)
 	☐ Decoration
 		☐ Header
         ☐ Text
         ☐ Icon column
         ☐ Color column
 	☐ String
-		☐ Simple String	
+		✔ Simple String @done(19-09-14 09:03)
 		☐ Email
 	☐ Number
-		☐ Integer					
+		✔ Integer @done(19-09-14 09:03)
 		☐ Decimal
 		☐ Telephone number
 		☐ Slider
 	☐ Boolean
-		☐ Checkbox				
+		✔ Checkbox @done(19-09-14 09:03)
         ☐ Switch
         ☐ 2D radio survey
     ☐ Payment
-        ☐ Paypal    `[COMPLEX]`
-        ☐ Stripe    `[COMPLEX]`
+        ☐ Paypal `[COMPLEX]`
+        ☐ Stripe `[COMPLEX]`
         ☐ ... check jotforms
 	☐ Relationship
-		☐ 1:1 				
-		☐ 1:M 				
-		☐ 1:M Table				
+		✔ 1:1 @done(19-09-14 09:03)
+		✔ 1:M @done(19-09-14 09:03)
+		✔ 1:M Table @done(19-09-14 09:03)
 	☐ Date and Time
 		☐ Date
 		☐ Date Range
 		☐ Date and Time
 		☐ Spinner Date
 	☐ List
-		☐ Select					
+		☐ Select
 		☐ Cascade ajax select
 		☐ Radio
 		☐ Json Table
 		☐ Tags input
 	☐ Text
-		☐ Simple text				
+		✔ Simple text @done(19-09-14 09:04)
 		☐ WYSIWYG
 		☐ BB Code
 		☐ Code highlite
 		☐ Static text
 	☐ Images
-		☐ Filesystem Images		    `[COMPLEX]`
-		☐ Filesystem Image Crop	    `[COMPLEX]`
+		☐ Filesystem Images `[COMPLEX]`
+		☐ Filesystem Image Crop `[COMPLEX]`
 		☐ Database Images
 		☐ Database Image Crop
-		☐ Google Drive Images    `[COMPLEX]`
+		☐ Google Drive Images `[COMPLEX]`
 	☐ Files
-		☐ Filesystem Files		    `[COMPLEX]`
+		✔ Filesystem Files `[COMPLEX]` @done(19-09-14 09:05)
 		☐ Database Files
-		☐ Google Disk Files    `[COMPLEX]`
+		☐ Google Disk Files `[COMPLEX]`
 	☐ Users
-		☐ Users    `[COMPLEX]`
-		☐ Approval path    `[COMPLEX]`
+		☐ Users `[COMPLEX]`
+		☐ Approval path `[COMPLEX]`
 	☐ Itegration
-		☐ Google Maps    `[COMPLEX]`
+		☐ Google Maps `[COMPLEX]`
 		☐ Google SpreadSheet
 		☐ Google Text
 		☐ Google calendar
@@ -1171,11 +1119,11 @@ ALL AX FIELDS:
 		☐ D3 Graph
 	☐ Calculated values
 		☐ Condition styling
-		☐ Ajax request field    `[COMPLEX]`
+		☐ Ajax request field `[COMPLEX]`
 	☐ Object Control
-		☐ Edit history (Logging)    `[COMPLEX]`
-        ☐ Detailed edit history (Version control)    `[COMPLEX]`
+		✔ Edit history (Logging) `[COMPLEX]` @done(19-09-14 09:05)
+        ☐ Detailed edit history (Version control) `[COMPLEX]`
         ☐ Position drag
     ☐ Communications
         ☐ Comments
-		☐ Google Comments    `[COMPLEX]`
+		☐ Google Comments `[COMPLEX]`

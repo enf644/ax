@@ -1,8 +1,4 @@
 {
-    "hello": "Hello 44",
-    "users": {
-        "add-new-user": "Add new user"
-    },
     "common": {
         "lenght-error": "Must be less than {num} characters",
         "confirm-yes": "Yes",
@@ -10,13 +6,14 @@
         "confirm-no": "Cancel",
         "position-changed": "Positions changed",
         "error-close": "Close",
-        "field-required": "Field is required",
+        "field-required": "Is required",
         "true": "True",
         "false": "False",
         "confirm": "Confirm",
         "ok": "Ok",
         "no-field-settings-error": "[{name}] - Settings error",
-        "no-column": "Column not supported for [{name}] field type"
+        "no-column": "Column not supported for [{name}] field type",
+        "invalid-email": "Email invalid"
     },
     "home": {
         "ax-forms": "Ax Forms",
@@ -27,6 +24,7 @@
         "marketplace-btn": "Marketplace",
         "pages-designer-btn": "Pages designer",
         "create-new-grid-btn": "Create new grid",
+        "logout": "Log out",
         "toolbar": {
             "form-btn": "Form",
             "workflow-btn": "Workflow",
@@ -79,6 +77,12 @@
             "delete-toast": "Folder deleted",
             "delete-confirm": "Do you realy want to delete this folder?"
         }
+    },
+    "users": {
+        "admin-email": "Email *",
+        "admin-password": "Password *",
+        "do-sign-in": "Sign in",
+        "add-new-user": "Add new user"
     },
     "form": {
         "add-tab": "Add tab",

@@ -115,11 +115,20 @@
 
     <v-spacer></v-spacer>
     <transition enter-active-class='animated fadeIn faster' name='fade'></transition>
-    <div>
-      <v-avatar class='logout' size='27px' slot='activator'>
-        <img src='https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' />
-      </v-avatar>
-    </div>
+    <div></div>
+
+    <v-menu offset-y>
+      <template v-slot:activator='{ on }'>
+        <v-avatar class='logout' size='27px' v-on='on'>
+          <img src='https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' />
+        </v-avatar>
+      </template>
+      <v-list>
+        <v-list-item @click='doLogOut()'>
+          <v-list-item-title>{{$t("home.logout")}}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </v-app-bar>
 </template>
 
@@ -133,6 +142,9 @@ export default {
     TheNewForm,
     TheGridModal
   },
+  data: () => ({
+    userMenuOn: false
+  }),
   computed: {
     allGrids() {
       const gridsList = [...this.$store.state.form.grids];
@@ -192,6 +204,9 @@ export default {
     }
   },
   methods: {
+    doLogOut() {
+      this.$store.dispatch('auth/logOut');
+    },
     gotoGrid(dbName) {
       const url = `/admin/${this.currentFormDbName}/grids/${dbName}`;
       this.$store.commit('home/setRedirectNeededUrl', url);

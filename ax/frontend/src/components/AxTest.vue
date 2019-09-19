@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <h1>WTF - {{locale('common.field-required')}}</h1>
-  </div>
+  <div>AxTest</div>
 </template>
 
 <script>

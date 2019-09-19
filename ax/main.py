@@ -41,6 +41,7 @@ import backend.migration as ax_migration
 import backend.routes as ax_routes
 import backend.dialects as ax_dialects
 import backend.emails as ax_emails
+import backend.auth as ax_auth
 
 # pylint: enable=wrong-import-position
 
@@ -141,6 +142,9 @@ def init_ax():
         port=os.environ.get('AX_SMTP_PORT'),
         ssl=os.environ.get('AX_SMTP_SSL')
     )
+
+    # Initiate auth module
+    ax_auth.init_auth(sanic_app=app)
 
 
 ax_logo = """

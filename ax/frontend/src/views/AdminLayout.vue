@@ -24,9 +24,17 @@ export default {
     },
     redirectNeededUrl() {
       return this.$store.state.home.redirectNeededUrl;
+    },
+    authToken() {
+      return this.$store.state.auth.accessToken;
     }
   },
   watch: {
+    authToken(newValue) {
+      if (newValue == null || newValue == 'null') {
+        this.checkAuth(newValue);
+      }
+    },
     currentFormDbName(newValue) {
       let title = '';
       if (newValue) title = `[${newValue}] `;
@@ -57,6 +65,8 @@ export default {
     }
   },
   created() {
+    this.checkAuth(this.$store.state.auth.accessToken);
+
     if (!this.$store.state.home.isFormsLoaded) {
       this.$store.dispatch('home/getAllForms', {
         updateTime: Date.now()
@@ -77,11 +87,21 @@ export default {
         this.$store.commit('grids/setFormDbName', this.currentFormDbName);
       }
     }
+  },
+  methods: {
+    checkAuth(accessToken) {
+      if (accessToken == null || accessToken == 'null') {
+        const fromUrl = this.$route.fullPath;
+        this.$store.commit('home/setRedirectFromUrl', fromUrl);
+        setTimeout(() => {
+          const url = `/signin`;
+          this.$router.push({ path: url });
+        }, 100);
+      }
+    }
   }
 };
 </script>
 
 <style scoped>
-.content {
-}
 </style>
