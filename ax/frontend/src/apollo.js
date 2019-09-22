@@ -41,10 +41,10 @@ const customFetch = (uri, options) => {
           body: JSON.stringify({ "refresh_token": refreshToken })
         })
           .then((refresh_token_repsonse) => {
-            console.log(refresh_token_repsonse);
+            // console.log(refresh_token_repsonse);
             if (refresh_token_repsonse.ok) {
               return refresh_token_repsonse.json().then((refreshJSON) => {
-                console.log(refreshJSON);
+                console.log('Refresh token used. New access token recieved.');
 
                 // Return the new access token as a result of the promise
                 store.commit('auth/setTokens', {

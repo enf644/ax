@@ -608,15 +608,15 @@ AX 0.2:
             ✔ Login backlink @done(19-09-18 19:05)
         ✔ Auth for routes @done(19-09-18 10:30)
         ✔ User model @done(19-09-19 09:42)
-        ☐ All Users
-            ☐ Insert, update, delete user schema
-            ☐ UsersModal - add, update, delete user
-            ☐ View with ag-grid
-            ☐ Custom gql query
-        ☐ Groups list
-            ☐ Groups gql query
-            ☐ Jstree
-            ☐ User Group modal
+        ✔ All Users @done(19-09-22 21:16)
+            ✔ Insert, update, delete user schema @done(19-09-19 17:35)
+            ✔ UsersModal - add, update, delete user @done(19-09-19 23:13)
+            ✔ View with ag-grid @done(19-09-19 23:13)
+            ✔ Custom gql query @done(19-09-19 23:13)
+        ✔ Groups list @done(19-09-22 21:16)
+            ✔ Groups gql query @done(19-09-22 21:16)
+            ✔ Jstree @done(19-09-22 21:16)
+            ✔ User Group modal @done(19-09-22 21:16)
         ☐ Roles modal - add users
         ☐ Create default users on install - admin, anon, all_users
         ☐ auth.py takes users from database
@@ -631,6 +631,9 @@ AX 0.2:
             ☐ Select all schema authorisation.
         ☐ AxForm fields permissions
         ☐ Action permissions
+        ☐ Frogs
+            ☐ If no field added - error in AxGrid
+            ☐ Auth for uppy upload
     ☐ PAGES DESIGNER
         ✔ Routes work with static content @done(19-08-15 14:09)
         ✔ Routes take path from app.yaml so it can be configured @done(19-08-15 16:48)

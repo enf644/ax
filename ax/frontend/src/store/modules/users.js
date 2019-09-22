@@ -21,12 +21,12 @@ const GET_ALL_USERS_QUERY = gql`
     }
 `;
 
-const CREATE_NEW_USER_QUERY = gql`
-  mutation ($name: String!, $email: String!) {
-    createUser(name: $name, email: $email) {
+
+const UPDATE_USER = gql`
+  mutation ($email: String!, $name: String, $shortName: String, $password: String!, $avatarTmp: String, $info: String) {
+    updateUser(email: $name, name: $email, shortName: $shortName, password: $password, avatarTmp: $avatarTmp, info: $info) {
       user {
         guid,
-        name,
         email
       }
       ok
@@ -34,6 +34,14 @@ const CREATE_NEW_USER_QUERY = gql`
   }
 `;
 
+const DELETE_USER = gql`
+  mutation ($guid: String!) {
+    deleteUser(guid: $guid) {
+      deleted,
+      ok    
+    }
+  }
+`;
 
 const getters = {};
 
@@ -51,36 +59,8 @@ const actions = {
         logger.error(error);
       });
   },
-  createNewUser() {
-    apolloClient.mutate({
-      mutation: CREATE_NEW_USER_QUERY,
-      variables: { name: 'Jhony', email: 'jhony@dot.ru' }
-    })
-      .then(data => {
-        logger.info(data);
-      })
-      .catch(error => {
-        logger.error(`Error in createNewUser gql => ${error}`);
-        logger.error(error);
-      });
-  },
-  subscribeToUsers({ commit }) {
-    apolloClient.subscribe({
-      query: SUBSCRIPTION_QUERY,
-      variables: { repoFullName: 'repoName' }
-    }).subscribe({
-      next(data) {
-        logger.info(data);
+  createNewUser(context, payload) {
 
-        const newUser = {
-          name: data.data.mutationExample.name,
-          email: data.data.mutationExample.email
-        };
-        commit('addUser', newUser);
-      }
-    }, {
-      error(error) { logger.error(`ERRROR in GQL subscribeToUsers => ${error}`); }
-    });
   }
 };
 
@@ -89,18 +69,21 @@ const mutations = {
     state.all = users;
     state.isUsersLoaded = true;
   },
-  addUser(state, userData) {
-    const newUser = {
-      name: userData.name,
-      email: userData.email
-    };
-    state.all.push(newUser);
+  setGroups(state, groups) {
+    state.groups = groups;
+  },
+  updateGroup(state, group) {
+    state.groups = [
+      ...state.groups.filter(element => element.guid !== group.guid),
+      group
+    ];
   }
 };
 
 
 const state = {
   all: [],
+  groups: [],
   isUsersLoaded: false
 };
 

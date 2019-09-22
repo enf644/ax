@@ -86,7 +86,7 @@ class User(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
     class Meta:  # pylint: disable=missing-docstring
         model = AxUser
         interfaces = (relay.Node, )
-        exclude_fields = ('avatar')
+        exclude_fields = ('avatar', 'password')
 
 
 class Role(SQLAlchemyObjectType):  # pylint: disable=missing-docstring

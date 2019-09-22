@@ -21,6 +21,7 @@ def get_default_grid_code(db_name):
     """ Returns default code for grid.
         Used in createTable (grids_schema)
         and createForm (home_schema)  """
+    del db_name
     code = f"""ax.query = \"\"\"
     SELECT <ax_fields> FROM "<ax_table>";
 \"\"\""""
@@ -362,7 +363,8 @@ class GridsQuery(graphene.ObjectType):
     )
     grids_list = graphene.List(
         Grid,
-        form_db_name=graphene.Argument(type=graphene.String, required=True)
+        form_db_name=graphene.Argument(type=graphene.String, required=True),
+        update_time=graphene.Argument(type=graphene.String, required=False)
     )
 
     async def resolve_ax_grid(

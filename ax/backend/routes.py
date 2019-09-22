@@ -28,26 +28,6 @@ loop = asyncio.new_event_loop()
 actions_loop = asyncio.new_event_loop()
 app = None
 graphql_view = None
-dummy_view = None
-
-
-# class AxGraphQLView(GraphQLView):
-#     """ Extends GraphQLView to output GQL errors and schema updates"""
-#     decorators = [inject_user(), ax_auth.ax_protected()]
-
-#     def __init__(self, **kwargs):
-#         super().__init__(
-#             schema=ax_schema.schema,
-#             graphiql=False,
-#             enable_async=True,
-#             executor=AsyncioExecutor(loop=this.loop)
-#         )
-
-#     @staticmethod
-#     def format_error(error):
-#         """ This method is required for showing graphql errors """
-#         logger.error(error)
-#         return GraphQLView.format_error(error)
 
 
 def init_graphql_view():  # pylint: disable=unused-variable

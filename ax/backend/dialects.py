@@ -578,6 +578,24 @@ class PorstgreDialect(object):
             logger.exception('Error executing SQL - drop_column')
             raise
 
+    async def select_group_users(self, db_session, group_guid):
+        """ Select of users of group """
+        try:
+            sql = """
+                SELECT us.guid, us.short_name
+                FROM "_ax_group2user" g2u, "_ax_users" us
+                WHERE g2u.user_guid == us.guid AND g2u.group_guid=:group_guid;            
+            """
+            query_params = {
+                "group_guid": group_guid.replace('-', '')
+            }
+            result = db_session.execute(sql, query_params).fetchall()
+            return result
+        except Exception:
+            logger.exception('Error executing SQL - select_group_users')
+            raise
+
+
 
 class SqliteDialect(PorstgreDialect):
     """SQL query for Sqlite database"""

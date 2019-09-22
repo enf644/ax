@@ -183,6 +183,11 @@ a {
     margin-left: 0px !important;
 }
 
+.groups-tree ul {
+    padding-left: 0px !important;
+}
+
+
 /************ Jstree styles } ***************/
 
 /****************** D3 styles { *************************/
@@ -527,5 +532,9 @@ a {
 }
 
 .tom-remove {
+    cursor: pointer;
+}
+
+.grid-btn {
     cursor: pointer;
 }

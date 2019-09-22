@@ -339,7 +339,7 @@ def create_field_types() -> None:
                 position=4,
                 default_db_name="cropImage",
                 is_backend_available=True,
-                value_type="VARCHAR(255)",
+                value_type="BLOB",
                 icon="image"))
 
             # Files

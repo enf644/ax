@@ -4,6 +4,7 @@ DB CHANGES
     AxUsers -> + short_name (varchar 255)
     AxUsers -> + avatar (largeBinary)
     AxUsers -> + info (Text)
+    AxUser -> + is_email_confirmed (Boolean)
 
 
 

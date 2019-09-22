@@ -8,13 +8,13 @@
         </div>
         <br />
         <v-text-field
-          :label='locale("users.admin-email")'
+          :label='locale("users.signin-email")'
           :rules='[rules.required, rules.isEmail]'
           v-model='email'
         ></v-text-field>
 
         <v-text-field
-          :label='locale("users.admin-password")'
+          :label='locale("users.signin-password")'
           :rules='[rules.required]'
           type='password'
           v-model='password'
