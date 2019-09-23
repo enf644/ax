@@ -617,11 +617,16 @@ AX 0.2:
             ✔ Groups gql query @done(19-09-22 21:16)
             ✔ Jstree @done(19-09-22 21:16)
             ✔ User Group modal @done(19-09-22 21:16)
-        ☐ Roles modal - add users
-        ☐ Create default users on install - admin, anon, all_users
+        ✔ Roles modal - add users @done(19-09-23 15:17)
+        ☐ Create default users on install
+            ☐ Admin group
+            ☐ Default admin
+            ☐ Everyone
+            ☐ All users
         ☐ auth.py takes users from database
+        ☐ Add GQL query for current user data
         ☐ AxGrid, AxForm -> auth needed setting
-        ☐ AxGrid, AxForm -> sign in dialog when not logged and anon icon if showing 
+        ☐ AxGrid, AxForm -> sign in dialog when not logged and anon icon if showing
     ☐ PERMISSION SYSTEM
         ☐ When user logs in - his perms are stored in cache. form -> perms list
         ✔ GraphQL authorisation @done(19-09-18 18:13)

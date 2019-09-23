@@ -15,6 +15,11 @@ export function getAxProtocol() {
   return 'http';
 }
 
+export function getAxHostProtocol() {
+  const protocol = getAxProtocol();
+  const host = getAxHost();
+  return `${protocol}://${host}`;
+}
 
 export function uuidWithDashes(uuidString) {
   if (uuidString.includes('-')) return uuidString;

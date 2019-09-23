@@ -8,7 +8,7 @@ from passlib.hash import pbkdf2_sha256
 # from loguru import logger
 
 from backend.misc import convert_column_to_string
-from backend.model import AxUser, GUID, AxGroup2Users
+from backend.model import AxUser, GUID, AxGroup2Users, AxRole2Users
 import backend.model as ax_model
 # import backend.cache as ax_cache
 import backend.dialects as ax_dialects
@@ -211,7 +211,7 @@ class AddUserToGroup(graphene.Mutation):
 
 
 class RemoveUserFromGroup(graphene.Mutation):
-    """ Creates AxGroup2Users """
+    """ Deletes AxGroup2Users """
     class Arguments:  # pylint: disable=missing-docstring
         user_guid = graphene.String()
         group_guid = graphene.String()
@@ -234,6 +234,61 @@ class RemoveUserFromGroup(graphene.Mutation):
             return RemoveUserFromGroup(ok=True)
 
 
+class AddUserToRole(graphene.Mutation):
+    """ Creates AxRole2Users """
+    class Arguments:  # pylint: disable=missing-docstring
+        user_guid = graphene.String()
+        role_guid = graphene.String()
+
+    ok = graphene.Boolean()
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        err = 'Error in gql mutation - users_schema -> AddUserToRole.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
+            user_guid = uuid.UUID(args.get('user_guid'))
+            role_guid = uuid.UUID(args.get('role_guid'))
+
+            role2user = db_session.query(AxRole2Users).filter(
+                AxRole2Users.user_guid == user_guid
+            ).filter(
+                AxRole2Users.role_guid == role_guid
+            ).first()
+            if role2user:
+                return AddUserToRole(ok=True)
+
+            role2user = AxRole2Users()
+            role2user.role_guid = role_guid
+            role2user.user_guid = user_guid
+            db_session.add(role2user)
+            db_session.flush()
+
+            return AddUserToRole(ok=True)
+
+
+class RemoveUserFromRole(graphene.Mutation):
+    """ Removes AxRole2Users """
+    class Arguments:  # pylint: disable=missing-docstring
+        user_guid = graphene.String()
+        role_guid = graphene.String()
+
+    ok = graphene.Boolean()
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        err = 'Error in gql mutation - users_schema -> RemoveUserFromRole.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
+            user_guid = uuid.UUID(args.get('user_guid'))
+            role_guid = uuid.UUID(args.get('role_guid'))
+
+            db_session.query(AxRole2Users).filter(
+                AxRole2Users.user_guid == user_guid
+            ).filter(
+                AxRole2Users.role_guid == role_guid
+            ).delete()
+            db_session.flush()
+
+            return RemoveUserFromRole(ok=True)
+
+
 class UsersQuery(graphene.ObjectType):
     """AxUser queryes"""
     all_users = graphene.List(
@@ -250,8 +305,14 @@ class UsersQuery(graphene.ObjectType):
         group_guid=graphene.Argument(type=graphene.String, required=True),
         update_time=graphene.Argument(type=graphene.String, required=False)
     )
+    role_users = graphene.List(
+        User,
+        role_guid=graphene.Argument(type=graphene.String, required=True),
+        update_time=graphene.Argument(type=graphene.String, required=False)
+    )
     users_and_groups = graphene.List(
         User,
+        search_string=graphene.Argument(type=graphene.String, required=False),
         update_time=graphene.Argument(type=graphene.String, required=False)
     )
     find_user = graphene.Field(
@@ -290,7 +351,7 @@ class UsersQuery(graphene.ObjectType):
             return users_list
 
     async def resolve_group_users(self, info, group_guid, update_time=None):
-        """Get all groups"""
+        """Get users of group"""
         del update_time
         err = 'Error in GQL query - resolve_all_groups.'
         with ax_model.try_catch(
@@ -304,15 +365,36 @@ class UsersQuery(graphene.ObjectType):
             ret_list = query.filter(AxUser.guid.in_(user_guids)).all()
             return ret_list
 
-    async def resolve_users_and_groups(self, info, update_time=None):
-        """Get all users"""
+    async def resolve_role_users(self, info, role_guid, update_time=None):
+        """Get users of role"""
         del update_time
-        err = 'Error in GQL query - users_and_groups.'
+        err = 'Error in GQL query - resolve_role_users.'
         with ax_model.try_catch(
                 info.context['session'], err, no_commit=True):
+            user_list = await ax_dialects.dialect.select_role_users(
+                db_session=info.context['session'], role_guid=role_guid)
+            user_guids = []
+            for user in user_list:
+                user_guids.append(user['guid'])
             query = User.get_query(info)  # SQLAlchemy query
-            user_list = query.all()
-            return user_list
+            ret_list = query.filter(AxUser.guid.in_(user_guids)).all()
+            return ret_list
+
+    async def resolve_users_and_groups(
+            self, info, search_string=None, update_time=None):
+        """Get all users and groups in one search"""
+        del update_time
+        err = 'Error in GQL query - users_and_groups.'
+        with ax_model.try_catch(info.context['session'], err, no_commit=True):
+            query = User.get_query(info)
+            users_list = []
+            if not search_string:
+                users_list = query.all()
+            else:
+                users_list = query.filter(
+                    AxUser.short_name.ilike(f"%{search_string}%")
+                ).all()
+            return users_list
 
     def resolve_find_user(self, info, guid, update_time):
         """default find method"""
@@ -335,5 +417,7 @@ class UsersMutations(graphene.ObjectType):
     delete_user = DeleteUser.Field()
     create_group = CreateGroup.Field()
     update_group = UpdateGroup.Field()
-    remove_user_from_group = RemoveUserFromGroup.Field()
     add_user_to_group = AddUserToGroup.Field()
+    remove_user_from_group = RemoveUserFromGroup.Field()
+    add_user_to_role = AddUserToRole.Field()
+    remove_user_from_role = RemoveUserFromRole.Field()

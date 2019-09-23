@@ -12,19 +12,21 @@ userguid_table = None
 
 
 class User:
-    def __init__(self, guid, username, password):
+    def __init__(self, guid, email, password, short_name):
         self.user_id = guid
-        self.username = username
+        self.email = email
         self.password = password
+        self.short_name = short_name
 
     def __repr__(self):
         return "User(guid='{}')".format(self.user_id)
 
     def to_dict(self):
-        return {"user_id": self.user_id, "username": self.username}
+        return {"user_id": self.user_id, "short_name": self.short_name}
 
 
 async def authenticate(request, *args, **kwargs):
+    """ - """
     email = request.json.get("email", None)
     password = request.json.get("password", None)
     if not email or not password:
@@ -63,9 +65,11 @@ def ax_protected(initialized_on=None, **kw):
 async def retrieve_user(request, payload, *args, **kwargs):
     if payload:
         user_id = payload.get('user_id', None)
+        user = this.userguid_table.get(user_id, None)
         user = {
             "user_id": user_id,
-            "is_admin": False
+            "is_admin": False,
+            "short_name": user.short_name
         }
         return user
     else:
@@ -87,10 +91,10 @@ class AxConfiguration(Configuration):
 
 
 def init_auth(sanic_app):
-    this.users = [User('uber-guid', "enf644@gmail.com", "123"),
-                  User('uber-guid', "admin@ax.ru", "123")]
+    this.users = [User('uber-guid', "enf644@gmail.com", "123", "enfik"),
+                  User('uber-guid', "admin@ax.ru", "123", "admin")]
 
-    this.useremail_table = {u.username: u for u in this.users}
+    this.useremail_table = {u.email: u for u in this.users}
     this.userguid_table = {u.user_id: u for u in this.users}
 
     initialize(sanic_app,

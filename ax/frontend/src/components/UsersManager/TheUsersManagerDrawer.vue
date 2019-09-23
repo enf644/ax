@@ -2,7 +2,7 @@
   <div>
     <h3>{{$t("users.drawer-users-header")}}:</h3>
     <v-btn @click='gotoAllUsers' small>
-      <i class='fas fa-users'></i>
+      <i class='far fa-user'></i>
       &nbsp; {{$t("users.all-users-btn")}}
     </v-btn>
     <br />
@@ -74,7 +74,6 @@ export default {
       if (url != this.$route.fullPath) this.$router.push({ path: url });
     },
     loadGroups() {
-      console.log('load groups');
       const ALL_GROUPS = gql`
         query($updateTime: String!) {
           allGroups(updateTime: $updateTime) {

@@ -5,7 +5,10 @@
         <v-col>
           <v-row>
             <div>
-              <h1>{{ this.groupName}}</h1>
+              <h1>
+                <i class='fas fa-users'></i>
+                &nbsp; {{ this.groupName}}
+              </h1>
             </div>
             <div class='ico-btn'>
               <v-btn @click='promptRenameGroup' icon text>

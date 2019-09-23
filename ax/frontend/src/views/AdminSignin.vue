@@ -35,6 +35,7 @@
 import axios from 'axios';
 // import { setTokens, getAccessToken } from '@/apollo';
 import store from '@/store';
+import { getAxHostProtocol } from '@/misc';
 
 export default {
   name: 'AdminSignin',
@@ -63,13 +64,15 @@ export default {
     },
     doSignIn() {
       if (this.$refs.form.validate()) {
+        const host = getAxHostProtocol();
+        console.log(host);
         axios
-          .post('http://127.0.0.1:8080/api/auth', {
-            email: 'enf644@gmail.com',
-            password: '123'
+          .post(`${host}/api/auth`, {
+            email: this.email,
+            password: this.password
           })
           .then(response => {
-            // this.$log.info(response);
+            this.$log.info(response);
             store.commit('auth/setTokens', {
               access: response.data.access_token,
               refresh: response.data.refresh_token

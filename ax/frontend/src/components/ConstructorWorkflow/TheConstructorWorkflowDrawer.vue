@@ -16,11 +16,11 @@
       </div>
     </div>
 
-    <modal adaptive height='auto' name='update-role' scrollable>
-      <TheRoleModal :guid='this.selectedRoleGuid' @close='closeModal'/>
+    <modal :height='windowHeight' adaptive name='update-role' scrollable width='1000px'>
+      <TheRoleModal :guid='this.selectedRoleGuid' @close='closeModal' />
     </modal>
 
-    <br>
+    <br />
 
     <v-btn @click='createRole' data-cy='create-role-btn' small>
       <i class='fas fa-plus'></i>
@@ -36,12 +36,17 @@ export default {
   name: 'WorkflowDrawer',
   components: { TheRoleModal },
   data: () => ({
-    selectedRoleGuid: null
+    selectedRoleGuid: null,
+    windowHeight: null
   }),
   computed: {
     roles() {
       return this.$store.getters['workflow/rolesWithColor'];
     }
+  },
+  created() {
+    this.windowHeight = window.innerHeight * 1 - 50;
+    console.log(this.windowHeight);
   },
   methods: {
     highlightRole(role) {

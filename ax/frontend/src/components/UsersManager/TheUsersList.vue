@@ -1,6 +1,9 @@
 <template>
   <div class='grid-wrapper'>
-    <h1>{{$t("users.all-users-header")}}</h1>
+    <h1>
+      <i class='far fa-user'></i>
+      &nbsp; {{$t("users.all-users-header")}}
+    </h1>
     <div class='ag-theme-material grid-class' ref='grid'></div>
     <v-btn @click='openNewUserModal' class='mb-3' data-cy='create-form-btn' small>
       <i class='fas fa-users-plus'></i>

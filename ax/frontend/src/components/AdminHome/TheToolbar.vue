@@ -119,8 +119,10 @@
 
     <v-menu offset-y>
       <template v-slot:activator='{ on }'>
-        <v-avatar class='logout' size='27px' v-on='on'>
-          <img src='https://avatars0.githubusercontent.com/u/9064066?v=4&s=460' />
+        <v-avatar class='logout' v-on='on'>
+          <div class='user-avatar'>
+            <i class='fas fa-user-circle'></i>
+          </div>
         </v-avatar>
       </template>
       <v-list>
@@ -316,5 +318,9 @@ export default {
 }
 .logo-div {
   width: 10%;
+}
+.user-avatar {
+  font-size: 22px;
+  color: #999;
 }
 </style>

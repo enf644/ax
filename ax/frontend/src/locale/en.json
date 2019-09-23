@@ -119,10 +119,15 @@
         "user-delete-confirm": "Delete user [{name}]?",
         "group-delete-confirm": "Delete group [{name}]?",
         "add-to-group": "Enter user name to search",
+        "add-to-role": "Enter user name to search",
         "add-to-group-btn": "Add to group",
+        "add-to-role-btn": "Add to role",
         "user-added-group-toast": "User added to group",
+        "user-added-role-toast": "User added to role",
         "remove-user-confirm": "Remove user [{name}] from group?",
-        "user-removed-group-toast": "User removed from group"
+        "remove-user-role-confirm": "Remove [{name}] from role?",
+        "user-removed-group-toast": "User removed from group",
+        "user-removed-role-toast": "User removed from role"
     },
     "form": {
         "add-tab": "Add tab",

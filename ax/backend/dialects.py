@@ -596,6 +596,23 @@ class PorstgreDialect(object):
             raise
 
 
+    async def select_role_users(self, db_session, role_guid):
+        """ Select of users of group """
+        try:
+            sql = """
+                SELECT us.guid, us.short_name
+                FROM "_ax_role2user" r2u, "_ax_users" us
+                WHERE r2u.user_guid == us.guid AND r2u.role_guid=:role_guid;            
+            """
+            query_params = {
+                "role_guid": role_guid.replace('-', '')
+            }
+            result = db_session.execute(sql, query_params).fetchall()
+            return result
+        except Exception:
+            logger.exception('Error executing SQL - select_role_users')
+            raise
+
 
 class SqliteDialect(PorstgreDialect):
     """SQL query for Sqlite database"""
