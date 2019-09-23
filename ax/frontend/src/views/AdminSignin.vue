@@ -65,7 +65,6 @@ export default {
     doSignIn() {
       if (this.$refs.form.validate()) {
         const host = getAxHostProtocol();
-        console.log(host);
         axios
           .post(`${host}/api/auth`, {
             email: this.email,

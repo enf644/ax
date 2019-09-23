@@ -347,7 +347,13 @@ class UsersQuery(graphene.ObjectType):
         with ax_model.try_catch(
                 info.context['session'], err, no_commit=True):
             query = User.get_query(info)  # SQLAlchemy query
-            users_list = query.filter(AxUser.is_group.is_(True)).all()
+            users_list = query.filter(
+                AxUser.is_group.is_(True)
+            ).filter(
+                AxUser.is_all_users.is_(False)
+            ).filter(
+                AxUser.is_everyone.is_(False)
+            ).all()
             return users_list
 
     async def resolve_group_users(self, info, group_guid, update_time=None):

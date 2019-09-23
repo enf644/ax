@@ -108,6 +108,7 @@
         "group-deleted-toast": "Group deleted",
         "grid-email": "Email",
         "grid-short-name": "Short name",
+        "grid-name": "User name",
         "invalid-new-password": "Password is invalid. Note password rules",
         "re-password-invalid": "Not equal to password",
         "all-users-header": "All users",
@@ -127,7 +128,10 @@
         "remove-user-confirm": "Remove user [{name}] from group?",
         "remove-user-role-confirm": "Remove [{name}] from role?",
         "user-removed-group-toast": "User removed from group",
-        "user-removed-role-toast": "User removed from role"
+        "user-removed-role-toast": "User removed from role",
+        "admin-group-name": "Administrators",
+        "everyone-group-name": "Everyone",
+        "all-users-group-name": "All users"
     },
     "form": {
         "add-tab": "Add tab",

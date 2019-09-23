@@ -618,11 +618,7 @@ AX 0.2:
             ✔ Jstree @done(19-09-22 21:16)
             ✔ User Group modal @done(19-09-22 21:16)
         ✔ Roles modal - add users @done(19-09-23 15:17)
-        ☐ Create default users on install
-            ☐ Admin group
-            ☐ Default admin
-            ☐ Everyone
-            ☐ All users
+        ✔ Create default users on install @done(19-09-23 16:16)
         ☐ auth.py takes users from database
         ☐ Add GQL query for current user data
         ☐ AxGrid, AxForm -> auth needed setting

@@ -440,7 +440,6 @@ class AxUser(Base):
     is_admin = Column(Boolean, unique=False, default=False)
     is_everyone = Column(Boolean, unique=False, default=False)
     is_all_users = Column(Boolean, unique=False, default=False)
-    is_anon = Column(Boolean, unique=False, default=False)
     is_email_confirmed = Column(Boolean, unique=False, default=False)
     parent = Column(GUID())
     avatar = Column(LargeBinary)

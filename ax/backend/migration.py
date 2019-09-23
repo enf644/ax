@@ -12,13 +12,14 @@ Checks that current Database schema fits SqlAlchemy schema. If it is not,
 import os
 import sys
 from loguru import logger
+from passlib.hash import pbkdf2_sha256
 from alembic.config import Config
 from alembic.migration import MigrationContext
 from alembic.autogenerate import compare_metadata
 from alembic import command
 import backend.model as ax_model
 import backend.misc as ax_misc
-from backend.model import AxAlembicVersion, AxFieldType
+from backend.model import AxAlembicVersion, AxFieldType, AxUser, AxGroup2Users
 
 this = sys.modules[__name__]
 alembic_cfg = None
@@ -67,6 +68,52 @@ def create_tables() -> None:
 
         logger.info('Ax tables not found. Creating database tables.')
         return True
+
+
+def create_default_users():
+    """ Create Admin group, Default admin, Everyone, All users """
+    msg = "Error -> Migration -> create_default_users"
+    with ax_model.scoped_session(msg) as db_session:
+        # Admin group
+        admin_group = AxUser()
+        # admin_group.short_name = 'users.admin-group-name'
+        admin_group.short_name = 'Administrators'
+        admin_group.is_group = True
+        admin_group.is_admin = True
+        db_session.add(admin_group)
+
+        # Default admin
+        admin = AxUser()
+        admin.email = 'default@ax-workflow.com'
+        admin.password = pbkdf2_sha256.hash('deleteme')
+        admin.name = 'Default Administrator. Delete this user.'
+        admin.short_name = 'Default Admin'
+        db_session.add(admin)
+
+        db_session.commit()
+
+        group_user = AxGroup2Users()
+        group_user.group_guid = admin_group.guid
+        group_user.user_guid = admin.guid
+        db_session.add(group_user)
+
+        # Everyone
+        everyone_group = AxUser()
+        # everyone_group.short_name = 'users.everyone-group-name'
+        everyone_group.short_name = 'Everyone'
+        everyone_group.is_group = True
+        everyone_group.is_everyone = True
+        db_session.add(everyone_group)
+
+        # All users
+        all_group = AxUser()
+        # all_group.short_name = 'users.all-users-group-name'
+        all_group.short_name = 'All users'
+        all_group.is_group = True
+        all_group.is_all_users = True
+        db_session.add(all_group)
+
+        db_session.commit()
 
 
 def create_field_types() -> None:
@@ -426,6 +473,7 @@ def init_migration():
     if tables_exist() is False:
         create_tables()
         create_field_types()
+        create_default_users()
     else:
         pass
         # if database_fits_metadata() is False:

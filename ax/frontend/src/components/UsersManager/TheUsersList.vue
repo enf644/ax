@@ -93,7 +93,8 @@ export default {
     initAgGrid(data) {
       const columnDefs = [
         { headerName: this.$t('users.grid-email'), field: 'email' },
-        { headerName: this.$t('users.grid-short-name'), field: 'shortName' }
+        { headerName: this.$t('users.grid-short-name'), field: 'shortName' },
+        { headerName: this.$t('users.grid-name'), field: 'name' }
       ];
 
       const gridOptions = {
