@@ -395,7 +395,7 @@ export default {
 }
 .grid-class {
   width: 100%;
-  height: calc(100% - 100px);
+  height: calc(100% - 175px);
 }
 .left-input div {
   width: 350px;

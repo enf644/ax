@@ -1,6 +1,7 @@
 <template>
   <div class='nobr'>
     <v-autocomplete
+      :disabled='isReadonly'
       :error-messages='errors'
       :hide-no-data='hideNoData'
       :hint='this.options.hint'
@@ -89,11 +90,9 @@ export default {
     dbName: null,
     tag: null,
     options: null,
-    value: {
-      type: Array,
-      default: null
-    },
-    isRequired: null
+    value: null,
+    isRequired: null,
+    isReadonly: null
   },
   data: () => ({
     currentValue: null,
@@ -133,8 +132,10 @@ export default {
       if (newValue && newValue !== this.select) this.doQuicksearch();
     },
     value(newValue) {
-      this.currentValue = newValue;
-      if (this.currentValue) this.loadData();
+      if (newValue != this.currentValue) {
+        this.currentValue = newValue;
+        if (this.currentValue) this.loadData();
+      }
     }
   },
   created() {
@@ -150,8 +151,8 @@ export default {
     },
     openFormModal(item) {
       if (
-        this.options.enableFormModal
-        || this.options.enableFormModal === undefined
+        this.options.enableFormModal ||
+        this.options.enableFormModal === undefined
       ) {
         this.activeItemGuid = item.guid;
         this.$modal.show(`tom-form-${this.modalGuid}`);

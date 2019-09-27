@@ -1,5 +1,6 @@
 <template>
   <v-text-field
+    :disabled='isReadonly'
     :error-messages='errors'
     :hint='options.hint'
     :label='name'
@@ -20,7 +21,8 @@ export default {
     tag: null,
     options: null,
     value: null,
-    isRequired: null
+    isRequired: null,
+    isReadonly: null
   },
   data: () => ({
     currentValue: null,

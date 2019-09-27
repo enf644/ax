@@ -23,6 +23,10 @@
         <v-btn @click='doSignIn()'>
           <i class='fas fa-sign-in-alt'></i>
           &nbsp;{{$t("users.do-sign-in")}}
+        </v-btn>&nbsp;
+        <v-btn @click='adminSignIn()'>
+          <i class='fas fa-tractor'></i>
+          &nbsp;Admin sign in
         </v-btn>
       </v-form>
     </v-card>
@@ -43,8 +47,10 @@ export default {
   data() {
     return {
       valid: true,
+      // email: 'default@ax-workflow.com',
+      // password: 'deleteme',
       email: 'enf644@gmail.com',
-      password: '123',
+      password: 'Cnuds644',
       showPass: false,
       rules: {
         required: value => !!value || this.locale('common.field-required'),
@@ -61,6 +67,11 @@ export default {
   methods: {
     locale(key) {
       return this.$t(key);
+    },
+    adminSignIn() {
+      this.email = 'default@ax-workflow.com';
+      this.password = 'deleteme';
+      this.doSignIn();
     },
     doSignIn() {
       if (this.$refs.form.validate()) {

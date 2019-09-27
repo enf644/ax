@@ -62,7 +62,7 @@
     <div v-show='valueIsVisible'>
       <img :src='valueSrc' :style='{width: this.width + "px", height: this.height + "px"}' />
       <br />
-      <v-btn @click='clearValue' small text>
+      <v-btn @click='clearValue' small text v-if='this.isReadonly !== true'>
         <i class='far fa-trash-alt'></i>
         &nbsp; {{locale("types.AxImageCropDb.clear-image")}}
       </v-btn>
@@ -91,6 +91,7 @@ import {
 } from 'uppy';
 
 import 'vue-croppa/dist/vue-croppa.css';
+import '@uppy/webcam/dist/style.css';
 
 Vue.use(Croppa);
 
@@ -105,6 +106,7 @@ export default {
     options: null,
     value: null,
     isRequired: null,
+    isReadonly: null,
     formGuid: null,
     rowGuid: null,
     fieldGuid: null
@@ -132,18 +134,20 @@ export default {
     },
     placeholderIsVisible() {
       return (
-        !this.uppyImage
-        && !this.currentValue
-        && this.width >= 120
-        && this.height >= 120
+        !this.uppyImage &&
+        !this.currentValue &&
+        !this.isReadonly &&
+        this.width >= 120 &&
+        this.height >= 120
       );
     },
     miniPlaceholderIsVisible() {
       return (
-        !this.uppyImage
-        && !this.currentValue
-        && this.width < 120
-        && this.height < 120
+        !this.uppyImage &&
+        !this.currentValue &&
+        !this.isReadonly &&
+        this.width < 120 &&
+        this.height < 120
       );
     },
     croppaIsVisible() {
@@ -154,10 +158,10 @@ export default {
     },
     valueSrc() {
       if (this.currentValue && typeof this.currentValue === 'object') {
-        return `/api/file/${this.formGuid}/null/${this.fieldGuid}/${this.currentValue.guid}`;
+        return `/api/file/${this.formGuid}/null/${this.fieldGuid}/${this.currentValue.guid}/${this.currentValue.name}`;
       }
       if (this.currentValue) {
-        return `/api/file/${this.formGuid}/${this.rowGuid}/${this.fieldGuid}`;
+        return `/api/file/${this.formGuid}/${this.rowGuid}/${this.fieldGuid}/noname`;
       }
       return null;
     },
@@ -279,11 +283,14 @@ export default {
       });
 
       if (
-        this.options.enableWebcam === true
-        || this.options.enableWebcam == null
-        || this.options.enableWebcam === undefined
+        this.options.enableWebcam === true ||
+        this.options.enableWebcam == null ||
+        this.options.enableWebcam === undefined
       ) {
-        this.uppy.use(Webcam, { target: Dashboard });
+        this.uppy.use(Webcam, {
+          target: Dashboard,
+          modes: ['picture']
+        });
       }
 
       this.uppy.on('file-added', file => {

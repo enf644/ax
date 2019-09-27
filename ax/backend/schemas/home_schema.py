@@ -10,7 +10,7 @@ from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 import ujson as json
 from backend.misc import convert_column_to_string  # TODO check if needed
 from backend.model import GUID, AxForm, AxField, AxGrid, AxAction, AxState, \
-    AxRole, AxRole2Users, AxRoleFieldPermission, AxState2Role, AxAction2Role, \
+    AxRole2Users, AxRoleFieldPermission, AxState2Role, AxAction2Role, \
     Ax1tomReference
 import backend.model as ax_model
 # import backend.cache as ax_cache
@@ -18,6 +18,7 @@ import backend.dialects as ax_dialects
 from backend.schemas.grids_schema import get_default_grid_code
 import backend.misc as ax_misc
 from backend.schemas.types import Form, PositionInput
+from backend.auth import ax_admin_only
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
 
@@ -102,7 +103,7 @@ async def create_default_grid(db_session, ax_form, name):
         ax_grid.name = name
         ax_grid.db_name = 'Default'
         ax_grid.form_guid = ax_form.guid
-        ax_grid.code = get_default_grid_code(ax_form.db_name);
+        ax_grid.code = get_default_grid_code(ax_form.db_name)
         ax_grid.position = 1
 
         default_options = {
@@ -206,64 +207,6 @@ async def create_default_actions(
         }
 
 
-async def create_default_roles(db_session, ax_form, states, actions,
-                               default_admin):
-    "Creates default AxRole"
-
-    err = "home_schema -> create_default_roles"
-    with ax_model.try_catch(db_session, err) as db_session:
-        admin_role = AxRole()
-        admin_role.name = default_admin
-        admin_role.form_guid = ax_form.guid
-        admin_role.is_admin = True
-        # TODO add admin group user to role
-        db_session.add(admin_role)
-
-        db_session.flush()
-
-        start_role = AxState2Role()
-        start_role.state_guid = states['start']
-        start_role.role_guid = admin_role.guid
-        db_session.add(start_role)
-
-        created_role = AxState2Role()
-        created_role.state_guid = states['created']
-        created_role.role_guid = admin_role.guid
-        db_session.add(created_role)
-
-        create_action_role = AxAction2Role()
-        create_action_role.action_guid = actions['create']
-        create_action_role.role_guid = admin_role.guid
-        db_session.add(create_action_role)
-
-        delete_action_role = AxAction2Role()
-        delete_action_role.action_guid = actions['delete']
-        delete_action_role.role_guid = admin_role.guid
-        db_session.add(delete_action_role)
-
-        # Create default permission for admin. field_guid is None
-        # it meens - for all fields
-        perm = AxRoleFieldPermission()
-        perm.form_guid = ax_form.guid
-        perm.state_guid = states['start']
-        perm.role_guid = admin_role.guid
-        perm.field_guid = None
-        perm.read = True
-        perm.edit = True
-        db_session.add(perm)
-
-        perm = AxRoleFieldPermission()
-        perm.form_guid = ax_form.guid
-        perm.state_guid = states['created']
-        perm.role_guid = admin_role.guid
-        perm.field_guid = None
-        perm.read = True
-        perm.edit = True
-        db_session.add(perm)
-
-        db_session.flush()
-
-
 class CreateForm(graphene.Mutation):
     """ Creates AxForm """
     class Arguments:  # pylint: disable=missing-docstring
@@ -277,7 +220,6 @@ class CreateForm(graphene.Mutation):
         default_state = graphene.String()
         default_delete = graphene.String()
         default_deleted = graphene.String()
-        default_admin = graphene.String()
         default_update = graphene.String()
         delete_confirm = graphene.String()
 
@@ -285,6 +227,7 @@ class CreateForm(graphene.Mutation):
     avalible = graphene.Boolean()
     form = graphene.Field(Form)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
         err = "home_schema -> CreateForm"
@@ -299,7 +242,6 @@ class CreateForm(graphene.Mutation):
             default_state = args.get('default_state')
             default_delete = args.get('default_delete')
             default_deleted = args.get('default_deleted')
-            default_admin = args.get('default_admin')
             default_update = args.get('default_update')
             delete_confirm = args.get('delete_confirm')
 
@@ -325,7 +267,7 @@ class CreateForm(graphene.Mutation):
                 default_all=default_all,
                 default_deleted=default_deleted)
 
-            actions = await create_default_actions(
+            await create_default_actions(
                 db_session=db_session,
                 ax_form=new_form,
                 states=states,
@@ -333,13 +275,6 @@ class CreateForm(graphene.Mutation):
                 default_delete=default_delete,
                 default_update=default_update,
                 delete_confirm=delete_confirm)
-
-            await create_default_roles(
-                db_session=db_session,
-                ax_form=new_form,
-                states=states,
-                actions=actions,
-                default_admin=default_admin)
 
             await create_default_grid(
                 db_session=db_session,
@@ -351,7 +286,7 @@ class CreateForm(graphene.Mutation):
                 ax_form=new_form,
                 name=default_tab_name)
 
-            db_session.flush()
+            db_session.commit()
             ax_schema.init_schema(db_session)
             # TODO: check for multiple workers and load balancers.
             # https://community.sanicframework.org/t/removing-routes-necessary-functionality/29
@@ -373,6 +308,7 @@ class UpdateForm(graphene.Mutation):
     db_name_changed = graphene.String()
     form = graphene.Field(Form)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
         err = "home_schema -> UpdateForm"
@@ -435,6 +371,7 @@ class DeleteForm(graphene.Mutation):
     ok = graphene.Boolean()
     forms = graphene.List(Form)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "home_schema -> DeleteForm"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -446,8 +383,6 @@ class DeleteForm(graphene.Mutation):
 
             if not ax_form:
                 return DeleteForm(forms=None, ok=False)
-
-            # s.execute("SET FOREIGN_KEY_CHECKS=0;")
 
             # Remove objects connected to form - Ax1tomReference, AxRole2Users,
             # AxState2Role, AxAction2Role, AxRoleFieldPermission, AxRole,
@@ -511,6 +446,7 @@ class CreateFolder(graphene.Mutation):
     ok = graphene.Boolean()
     form = graphene.Field(Form)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "home_schema -> CreateFolder"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -531,6 +467,7 @@ class UpdateFolder(graphene.Mutation):
     ok = graphene.Boolean()
     form = graphene.Field(Form)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "home_schema -> UpdateFolder"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -553,6 +490,7 @@ class DeleteFolder(graphene.Mutation):
     forms = graphene.List(Form)
     ok = graphene.Boolean()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "home_schema -> DeleteFolder"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -586,6 +524,7 @@ class ChangeFormsPositions(graphene.Mutation):
     ok = graphene.Boolean()
     forms = graphene.List(Form)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "home_schema -> ChangeFormsPositions"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -614,8 +553,9 @@ class HomeQuery(graphene.ObjectType):
             type=graphene.String, required=False)
     )
     sql_status = graphene.String()
-    ping = graphene.String()    
+    ping = graphene.String()
 
+    @ax_admin_only
     async def resolve_all_forms(self, info, update_time):
         """Get all users"""
         del update_time
@@ -631,7 +571,6 @@ class HomeQuery(graphene.ObjectType):
         """ - """
         del info
         return ax_model.engine.pool.status()
-
 
     def resolve_ping(self, info):
         """ - """

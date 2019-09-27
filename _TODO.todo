@@ -593,7 +593,7 @@ AX 0.2:
                 ✔ If no rows in AxGrid - loading is shown @done(19-09-13 13:02)
                 ✔ Try russian in db_name field @done(19-09-13 17:57)
             ✔ Discover postgre connection build up @done(19-09-13 17:03)
-    ☐ USERS
+    ✔ USERS @done(19-09-24 09:19)
         ✔ Choose lib @done(19-09-15 08:35)
         ✔ Sign in form @done(19-09-15 08:35)
         ✔ Auth for gql @done(19-09-18 19:05)
@@ -619,22 +619,36 @@ AX 0.2:
             ✔ User Group modal @done(19-09-22 21:16)
         ✔ Roles modal - add users @done(19-09-23 15:17)
         ✔ Create default users on install @done(19-09-23 16:16)
-        ☐ auth.py takes users from database
-        ☐ Add GQL query for current user data
-        ☐ AxGrid, AxForm -> auth needed setting
-        ☐ AxGrid, AxForm -> sign in dialog when not logged and anon icon if showing
+        ✔ auth.py takes users from database @done(19-09-23 22:41)
     ☐ PERMISSION SYSTEM
-        ☐ When user logs in - his perms are stored in cache. form -> perms list
+        ✔ When user logs in - his perms are stored in cache. form -> perms list @done(19-09-26 17:34)
         ✔ GraphQL authorisation @done(19-09-18 18:13)
         ☐ Every GQL mutation needs permissions
-            ☐ All admin routes checks if user is admin. Is_admin is stored in jwt.
-            ☐ Select one schema authorisation. (formData)
+            ✔ All admin routes checks if user is admin. Is_admin is stored in jwt. @done(19-09-27 22:26)
+                ✔ Redirect to signin and reset store if not admin @done(19-09-27 22:32)
+            ✔ Select one schema authorisation. (formData) @done(19-09-26 17:34)
             ☐ Select all schema authorisation.
-        ☐ AxForm fields permissions
-        ☐ Action permissions
-        ☐ Frogs
-            ☐ If no field added - error in AxGrid
-            ☐ Auth for uppy upload
+            ☐ Action permissions - fields permissions
+        ✔ AxForm fields permissions @done(19-09-27 17:41)
+        ✔ All fields must have isReadonly param @done(19-09-27 17:41)
+        ✔ Frogs @done(19-09-27 20:40)
+            ✔ form.js -> 'All fields' must be from locale @done(19-09-27 16:19)
+            ✔ AxAction when no fields are visible @done(19-09-27 16:43)
+            ✔ Check fields errors @done(19-09-27 16:15)
+                ✔ Ax Changelog @done(19-09-27 15:25)
+                ✔ Db crop @done(19-09-27 16:15)
+                ✔ 1toM, 1tomTable @done(19-09-27 14:37)
+                ✔ Ax Files @done(19-09-27 14:37)
+            ✔ GQL schema not updated. If no field added - error in AxGrid @done(19-09-27 17:31)
+            ✔ Start state disapears after update @done(19-09-27 18:01)
+            ✔ AxForm header is clickable - opens form in new window @done(19-09-27 18:49)
+            ✔ Remove default admin role @done(19-09-27 19:22)
+                ✔ No roles message @done(19-09-27 19:22)
+                ✔ Delete roles @done(19-09-27 19:22)
+            ✔ If server was reloaded -> user can log-in because access_token is not expired, but cache is empty. @done(19-09-27 19:36)
+                ✔ On retrive user - check if user in cache - is false - write to cache @done(19-09-27 19:37)
+            ✔ Auth for uppy/tus upload @done(19-09-27 20:05)
+            ✔ Add GQL query for current user data @done(19-09-27 20:40)
     ☐ PAGES DESIGNER
         ✔ Routes work with static content @done(19-08-15 14:09)
         ✔ Routes take path from app.yaml so it can be configured @done(19-08-15 16:48)
@@ -648,7 +662,7 @@ AX 0.2:
         ☐ Git integration
         ☐ Pages in application?
         ☐ Application catalog
-        ☐ Install from git repository (pages use gitcdn)        
+        ☐ Install from git repository (pages use gitcdn)
     ☐ GLOBAL FROGS
         ☐ Different sorting and filtering for different types
             ✘ Server filter - must be loaded dynamicly @cancelled(19-09-08 21:11)
@@ -847,6 +861,8 @@ FROGS TODOS:
     ☐ If app engine -> disable Web-sockets
     ☐ What if database already exists?            
     ☐ If error accured while executing field before/after code -> the exception must be seen in modal for user
+    ☐ Tom name -> need to check if fields in {{}} exists
+    ☐ tus.py max file size must be from app.yaml
 
 
 
@@ -898,6 +914,10 @@ FEATURES:
     ☐ Conditions in workflow
     ☐ Timers in workflo
     ☐ Resources monitoring
+    ☐ `[IMPORTANT]` AxGrid, AxForm -> auth needed setting
+    ☐ `[IMPORTANT]` AxGrid, AxForm -> sign in dialog when not logged and anon icon if showing
+
+    
     
 MAYBE LATER:
     ☐ python autodoc

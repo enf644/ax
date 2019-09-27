@@ -1,6 +1,10 @@
 <template>
-  <div>
+  <div v-show='formGuid'>
     <h3>{{$t("workflow.role.roles-list-header")}}:</h3>
+    <div v-if='this.roles.length == 0'>
+      <i class='fas fa-user-slash'></i>
+      &nbsp; {{$t("workflow.role.no-roles")}}
+    </div>
     <div
       :key='role.guid'
       @click='openRoleModal(role)'
@@ -16,7 +20,7 @@
       </div>
     </div>
 
-    <modal :height='windowHeight' adaptive name='update-role' scrollable width='1000px'>
+    <modal :height='windowHeight' adaptive name='update-role' width='1000px'>
       <TheRoleModal :guid='this.selectedRoleGuid' @close='closeModal' />
     </modal>
 
@@ -42,11 +46,13 @@ export default {
   computed: {
     roles() {
       return this.$store.getters['workflow/rolesWithColor'];
+    },
+    formGuid() {
+      return this.$store.state.workflow.formGuid;
     }
   },
   created() {
     this.windowHeight = window.innerHeight * 1 - 50;
-    console.log(this.windowHeight);
   },
   methods: {
     highlightRole(role) {

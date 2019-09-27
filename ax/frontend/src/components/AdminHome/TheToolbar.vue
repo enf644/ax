@@ -120,8 +120,9 @@
     <v-menu offset-y>
       <template v-slot:activator='{ on }'>
         <v-avatar class='logout' v-on='on'>
-          <div class='user-avatar'>
-            <i class='fas fa-user-circle'></i>
+          <div class='user-avatar-div'>
+            {{currentUserShortName}} &nbsp;
+            <i class='user-avatar fas fa-user-circle'></i>
           </div>
         </v-avatar>
       </template>
@@ -203,6 +204,11 @@ export default {
       );
       if (defGrid) return defGrid.name;
       return null;
+    },
+    currentUserShortName() {
+      if (this.$store.state.users.currentUser) {
+        return this.$store.state.users.currentUser.shortName;
+      }
     }
   },
   methods: {
@@ -321,6 +327,11 @@ export default {
 }
 .user-avatar {
   font-size: 22px;
+  color: #999;
+}
+.user-avatar-div {
+  margin-right: 60px;
+  white-space: nowrap;
   color: #999;
 }
 </style>

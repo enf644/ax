@@ -2,7 +2,7 @@
   <div>
     <h3>{{name}}</h3>
     <div :key='item.timestamp' class='changelog-row' v-for='item in currentValue'>
-      {{ $d(getDate(item.timestamp), 'normal') }} : [AnonUser] :
+      {{ $d(getDate(item.timestamp), 'normal') }} : [{{item.user}}] :
       <b>{{ item.action.name }}</b>
       &nbsp;
       <i class='fas fa-arrow-right'></i>

@@ -2,6 +2,16 @@ import apolloClient from '../../apollo';
 import gql from 'graphql-tag';
 import logger from '../../logger';
 
+const getDefaultState = () => {
+  return {
+    all: [],
+    groups: [],
+    isUsersLoaded: false,
+    currentUser: null
+  }
+}
+
+
 const SUBSCRIPTION_QUERY = gql`
     subscription {
       mutationExample {
@@ -58,13 +68,13 @@ const actions = {
         logger.error('Error in getAllUsers gql');
         logger.error(error);
       });
-  },
-  createNewUser(context, payload) {
-
   }
 };
 
 const mutations = {
+  resetState(state) {
+    Object.assign(state, getDefaultState())
+  },
   setUsers(state, users) {
     state.all = users;
     state.isUsersLoaded = true;
@@ -77,15 +87,14 @@ const mutations = {
       ...state.groups.filter(element => element.guid !== group.guid),
       group
     ];
+  },
+  setCurrentUser(state, user) {
+    state.currentUser = user;
   }
 };
 
 
-const state = {
-  all: [],
-  groups: [],
-  isUsersLoaded: false
-};
+const state = getDefaultState();
 
 export default {
   namespaced: true,

@@ -102,7 +102,7 @@ class PorstgreDialect(object):
         if "BLOB" in type_name:
             ret_val = f"octet_length({db_name}) as {db_name}"
         else:
-            ret_val = db_name
+            ret_val = f'"{db_name}"'
         return ret_val
 
 
@@ -153,7 +153,9 @@ class PorstgreDialect(object):
 
     async def get_value(self, type_name, value):
         """ SELECT cat return different types for diferent dialects
-        This method makes returning value same """
+        This method makes returning value same.
+            Sqllite returns JSON as string
+            Postgre returns JSON as dict  """
         ret_value = value
         if "JSON" in type_name:
             ret_value = json.dumps(value) if value else None
@@ -208,6 +210,10 @@ class PorstgreDialect(object):
             fields_sql = ", ".join(
                 '"' + field.db_name + '"' for field in ax_form.db_fields)
 
+            # If no fields -> no , needed
+            if fields_sql:
+                fields_sql = "," + fields_sql
+
             quicksearch_sql = ''
             if quicksearch:
                 sql_params['quicksearch'] = quicksearch
@@ -241,7 +247,7 @@ class PorstgreDialect(object):
                     if not quicksearch_sql:
                         guids_sql = f"AND guid IN ({guids_string})"
             sql = (
-                f'SELECT guid, "axState", {fields_sql}'
+                f'SELECT guid, "axState" {fields_sql}'
                 f', {tom_name} as "axLabel" FROM "{ax_form.db_name}"'
                 f' WHERE (1=1 {quicksearch_sql}) {guids_sql}'
             )
@@ -296,8 +302,12 @@ class PorstgreDialect(object):
 
             db_fields_sql = ", ".join(
                 '"' + field.db_name + '"' for field in ax_form.db_fields)
+
+            if db_fields_sql:
+                db_fields_sql = ", " + db_fields_sql
+
             fields_sql = (
-                f'"guid", "axState", {db_fields_sql}, {tom_name} as "axLabel"')
+                f'"guid", "axState" {db_fields_sql}, {tom_name} as "axLabel"')
             final_sql = sql.replace('<ax_fields>', fields_sql)
             final_sql = final_sql.replace('<ax_table>', ax_form.db_name)
 
@@ -353,7 +363,7 @@ class PorstgreDialect(object):
                     field_db_name = field.field_type.virtual_source
                 field_name = await self.get_select_sql(
                     field.field_type.value_type, field_db_name)
-                fields_string += f', "{field_name}"'
+                fields_string += f', {field_name}'
 
             sql = None
             query_params = None
@@ -649,7 +659,7 @@ class SqliteDialect(PorstgreDialect):
         if "BLOB" in type_name:
             ret_val = f"LENGTH({db_name}) as \"{db_name}\""
         else:
-            ret_val = db_name
+            ret_val = f'"{db_name}"'
         return ret_val
 
     async def get_value_sql(self, type_name, db_name):
@@ -693,6 +703,17 @@ class SqliteDialect(PorstgreDialect):
         else:
             ret_param = value if value else None
         return ret_param
+
+
+
+    async def get_value(self, type_name, value):
+        """ SELECT cat return different types for diferent dialects
+        This method makes returning value same.
+            Sqllite returns JSON as string
+            Postgre returns JSON as dict  """
+        ret_value = value
+        return ret_value
+
 
 
     async def create_data_table(self, db_session, db_name: str) -> None:

@@ -1,6 +1,7 @@
 <template>
   <v-select
     :clearable='options.clearable'
+    :disabled='isReadonly'
     :error-messages='errors'
     :hint='options.hint'
     :items='items'
@@ -21,7 +22,8 @@ export default {
     tag: null,
     options: null,
     value: null,
-    isRequired: null
+    isRequired: null,
+    isReadonly: null
   },
   data: () => ({
     currentValue: null,

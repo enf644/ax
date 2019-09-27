@@ -3,6 +3,22 @@ import gql from 'graphql-tag';
 import logger from '../../logger';
 import i18n from '../../locale.js';
 
+const getDefaultState = () => {
+  return {
+    formGuid: null,
+    formDbName: null,
+    roles: [],
+    states: [],
+    actions: [],
+    currentStateGuid: [],
+    permissions: [],
+    updateTime: null,
+    addedAction: null,
+    highlightedRole: null
+  }
+}
+
+
 const CREATE_STATE = gql`
   mutation ($formGuid: String!, $name: String!, $x: Float!, $y: Float!, $update: String) {
     createState(formGuid: $formGuid, name: $name, x: $x, y: $y, update: $update) {
@@ -274,6 +290,9 @@ const SET_STATE_PERMISSION = gql`
 
 
 const mutations = {
+  resetState(state) {
+    Object.assign(state, getDefaultState())
+  },
   setWorkflowData(state, data) {
     if (data) {
       state.formGuid = data.guid;
@@ -765,18 +784,7 @@ const actions = {
 
 };
 
-const state = {
-  formGuid: null,
-  formDbName: null,
-  roles: [],
-  states: [],
-  actions: [],
-  currentStateGuid: [],
-  permissions: [],
-  updateTime: null,
-  addedAction: null,
-  highlightedRole: null
-};
+const state = getDefaultState();
 
 export default {
   namespaced: true,

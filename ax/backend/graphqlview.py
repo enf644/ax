@@ -19,6 +19,7 @@ from graphql_server import (HttpQueryError, default_format_error,
 from loguru import logger
 import backend.model as ax_model
 import backend.auth as ax_auth
+import backend.schema as ax_schema
 
 
 class GraphQLView(HTTPMethodView):
@@ -53,7 +54,7 @@ class GraphQLView(HTTPMethodView):
         self._enable_async = self._enable_async and isinstance(
             self.executor, AsyncioExecutor)
         assert isinstance(
-            self.schema, GraphQLSchema), 'A Schema is required to be provided to GraphQLView.'
+            self.schema, GraphQLSchema), 'A Schema is required'
 
     # noinspection PyUnusedLocal
     def get_root_value(self, request):  # pylint: disable=unused-argument
@@ -64,8 +65,8 @@ class GraphQLView(HTTPMethodView):
         """ Returns saved context. Contains reqest, db_session, user """
         context = (
             self.context.copy()
-            if self.context
-            and isinstance(self.context, Mapping)
+            if self.context and
+            isinstance(self.context, Mapping)
             else {}
         )
         if isinstance(context, Mapping) and 'request' not in context:
@@ -108,7 +109,7 @@ class GraphQLView(HTTPMethodView):
 
                 if request_method != 'options':
                     execution_results, all_params = run_http_query(
-                        self.schema,
+                        ax_schema.schema,
                         request_method,
                         data,
                         query_data=request.args,
@@ -122,6 +123,7 @@ class GraphQLView(HTTPMethodView):
                         middleware=self.get_middleware(request),
                         executor=self.get_executor(request),
                     )  # pylint: disable=unused-argument
+                    del all_params
                     awaited_execution_results = await Promise.all(
                         execution_results)
                     result, status_code = encode_execution_results(
@@ -150,7 +152,7 @@ class GraphQLView(HTTPMethodView):
                     headers=err.headers,
                     content_type='application/json'
                 )
-            except Exception as err:
+            except Exception as err:    # pylint: disable=broad-except
                 logger.exception(f'graqlView -> {err}')
 
     # noinspection PyBroadException

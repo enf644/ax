@@ -4,6 +4,23 @@ import logger from '../../logger';
 import i18n from '../../locale.js';
 
 
+const getDefaultState = () => {
+  return {
+    guid: null,
+    name: null,
+    dbName: null,
+    parent: null,
+    icon: null,
+    fields: [],
+    grids: [],
+    fieldTypes: [],
+    isNameChangeOperation: false,
+    openSettingsFlag: null,
+    createdFieldGuid: null,
+    updateTime: null
+  }
+}
+
 const FieldFragment = gql`
   fragment FieldFragment on Field {
     guid,
@@ -243,6 +260,9 @@ const GET_FIELD_TYPES = gql`
 `;
 
 const mutations = {
+  resetState(state) {
+    Object.assign(state, getDefaultState())
+  },
   setFields(state, fields) {
     state.fields = fields;
   },
@@ -326,7 +346,7 @@ const getters = {
     const retFields = [];
     retFields.push({
       guid: null,
-      name: 'All fields',
+      name: i18n.tc('workflow.role.all-permissions'),
       isTab: true
     });
     const tabs = state.fields.filter(field => field.isTab).sort(field => field.position);
@@ -635,20 +655,7 @@ const actions = {
 
 };
 
-const state = {
-  guid: null,
-  name: null,
-  dbName: null,
-  parent: null,
-  icon: null,
-  fields: [],
-  grids: [],
-  fieldTypes: [],
-  isNameChangeOperation: false,
-  openSettingsFlag: null,
-  createdFieldGuid: null,
-  updateTime: null
-};
+const state = getDefaultState();
 
 export default {
   namespaced: true,

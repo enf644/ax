@@ -109,7 +109,8 @@ export default {
     guids: null,
     arguments: null,
     width: null,
-    height: null
+    height: null,
+    tom_disabled: false
   },
   data() {
     return {
@@ -319,7 +320,7 @@ export default {
       return this.tom_mode !== undefined;
     },
     isTomInlineMode() {
-      return this.tom_inline_mode !== undefined;
+      return this.tom_inline_mode !== undefined && this.tom_disabled == false;
     },
     gridTitle() {
       if (this.title) return this.title;

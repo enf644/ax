@@ -15,6 +15,9 @@ from backend.model import AxForm, AxField, AxFieldType, \
 import backend.model as ax_model
 import backend.misc as ax_misc
 import backend.dialects as ax_dialects
+# import backend.cache as ax_cache
+import backend.auth as ax_auth
+from backend.auth import ax_admin_only
 
 from backend.schemas.types import Form, Field, PositionInput, \
     RoleFieldPermission
@@ -53,6 +56,49 @@ async def execute_before_display(db_session, ax_form, current_user):
     return ax_form
 
 
+async def get_state_guid(ax_form, state_name):
+    """ Returns guid of state by name. If no state_name provided ->
+            returns guid of Start state """
+    state_guid = None
+    for state in ax_form.states:
+        if state_name and state.name == state_name:
+            state_guid = str(state.guid)
+        elif ((state_name is None or state_name == '')
+              and state.is_start is True):
+            state_guid = str(state.guid)
+
+    return state_guid
+
+
+async def set_form_visibility(ax_form, state_guid, current_user):
+    """ Sets permission field visibility. Deletes value if field is hidden """
+    allowed_fields = await ax_auth.get_allowed_fields_dict(
+        ax_form=ax_form,
+        user_guid=current_user["user_id"],
+        state_guid=state_guid)
+
+    for field in ax_form.no_tab_fields:
+        if field in ax_form.db_fields or field.field_type.is_virtual:
+            field.is_hidden = True
+            if current_user['is_admin']:
+                field.is_readonly = False
+                field.is_hidden = False
+            else:
+                field_guid_str = str(field.guid)
+                if field_guid_str in allowed_fields:
+                    if allowed_fields[field_guid_str] == 1:
+                        field.is_readonly = True
+                        field.is_hidden = False
+                    if allowed_fields[field_guid_str] == 2:
+                        field.is_readonly = False
+                        field.is_hidden = False
+
+                # If field is hidden -> Epty the value
+                if field.is_hidden is True:
+                    field.value = None
+    return ax_form
+
+
 async def set_form_values(db_session, ax_form, row_guid, current_user):
     """ Select row from DB and set AxForm.fields values, state and rowGuid
 
@@ -63,23 +109,20 @@ async def set_form_values(db_session, ax_form, row_guid, current_user):
     Returns:
         AxForm: Form with field values
     """
-    # TODO get list of fields that user have permission
-    allowed_fields = []
-    for field in ax_form.db_fields:
-        allowed_fields.append(field)
 
     result = await ax_dialects.dialect.select_one(
         db_session=db_session,
         form=ax_form,
-        fields_list=allowed_fields,
+        fields_list=ax_form.db_fields,
         row_guid=row_guid)
 
     if result:
         ax_form.current_state_name = result[0]['axState']
         ax_form.row_guid = result[0]['guid']
+
         # populate each AxField with data
         for field in ax_form.no_tab_fields:
-            if field in allowed_fields or field.field_type.is_virtual:
+            if field in ax_form.db_fields or field.field_type.is_virtual:
                 if field.is_virtual:
                     field.value = result[0][field.field_type.virtual_source]
                 else:
@@ -93,6 +136,7 @@ async def set_form_values(db_session, ax_form, row_guid, current_user):
                         field=field,
                         form=ax_form,
                         current_user=current_user)
+
     return ax_form
 
 
@@ -105,6 +149,7 @@ class CreateTab(graphene.Mutation):
     ok = graphene.Boolean()
     field = graphene.Field(Field)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = f"Error in gql mutation - form.schema -> CreateTab"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -136,6 +181,7 @@ class UpdateTab(graphene.Mutation):
     ok = graphene.Boolean()
     field = graphene.Field(Field)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = 'Error in gql mutation - form_schema -> UpdateTab.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -159,6 +205,7 @@ class DeleteTab(graphene.Mutation):
     ok = graphene.Boolean()
     deleted = graphene.String()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = 'Error in gql mutation - form_schema -> DeleteTab.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -200,6 +247,7 @@ class CreateField(graphene.Mutation):
     field = graphene.Field(Field)
     permissions = graphene.List(RoleFieldPermission)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
         err = 'Error in gql mutation - form_schema -> CreateTab'
@@ -330,6 +378,7 @@ class UpdateField(graphene.Mutation):
     ok = graphene.Boolean()
     field = graphene.Field(Field)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
         err = 'Error in gql mutation - form_schema -> UpdateField.'
@@ -406,6 +455,7 @@ class DeleteField(graphene.Mutation):
     ok = graphene.Boolean()
     deleted = graphene.String()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
         err = 'Error in gql mutation - form_schema -> DeleteField.'
@@ -443,6 +493,7 @@ class ChangeFieldsPositions(graphene.Mutation):
     ok = graphene.Boolean()
     fields = graphene.List(Field)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = 'Error in gql mutation - form_schema -> ChangeFieldsPositions.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -519,7 +570,7 @@ class FormQuery(graphene.ObjectType):
         Returns:
             AxForm: Form with field values, avaluble actions, state, row_guid
         """
-        current_user = None
+        current_user = info.context['user']
         err = 'Error in gql query - form_schema -> resolve_form_data'
         with ax_model.try_catch(
                 info.context['session'], err, no_commit=True) as db_session:
@@ -542,6 +593,15 @@ class FormQuery(graphene.ObjectType):
             ax_form = await execute_before_display(
                 db_session=db_session,
                 ax_form=ax_form,
+                current_user=current_user)
+
+            state_guid = await get_state_guid(
+                ax_form=ax_form,
+                state_name=ax_form.current_state_name)
+
+            ax_form = await set_form_visibility(
+                ax_form=ax_form,
+                state_guid=state_guid,
                 current_user=current_user)
 
             ax_form.avalible_actions = await action_schema.get_actions(

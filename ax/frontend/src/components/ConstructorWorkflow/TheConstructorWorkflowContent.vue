@@ -281,8 +281,8 @@ export default {
           // (create action or change radius)
           const timeDelta = new Date() - this.stateMouseDownTimestamp;
           this.diagramActionMode = !(
-            this.stateMouseDownTimestamp != null
-            && timeDelta < this.NEW_ACTION_TIMEOUT
+            this.stateMouseDownTimestamp != null &&
+            timeDelta < this.NEW_ACTION_TIMEOUT
           );
           if (elementIsDragged) this.stateMouseDownTimestamp = null;
 
@@ -325,15 +325,15 @@ export default {
         .append('svg')
         .attr(
           'width',
-          this.containerWidth
-            + this.containerMargin.left
-            + this.containerMargin.right
+          this.containerWidth +
+            this.containerMargin.left +
+            this.containerMargin.right
         )
         .attr(
           'height',
-          this.containerHeight
-            + this.containerMargin.top
-            + this.containerMargin.bottom
+          this.containerHeight +
+            this.containerMargin.top +
+            this.containerMargin.bottom
         )
         .append('g')
         .attr(
@@ -400,7 +400,8 @@ export default {
         .attr('id', 'globalG')
         .attr(
           'transform',
-          () => `translate(${initialX},${initialY}) scale(${initialZoom},${initialZoom})`
+          () =>
+            `translate(${initialX},${initialY}) scale(${initialZoom},${initialZoom})`
         )
         .on('mousemove', () => {});
 
@@ -766,8 +767,9 @@ export default {
             .attributes.height.value;
           startHeight = startHeight * 1 + 5; // 5 is first time offset
           const currentStateSelfActions = this.axActions.filter(
-            action => action.toStateGuid === action.fromStateGuid
-              && action.toStateGuid === d.guid
+            action =>
+              action.toStateGuid === action.fromStateGuid &&
+              action.toStateGuid === d.guid
           );
           currentStateSelfActions.forEach(actionD => {
             currentElement
@@ -1361,6 +1363,7 @@ export default {
       setTimeout(() => {
         d3.select(`#d3_state_g_${stateGuid}`).remove();
         this.redrawStates();
+        this.drawStart();
         this.closeModal();
       }, 100);
     },
@@ -1375,8 +1378,8 @@ export default {
       let isSelfAction = false;
       this.$store.state.workflow.actions.forEach(action => {
         if (
-          action.guid === actionGuid
-          && action.fromStateGuid === action.toStateGuid
+          action.guid === actionGuid &&
+          action.fromStateGuid === action.toStateGuid
         ) {
           isSelfAction = action.toStateGuid;
         }

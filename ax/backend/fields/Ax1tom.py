@@ -1,5 +1,6 @@
 """Ax1tom field type functions - before, after / insert, update, delete"""
 import uuid
+import ujson as json
 from backend.model import Ax1tomReference
 
 
@@ -33,6 +34,9 @@ async def after_update(db_session, field, before_form, tobe_form, action,
     ).delete()
 
     if field.value:
+        if not isinstance(field.value, list):
+            field.value = json.reads(field.value)
+
         for child_guid in field.value:
             new_tom = Ax1tomReference()
             new_tom.form_guid = tobe_form.guid

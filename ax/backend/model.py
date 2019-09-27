@@ -244,6 +244,15 @@ class AxForm(Base):
                 return field
         return None
 
+    @property
+    def perm_states(self):
+        """Only AxStates that have perms - all without deleted and all"""
+        states = []
+        for state in self.states:
+            if state.is_all is False and state.is_deleted is False:
+                states.append(state)
+        return states
+
 
 class AxFieldType(Base):
     """List of avalible ax field types"""
@@ -285,7 +294,7 @@ class AxFieldType(Base):
     # True meens that current field type always must be displayed as whole row
     is_always_whole_row = Column(Boolean, unique=False, default=False)
     # True if fields type have python code that must be executed before form
-    # is displayed. Check backend/fields/ for more info
+    # is displayed. Check backend/fields/AxHtml for more info
     is_display_backend_avalible = Column(Boolean, unique=False, default=False)
 
     def __init__(self,
@@ -351,8 +360,9 @@ class AxField(Base):
     is_tab = Column(Boolean, unique=False, default=False)
     is_required = Column(Boolean, unique=False, default=False)
     is_whole_row = Column(Boolean, unique=False, default=False)
-    parent = Column(GUID())
+    parent = Column(GUID()) # Tab guid
     value = None
+    is_hidden = False
     is_readonly = False
     needs_sql_update = False  # Flag that current field must be updated in DB
 
@@ -451,6 +461,10 @@ class AxUser(Base):
         secondaryjoin="AxUser.guid==AxGroup2Users.user_guid",
         backref="users_in_group"
     )
+
+    def to_dict(self):
+        """ Required for sanic-jwt """
+        return {"user_id": str(self.guid), "short_name": self.short_name}
 
 
 class AxRole2Users(Base):

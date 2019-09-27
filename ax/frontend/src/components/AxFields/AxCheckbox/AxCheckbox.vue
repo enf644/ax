@@ -1,5 +1,5 @@
 <template>
-  <v-checkbox :label='name' v-model='currentValue'></v-checkbox>
+  <v-checkbox :disabled='isReadonly' :label='name' v-model='currentValue'></v-checkbox>
 </template>
 
 <script>
@@ -14,6 +14,7 @@ export default {
     options: null,
     value: null,
     isRequired: null,
+    isReadonly: null,
     formDbName: null
   },
   data: () => ({

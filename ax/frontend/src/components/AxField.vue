@@ -6,6 +6,7 @@
       :formDbName='formDbName'
       :formGuid='formGuid'
       :is='component'
+      :isReadonly='isReadonly'
       :isRequired='isRequired'
       :name='name'
       :options='options'
@@ -29,6 +30,7 @@ export default {
     value: null,
     isRequired: null,
     isWholeRow: null,
+    isReadonly: null,
     formGuid: null,
     rowGuid: null,
     fieldGuid: null,

@@ -1,14 +1,17 @@
+const getDefaultState = () => {
+  return {}
+}
+
 const mutations = {
-  increment(state) {
-    state.count += 1;
-    return state;
-  }
+  resetState(state) {
+    Object.assign(state, getDefaultState())
+  },
 };
 
 const getters = {};
 const actions = {};
 
-const state = {};
+const state = getDefaultState();
 
 export default {
   namespaced: true,

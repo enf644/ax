@@ -3,6 +3,20 @@ import gql from 'graphql-tag';
 import logger from '../../logger';
 import i18n from '../../locale.js';
 
+const getDefaultState = () => {
+  return {
+    forms: [],
+    isFormsLoaded: false,
+    dbNameIsAvalible: true,
+    modalMustClose: false,
+    positionChangedFlag: false,
+    dbNameChanged: false,
+    redirectNeededUrl: null,
+    redirectFromUrl: null,
+    currentUser: null
+  }
+}
+
 const GET_ALL_FORMS = gql`
     query ($updateTime: String) {
       allForms (updateTime: $updateTime) {
@@ -25,6 +39,12 @@ const GET_ALL_FORMS = gql`
           }
         },  
         tomLabel
+      },
+      currentAxUser (updateTime: $updateTime) {
+        guid,
+        email,
+        shortName,
+        name
       }
     }
 `;
@@ -43,8 +63,7 @@ const CREATE_FORM = gql`
       $defaultDelete: String!,
       $defaultDeleted: String!,
       $deleteConfirm: String!,
-      $defaultUpdate: String!,
-      $defaultAdmin: String!
+      $defaultUpdate: String!
     ) {
     createForm(
         name: $name, 
@@ -58,8 +77,7 @@ const CREATE_FORM = gql`
         defaultDelete: $defaultDelete,
         defaultDeleted: $defaultDeleted,
         deleteConfirm: $deleteConfirm,
-        defaultUpdate: $defaultUpdate,
-        defaultAdmin: $defaultAdmin
+        defaultUpdate: $defaultUpdate
       ) {
       form {
         guid,
@@ -199,6 +217,9 @@ const CHANGE_FORMS_POSITIONS = gql`
     }`;
 
 const mutations = {
+  resetState(state) {
+    Object.assign(state, getDefaultState())
+  },
   setForms(state, forms) {
     state.forms = forms;
     state.isFormsLoaded = true;
@@ -364,7 +385,7 @@ const getters = {
 };
 
 const actions = {
-  getAllForms({ commit }) {
+  getAllForms({ commit, dispatch }) {
     apolloClient.query({
       query: GET_ALL_FORMS,
       variables: {
@@ -373,9 +394,11 @@ const actions = {
     })
       .then(data => {
         commit('setForms', data.data.allForms);
+        commit('users/setCurrentUser', data.data.currentAxUser, { root: true });
       })
       .catch(error => {
         logger.error(`Error in getAllForms apollo client -> ${error}`);
+        dispatch('auth/logOut', null, { root: true });
       });
   },
   createForm(context, payload) {
@@ -393,7 +416,6 @@ const actions = {
         defaultCreate: i18n.tc('home.new-form.default-create'),
         defaultState: i18n.tc('home.new-form.default-state'),
         defaultDelete: i18n.tc('home.new-form.default-delete'),
-        defaultAdmin: i18n.tc('home.new-form.default-admin'),
         defaultUpdate: i18n.tc('workflow.action.new-self-action-dummy'),
         deleteConfirm: i18n.tc('workflow.delete-confirm')
       }
@@ -527,17 +549,8 @@ const actions = {
   }
 };
 
-const state = {
-  forms: [],
-  isFormsLoaded: false,
-  dbNameIsAvalible: true,
-  modalMustClose: false,
-  positionChangedFlag: false,
-  dbNameChanged: false,
-  redirectNeededUrl: null,
-  redirectFromUrl: null,
-  currentUser: null
-};
+
+const state = getDefaultState();
 
 export default {
   namespaced: true,

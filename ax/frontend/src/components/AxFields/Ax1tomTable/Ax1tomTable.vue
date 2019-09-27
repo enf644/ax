@@ -11,6 +11,7 @@
         :grid='options.inline_grid'
         :guids='currentValue'
         :title='name'
+        :tom_disabled='isReadonly'
         :update_time='updateTime'
         @openSelectDialog='openGridModal()'
         @tomRemove='clearValue'
@@ -73,7 +74,8 @@ export default {
     tag: null,
     options: null,
     value: null,
-    isRequired: null
+    isRequired: null,
+    isReadonly: null
   },
   data: () => ({
     currentValue: null,
@@ -129,7 +131,8 @@ export default {
   },
   created() {
     if (this.value) {
-      this.currentValue = this.value;
+      if (Array.isArray(this.value)) this.currentValue = this.value;
+      else this.currentValue = JSON.parse(this.value);
     }
     this.updateTime = Date.now();
     this.modalGuid = uuid4();
@@ -140,8 +143,8 @@ export default {
     },
     openFormModal(item) {
       if (
-        this.options.enableFormModal
-        || this.options.enableFormModal === undefined
+        this.options.enableFormModal ||
+        this.options.enableFormModal === undefined
       ) {
         this.activeItemGuid = item.guid;
         this.$modal.show(`tom-form-${this.modalGuid}`);

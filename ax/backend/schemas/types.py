@@ -68,6 +68,8 @@ class Field(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
         model = AxField
         interfaces = (relay.Node, )
     value = graphene.String()
+    is_hidden = graphene.Boolean()
+    is_readonly = graphene.Boolean()
 
 
 class Grid(SQLAlchemyObjectType):  # pylint: disable=missing-docstring

@@ -15,6 +15,7 @@ import backend.model as ax_model
 
 # import backend.cache as ax_cache # TODO use cache!
 from backend.schemas.types import Grid, Column, PositionInput
+from backend.auth import ax_admin_only
 
 
 def get_default_grid_code(db_name):
@@ -77,6 +78,7 @@ class CreateColumn(graphene.Mutation):
     ok = graphene.Boolean()
     column = graphene.Field(Column)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = 'grids_schema -> CreateColumn'
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -115,6 +117,7 @@ class UpdateColumnOptions(graphene.Mutation):
 
     ok = graphene.Boolean()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = 'Error in gql mutation - grids_schema -> UpdateColumnOptions.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -134,6 +137,7 @@ class DeleteColumn(graphene.Mutation):
     ok = graphene.Boolean()
     deleted = graphene.String()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = 'Error in gql mutation - grids_schema -> DeleteColumn'
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -154,6 +158,7 @@ class ChangeColumnsPositions(graphene.Mutation):
     ok = graphene.Boolean()
     columns = graphene.List(Column)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = 'Error in gql mutation - grids_schema -> ChangeColumnsPositions.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -188,6 +193,7 @@ class CreateGrid(graphene.Mutation):
     ok = graphene.Boolean()
     grid = graphene.Field(Grid)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
         err = 'Error in gql mutation - grids_schema -> CreateGrid.'
@@ -253,6 +259,7 @@ class DeleteGrid(graphene.Mutation):
     ok = graphene.Boolean()
     deleted = graphene.String()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
         err = 'Error in gql mutation - grids_schema -> DeleteGrid.'
@@ -293,6 +300,7 @@ class UpdateGrid(graphene.Mutation):
     ok = graphene.Boolean()
     grid = graphene.Field(Grid)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
         err = 'Error in gql mutation - grids_schema -> UpdateGrid.'
@@ -392,6 +400,7 @@ class GridsQuery(graphene.ObjectType):
 
             return grid
 
+    @ax_admin_only
     async def resolve_grids_list(self, info, form_db_name):
         """Gets list of all AxGrid's of form """
         err = 'grids_schema -> resolve_grids_list'

@@ -12,7 +12,7 @@
     >
       <!-- <v-layout align-space-between class='form-layout' justify-start> -->
       <v-container class='form-layout'>
-        <v-row>
+        <v-row class='form-global-row' no-gutters>
           <transition :enter-active-class='drawerAnimationClass'>
             <v-col
               :class='{
@@ -74,9 +74,11 @@
                   <i class='fas fa-bars'></i>
                 </v-btn>
               </v-badge>
-              <i :class='iconClass'></i>
-              &nbsp; {{name}} &nbsp;
-              <v-btn @click='reloadData' icon text>
+              <span @click='openFormBlank()' class='form-header'>
+                <i :class='iconClass'></i>
+                &nbsp; {{name}} &nbsp;
+              </span>
+              <v-btn @click='reloadData' icon text v-if='this.rowGuid'>
                 <i class='fas fa-redo-alt'></i>
               </v-btn>
               <resize-observer @notify='handleResize' />
@@ -89,6 +91,7 @@
                   :fieldGuid='field.guid'
                   :formDbName='db_name'
                   :formGuid='formGuid'
+                  :isReadonly='field.isReadonly'
                   :isRequired='field.isRequired'
                   :isWholeRow='field.isWholeRow'
                   :key='field.guid'
@@ -116,38 +119,45 @@
                 </transition>
 
                 <v-flex xs12>
-                  <v-btn
-                    :disabled='!formIsValid'
-                    @click='submitTest'
-                    small
-                    v-if='isConstructorMode'
-                  >
-                    <i class='fas fa-vial'></i>
-                    &nbsp; {{locale("form.test-from")}}
-                  </v-btn>
+                  <div class='btns-div'>
+                    <v-btn
+                      :disabled='!formIsValid'
+                      @click='submitTest'
+                      small
+                      v-if='isConstructorMode'
+                    >
+                      <i class='fas fa-vial'></i>
+                      &nbsp; {{locale("form.test-from")}}
+                    </v-btn>
 
-                  <v-btn @click='openTerminalModal' color='success' icon v-if='terminalIsAvalible'>
-                    <i class='fas fa-terminal'></i>
-                  </v-btn>
+                    <v-btn
+                      @click='openTerminalModal'
+                      color='success'
+                      icon
+                      v-if='terminalIsAvalible'
+                    >
+                      <i class='fas fa-terminal'></i>
+                    </v-btn>
 
-                  <v-btn
-                    :disabled='!formIsValid || performingActionGuid != null'
-                    :key='action.guid'
-                    @click='doAction(action)'
-                    class='mr-3'
-                    small
-                    v-for='action in this.actions'
-                    v-show='isConstructorMode == false'
-                  >
-                    <i :class='getActionIconClass(action)'></i>
-                    &nbsp;
-                    {{ action.name }}
-                    <i
-                      class='fas fa-spinner fa-spin action-loading'
-                      v-if='action.guid == performingActionGuid'
-                    ></i>
-                  </v-btn>
-                  <!-- <v-btn @click='openForm()' color='primary' outline>text</v-btn> -->
+                    <v-btn
+                      :disabled='!formIsValid || performingActionGuid != null'
+                      :key='action.guid'
+                      @click='doAction(action)'
+                      class='mr-3'
+                      small
+                      v-for='action in this.actions'
+                      v-show='isConstructorMode == false'
+                    >
+                      <i :class='getActionIconClass(action)'></i>
+                      &nbsp;
+                      {{ action.name }}
+                      <i
+                        class='fas fa-spinner fa-spin action-loading'
+                        v-if='action.guid == performingActionGuid'
+                      ></i>
+                    </v-btn>
+                    <!-- <v-btn @click='openForm()' color='primary' outline>text</v-btn> -->
+                  </div>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -214,6 +224,7 @@ import { WebLinksAddon } from 'xterm-addon-web-links';
 import { FitAddon } from 'xterm-addon-fit';
 import { SearchAddon } from 'xterm-addon-search';
 import 'xterm/css/xterm.css';
+import { getAxHost, getAxProtocol } from '@/misc';
 
 // import { settings } from 'cluster';
 
@@ -297,6 +308,12 @@ export default {
     },
     isConstructorMode() {
       return this.constructor_mode !== undefined;
+    },
+    formUrl() {
+      const url = `${getAxProtocol()}://${getAxHost()}/form/${this.db_name}/${
+        this.rowGuid
+      }`;
+      return url;
     }
   },
   watch: {
@@ -327,6 +344,14 @@ export default {
   methods: {
     locale(key, values) {
       return i18n.t(key, values);
+    },
+    openFormBlank() {
+      if (this.rowGuid) {
+        Object.assign(document.createElement('a'), {
+          target: '_blank',
+          href: this.formUrl
+        }).click();
+      }
     },
     initiateTerminal() {
       this.terminal = new Terminal({
@@ -455,6 +480,8 @@ export default {
                   parent
                   optionsJson
                   value
+                  isHidden
+                  isReadonly
                 }
               }
             }
@@ -506,15 +533,19 @@ export default {
           fields.forEach(field => {
             const thisField = field;
             if (
-              !field.isTab
-              && field.value
-              && field.fieldType.valueType === 'JSON'
+              !field.isTab &&
+              field.value &&
+              field.fieldType.valueType === 'JSON'
             ) {
               thisField.value = JSON.parse(field.value);
             }
+            // console.log(thisField);
+
             if (field.isRequired) thisField.name = `${field.name} *`;
             if (field.isTab) this.tabs.push(thisField);
-            else this.fields.push(thisField);
+            else if (!field.isHidden) {
+              this.fields.push(thisField);
+            }
           });
           if (this.opened_tab) this.activeTab = this.opened_tab;
           else this.activeTab = this.tabs[0].guid;
@@ -549,9 +580,9 @@ export default {
     },
     handleResize(force = false) {
       if (
-        this.currentWidth
-        && this.currentWidth === this.$el.clientWidth
-        && !force
+        this.currentWidth &&
+        this.currentWidth === this.$el.clientWidth &&
+        !force
       ) {
         return false;
       }
@@ -578,8 +609,8 @@ export default {
       }
 
       if (
-        this.drawerIsFloating === false
-        && this.currentWidth * 1 < drawerBreakingPoint
+        this.drawerIsFloating === false &&
+        this.currentWidth * 1 < drawerBreakingPoint
       ) {
         this.drawerIsFloating = true;
         this.drawerIsHidden = true;
@@ -588,8 +619,8 @@ export default {
       }
 
       if (
-        this.drawerIsFloating === true
-        && this.currentWidth * 1 > drawerBreakingPoint
+        this.drawerIsFloating === true &&
+        this.currentWidth * 1 > drawerBreakingPoint
       ) {
         this.drawerIsFloating = false;
         this.drawerIsHidden = false;
@@ -775,9 +806,9 @@ export default {
     },
     subscribeToActions() {
       if (
-        this.constructor_mode !== undefined
-        || this.rowGuid === null
-        || this.subscribedToActions
+        this.constructor_mode !== undefined ||
+        this.rowGuid === null ||
+        this.subscribedToActions
       ) {
         return false;
       }
@@ -810,16 +841,23 @@ export default {
                 this.showSubscribtionWarning = true;
               }, 100);
             }
-            const notifyActionGuid = data.data.actionNotify.actionGuid.replace(
-              '-',
-              ''
-            );
-            const performingActionGuid = this.performingActionGuid.replace(
-              '-',
-              ''
-            );
-            if (notifyActionGuid === performingActionGuid) {
-              this.reloadData();
+
+            if (
+              data.data.actionNotify &&
+              data.data.actionNotify.actionGuid &&
+              this.performingActionGuid
+            ) {
+              const notifyActionGuid = data.data.actionNotify.actionGuid.replace(
+                '-',
+                ''
+              );
+              const performingActionGuid = this.performingActionGuid.replace(
+                '-',
+                ''
+              );
+              if (notifyActionGuid === performingActionGuid) {
+                this.reloadData();
+              }
             }
           },
           {
@@ -956,6 +994,7 @@ export default {
 }
 .form-layout {
   min-height: 300px;
+  padding: 0px;
 }
 .header {
   font-size: 1.2em;
@@ -1014,5 +1053,14 @@ export default {
 .action-loading {
   margin-left: 15px;
   color: #f44336;
+}
+.btns-div {
+  padding-left: 20px;
+}
+.form-header {
+  cursor: pointer;
+}
+.form-global-row {
+  min-height: 300px;
 }
 </style>

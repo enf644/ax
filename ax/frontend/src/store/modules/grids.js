@@ -3,6 +3,24 @@ import gql from 'graphql-tag';
 import logger from '../../logger';
 import i18n from '../../locale.js';
 
+const getDefaultState = () => {
+  return {
+    guid: null,
+    formGuid: null,
+    formDbName: null,
+    name: null,
+    dbName: null,
+    code: null,
+    options: {},
+    isDefaultView: null,
+    columns: [],
+    otherGrids: [],
+    gotoGridDbName: null,
+    updateTime: null,
+    deletedFlag: null,
+    loadingDone: false
+  }
+}
 
 const ColumnFragment = gql`
   fragment ColumnFragment on Column {
@@ -141,6 +159,9 @@ const UPDATE_GRID = gql`
 
 
 const mutations = {
+  resetState(state) {
+    Object.assign(state, getDefaultState())
+  },
   setGridData(state, grid) {
     if (grid) {
       state.guid = grid.guid;
@@ -417,22 +438,7 @@ const actions = {
 
 };
 
-const state = {
-  guid: null,
-  formGuid: null,
-  formDbName: null,
-  name: null,
-  dbName: null,
-  code: null,
-  options: {},
-  isDefaultView: null,
-  columns: [],
-  otherGrids: [],
-  gotoGridDbName: null,
-  updateTime: null,
-  deletedFlag: null,
-  loadingDone: false
-};
+const state = getDefaultState();
 
 export default {
   namespaced: true,

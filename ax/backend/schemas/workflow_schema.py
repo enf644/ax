@@ -4,11 +4,12 @@ Role2Action, Role2State, StatePermissions"""
 import uuid
 import graphene
 # from loguru import logger
-from backend.model import AxForm, AxField, AxAction, AxState, \
+from backend.model import AxField, AxAction, AxState, \
     AxRole, AxRoleFieldPermission, AxState2Role, AxAction2Role
 import backend.model as ax_model
 from backend.schemas.types import State, Action, \
     State2Role, Action2Role, RoleFieldPermission, Role
+from backend.auth import ax_admin_only
 
 
 class CreateState(graphene.Mutation):
@@ -38,6 +39,7 @@ class CreateState(graphene.Mutation):
     action = graphene.Field(Action)
     permissions = graphene.List(RoleFieldPermission)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "workflow_schema -> CreateState"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -105,6 +107,7 @@ class UpdateState(graphene.Mutation):
     ok = graphene.Boolean()
     state = graphene.Field(State)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "workflow_schema -> UpdateState"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -128,6 +131,7 @@ class DeleteState(graphene.Mutation):
     ok = graphene.Boolean()
     deleted = graphene.String()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "workflow_schema -> DeleteState"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -159,6 +163,7 @@ class CreateAction(graphene.Mutation):
     ok = graphene.Boolean()
     action = graphene.Field(Action)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "workflow_schema -> CreateAction"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -200,6 +205,7 @@ class UpdateAction(graphene.Mutation):
     ok = graphene.Boolean()
     action = graphene.Field(Action)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "workflow_schema -> UpdateAction"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -233,6 +239,7 @@ class DeleteAction(graphene.Mutation):
     ok = graphene.Boolean()
     deleted = graphene.String()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "workflow_schema -> DeleteAction"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -253,6 +260,7 @@ class CreateRole(graphene.Mutation):
     ok = graphene.Boolean()
     role = graphene.Field(Role)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "workflow_schema -> CreateRole"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -273,6 +281,7 @@ class UpdateRole(graphene.Mutation):
     ok = graphene.Boolean()
     role = graphene.Field(Role)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "workflow_schema -> UpdateRole"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -294,6 +303,7 @@ class DeleteRole(graphene.Mutation):
     ok = graphene.Boolean()
     deleted = graphene.String()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "workflow_schema -> DeleteRole"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -315,6 +325,7 @@ class AddRoleToState(graphene.Mutation):
     ok = graphene.Boolean()
     state2role = graphene.Field(State2Role)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "workflow_schema -> AddRoleToState"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -352,6 +363,7 @@ class DeleteRoleFromState(graphene.Mutation):
     role_guid = graphene.String()
     state_guid = graphene.String()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "workflow_schema -> DeleteRoleFromState"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -391,6 +403,7 @@ class AddRoleToAction(graphene.Mutation):
     ok = graphene.Boolean()
     action2role = graphene.Field(Action2Role)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "workflow_schema -> AddRoleToAction"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -428,6 +441,7 @@ class DeleteRoleFromAction(graphene.Mutation):
     role_guid = graphene.String()
     action_guid = graphene.String()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "workflow_schema -> DeleteRoleFromAction"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -469,6 +483,7 @@ class SetStatePermission(graphene.Mutation):
     ok = graphene.Boolean()
     permissions = graphene.List(RoleFieldPermission)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "workflow_schema -> SetStatePermission"
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -479,7 +494,6 @@ class SetStatePermission(graphene.Mutation):
             read = args.get('read')
             edit = args.get('edit')
 
-            current_fields_guids = []
             ax_field_guid = None
             ax_field = None
             if field_guid:
@@ -498,7 +512,8 @@ class SetStatePermission(graphene.Mutation):
                     AxRoleFieldPermission.role_guid == uuid.UUID(role_guid)
                 ).delete()
             else:
-                # if field or tab clicked - we must delete permission fo all fields
+                # if field or tab clicked - we must delete
+                # permission fo all fields
                 db_session.query(
                     AxRoleFieldPermission
                 ).filter(
@@ -541,7 +556,6 @@ class SetStatePermission(graphene.Mutation):
                 ).filter(
                     AxRoleFieldPermission.field_guid == ax_field.parent
                 ).delete()
-
 
             ax_perm = db_session.query(
                 AxRoleFieldPermission

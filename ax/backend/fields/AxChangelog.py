@@ -18,7 +18,7 @@ async def before_update(db_session, field, before_form, tobe_form, action,
     Returns:
         Object: Returns updated value of current field"""
 
-    del current_user, db_session
+    del db_session
 
     field_val = []
     changed_fields = []
@@ -38,7 +38,6 @@ async def before_update(db_session, field, before_form, tobe_form, action,
                     }
                     changed_fields.append(changed_field)
 
-    # TODO: add user info
     log_obj = {
         "action": {
             "guid": str(action.guid),
@@ -46,7 +45,7 @@ async def before_update(db_session, field, before_form, tobe_form, action,
             "messages": action.messages
         },
         "changed_fields": changed_fields,
-        "user": None,
+        "user": current_user['email'],
         "timestamp": str(time.time())
     }
     field_val.append(log_obj)
@@ -56,7 +55,7 @@ async def before_update(db_session, field, before_form, tobe_form, action,
 async def before_insert(db_session, field, before_form, tobe_form, action,
                         current_user):
     """ before insert """
-    del before_form, current_user, field, db_session
+    del before_form, field, db_session
 
     field_val = []
     changed_fields = []
@@ -78,7 +77,7 @@ async def before_insert(db_session, field, before_form, tobe_form, action,
             "messages": action.messages
         },
         "changed_fields": changed_fields,
-        "user": None,
+        "user": current_user['email'],
         "timestamp": str(time.time())
     }
     field_val.append(log_obj)

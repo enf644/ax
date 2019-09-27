@@ -5,6 +5,18 @@ import shutil
 import backend.misc as ax_misc
 
 
+async def before_update(db_session, field, before_form, tobe_form, action,
+                        current_user):
+    """ Set isTmp of file to False. So file_view route will work with /uploads,
+        not /tmp forlder """
+    del db_session, before_form, tobe_form, action, current_user
+    if field.value:
+        for file in field.value:
+            if file['isTmp']:
+                file['isTmp'] = False
+    return field.value
+
+
 async def after_update(db_session, field, before_form, tobe_form, action,
                        current_user):
     """
@@ -58,6 +70,13 @@ async def after_update(db_session, field, before_form, tobe_form, action,
                     shutil.rmtree(dir_to_delete)
 
     return field.value
+
+
+async def before_insert(db_session, field, before_form, tobe_form, action,
+                        current_user):
+    """ Do the same as before_update """
+    return await before_update(
+        db_session, field, before_form, tobe_form, action, current_user)
 
 
 async def after_insert(db_session, field, before_form, tobe_form, action,

@@ -266,7 +266,8 @@
             "role-removed-from-state-toast": "Role removed",
             "role-removed-from-action-toast": "Role removed",
             "permission-set-toast": "State permissions modified",
-            "all-permissions": "All fields"
+            "all-permissions": "All fields",
+            "no-roles": "No roles created"
         },
         "delete-confirm": "Are you sure you want to delete record?"
     },

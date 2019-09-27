@@ -16,7 +16,7 @@
       {{ file.name }}
     </v-chip>
 
-    <v-btn :id='btnId' small text>
+    <v-btn :id='btnId' small text v-if='this.isReadonly == false'>
       <i class='fas fa-upload'></i>
       &nbsp;
       {{locale("types.AxFiles.upload-btn")}}
@@ -53,6 +53,7 @@ export default {
     options: null,
     value: null,
     isRequired: null,
+    isReadonly: false,
     formGuid: null,
     rowGuid: null,
     fieldGuid: null
@@ -81,7 +82,8 @@ export default {
       this.$emit('update:value', newValue);
     },
     value(newValue) {
-      this.currentValue = newValue;
+      if (Array.isArray(newValue)) this.currentValue = newValue;
+      else this.currentValue = JSON.parse(newValue);
     },
     options(newValue, oldValue) {
       if (oldValue) {
@@ -92,7 +94,10 @@ export default {
   },
   created() {
     this.modalGuid = uuid4();
-    this.currentValue = this.value;
+    if (this.value) {
+      if (Array.isArray(this.value)) this.currentValue = this.value;
+      else this.currentValue = JSON.parse(this.value);
+    }
   },
   mounted() {
     this.initUppy();
@@ -135,9 +140,9 @@ export default {
       });
 
       if (
-        this.options.enableWebcam === true
-        || this.options.enableWebcam == null
-        || this.options.enableWebcam === undefined
+        this.options.enableWebcam === true ||
+        this.options.enableWebcam == null ||
+        this.options.enableWebcam === undefined
       ) {
         this.uppy.use(Webcam, { target: Dashboard });
       }
@@ -153,7 +158,8 @@ export default {
           extension: file.extension,
           meta: file.meta,
           type: file.type,
-          size: file.size
+          size: file.size,
+          isTmp: true
         };
         this.currentValue.push(newFile);
       });
@@ -184,7 +190,11 @@ export default {
       return true;
     },
     getFileIcon(extension) {
-      return `fas ${getClassNameForExtension(extension)}`;
+      if (extension) {
+        const ico = getClassNameForExtension(extension);
+        return `fas ${ico}`;
+      }
+      return 'fas fa-file';
     },
     deleteFile(guid) {
       this.currentValue = [
@@ -192,7 +202,9 @@ export default {
       ];
     },
     openFile(file) {
-      const rowGuid = uuidWithDashes(this.rowGuid);
+      let rowGuid = uuidWithDashes(this.rowGuid);
+      if (file.isTmp) rowGuid = 'null';
+
       const url = `http://${getAxHost()}/api/file/${this.formGuid}/${rowGuid}/${
         this.fieldGuid
       }/${file.guid}/${file.name}`;

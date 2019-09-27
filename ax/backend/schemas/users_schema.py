@@ -14,6 +14,7 @@ import backend.model as ax_model
 import backend.dialects as ax_dialects
 # import backend.pubsub as ax_pubsub
 from backend.schemas.types import User
+from backend.auth import ax_admin_only
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
 
@@ -32,6 +33,7 @@ class CreateUser(graphene.Mutation):
     user = graphene.Field(User)
     msg = graphene.String()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         # avatar_tmp = args.get('avatar_tmp')
 
@@ -69,6 +71,7 @@ class UpdateUser(graphene.Mutation):
     ok = graphene.Boolean()
     user = graphene.Field(User)
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         # avatar_tmp = args.get('avatar_tmp')
         guid = args.get('guid')
@@ -100,6 +103,7 @@ class DeleteUser(graphene.Mutation):
     ok = graphene.Boolean()
     deleted = graphene.String()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = 'Error in gql mutation - form_schema -> DeleteUser.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -120,6 +124,7 @@ class CreateGroup(graphene.Mutation):
     user = graphene.Field(User)
     msg = graphene.String()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = 'Error in gql mutation - users_schema -> CreateGroup.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -153,6 +158,7 @@ class UpdateGroup(graphene.Mutation):
     user = graphene.Field(User)
     msg = graphene.String()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = 'Error in gql mutation - users_schema -> UpdateGroup.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -187,6 +193,7 @@ class AddUserToGroup(graphene.Mutation):
 
     ok = graphene.Boolean()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = 'Error in gql mutation - users_schema -> AddUserToGroup.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -218,6 +225,7 @@ class RemoveUserFromGroup(graphene.Mutation):
 
     ok = graphene.Boolean()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = 'Error in gql mutation - users_schema -> RemoveUserFromGroup.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -242,6 +250,7 @@ class AddUserToRole(graphene.Mutation):
 
     ok = graphene.Boolean()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = 'Error in gql mutation - users_schema -> AddUserToRole.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -273,6 +282,7 @@ class RemoveUserFromRole(graphene.Mutation):
 
     ok = graphene.Boolean()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = 'Error in gql mutation - users_schema -> RemoveUserFromRole.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
@@ -320,7 +330,12 @@ class UsersQuery(graphene.ObjectType):
         guid=graphene.Argument(type=graphene.String, required=True),
         update_time=graphene.Argument(type=graphene.String, required=False)
     )
+    current_ax_user = graphene.Field(
+        User,
+        update_time=graphene.Argument(type=graphene.String, required=False)
+    )
 
+    @ax_admin_only
     async def resolve_all_users(
             self, info, search_string=None, update_time=None):
         """Get all users"""
@@ -340,6 +355,7 @@ class UsersQuery(graphene.ObjectType):
                 ).all()
             return users_list
 
+    @ax_admin_only
     async def resolve_all_groups(self, info, update_time=None):
         """Get all groups"""
         del update_time
@@ -356,6 +372,7 @@ class UsersQuery(graphene.ObjectType):
             ).all()
             return users_list
 
+    @ax_admin_only
     async def resolve_group_users(self, info, group_guid, update_time=None):
         """Get users of group"""
         del update_time
@@ -371,6 +388,7 @@ class UsersQuery(graphene.ObjectType):
             ret_list = query.filter(AxUser.guid.in_(user_guids)).all()
             return ret_list
 
+    @ax_admin_only
     async def resolve_role_users(self, info, role_guid, update_time=None):
         """Get users of role"""
         del update_time
@@ -409,6 +427,16 @@ class UsersQuery(graphene.ObjectType):
         with ax_model.try_catch(info.context['session'], err, no_commit=True):
             query = User.get_query(info)
             ax_user = query.filter(AxUser.guid == guid).first()
+            return ax_user
+
+    def resolve_current_ax_user(self, info, update_time):
+        """ Returns current AxUser """
+        del update_time
+        err = 'Error in GQL query - find_user.'
+        with ax_model.try_catch(info.context['session'], err, no_commit=True):
+            user_guid = info.context['user']['user_id']
+            query = User.get_query(info)
+            ax_user = query.filter(AxUser.guid == uuid.UUID(user_guid)).first()
             return ax_user
 
 

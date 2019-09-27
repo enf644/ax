@@ -1,7 +1,9 @@
 <template>
-  <div class='form-wrapper'>
-    <AxForm :db_name='formDbName' :guid='rowNumGuid' :row='rowNumGuid'></AxForm>
-  </div>
+  <v-app id='ax-form-viewer'>
+    <div class='form-wrapper'>
+      <AxForm :db_name='formDbName' :guid='rowNumGuid' :row='rowNumGuid'></AxForm>
+    </div>
+  </v-app>
 </template>
 
 <script>
@@ -23,6 +25,7 @@ export default {
 
 <style scoped>
 .form-wrapper {
+  background: white;
   padding-top: 25px;
   padding-bottom: 25px;
   padding-left: 10%;

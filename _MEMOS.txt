@@ -7,6 +7,40 @@ DB CHANGES
     AxUser -> + is_email_confirmed (Boolean)
 
 
+-----------------------
+
+On user sign in -> each form.field permissions are stored in cache
+    - ttl = 18min
+    - refreshed on token refresh
+
+
+Check if user is admin. If so - write cache
+
+For each form
+    Get roles of user
+    Get AxRoleFieldPermission for those roles
+
+    For each field
+        For each state
+            For each perm
+                If field_guid == ax_form.guid -> set cache field perm
+                If field_guid == tab.guid -> set cache field perm
+                if field_guid == current field.guid -> set cache field perm
+
+schema ->
+    for each field - check in cache.
+
+form data ->
+    for each field - check in cache.
+
+updade schema ->
+    for each field - check in cache.
+
+
+
+
+---------------------------
+
 
 THINK ABOUT
     Подумать над шрифтом Segoi UI

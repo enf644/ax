@@ -1,6 +1,7 @@
 <template>
   <div class='nobr'>
     <v-autocomplete
+      :disabled='isReadonly'
       :error-messages='errors'
       :hide-no-data='hideNoData'
       :hint='this.options.hint'
@@ -83,7 +84,8 @@ export default {
     tag: null,
     options: null,
     value: null,
-    isRequired: null
+    isRequired: null,
+    isReadonly: null
   },
   data: () => ({
     currentValue: null,
@@ -134,8 +136,8 @@ export default {
     },
     openFormModal() {
       if (
-        this.options.enableFormModal
-        || this.options.enableFormModal === undefined
+        this.options.enableFormModal ||
+        this.options.enableFormModal === undefined
       ) {
         this.$modal.show(`tom-form-${this.modalGuid}`);
       }

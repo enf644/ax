@@ -96,9 +96,9 @@ class ConsoleSender:
 
 class ActionExecuter:
     """ Runs execute_action with pre-set db_session """
-    def __init__(self, db_session):
+    def __init__(self, db_session, current_user):
         self.db_session = db_session
-
+        self.current_user = current_user
     def __call__(
             self,
             row_guid=None,
@@ -118,7 +118,8 @@ class ActionExecuter:
             action_db_name=action_db_name,
             values=values,
             modal_guid=modal_guid,
-            arguments=arguments
+            arguments=arguments,
+            current_user=self.current_user
         )
 
 
@@ -157,7 +158,13 @@ async def get_actions(form, current_state=None):
 
 
 
-async def do_exec(db_session, action, form, arguments=None, modal_guid=None):
+async def do_exec(
+        db_session,
+        action,
+        form,
+        arguments=None,
+        modal_guid=None,
+        current_user=None):
     """ Executes python commands form AxAction.code
 
     Args:
@@ -201,7 +208,8 @@ async def do_exec(db_session, action, form, arguments=None, modal_guid=None):
     ax.paths.uploads = ax_misc.uploads_root_dir
     ax.paths.tmp = ax_misc.tmp_root_dir
     ax.add_action_job = ax_scheduler.add_action_job
-    ax.do_action = ActionExecuter(db_session=db_session)
+    ax.do_action = ActionExecuter(
+        db_session=db_session, current_user=current_user)
     ax.modal_guid = modal_guid
     for field in form.db_fields:
         ax.row[field.db_name] = field.value
@@ -292,11 +300,10 @@ async def get_before_form(db_session, row_guid, form, ax_action):
     tobe_form = form
 
     if row_guid:
-        fields_names = [field for field in tobe_form.db_fields]
         before_result = await ax_dialects.dialect.select_one(
             db_session=db_session,
             form=tobe_form,
-            fields_list=fields_names,
+            fields_list=tobe_form.db_fields,
             row_guid=row_guid)
 
         if not before_result:
@@ -368,7 +375,8 @@ async def execute_action(
         action_db_name=None,
         values=None,
         modal_guid=None,
-        arguments=None):
+        arguments=None,
+        current_user=None):
     """ Performs Action on row
         # 0. Get AxForm
         # 1. Get AxAction and query_type
@@ -415,7 +423,6 @@ async def execute_action(
             new_guid = uuid.uuid4()
             if not values:
                 values = {}
-            current_user = None  # TODO: implement users
 
             # Check if row locked, if not -> lock it
             if row_guid:
@@ -511,7 +518,8 @@ async def execute_action(
                     action=ax_action,
                     form=tobe_form,
                     arguments=arguments,
-                    modal_guid=modal_guid)
+                    modal_guid=modal_guid,
+                    current_user=current_user)
                 messages = {
                     "exception": code_result["exception"],
                     "error": code_result["error"],
@@ -629,7 +637,8 @@ async def run_execute_action(
         action_db_name=None,
         values=None,
         modal_guid=None,
-        arguments=None
+        arguments=None,
+        current_user=None
     ):
     """ This function executes execute_action corutine in different thread """
     loop = asyncio.get_event_loop()
@@ -644,7 +653,8 @@ async def run_execute_action(
         action_db_name=action_db_name,
         values=values,
         modal_guid=modal_guid,
-        arguments=arguments
+        arguments=arguments,
+        current_user=current_user
     )
 
     result = await loop.run_in_executor(
@@ -680,6 +690,7 @@ class DoAction(graphene.Mutation):
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = 'Error in gql mutation - action_schema -> DoAction.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
+            current_user = info.context['user']
             values_string = args.get('values')
             values = {}
             if values_string and values_string != 'null':
@@ -704,7 +715,8 @@ class DoAction(graphene.Mutation):
                 action_db_name=action_db_name,
                 values=values,
                 arguments=arguments,
-                modal_guid=modal_guid)
+                modal_guid=modal_guid,
+                current_user=current_user)
 
             return DoAction(
                 form=result["form"],

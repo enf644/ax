@@ -9,9 +9,12 @@ import shutil
 from pathlib import Path
 from sanic import response
 from sanic import Blueprint
+from sanic_jwt.decorators import inject_user
 from loguru import logger
 import ujson as json
 import backend.misc as ax_misc
+from backend.auth import ax_protected
+
 
 this = sys.modules[__name__]
 tus_bp = Blueprint('sanic_tus')
@@ -47,6 +50,8 @@ def read_info(file_guid):
     return data
 
 
+@ax_protected
+@inject_user
 @tus_bp.route('/api/upload', methods=['POST', 'OPTIONS'])
 async def tus_file_upload(request):
     """
@@ -88,7 +93,7 @@ async def tus_file_upload(request):
         return response.text(msg, status=413)  # REQUEST_ENTITY_TOO_LARGE
 
     file_guid = str(uuid.uuid4())
-    print('-----------------' + str(this.upload_folder))
+    # print('-----------------' + str(this.upload_folder))
     content_dir = os.path.join(this.upload_folder, file_guid)
     os.makedirs(content_dir)
 
