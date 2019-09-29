@@ -23,7 +23,7 @@
       v-show='this.gqlException == false'
     >
       <div class='header'>
-        <div class='grid-title' v-show='titleEnabled'>
+        <div @click='openGridBlank()' class='grid-title' v-show='titleEnabled'>
           <i :class='`fas fa-${this.formIcon}`'></i>
           &nbsp; {{gridTitle}}
         </div>
@@ -90,6 +90,7 @@ import i18n from '@/locale';
 import AxForm from './AxForm.vue';
 // import { print } from 'graphql/language/printer';
 import uuid4 from 'uuid4';
+import { getAxHost, getAxProtocol } from '@/misc';
 
 export default {
   name: 'AxGrid',
@@ -728,6 +729,15 @@ export default {
     closeModal() {
       this.selectedGuid = null;
       this.$modal.hide(`sub-form-${this.modalGuid}`);
+    },
+    openGridBlank() {
+      const url = `${getAxProtocol()}://${getAxHost()}/grid/${
+        this.form
+      }/${this.grid}`;
+      Object.assign(document.createElement('a'), {
+        target: '_blank',
+        href: url
+      }).click();
     }
   }
 };
@@ -799,6 +809,7 @@ export default {
   margin-top: 16px;
   margin-left: 25px;
   font-size: 1.2em;
+  cursor: pointer;
 }
 .quick-search {
   width: 300px;

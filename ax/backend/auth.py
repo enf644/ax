@@ -20,7 +20,8 @@ users = None
 
 
 async def get_allowed_fields_dict(ax_form, user_guid, state_guid):
-    """ Gets allowed fields for user -> dict['field_guid'] = 1/2 """
+    """ Gets allowed fields for user for specific state
+         -> dict['field_guid'] = 1/2 """
     cache_keys = []
     field_guids = []
     allowed_fields_dict = {}
@@ -38,6 +39,33 @@ async def get_allowed_fields_dict(ax_form, user_guid, state_guid):
         perm_value = cache_results[idx]
         allowed_fields_dict[field_guid] = perm_value
 
+    return allowed_fields_dict
+
+
+async def get_grid_allowed_fields_dict(ax_form, user_guid):
+    """ Gets allowed fields for user for all states
+            -> dict['state_name']['field_db_name'] = 1/2 """
+    cache_keys = []
+    for state in ax_form.states:
+        for field in ax_form.no_tab_fields:
+            user_guid = str(user_guid)
+            field_guid = str(field.guid)
+            state_guid = str(state.guid)
+            key = f"perm_{user_guid}_{field_guid}_{state_guid}"
+            cache_keys.append(key)
+
+    cache_results = await ax_cache.cache.multi_get(cache_keys)
+
+    allowed_fields_dict = {}
+    idx = 0
+    for state in ax_form.states:
+        allowed_fields_dict[state.name] = {}
+        for field in ax_form.no_tab_fields:
+            field_db_name = field.db_name
+            if field.is_virtual:
+                field_db_name = field.field_type.virtual_source
+            allowed_fields_dict[state.name][field_db_name] = cache_results[idx]
+            idx += 1
     return allowed_fields_dict
 
 
@@ -149,7 +177,9 @@ async def write_perm_cache(db_session, user_guid):
 
                 perm_cache_pairs.append([key, value])
                 debug_list.append(
-                    [f"{ax_state.name} -> {ax_field.db_name} -> {value}"])
+                    (f"{ax_form.db_name} -> "
+                     f"{ax_state.name} -> {ax_field.db_name} -> {value}")
+                )
 
     expire_seconds = 60 * 20  # 20 mins
     await ax_cache.cache.multi_set(perm_cache_pairs, ttl=expire_seconds)

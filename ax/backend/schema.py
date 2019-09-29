@@ -30,6 +30,7 @@ from backend.schemas.types import Form, FieldType, Field, Grid, \
 from backend.model import AxForm
 import backend.model as ax_model
 import backend.dialects as ax_dialects
+import backend.auth as ax_auth
 
 
 this = sys.modules[__name__]
@@ -164,22 +165,20 @@ def make_resolver(db_name, type_class):
             if not grid_to_use:
                 return None
 
-            # TODO add permission checks
-            user = info.context['user']
-            allowed_fields = []
-            for field in ax_form.db_fields:
-                allowed_fields.append(field.db_name)
+            # TODO Add paging
 
             results = None
-            # select * from table
-            # TODO Add paging
+
             if quicksearch or guids:
+                # Quicksearch or 1tom query
+                # TODO check if permissions needed
                 results = await ax_dialects.dialect.select_all(
                     db_session=db_session,
                     ax_form=ax_form,
                     quicksearch=quicksearch,
                     guids=guids)
             else:
+                # Normal gql query
                 arguments_dict = None
                 if arguments:
                     try:
@@ -201,11 +200,30 @@ def make_resolver(db_name, type_class):
             if not results:
                 return None
 
+            current_user = info.context['user']
+            user_guid = None
+            if current_user:
+                user_guid = current_user["user_id"]
+
+            allowed_fields = await ax_auth.get_grid_allowed_fields_dict(
+                ax_form=ax_form,
+                user_guid=user_guid)
+
             result_items = []
             for row in results:
                 kwargs = {}
+                row_state_name = row["axState"]
                 for key, value in row.items():
-                    kwargs[key] = value
+                    if current_user and current_user['is_admin']:
+                        kwargs[key] = value
+                    elif (key in allowed_fields[row_state_name]
+                          and allowed_fields[row_state_name][key]
+                          and allowed_fields[row_state_name][key] > 0):
+                        kwargs[key] = value
+                    elif key == 'guid':
+                        kwargs[key] = value
+                    else:
+                        kwargs[key] = None
 
                 result_items.append(type_class(**kwargs))
 

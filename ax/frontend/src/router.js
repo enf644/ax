@@ -15,6 +15,7 @@ const UsersManager = () => import(/* webpackChunkName: "ax-admin" */ './views/Us
 const UsersGroup = () => import(/* webpackChunkName: "ax-admin" */ './views/UsersGroup.vue');
 
 const FormView = () => import(/* webpackChunkName: "ax-form" */ './views/FormView.vue');
+const GridView = () => import(/* webpackChunkName: "ax-form" */ './views/GridView.vue');
 
 Vue.use(Router);
 
@@ -92,6 +93,11 @@ export default new Router({
       path: '/form/:db_name/:num_guid',
       name: 'form-view-guid',
       component: FormView
+    },
+    {
+      path: '/grid/:form/:grid',
+      name: 'grid-view',
+      component: GridView
     },
     {
       path: '/test',
