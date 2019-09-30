@@ -22,6 +22,7 @@ export function getAxHostProtocol() {
 }
 
 export function uuidWithDashes(uuidString) {
+  if (!uuidString) return null;
   if (uuidString.includes('-')) return uuidString;
   return `${uuidString.substr(0, 8)}-${uuidString.substr(8, 4)}-${uuidString.substr(12, 4)}-${uuidString.substr(16, 4)}-${uuidString.substr(20)}`;
 }

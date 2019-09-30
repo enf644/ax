@@ -623,13 +623,14 @@ AX 0.2:
     ☐ PERMISSION SYSTEM
         ✔ When user logs in - his perms are stored in cache. form -> perms list @done(19-09-26 17:34)
         ✔ GraphQL authorisation @done(19-09-18 18:13)
-        ☐ Every GQL mutation needs permissions
+        ✔ Every GQL mutation needs permissions @done(19-09-30 13:06)
             ✔ All admin routes checks if user is admin. Is_admin is stored in jwt. @done(19-09-27 22:26)
                 ✔ Redirect to signin and reset store if not admin @done(19-09-27 22:32)
             ✔ Select one schema authorisation. (formData) @done(19-09-26 17:34)
             ✔ Select all schema authorisation. @done(19-09-29 07:40)
-            ☐ Action permissions - fields permissions
-            ☐ File viewer permissions
+            ✔ Action permissions - fields permissions @done(19-09-29 10:00)
+            ✔ Check if user can perform action @done(19-09-29 12:59)
+            ✔ File viewer permissions @done(19-09-30 13:06)
         ✔ AxForm fields permissions @done(19-09-27 17:41)
         ✔ All fields must have isReadonly param @done(19-09-27 17:41)
         ☐ Everyone group

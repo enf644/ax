@@ -56,49 +56,6 @@ async def execute_before_display(db_session, ax_form, current_user):
     return ax_form
 
 
-async def get_state_guid(ax_form, state_name):
-    """ Returns guid of state by name. If no state_name provided ->
-            returns guid of Start state """
-    state_guid = None
-    for state in ax_form.states:
-        if state_name and state.name == state_name:
-            state_guid = str(state.guid)
-        elif ((state_name is None or state_name == '')
-              and state.is_start is True):
-            state_guid = str(state.guid)
-
-    return state_guid
-
-
-async def set_form_visibility(ax_form, state_guid, current_user):
-    """ Sets permission field visibility. Deletes value if field is hidden """
-    allowed_fields = await ax_auth.get_allowed_fields_dict(
-        ax_form=ax_form,
-        user_guid=current_user["user_id"],
-        state_guid=state_guid)
-
-    for field in ax_form.no_tab_fields:
-        if field in ax_form.db_fields or field.field_type.is_virtual:
-            field.is_hidden = True
-            if current_user['is_admin']:
-                field.is_readonly = False
-                field.is_hidden = False
-            else:
-                field_guid_str = str(field.guid)
-                if field_guid_str in allowed_fields:
-                    if allowed_fields[field_guid_str] == 1:
-                        field.is_readonly = True
-                        field.is_hidden = False
-                    if allowed_fields[field_guid_str] == 2:
-                        field.is_readonly = False
-                        field.is_hidden = False
-
-                # If field is hidden -> Epty the value
-                if field.is_hidden is True:
-                    field.value = None
-    return ax_form
-
-
 async def set_form_values(db_session, ax_form, row_guid, current_user):
     """ Select row from DB and set AxForm.fields values, state and rowGuid
 
@@ -595,18 +552,19 @@ class FormQuery(graphene.ObjectType):
                 ax_form=ax_form,
                 current_user=current_user)
 
-            state_guid = await get_state_guid(
+            state_guid = await ax_auth.get_state_guid(
                 ax_form=ax_form,
                 state_name=ax_form.current_state_name)
 
-            ax_form = await set_form_visibility(
+            ax_form = await ax_auth.set_form_visibility(
                 ax_form=ax_form,
                 state_guid=state_guid,
                 current_user=current_user)
 
             ax_form.avalible_actions = await action_schema.get_actions(
                 form=ax_form,
-                current_state=ax_form.current_state_name
+                current_state=ax_form.current_state_name,
+                current_user=current_user
             )
             return ax_form
 

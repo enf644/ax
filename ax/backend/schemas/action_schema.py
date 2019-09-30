@@ -24,6 +24,7 @@ import backend.misc as ax_misc
 import backend.scheduler as ax_scheduler
 import backend.emails as ax_emails
 import backend.exec as ax_exec
+import backend.auth as ax_auth
 
 import backend.cache as ax_cache
 from backend.schemas.types import Action, Form, ConsoleMessage, \
@@ -123,7 +124,7 @@ class ActionExecuter:
         )
 
 
-async def get_actions(form, current_state=None):
+async def get_actions(form, current_state=None, current_user=None):
     """ Get actions for current state
 
     Args:
@@ -134,7 +135,6 @@ async def get_actions(form, current_state=None):
     Returns:
         List(AxAction): List of avalible actions for current form and state
     """
-    # TODO: Permissions filter actions, filter fields based on state and user
     ret_actions = []
     state_guid = None
     all_state_guid = None
@@ -154,7 +154,20 @@ async def get_actions(form, current_state=None):
             ret_actions.append(action)
         if current_state and action.from_state_guid == all_state_guid:
             ret_actions.append(action)
-    return ret_actions
+
+    # Filter action based on permission cache
+    perm_actions = []
+    for action in ret_actions:
+        user_guid = current_user.get('user_id', None)
+        action_guid = str(action.guid)
+        avalible = await ax_auth.check_action_perm(
+            user_guid=user_guid, action_guid=action_guid)
+
+        user_is_admin = current_user.get('is_admin', False)
+        if avalible or user_is_admin:
+            perm_actions.append(action)
+
+    return perm_actions
 
 
 
@@ -315,8 +328,8 @@ async def get_before_form(db_session, row_guid, form, ax_action):
 
         if tobe_form.current_state_name != ax_action.from_state.name \
                 and ax_action.from_state.is_all is False:
-            raise Exception('Error in DoAction. Performed \
-            action does not fit axState')
+            raise Exception(
+                'Error in DoAction. Performed action does not fit axState')
 
         # populate each AxField of before_form with old data
         for field in tobe_form.db_fields:
@@ -380,15 +393,17 @@ async def execute_action(
     """ Performs Action on row
         # 0. Get AxForm
         # 1. Get AxAction and query_type
-        # 2. Get before_form - fill it with values from database row
-        # 3. Assemble tobe_object - fill it with values from AxForm.vue
-        # 4. Run before backend code for each field.
+        # 2. Check if user can perform current action
+        # 3. Get before_form - fill it with values from database row
+        # 4. Assemble tobe_object - fill it with values from AxForm.vue
+        # 5. Run before backend code for each field.
             FieldType can have backend code wich is performed before and after
             action. Sea backend.fields for more info.
-        # 5. Run python action, rewrite tobe_object
-        # 6. Make update or insert or delete query. Db commit is here.
-        # 7. Run after backend code for each field.
-        # 8. Fire all web-socket subscribtions. Notify of action performed
+        # 6. Run python action, rewrite tobe_object
+        # 7. Check fields permissions.
+        # 8. Make update or insert or delete query. Db commit is here.
+        # 9. Run after backend code for each field.
+        # 10. Fire all web-socket subscribtions. Notify of action performed
             AxForm.vue will display message, that current row have been modified
             AxGrid.vue will reload data of grid
 
@@ -479,14 +494,32 @@ async def execute_action(
             elif ax_action.to_state.is_deleted:
                 query_type = 'delete'
 
-            # 2. Get before_form - fill it with values from database row
+            # 2. Check if user can perform current action
+            user_is_admin = False 
+            if current_user and current_user['is_admin'] is True:
+                user_is_admin = True
+
+            if not user_is_admin:
+                action_is_avalible = await ax_auth.check_action_perm(
+                    user_guid=current_user['user_id'],
+                    action_guid=ax_action.guid)
+                if not action_is_avalible:
+                    email = current_user['email']
+                    msg = (
+                        f'Error in DoAction. Action [{ax_action.name}]',
+                        f'not allowed for user [{email}]'                    
+                    )
+                    logger.error(msg)
+                    raise Exception(msg)
+
+            # 3. Get before_form - fill it with values from database row
             before_form, tobe_form = await get_before_form(
                 db_session=db_session,
                 row_guid=row_guid,
                 form=ax_form,
                 ax_action=ax_action)
 
-            # 3. Assemble tobe_object - fill it with values from AxForm.vue
+            # 4. Assemble tobe_object - fill it with values from AxForm.vue
             if not tobe_form.row_guid:
                 tobe_form.row_guid = new_guid
             for field in tobe_form.db_fields:
@@ -496,7 +529,7 @@ async def execute_action(
                 if field.field_type.is_updated_always:
                     field.needs_sql_update = True
 
-            # 4. Run before backend code for each field.
+            # 5. Run before backend code for each field.
             for field in tobe_form.no_tab_fields:
                 if field.field_type.is_backend_available:
                     field.value = await run_field_backend(
@@ -509,7 +542,7 @@ async def execute_action(
                         tobe_form=tobe_form,
                         current_user=current_user)
 
-            # 5. Run python action, rewrite tobe_object
+            # 6. Run python action, rewrite tobe_object
             messages = None
             messages_json = None
             if ax_action.code:
@@ -542,7 +575,14 @@ async def execute_action(
                         field.value = new_item[field.db_name]
                         field.needs_sql_update = True
 
-            # 6. Make update or insert or delete query #COMMIT HERE
+            # 7. Check fields permissions. If not permited - set needs_update
+            # to False
+            ax_form = await ax_auth.set_form_visibility(
+                ax_form=ax_form,
+                state_guid=ax_action.from_state.guid,
+                current_user=current_user)
+
+            # 8. Make update or insert or delete query #COMMIT HERE
             return_guid = tobe_form.row_guid
             after_form = copy.deepcopy(tobe_form)
             if query_type == 'insert':
@@ -569,7 +609,7 @@ async def execute_action(
                     row_guid=tobe_form.row_guid
                 )
 
-            # 7. Run after backend code for each field.
+            # 9. Run after backend code for each field.
             for field in after_form.no_tab_fields:
                 if field.field_type.is_backend_available:
                     field.value = await run_field_backend(
@@ -582,14 +622,7 @@ async def execute_action(
                         tobe_form=after_form,
                         current_user=current_user)
 
-            # 8. Fire all web-socket subscribtions. Notify of action performed
-            # subscription_form = AxForm()
-            # subscription_form.guid = tobe_form.guid
-            # subscription_form.icon = tobe_form.icon
-            # subscription_form.db_name = tobe_form.db_name
-            # subscription_form.row_guid = tobe_form.row_guid
-            # subscription_form.modal_guid = modal_guid
-
+            # 10. Fire all web-socket subscribtions. Notify of action performed
             notify_message = {
                 "form_guid": tobe_form.guid,
                 "form_icon": tobe_form.icon,
@@ -838,7 +871,7 @@ class ActionQuery(graphene.ObjectType):
     async def resolve_actions_avalible(self, info, form_db_name,
                                        current_state=None, update_time=None):
         """ Gets AxActions for current state """
-        # TODO: Add permissions based on roles and current user
+        current_user = info.context['user']
         del update_time
         err = (f"action_schema.resolve_actions_avalible."
                f"Error in gql query - resolve_actions_avalible.")
@@ -848,7 +881,9 @@ class ActionQuery(graphene.ObjectType):
                 AxForm.db_name == form_db_name
             ).first()
             ax_actions = await get_actions(
-                form=ax_form, current_state=current_state)
+                form=ax_form,
+                current_state=current_state,
+                current_user=current_user)
 
             return ax_actions
 

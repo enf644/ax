@@ -10,13 +10,36 @@ from sanic_jwt import exceptions, initialize, Configuration
 from sanic_jwt.decorators import _do_protection
 
 from backend.model import AxUser, AxGroup2Users, AxRole2Users, \
-    AxRoleFieldPermission, AxForm
+    AxRoleFieldPermission, AxForm, AxAction2Role
 import backend.cache as ax_cache
 import backend.model as ax_model
 import backend.misc as ax_misc
 
 this = sys.modules[__name__]
 users = None
+
+
+async def get_state_guid(ax_form, state_name):
+    """ Returns guid of state by name.
+        If no state_name provided -> returns guid of Start state """
+    state_guid = None
+    for state in ax_form.states:
+        if state_name and state.name == state_name:
+            state_guid = str(state.guid)
+        elif ((state_name is None or state_name == '')
+              and state.is_start is True):
+            state_guid = str(state.guid)
+
+    return state_guid
+
+
+async def check_action_perm(user_guid, action_guid):
+    """ Checks for action_perm_ cache record """
+    user_guid_str = str(user_guid)
+    action_guid_str = str(action_guid)
+    action_key = f"action_perm_{user_guid_str}_{action_guid_str}"
+    perm = await ax_cache.cache.get(action_key)
+    return perm
 
 
 async def get_allowed_fields_dict(ax_form, user_guid, state_guid):
@@ -69,6 +92,41 @@ async def get_grid_allowed_fields_dict(ax_form, user_guid):
     return allowed_fields_dict
 
 
+async def set_form_visibility(ax_form, state_guid, current_user):
+    """ Sets permission field visibility. Deletes value if field is hidden """
+    allowed_fields = await get_allowed_fields_dict(
+        ax_form=ax_form,
+        user_guid=current_user["user_id"],
+        state_guid=state_guid)
+
+    for field in ax_form.no_tab_fields:
+        if field in ax_form.db_fields or field.field_type.is_virtual:
+            field.is_hidden = True
+            if current_user['is_admin']:
+                field.is_readonly = False
+                field.is_hidden = False
+            else:
+                field_guid_str = str(field.guid)
+                if field_guid_str in allowed_fields:
+                    if allowed_fields[field_guid_str] == 1:
+                        field.is_readonly = True
+                        field.is_hidden = False
+                    if allowed_fields[field_guid_str] == 2:
+                        field.is_readonly = False
+                        field.is_hidden = False
+
+                # If field is hidden -> Epty the value and forbid
+                # inser and update
+                if field.is_hidden is True:
+                    field.value = None
+                    field.needs_sql_update = False
+
+                # Forbid update if readonly
+                if field.is_readonly is True:
+                    field.needs_sql_update = False
+    return ax_form
+
+
 async def check_if_admin(user_guid, db_session):
     """ Checks if user is adimn and writes  <user_is_admin_{user_guid}> cache"""
     err = "Error -> Auth -> check_if_admin"
@@ -94,6 +152,9 @@ async def check_if_admin(user_guid, db_session):
 async def write_perm_cache(db_session, user_guid):
     """ On each user token refresh we write to cache permissions for
         each field/state combination """
+    perm_cache_pairs = []
+    debug_list = []
+
     user_and_groups = []
     user_and_groups.append(uuid.UUID(user_guid))
 
@@ -131,13 +192,22 @@ async def write_perm_cache(db_session, user_guid):
         if perm.form_guid not in forms_guids:
             forms_guids.append(perm.form_guid)
 
+    # Get AxAction2Role for those roles
+    actions_guids = []
+    action_role_result = db_session.query(AxAction2Role).filter(
+        AxAction2Role.role_guid.in_(roles_guids)
+    ).all()
+    for a2r in action_role_result:
+        if a2r.action_guid not in actions_guids:
+            actions_guids.append(a2r.action_guid)
+            action_guid = str(a2r.action_guid)
+            action_key = f"action_perm_{user_guid}_{action_guid}"
+            perm_cache_pairs.append([action_key, True])
+
     # Get all forms with perms
     all_forms = db_session.query(AxForm).filter(
         AxForm.guid.in_(forms_guids)
     ).all()
-
-    perm_cache_pairs = []
-    debug_list = []
 
     # For each form
     for ax_form in all_forms:
@@ -149,16 +219,16 @@ async def write_perm_cache(db_session, user_guid):
                 edit = False
                 # For each perm
                 form_perms = [p for p in perms if (
-                    p.form_guid == ax_form.guid and
-                    p.state_guid == ax_state.guid)]
+                    p.form_guid == ax_form.guid
+                    and p.state_guid == ax_state.guid)]
                 for perm in form_perms:
                     # if perm is set to whole form
                     # if perm is set to tab
                     # if perm is set to field
 
-                    if (perm.field_guid is None or
-                            perm.field_guid == ax_field.parent or
-                            perm.field_guid == ax_field.guid):
+                    if (perm.field_guid is None
+                            or perm.field_guid == ax_field.parent
+                            or perm.field_guid == ax_field.guid):
 
                         if perm.read is True:
                             read = True
@@ -317,6 +387,7 @@ class AxConfiguration(Configuration):
 def init_auth(sanic_app):
     """ Initiate sanic-jwt module """
 
+    delta = 60  # seconds
     initialize(sanic_app,
                authenticate=authenticate,
                configuration_class=AxConfiguration,
@@ -324,4 +395,6 @@ def init_auth(sanic_app):
                store_refresh_token=store_refresh_token,
                retrieve_refresh_token=retrieve_refresh_token,
                retrieve_user=retrieve_user,
-               expiration_delta=60)
+               expiration_delta=delta,
+               cookie_access_token_name='ax_auth',
+               cookie_set=True)

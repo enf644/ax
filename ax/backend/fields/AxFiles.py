@@ -30,7 +30,7 @@ async def after_update(db_session, field, before_form, tobe_form, action,
     row_guid = str(uuid.UUID(str(tobe_form.row_guid)))
     field_guid = str(field.guid)
 
-    if field.value:
+    if field.value and field.needs_sql_update:
         for file in field.value:
             value_guids.append(file['guid'])
             tmp_folder = os.path.join(ax_misc.tmp_root_dir, file['guid'])
@@ -54,20 +54,21 @@ async def after_update(db_session, field, before_form, tobe_form, action,
     # if form.row.field directory contains sub dirs with guid wich is not
     # in current value -> then file was deleted from field data,
     # We must delete this file from filesystem
-    field_folder = os.path.join(
-        ax_misc.uploads_root_dir,
-        'form_row_field_file',
-        form_guid,
-        row_guid,
-        field_guid
-    )
-    if os.path.exists(field_folder) is True:
-        for root, dirs, _ in os.walk(field_folder):
-            del root
-            for dir_name in dirs:
-                if dir_name not in value_guids:
-                    dir_to_delete = os.path.join(field_folder, dir_name)
-                    shutil.rmtree(dir_to_delete)
+    if field.needs_sql_update:
+        field_folder = os.path.join(
+            ax_misc.uploads_root_dir,
+            'form_row_field_file',
+            form_guid,
+            row_guid,
+            field_guid
+        )
+        if os.path.exists(field_folder) is True:
+            for root, dirs, _ in os.walk(field_folder):
+                del root
+                for dir_name in dirs:
+                    if dir_name not in value_guids:
+                        dir_to_delete = os.path.join(field_folder, dir_name)
+                        shutil.rmtree(dir_to_delete)
 
     return field.value
 

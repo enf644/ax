@@ -9,6 +9,7 @@ from sanic import response
 from loguru import logger
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from graphql_ws.websockets_lib import WsLibSubscriptionServer
+from sanic_jwt.decorators import inject_user
 import ujson as json
 
 from backend.graphqlview import GraphQLView
@@ -20,6 +21,8 @@ import backend.model as ax_model
 from backend.model import AxForm, AxField
 import backend.schemas.form_schema as form_schema
 import backend.dialects as ax_dialects
+import backend.auth as ax_auth
+from backend.auth import ax_protected
 
 
 this = sys.modules[__name__]
@@ -69,32 +72,74 @@ def init_routes(sanic_app, deck_path=None):
         @sanic_app.route(
             '/api/file/<form_guid>/<row_guid>/<field_guid>/<file_name>',
             methods=['GET'])
+        @inject_user()
+        @ax_protected()
         async def db_file_viewer(   # pylint: disable=unused-variable
-                request, form_guid, row_guid, field_guid, file_name):  # pylint: disable=unused-variable
+                request, form_guid, row_guid, field_guid, file_name, user):  # pylint: disable=unused-variable
             """ Used to display files that are stored in database.
                 Used in fields like AxImageCropDb"""
+            current_user = user
             del request, form_guid, file_name
             with ax_model.scoped_session("routes.db_file_viewer") as db_session:
                 safe_row_guid = str(uuid.UUID(str(row_guid)))
                 ax_field = db_session.query(AxField).filter(
                     AxField.guid == uuid.UUID(field_guid)
                 ).first()
+
+                # first we select only guid and axState to know, if user have
+                # access
+                row_result = await ax_dialects.dialect.select_one(
+                    db_session=db_session,
+                    form=ax_field.form,
+                    fields_list=[],
+                    row_guid=safe_row_guid)
+
+                state_name = row_result[0]['axState']
+                state_guid = await ax_auth.get_state_guid(
+                    ax_form=ax_field.form,
+                    state_name=state_name)
+
+                user_guid = current_user.get('user_id', None)
+                user_is_admin = current_user.get('is_admin', False)
+                allowed_field_dict = await ax_auth.get_allowed_fields_dict(
+                    ax_form=ax_field.form,
+                    user_guid=user_guid,
+                    state_guid=state_guid)
+
+                field_guid = str(ax_field.guid)
+                if not user_is_admin:
+                    if (field_guid not in allowed_field_dict
+                            or allowed_field_dict[field_guid] == 0
+                            or allowed_field_dict[field_guid] is None):
+                        email = current_user.get('email', None)
+                        msg = (
+                            f'Error in db_file_viewer. ',
+                            f'not allowed for user [{email}]'
+                        )
+                        logger.error(msg)
+                        return response.text("", status=403)
+
                 field_value = await ax_dialects.dialect.select_field(
                     db_session=db_session,
                     form_db_name=ax_field.form.db_name,
                     field_db_name=ax_field.db_name,
                     row_guid=safe_row_guid)
+
                 return response.raw(
                     field_value, content_type='application/octet-stream')
 
         @sanic_app.route(
             '/api/file/<form_guid>/<row_guid>/<field_guid>/<file_guid>/<file_name>',    # pylint: disable=line-too-long
             methods=['GET'])
+        @inject_user()
+        @ax_protected()
         async def file_viewer(  # pylint: disable=unused-variable
-                request, form_guid, row_guid, field_guid, file_guid, file_name):
+                request, form_guid, row_guid, field_guid, file_guid, file_name,\
+                user=None):
             """ Used to display files uploaded and stored on disk.
                 Displays temp files too. Used in all fields with upload"""
             del request
+            current_user = user
             with ax_model.scoped_session("routes -> file_viewer") as db_session:
                 # if row_guid is null -> display from /tmp without permissions
                 if not row_guid or row_guid == 'null':
@@ -107,7 +152,6 @@ def init_routes(sanic_app, deck_path=None):
                 ax_form = db_session.query(AxForm).filter(
                     AxForm.guid == uuid.UUID(form_guid)
                 ).first()
-                current_user = None
                 ax_form = await form_schema.set_form_values(
                     db_session=db_session,
                     ax_form=ax_form,
@@ -129,6 +173,29 @@ def init_routes(sanic_app, deck_path=None):
 
                 if not the_file:
                     return response.text("", status=404)
+
+                state_guid = await ax_auth.get_state_guid(
+                    ax_form=ax_form,
+                    state_name=ax_form.current_state_name)
+
+                user_guid = current_user.get('user_id', None)
+                user_is_admin = current_user.get('is_admin', False)
+                allowed_field_dict = await ax_auth.get_allowed_fields_dict(
+                    ax_form=ax_form,
+                    user_guid=user_guid,
+                    state_guid=state_guid)
+
+                if not user_is_admin:
+                    if (field_guid not in allowed_field_dict
+                            or allowed_field_dict[field_guid] == 0
+                            or allowed_field_dict[field_guid] is None):
+                        email = current_user['email']
+                        msg = (
+                            f'Error in file_viewer. ',
+                            f'not allowed for user [{email}]'
+                        )
+                        logger.error(msg)
+                        return response.text("", status=403)
 
                 # if file exists -> return file
                 row_guid_str = str(uuid.UUID(row_guid))

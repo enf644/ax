@@ -1056,6 +1056,7 @@ export default {
 }
 .btns-div {
   padding-left: 20px;
+  margin-bottom: 20px;
 }
 .form-header {
   cursor: pointer;
