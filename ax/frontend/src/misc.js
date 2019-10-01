@@ -27,7 +27,6 @@ export function uuidWithDashes(uuidString) {
   return `${uuidString.substr(0, 8)}-${uuidString.substr(8, 4)}-${uuidString.substr(12, 4)}-${uuidString.substr(16, 4)}-${uuidString.substr(20)}`;
 }
 
-
 export function debounce(callback, limit) {
   let wait = false;
   return () => {

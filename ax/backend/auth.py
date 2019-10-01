@@ -3,9 +3,9 @@
 import sys
 import uuid
 import functools
+import asyncio
 from loguru import logger
 from passlib.hash import pbkdf2_sha256
-from sqlalchemy import or_
 from sanic_jwt import exceptions, initialize, Configuration
 from sanic_jwt.decorators import _do_protection
 
@@ -26,8 +26,8 @@ async def get_state_guid(ax_form, state_name):
     for state in ax_form.states:
         if state_name and state.name == state_name:
             state_guid = str(state.guid)
-        elif ((state_name is None or state_name == '')
-              and state.is_start is True):
+        elif ((state_name is None or state_name == '') and
+              state.is_start is True):
             state_guid = str(state.guid)
 
     return state_guid
@@ -94,15 +94,18 @@ async def get_grid_allowed_fields_dict(ax_form, user_guid):
 
 async def set_form_visibility(ax_form, state_guid, current_user):
     """ Sets permission field visibility. Deletes value if field is hidden """
+    user_guid = current_user.get("user_id", None) if current_user else None
+    user_id_admin = current_user.get(
+        "is_admin", False) if current_user else False
     allowed_fields = await get_allowed_fields_dict(
         ax_form=ax_form,
-        user_guid=current_user["user_id"],
+        user_guid=user_guid,
         state_guid=state_guid)
 
     for field in ax_form.no_tab_fields:
         if field in ax_form.db_fields or field.field_type.is_virtual:
             field.is_hidden = True
-            if current_user['is_admin']:
+            if user_id_admin:
                 field.is_readonly = False
                 field.is_hidden = False
             else:
@@ -154,25 +157,31 @@ async def write_perm_cache(db_session, user_guid):
         each field/state combination """
     perm_cache_pairs = []
     debug_list = []
-
     user_and_groups = []
-    user_and_groups.append(uuid.UUID(user_guid))
 
-    # Get everyone and all_users groups
-    everyone_all_groups = db_session.query(AxUser).filter(
-        or_(AxUser.is_all_users.is_(True), AxUser.is_everyone.is_(True))
-    ).all()
-    for grp in everyone_all_groups:
-        if grp.guid not in user_and_groups:
-            user_and_groups.append(grp.guid)
+    # Add everyone group
+    everyone_group = db_session.query(AxUser).filter(
+        AxUser.is_everyone.is_(True)
+    ).first()
+    user_and_groups.append(everyone_group.guid)
 
-    # Get user groups
-    group2user_result = db_session.query(AxGroup2Users).filter(
-        AxGroup2Users.user_guid == uuid.UUID(user_guid)
-    ).all()
-    for g2u in group2user_result:
-        if g2u.group_guid not in user_and_groups:
-            user_and_groups.append(g2u.group_guid)
+    if user_guid:
+        # Add current user
+        user_and_groups.append(uuid.UUID(user_guid))
+
+        # Add all users group
+        all_users_group = db_session.query(AxUser).filter(
+            AxUser.is_all_users.is_(True)
+        ).first()
+        user_and_groups.append(all_users_group.guid)
+
+        # Get user groups
+        group2user_result = db_session.query(AxGroup2Users).filter(
+            AxGroup2Users.user_guid == uuid.UUID(user_guid)
+        ).all()
+        for g2u in group2user_result:
+            if g2u.group_guid not in user_and_groups:
+                user_and_groups.append(g2u.group_guid)
 
     # Get roles of user and his groups
     roles_guids = []
@@ -219,16 +228,16 @@ async def write_perm_cache(db_session, user_guid):
                 edit = False
                 # For each perm
                 form_perms = [p for p in perms if (
-                    p.form_guid == ax_form.guid
-                    and p.state_guid == ax_state.guid)]
+                    p.form_guid == ax_form.guid and
+                    p.state_guid == ax_state.guid)]
                 for perm in form_perms:
                     # if perm is set to whole form
                     # if perm is set to tab
                     # if perm is set to field
 
-                    if (perm.field_guid is None
-                            or perm.field_guid == ax_field.parent
-                            or perm.field_guid == ax_field.guid):
+                    if (perm.field_guid is None or
+                            perm.field_guid == ax_field.parent or
+                            perm.field_guid == ax_field.guid):
 
                         if perm.read is True:
                             read = True
@@ -252,6 +261,8 @@ async def write_perm_cache(db_session, user_guid):
                 )
 
     expire_seconds = 60 * 20  # 20 mins
+    if user_guid is None:
+        expire_seconds = 0  # disable ttl for Everyone group
     await ax_cache.cache.multi_set(perm_cache_pairs, ttl=expire_seconds)
 
 
@@ -330,7 +341,7 @@ async def retrieve_user(request, payload, *args, **kwargs):
     """ Get user info. This info is transfered into routes with inject_user """
     del request, args, kwargs
     if payload:
-        user_id = payload.get('user_id', None)
+        user_id = payload.get('user_id') or None
 
         if not ax_misc.string_is_guid(user_id):
             return None
@@ -358,17 +369,19 @@ async def retrieve_user(request, payload, *args, **kwargs):
         return None
 
 
-async def store_refresh_token(user_id, refresh_token, *args, **kwargs):
+async def store_refresh_token(request, user_id, refresh_token, *args, **kwargs):
     """ Store refresh token in cache and write all perms cache for user """
     del args, kwargs
-    key = f'refresh_token_{user_id}'
+    device_guid = request.json['deviceGuid']
+    key = f'refresh_token_{device_guid}_{user_id}'
     await ax_cache.cache.set(key, refresh_token)
 
 
 async def retrieve_refresh_token(request, user_id, *args, **kwargs):
     """ Get refresh token from cache and refresh all perms cache for user """
-    del request, args, kwargs
-    key = f'refresh_token_{user_id}'
+    del args, kwargs
+    device_guid = request.json['deviceGuid']
+    key = f'refresh_token_{device_guid}_{user_id}'
     refresh_token = await ax_cache.cache.get(key)
 
     if refresh_token:
@@ -384,7 +397,7 @@ class AxConfiguration(Configuration):
     url_prefix = '/api/auth'
 
 
-def init_auth(sanic_app):
+def init_auth(sanic_app, secret="This is big secret, set me in app.yaml"):
     """ Initiate sanic-jwt module """
 
     delta = 60  # seconds
@@ -397,4 +410,12 @@ def init_auth(sanic_app):
                retrieve_user=retrieve_user,
                expiration_delta=delta,
                cookie_access_token_name='ax_auth',
-               cookie_set=True)
+               cookie_set=True,
+               cookie_strict=False,
+               login_redirect_url='/signin',
+               secret=secret)
+
+    # Write cache form Everyone group
+    with ax_model.scoped_session("init_auth - ERROR") as db_session:
+        asyncio.get_event_loop().run_until_complete(write_perm_cache(
+            db_session=db_session, user_guid=None))

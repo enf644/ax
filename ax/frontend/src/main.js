@@ -47,6 +47,8 @@ VueCookies.config('7d')
 
 import store from './store';
 import AxTest from './components/AxTest.vue';
+import Fingerprint2 from 'fingerprintjs2'
+import { uuidWithDashes } from '@/misc';
 
 // Dev dependencies
 // import VueDummy from 'vue-dummy'; // create lorum ipsum
@@ -109,6 +111,20 @@ Vue.use(VuetifyDialog, {
 
 Vue.prototype.$log = logger; // Custom logger
 
+
+// Write device guid using fingerprintjs. Used in sanic-jwt to enable
+// user login in multiple devices
+setTimeout(function () {
+  const fpOptions = {
+    excludeAdBlock: true
+  }
+  Fingerprint2.getPromise(fpOptions).then(components => {
+    const values = components.map(function (component) { return component.value })
+    const murmur = Fingerprint2.x64hash128(values.join(''), 31)
+    const deviceGuid = uuidWithDashes(murmur);
+    window.axDeviceGuid = deviceGuid
+  })
+}, 500)
 
 new Vue({
   router,

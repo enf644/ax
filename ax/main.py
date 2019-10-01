@@ -144,7 +144,8 @@ def init_ax():
     )
 
     # Initiate auth module
-    ax_auth.init_auth(sanic_app=app)
+    ax_auth.init_auth(
+        sanic_app=app, secret=os.environ.get('AX_AUTH_SECRET'))
 
 
 ax_logo = """

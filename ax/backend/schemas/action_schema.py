@@ -158,12 +158,13 @@ async def get_actions(form, current_state=None, current_user=None):
     # Filter action based on permission cache
     perm_actions = []
     for action in ret_actions:
-        user_guid = current_user.get('user_id', None)
+        user_guid = current_user.get('user_id', None) if current_user else None
         action_guid = str(action.guid)
         avalible = await ax_auth.check_action_perm(
             user_guid=user_guid, action_guid=action_guid)
 
-        user_is_admin = current_user.get('is_admin', False)
+        user_is_admin = current_user.get(
+            'is_admin', False) if current_user else False
         if avalible or user_is_admin:
             perm_actions.append(action)
 
@@ -495,19 +496,19 @@ async def execute_action(
                 query_type = 'delete'
 
             # 2. Check if user can perform current action
-            user_is_admin = False 
-            if current_user and current_user['is_admin'] is True:
-                user_is_admin = True
-
+            user_guid = current_user.get(
+                'user_id', None) if current_user else None
+            user_is_admin = current_user.get(
+                'is_admin', False) if current_user else False
             if not user_is_admin:
                 action_is_avalible = await ax_auth.check_action_perm(
-                    user_guid=current_user['user_id'],
+                    user_guid=user_guid,
                     action_guid=ax_action.guid)
                 if not action_is_avalible:
-                    email = current_user['email']
+                    email = current_user.get('email', None)
                     msg = (
                         f'Error in DoAction. Action [{ax_action.name}]',
-                        f'not allowed for user [{email}]'                    
+                        f'not allowed for user [{email}]'
                     )
                     logger.error(msg)
                     raise Exception(msg)

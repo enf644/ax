@@ -1,7 +1,14 @@
 <template>
   <!-- <div class='wrapper'> -->
   <v-app fill-height id='app' standalone>
-    <v-card class='card'>
+    <v-card class='card' v-if='authCookiePresent'>
+      <p v-html='$t("users.already-signed")'></p>
+
+      <v-btn @click='doLogOut()'>{{$t("home.logout")}}</v-btn>
+      <br />
+    </v-card>
+
+    <v-card class='card' v-if='authCookiePresent === false'>
       <v-form @submit='doSignIn' ref='form' v-model='valid'>
         <div class='logo-div'>
           <img class='logo' src='@/assets/small_axe.png' />
@@ -58,12 +65,22 @@ export default {
           const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
           return pattern.test(value) || this.locale('common.invalid-email');
         }
-      }
+      },
+      authCookiePresent: false
     };
   },
-  computed: {},
+  computed: {
+    currentUserShortName() {
+      if (this.$store.state.users.currentUser) {
+        return this.$store.state.users.currentUser.shortName;
+      }
+    }
+  },
   watch: {},
-  mounted() {},
+  mounted() {
+    if (this.$cookies.get('access_token')) this.authCookiePresent = true;
+    else this.authCookiePresent = false;
+  },
   methods: {
     locale(key) {
       return this.$t(key);
@@ -79,7 +96,8 @@ export default {
         axios
           .post(`${host}/api/auth`, {
             email: this.email,
-            password: this.password
+            password: this.password,
+            deviceGuid: window.axDeviceGuid
           })
           .then(response => {
             this.$log.info(response);
@@ -104,6 +122,12 @@ export default {
             this.$log.error(error);
           });
       }
+    },
+    doLogOut() {
+      // this.$store.dispatch('auth/logOut');
+      // this.authCookiePresent = false;
+      const host = getAxHostProtocol();
+      window.location.href = `${host}/api/signout`;
     }
   }
 };

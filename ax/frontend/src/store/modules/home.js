@@ -398,7 +398,7 @@ const actions = {
       })
       .catch(error => {
         logger.error(`Error in getAllForms apollo client -> ${error}`);
-        dispatch('auth/logOut', null, { root: true });
+        dispatch('auth/goToDeck', null, { root: true });
       });
   },
   createForm(context, payload) {

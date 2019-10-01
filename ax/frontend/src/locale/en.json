@@ -131,7 +131,8 @@
         "user-removed-role-toast": "User removed from role",
         "admin-group-name": "Administrators",
         "everyone-group-name": "Everyone",
-        "all-users-group-name": "All users"
+        "all-users-group-name": "All users",
+        "already-signed": "You already signed in. <br> <a href='/deck'>Deck</a> <br> <a href='/admin/home'>Admin</a>"
     },
     "form": {
         "add-tab": "Add tab",

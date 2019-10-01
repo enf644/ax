@@ -620,7 +620,7 @@ AX 0.2:
         ✔ Roles modal - add users @done(19-09-23 15:17)
         ✔ Create default users on install @done(19-09-23 16:16)
         ✔ auth.py takes users from database @done(19-09-23 22:41)
-    ☐ PERMISSION SYSTEM
+    ✔ PERMISSION SYSTEM @done(19-10-01 20:35)
         ✔ When user logs in - his perms are stored in cache. form -> perms list @done(19-09-26 17:34)
         ✔ GraphQL authorisation @done(19-09-18 18:13)
         ✔ Every GQL mutation needs permissions @done(19-09-30 13:06)
@@ -633,9 +633,15 @@ AX 0.2:
             ✔ File viewer permissions @done(19-09-30 13:06)
         ✔ AxForm fields permissions @done(19-09-27 17:41)
         ✔ All fields must have isReadonly param @done(19-09-27 17:41)
-        ☐ Everyone group
-        ☐ All users group
-        ☐ Frogs
+        ✔ All users group @done(19-10-01 13:37)
+        ✔ Signin - logout button, if user logged in @done(19-10-01 13:37)
+        ✔ Everyone group @done(19-10-01 17:15)
+            ✔ hide rows without values in AxGrid @done(19-10-01 17:15)
+            ✔ Form @done(19-10-01 15:14)
+            ✔ Grid @done(19-10-01 15:14)
+            ✔ Actions @done(19-10-01 17:14)
+        ✔ Multiple devices signin - add deviceGuid to refresh_token @done(19-10-01 20:36)
+        ✔ Frogs @done(19-10-01 20:35)
             ✔ form.js -> 'All fields' must be from locale @done(19-09-27 16:19)
             ✔ AxAction when no fields are visible @done(19-09-27 16:43)
             ✔ Check fields errors @done(19-09-27 16:15)
@@ -653,8 +659,8 @@ AX 0.2:
                 ✔ On retrive user - check if user in cache - is false - write to cache @done(19-09-27 19:37)
             ✔ Auth for uppy/tus upload @done(19-09-27 20:05)
             ✔ Add GQL query for current user data @done(19-09-27 20:40)
-            ☐ Workflow constructor - start does not hightlite
-            ☐ When access_token=null auth fails
+            ✔ In yandex brawser - if not 401 - no redirect happens @done(19-10-01 17:45)
+            ✔ Insert action if no fields visible @done(19-10-01 17:16)
     ☐ PAGES DESIGNER
         ✔ Routes work with static content @done(19-08-15 14:09)
         ✔ Routes take path from app.yaml so it can be configured @done(19-08-15 16:48)
@@ -670,9 +676,9 @@ AX 0.2:
         ☐ Application catalog
         ☐ Install from git repository (pages use gitcdn)
     ☐ GLOBAL FROGS
+        ☐ In yandex brawser - No modal in grid view
         ☐ Different sorting and filtering for different types
             ✘ Server filter - must be loaded dynamicly @cancelled(19-09-08 21:11)
-            ☐ Grid filter - must be loaded dynamicly
         ☐ Add clould logger for python and vue
         ☐ Product usage statistics
     ☐ ALL FIELDS v1

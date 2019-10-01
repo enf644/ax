@@ -577,7 +577,17 @@ export default {
         })
         .then(data => {
           this.gqlException = false;
-          this.rowData = data.data[this.viewDbName];
+          const rowsWithEmptyRows = data.data[this.viewDbName];
+
+          // If all fields but guid is null - hide row
+          this.rowData = rowsWithEmptyRows.filter(row => {
+            let rowIsEmpty = true;
+            Object.keys(row).forEach(key => {
+              if (key != 'guid' && key != '__typename' && row[key] != null)
+                rowIsEmpty = false;
+            });
+            if (!rowIsEmpty) return row;
+          });
 
           if (!this.gridInitialized) this.initAgGrid();
           else {
@@ -731,9 +741,9 @@ export default {
       this.$modal.hide(`sub-form-${this.modalGuid}`);
     },
     openGridBlank() {
-      const url = `${getAxProtocol()}://${getAxHost()}/grid/${
-        this.form
-      }/${this.grid}`;
+      const url = `${getAxProtocol()}://${getAxHost()}/grid/${this.form}/${
+        this.grid
+      }`;
       Object.assign(document.createElement('a'), {
         target: '_blank',
         href: url

@@ -38,7 +38,10 @@ const customFetch = (uri, options) => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`
           },
-          body: JSON.stringify({ "refresh_token": refreshToken })
+          body: JSON.stringify({
+            "refresh_token": refreshToken,
+            "deviceGuid": window.axDeviceGuid
+          })
         })
           .then((refresh_token_repsonse) => {
             // console.log(refresh_token_repsonse);

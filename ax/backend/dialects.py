@@ -453,12 +453,17 @@ class PorstgreDialect(object):
                         value=field.value)
 
             column_sql = ", ".join(fields_db_names)
+            if column_sql:
+                column_sql = ', ' + column_sql
+
             values_sql = ", ".join(value_strings)
+            if values_sql:
+                values_sql = ',' + values_sql
 
             sql = (
                 f'INSERT INTO "{form.db_name}" '
-                f'("guid", "axState", {column_sql}) '
-                f"VALUES (:row_guid, :ax_state, {values_sql});"
+                f'("guid", "axState" {column_sql}) '
+                f"VALUES (:row_guid, :ax_state {values_sql});"
             )
             db_session.execute(sql, query_params)
             return new_guid
@@ -499,9 +504,11 @@ class PorstgreDialect(object):
                     )
 
             values_sql = ", ".join(value_strings)
+            if values_sql:
+                values_sql = ", " + values_sql
             sql = (
                 f"UPDATE \"{form.db_name}\" "
-                f"SET \"axState\"=:ax_state, {values_sql} "
+                f"SET \"axState\"=:ax_state {values_sql} "
                 f"WHERE guid=:row_guid "
             )
             return db_session.execute(sql, query_params)

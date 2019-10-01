@@ -1,6 +1,7 @@
 import apolloClient from '../../apollo';
 import gql from 'graphql-tag';
 import logger from '../../logger';
+import { getAxHostProtocol } from '@/misc';
 
 const getDefaultState = () => {
   return {
@@ -9,23 +10,24 @@ const getDefaultState = () => {
   }
 }
 
+const LOGOUT = gql`
+  mutation {
+    logoutUser {
+      ok    
+    }
+  }
+`;
+
 const getters = {};
 
 const actions = {
   logOut(context) {
-    window.$cookies.set('access_token', null);
-    window.$cookies.set('refresh_token', null);
-
-    context.commit('setTokens', {
-      access: null,
-      refresh: null
-    })
-
-    context.commit('home/resetState', null, { root: true });
-    context.commit('form/resetState', null, { root: true });
-    context.commit('grids/resetState', null, { root: true });
-    context.commit('workflow/resetState', null, { root: true });
-    context.commit('pages/resetState', null, { root: true });
+    const host = getAxHostProtocol();
+    window.location.href = `${host}/api/signout`;
+  },
+  goToDeck(context) {
+    const host = getAxHostProtocol();
+    window.location.href = `${host}/deck`;
   }
 };
 

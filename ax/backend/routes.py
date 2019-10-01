@@ -69,6 +69,23 @@ def init_routes(sanic_app, deck_path=None):
         # Add web-socket subscription server
         subscription_server = WsLibSubscriptionServer(ax_schema.schema)
 
+        @sanic_app.route('api/signout', methods=['GET'])
+        @inject_user()
+        @ax_protected()
+        async def signout(request, user=None):   # pylint: disable=unused-variable
+            """ Delete all auth cookies and redirect to signin """
+            del request
+            user_guid = user.get('user_id', None) if user else None
+            if user_guid:
+                key = f'refresh_token_{user_guid}'
+                await ax_cache.cache.delete(key)
+
+            resp = response.redirect('/signin')
+            del resp.cookies['ax_auth']
+            del resp.cookies['access_token']
+            del resp.cookies['refresh_token']
+            return resp
+
         @sanic_app.route(
             '/api/file/<form_guid>/<row_guid>/<field_guid>/<file_name>',
             methods=['GET'])
@@ -99,8 +116,10 @@ def init_routes(sanic_app, deck_path=None):
                     ax_form=ax_field.form,
                     state_name=state_name)
 
-                user_guid = current_user.get('user_id', None)
-                user_is_admin = current_user.get('is_admin', False)
+                user_guid = current_user.get(
+                    'user_id', None) if current_user else None
+                user_is_admin = current_user.get(
+                    'is_admin', False) if current_user else False
                 allowed_field_dict = await ax_auth.get_allowed_fields_dict(
                     ax_form=ax_field.form,
                     user_guid=user_guid,
@@ -178,8 +197,10 @@ def init_routes(sanic_app, deck_path=None):
                     ax_form=ax_form,
                     state_name=ax_form.current_state_name)
 
-                user_guid = current_user.get('user_id', None)
-                user_is_admin = current_user.get('is_admin', False)
+                user_guid = current_user.get(
+                    'user_id', None) if current_user else None
+                user_is_admin = current_user.get(
+                    'is_admin', False) if current_user else False
                 allowed_field_dict = await ax_auth.get_allowed_fields_dict(
                     ax_form=ax_form,
                     user_guid=user_guid,

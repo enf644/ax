@@ -10,7 +10,7 @@ from passlib.hash import pbkdf2_sha256
 from backend.misc import convert_column_to_string
 from backend.model import AxUser, GUID, AxGroup2Users, AxRole2Users
 import backend.model as ax_model
-# import backend.cache as ax_cache
+import backend.cache as ax_cache
 import backend.dialects as ax_dialects
 # import backend.pubsub as ax_pubsub
 from backend.schemas.types import User
@@ -299,6 +299,25 @@ class RemoveUserFromRole(graphene.Mutation):
             return RemoveUserFromRole(ok=True)
 
 
+class LogoutUser(graphene.Mutation):
+    """ Delete refresh jwt token from cache """
+    # class Arguments:  # pylint: disable=missing-docstring
+    #     user_guid = graphene.String()
+    #     role_guid = graphene.String()
+
+    ok = graphene.Boolean()
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        """ Delete refresh token from cache """
+        current_user = info.context['user']
+        user_guid = current_user.get('user_id', None) if current_user else None
+        if user_guid:
+            key = f'refresh_token_{user_guid}'
+            await ax_cache.cache.delete(key)
+
+        return LogoutUser(ok=True)
+
+
 class UsersQuery(graphene.ObjectType):
     """AxUser queryes"""
     all_users = graphene.List(
@@ -455,3 +474,4 @@ class UsersMutations(graphene.ObjectType):
     remove_user_from_group = RemoveUserFromGroup.Field()
     add_user_to_role = AddUserToRole.Field()
     remove_user_from_role = RemoveUserFromRole.Field()
+    logout_user = LogoutUser.Field()
