@@ -22,10 +22,11 @@ from backend.schemas.workflow_schema import WorkflowMutations
 from backend.schemas.action_schema import ActionQuery, ActionMutations, \
     ActionSubscription
 from backend.schemas.grids_schema import GridsQuery, GridsMutations
-from backend.schemas.fields_schema import FieldsQuery, FieldsMutations
+from backend.schemas.pages_schema import PagesQuery, PagesMutations, \
+    PagesSubscription
 from backend.schemas.types import Form, FieldType, Field, Grid, \
     Column, User, Role, State, Action, RoleFieldPermission, Group2Users, \
-    Action2Role, State2Role, Role2Users, PositionInput
+    Action2Role, State2Role, Role2Users, PositionInput, Page, Page2Users
 
 from backend.model import AxForm
 import backend.model as ax_model
@@ -66,13 +67,16 @@ gql_types = [
     Action2Role,
     State2Role,
     Role2Users,
-    PositionInput,
+    Page,
+    Page2Users,
+    PositionInput
 ]
 
 
 class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery,
-            ActionQuery, FieldsQuery, graphene.ObjectType):
+            ActionQuery, PagesQuery, graphene.ObjectType):
     """Combines all schemas queryes"""
+    # TODO - check if this fields are needed? Maybe custom queryes are enough?
     forms = SQLAlchemyConnectionField(Form)
     field_types = SQLAlchemyConnectionField(FieldType)
     fields = SQLAlchemyConnectionField(Field)
@@ -87,7 +91,7 @@ class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery,
 
 
 class Mutations(HomeMutations, FormMutations, UsersMutations, GridsMutations,
-                WorkflowMutations, FieldsMutations, ActionMutations,
+                WorkflowMutations, PagesMutations, ActionMutations,
                 graphene.ObjectType):
     """Combines all schemas mutations"""
 
@@ -216,9 +220,9 @@ def make_resolver(db_name, type_class):
                 for key, value in row.items():
                     if current_user and current_user['is_admin']:
                         kwargs[key] = value
-                    elif (key in allowed_fields[row_state_name]
-                          and allowed_fields[row_state_name][key]
-                          and allowed_fields[row_state_name][key] > 0):
+                    elif (key in allowed_fields[row_state_name] and
+                          allowed_fields[row_state_name][key] and
+                          allowed_fields[row_state_name][key] > 0):
                         kwargs[key] = value
                     elif key == 'guid':
                         kwargs[key] = value

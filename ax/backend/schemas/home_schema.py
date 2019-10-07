@@ -564,7 +564,6 @@ class HomeQuery(graphene.ObjectType):
                 info.context['session'], err, no_commit=True):
             query = Form.get_query(info)  # SQLAlchemy query
             form_list = query.all()
-            # await ax_cache.cache.set('form_list', form_list)
             return form_list
 
     async def resolve_sql_status(self, info):

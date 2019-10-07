@@ -580,14 +580,16 @@ export default {
           const rowsWithEmptyRows = data.data[this.viewDbName];
 
           // If all fields but guid is null - hide row
-          this.rowData = rowsWithEmptyRows.filter(row => {
-            let rowIsEmpty = true;
-            Object.keys(row).forEach(key => {
-              if (key != 'guid' && key != '__typename' && row[key] != null)
-                rowIsEmpty = false;
+          if (rowsWithEmptyRows && rowsWithEmptyRows.length > 0) {
+            this.rowData = rowsWithEmptyRows.filter(row => {
+              let rowIsEmpty = true;
+              Object.keys(row).forEach(key => {
+                if (key != 'guid' && key != '__typename' && row[key] != null)
+                  rowIsEmpty = false;
+              });
+              if (!rowIsEmpty) return row;
             });
-            if (!rowIsEmpty) return row;
-          });
+          }
 
           if (!this.gridInitialized) this.initAgGrid();
           else {

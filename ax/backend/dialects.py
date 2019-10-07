@@ -631,6 +631,25 @@ class PorstgreDialect(object):
             raise
 
 
+    async def select_page_users(self, db_session, page_guid):
+        """ Select of users that can view page """
+        try:
+            sql = """
+                SELECT us.guid, us.short_name
+                FROM "_ax_page2user" p2u, "_ax_users" us
+                WHERE p2u.user_guid == us.guid AND p2u.page_guid=:page_guid;            
+            """
+            query_params = {
+                "page_guid": page_guid.replace('-', '')
+            }
+            result = db_session.execute(sql, query_params).fetchall()
+            return result
+        except Exception:
+            logger.exception('Error executing SQL - select_page_users')
+            raise
+
+
+
 class SqliteDialect(PorstgreDialect):
     """SQL query for Sqlite database"""
     name = 'sqlite'

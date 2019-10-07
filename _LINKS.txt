@@ -256,7 +256,7 @@ CI INSPIRATIONS
     https://cloud.google.com/cloud-build/?ref=stackshare
 
 
-DECK INSPIRATIONS
+PAGES INSPIRATIONS
     https://github.com/gollum/gollum#markups
     https://tray.io/
 

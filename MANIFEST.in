@@ -11,7 +11,7 @@ recursive-include ax/backend *
 recursive-include ax/dist *
 
 exclude ax/frontend *
-exclude ax/deck *
+exclude ax/pages *
 exclude ax/backend/__pycache__ *
 exclude ax/backend/logs *
 exclude ax/backend/py_libs *

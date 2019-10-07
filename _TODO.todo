@@ -72,7 +72,7 @@ ROUND ONE:
                 ✔ ManageUsers @done(19-02-15 14:30)
                 ✔ ManageGroup(group_id) @done(19-02-15 14:30)
                 ✔ Marketplace @done(19-02-15 14:50)
-                ✔ Deck designer @done(19-02-15 14:50)
+                ✔ Pages designer @done(19-02-15 14:50)
 			✔ Vuex @done(19-02-24 00:46)
 				✔ Store contains list of forms, two components display this list @done(19-02-19 10:29)
                 ✔ Call mutation on forms list @done(19-02-19 10:29)
@@ -664,8 +664,29 @@ AX 0.2:
     ☐ PAGES DESIGNER
         ✔ Routes work with static content @done(19-08-15 14:09)
         ✔ Routes take path from app.yaml so it can be configured @done(19-08-15 16:48)
+        ✔ Model @done(19-10-02 19:33)
+        ✔ GQL schema @done(19-10-02 20:16)
+        ✔ Designer @done(19-10-07 11:13)
+            ✔ First drawer @done(19-10-07 11:05)
+                ✔ Jstree with pages @done(19-10-06 17:30)
+                ✔ Create page @done(19-10-06 17:30)
+                ✔ Open tree on load @done(19-10-07 11:05)
+                ✔ Page modal @done(19-10-06 23:36)
+                    ✔ Name @done(19-10-06 23:35)
+                    ✔ Permissions - users and groups @done(19-10-06 23:36)
+            ✔ Second drawer @done(19-10-07 11:05)
+                ✔ Add drawer @done(19-10-02 21:02)
+                ✔ monaco editor @done(19-10-02 21:02)
+                ✔ Redraw monaco on resize @done(19-10-02 21:30)
+                ✔ Update gql on ctrl+s @done(19-10-06 23:36)
         ☐ Vue application - WPA
-        ☐ Create marketplace application
+            ☐ Create and check if wpa is ok
+            ☐ Drawer - drag open
+            ☐ GQL
+                ✔ Select page tree @done(19-10-06 17:29)
+                ✔ Select page @done(19-10-06 17:30)
+                ☐ Page edit subscription
+            ☐ Markdown to html
     ☐ PHOTO PROJECT
 	☐ MARKETPLACE
 		☐ Dump application to yaml
@@ -802,7 +823,7 @@ BEFORE LAUNCH:
     ☐ Documentation
         ☐ Sphninx in repo -> https://gist.github.com/GLMeece/222624fc495caf6f3c010a8e26577d31
         ☐ Gitbook -> https://www.gitbook.com/?t=1                
-        ☐ Ax Deck !!!
+        ☐ Ax Pages
     ☐ Lincese key generation, desribution and 
 
 
@@ -904,7 +925,7 @@ FEATURES:
     ☐ Arguments for doAction. Can be used in python code.
     ☐ favico for each form must be different - same as font-awesome icon
     ☐ Dynamic title and favico - changes for different AxForms
-    ☐ Ax and deck must use same node_modules
+    ☐ Ax and pages must use same node_modules
     ☐ AxGrid constructor - custom fields. Tree with column types - dragged to grid and enter name and db_name. Db_name must be specified in query.
     ☐ Quicksearch in 1tom -> must not be case sansitive
     ☐ GAuth - зачем?
@@ -915,7 +936,7 @@ FEATURES:
     ☐ Users -> List of Substitute users
     ☐ Javascript in actions - executed after action is complete. Is param of ax-form
     ☐ URL for executing actions. Can be placed inside emails
-    ☐ Deck -> Unread message counter
+    ☐ Pages -> Unread message counter
 	☐ Default tab at state settings
     ☐ Form constructor -> save entered values on form preview
     ☐ Form constructor -> delete field by drag-drop
@@ -928,6 +949,8 @@ FEATURES:
     ☐ Resources monitoring
     ☐ `[IMPORTANT]` AxGrid, AxForm -> auth needed setting
     ☐ `[IMPORTANT]` AxGrid, AxForm -> sign in dialog when not logged and anon icon if showing
+    ☐ Pages data is stored in cache
+    ☐ Page title in page-designer in toolbar
 
     
     

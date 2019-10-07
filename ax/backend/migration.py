@@ -19,7 +19,8 @@ from alembic.autogenerate import compare_metadata
 from alembic import command
 import backend.model as ax_model
 import backend.misc as ax_misc
-from backend.model import AxAlembicVersion, AxFieldType, AxUser, AxGroup2Users
+from backend.model import AxAlembicVersion, AxFieldType, AxUser, AxGroup2Users,\
+    AxPage
 
 this = sys.modules[__name__]
 alembic_cfg = None
@@ -68,6 +69,17 @@ def create_tables() -> None:
 
         logger.info('Ax tables not found. Creating database tables.')
         return True
+
+
+def create_default_pages():
+    """ Create default page """
+    with ax_model.scoped_session(
+            "migration -> create_default_pages") as db_session:
+        index_page = AxPage()
+        index_page.name = "Index Page"
+        index_page.code = "<h1>Welcome to Ax pages</h1> <br/><br/>Hello world"
+        db_session.add(index_page)
+        db_session.commit()
 
 
 def create_default_users():
@@ -474,6 +486,7 @@ def init_migration():
         create_tables()
         create_field_types()
         create_default_users()
+        create_default_pages()
     else:
         pass
         # if database_fits_metadata() is False:

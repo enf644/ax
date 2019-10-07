@@ -1,8 +1,8 @@
 
 module.exports = {
-  outputDir: '../dist/deck',
+  outputDir: '../dist/pages',
   assetsDir: 'static',
-  baseUrl: '/deck',
+  baseUrl: '/pages',
   css: {
     extract: false
   },

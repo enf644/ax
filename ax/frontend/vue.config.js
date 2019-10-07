@@ -54,7 +54,7 @@ module.exports = {
           // new Visualizer(),
           new VuetifyLoaderPlugin(),
           new MonocoEditorPlugin({
-            languages: ['json', 'python', 'markdown', 'yaml']
+            languages: ['json', 'html', 'python', 'markdown', 'yaml']
           })
         ]
       };
@@ -77,7 +77,7 @@ module.exports = {
         plugins: [
           new VuetifyLoaderPlugin(),
           new MonocoEditorPlugin({
-            languages: ['json', 'python', 'markdown', 'yaml']
+            languages: ['json', 'html', 'python', 'markdown', 'yaml']
           })
         ]
       };

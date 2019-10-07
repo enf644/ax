@@ -125,14 +125,17 @@
         "add-to-role-btn": "Add to role",
         "user-added-group-toast": "User added to group",
         "user-added-role-toast": "User added to role",
+        "user-added-page-toast": "User was granted page access",
         "remove-user-confirm": "Remove user [{name}] from group?",
         "remove-user-role-confirm": "Remove [{name}] from role?",
+        "remove-user-page-confirm": "Restrict page access for user [{name}]?",
         "user-removed-group-toast": "User removed from group",
         "user-removed-role-toast": "User removed from role",
+        "user-removed-page-toast": "User access to page was restricted",
         "admin-group-name": "Administrators",
         "everyone-group-name": "Everyone",
         "all-users-group-name": "All users",
-        "already-signed": "You already signed in. <br> <a href='/deck'>Deck</a> <br> <a href='/admin/home'>Admin</a>"
+        "already-signed": "You already signed in. <br> <a href='/pages'>Pages</a> <br> <a href='/admin/home'>Admin</a>"
     },
     "form": {
         "add-tab": "Add tab",
@@ -271,6 +274,23 @@
             "no-roles": "No roles created"
         },
         "delete-confirm": "Are you sure you want to delete record?"
+    },
+    "pages": {
+        "db-name-exists": "Page with this name already exists",
+        "page-updated-toast": "Page code updated",
+        "drawer-header": "Ax Pages",
+        "create-page-prompt": "Enter page label",
+        "page-created-toast": "Page created",
+        "page-modal-header": "Page permissions",
+        "modal-name-field": "Page title",
+        "modal-dbname-field": "Page code name",
+        "modal-dbname-field-hint": "Must be pascalCase. Used in url",
+        "modal-db-name-error": "Please use pascalCase for code name",
+        "add-to-page-btn": "Add",
+        "update-page-btn": "Update page",
+        "delete-page-btn": "Delete page",
+        "page-delete-confirm": "Delete page [{name}]?",
+        "page-deleted-toast": "Delete deleted"
     },
     "types": {
         "group-id": "Identification",

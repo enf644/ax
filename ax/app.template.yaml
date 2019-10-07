@@ -43,7 +43,7 @@ env_variables:
   # AX_LOCALE: ru # default=en
   # AX_TMP_ABSOLUTE_PATH: '/tmp' #'D:\Projects\tmp'
   # AX_UPLOADS_ABSOLUTE_PATH: '/tmp/uploads'
-  # AX_DECK_ABSOLUTE_PATH: 'C:\Users\enf64_000\Desktop\Dimiant\WineProject\wine\dist'
+  # AX_PAGES_ABSOLUTE_PATH: 'C:\Users\enf64_000\Desktop\Dimiant\WineProject\wine\dist'
   # AX_SMTP_HOST: smtp.yandex.com
   # AX_SMTP_PORT: 465 # default is 465
   # AX_SMTP_SSL: True # defualt is False

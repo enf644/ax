@@ -575,3 +575,24 @@ class Ax1tomReference(Base):
     field_guid = Column(GUID(), ForeignKey('_ax_fields.guid'))
     row_guid = Column(GUID())
     child_guid = Column(GUID())
+
+
+class AxPage(Base):
+    """ Stores all pages """
+    __tablename__ = '_ax_pages'
+    guid = Column(GUID(), primary_key=True,
+                  default=uuid.uuid4, unique=True, nullable=False)
+    name = Column(String(255))
+    db_name = Column(String(255))
+    code = Column(Text(convert_unicode=True))
+    # options_json = Column(String(2000))
+    parent = Column(GUID())
+
+
+class AxPage2Users(Base):
+    """What users and groups can view what pages?"""
+    __tablename__ = '_ax_page2user'
+    guid = Column(GUID(), primary_key=True,
+                  default=uuid.uuid4, unique=True, nullable=False)
+    page_guid = Column(GUID(), ForeignKey('_ax_pages.guid'))
+    user_guid = Column(GUID(), ForeignKey('_ax_users.guid'))

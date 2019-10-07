@@ -59,7 +59,7 @@ THINK ABOUT
 AX - rapid automation tool
 
 
-AX Deck
+AX Pages
     Pages are marketplace app just as any other
         Can be multiple fronts - pages/shop/intranet
     Menu based on permissions
@@ -77,8 +77,8 @@ Without Ax:
 
 How to use Ax:
     Headless CMS
-	Ax Deck - Create page structure and insert Forms, Grids and other web components
-	Ax Deck Mobile - View your deck in native Android or ios applicaiton
+	Ax Pages - Create page structure and insert Forms, Grids and other web components
+	Ax Pages Mobile - View your pages in native Android or ios applicaiton
 	Any website - Load AxForms and AxGrids as web components
 	GraphQL - Query data from external app
 	Slack - See AxForms and AxGrids directrly in Slack chat
@@ -234,7 +234,7 @@ Marketing news themes
         AWS
         Heroku
         Docker
-    Deck as standalone tool
+    Pages are standalone tool
     Building Sass business ontop of Ax
         Billing users inside Ax!!!
     Overview of ax-fields

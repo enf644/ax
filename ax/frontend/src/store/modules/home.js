@@ -45,6 +45,12 @@ const GET_ALL_FORMS = gql`
         email,
         shortName,
         name
+      },
+      allPages (updateTime: $updateTime) {
+        guid,
+        name,
+        dbName,
+        parent     
       }
     }
 `;
@@ -395,10 +401,13 @@ const actions = {
       .then(data => {
         commit('setForms', data.data.allForms);
         commit('users/setCurrentUser', data.data.currentAxUser, { root: true });
+        commit('pages/setPages', data.data.allPages, { root: true });
       })
       .catch(error => {
         logger.error(`Error in getAllForms apollo client -> ${error}`);
-        dispatch('auth/goToDeck', null, { root: true });
+        setTimeout(() => {
+          dispatch('auth/goToPages', null, { root: true });
+        }, 2000);
       });
   },
   createForm(context, payload) {

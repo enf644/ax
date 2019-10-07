@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Deck is empty</h1>
+    <h1>No pages</h1>
   </div>
 </template>
 

@@ -44,7 +44,7 @@ def init_graphql_view():  # pylint: disable=unused-variable
     this.app.add_route(this.graphql_view, '/api/graphql')
 
 
-def init_routes(sanic_app, deck_path=None):
+def init_routes(sanic_app, pages_path=None):
     """Innitiate all Ax routes"""
     try:
         sanic_app.static('/uploads', str(ax_misc.path('uploads')))
@@ -56,13 +56,13 @@ def init_routes(sanic_app, deck_path=None):
         sanic_app.static(
             '/editor.worker.js', str(ax_misc.path('dist/ax/editor.worker.js')))
 
-        deck_dist_path = str(ax_misc.path('dist/deck'))
-        if deck_path:
-            deck_dist_path = deck_path
-        index_path = str(os.path.join(deck_dist_path, "index.html"))
+        pages_dist_path = str(ax_misc.path('dist/pages'))
+        if pages_path:
+            pages_dist_path = pages_path
+        index_path = str(os.path.join(pages_dist_path, "index.html"))
 
-        sanic_app.static('/deck/', deck_dist_path)
-        sanic_app.static('/deck', index_path)
+        sanic_app.static('/pages/', pages_dist_path)
+        sanic_app.static('/pages', index_path)
 
         # Add tus upload blueprint
         sanic_app.blueprint(tus_bp)
@@ -246,7 +246,7 @@ def init_routes(sanic_app, deck_path=None):
         @sanic_app.route('/')
         def handle_request(request):  # pylint: disable=unused-variable
             del request
-            return response.redirect('/deck')
+            return response.redirect('/pages')
 
         @sanic_app.route('/draw_ax')
         async def draw_ax(request):  # pylint: disable=unused-variable

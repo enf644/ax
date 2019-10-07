@@ -1,4 +1,4 @@
-# deck
+# ax-pages
 
 ## Project setup
 ```

@@ -57,7 +57,7 @@ export default {
       // email: 'default@ax-workflow.com',
       // password: 'deleteme',
       email: 'enf644@gmail.com',
-      password: 'Cnuds644',
+      password: 'Qwerty644',
       showPass: false,
       rules: {
         required: value => !!value || this.locale('common.field-required'),
@@ -108,7 +108,7 @@ export default {
             this.$cookies.set('access_token', response.data.access_token);
             this.$cookies.set('refresh_token', response.data.refresh_token);
 
-            let url = `/deck`;
+            let url = `/pages`;
             if (this.$store.state.home.redirectFromUrl) {
               url = this.$store.state.home.redirectFromUrl;
             }

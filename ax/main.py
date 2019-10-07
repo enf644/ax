@@ -129,7 +129,7 @@ def init_ax():
     # Initiate all sanic server routes
     ax_routes.init_routes(
         sanic_app=app,
-        deck_path=os.environ.get('AX_DECK_ABSOLUTE_PATH')
+        pages_path=os.environ.get('AX_PAGES_ABSOLUTE_PATH')
     )
     # Initiate SQL dialects module. Different SQL queries for differents DBs
     ax_dialects.init_dialects(os.environ.get('AX_DB_DIALECT') or 'sqlite')

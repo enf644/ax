@@ -187,6 +187,10 @@ a {
     padding-left: 0px !important;
 }
 
+.jstree-container-ul {
+    padding-left: 0px !important;
+}
+
 
 /************ Jstree styles } ***************/
 
@@ -500,7 +504,6 @@ a {
 }
 
 /************ Query builder styles } ***************/
-
 
 
 .ax-form-app .application--wrap {

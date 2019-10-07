@@ -30,5 +30,5 @@ esac
 #     start program = "/home/wineuser/.local/lib/python3.6/site-packages/ax/ax.sh start"
 #     stop program = "/home/wineuser/.local/lib/python3.6/site-packages/ax/ax.sh stop"
 #     if failed port 8080 protocol http
-#        and request /deck
+#        and request /pages
 #     then restart

@@ -25,9 +25,9 @@ const actions = {
     const host = getAxHostProtocol();
     window.location.href = `${host}/api/signout`;
   },
-  goToDeck(context) {
+  goToPages(context) {
     const host = getAxHostProtocol();
-    window.location.href = `${host}/deck`;
+    window.location.href = `${host}/pages`;
   }
 };
 
