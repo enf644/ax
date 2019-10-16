@@ -169,7 +169,7 @@ async def write_perm_cache(db_session, user_guid):
         # Add current user
         user_and_groups.append(uuid.UUID(user_guid))
 
-        # Add all users group
+        # Add all-users group
         all_users_group = db_session.query(AxUser).filter(
             AxUser.is_all_users.is_(True)
         ).first()

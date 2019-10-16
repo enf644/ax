@@ -16,8 +16,9 @@ Options:
 import os
 import sys
 from pathlib import Path
-from sanic import Sanic
+from sanic import Sanic, response
 from sanic_cors import CORS
+from sanic_compress import Compress
 from loguru import logger
 from docopt import docopt
 
@@ -60,14 +61,6 @@ def init_model():
         sqlite_absolute_path=os.environ.get(
             'AX_DB_SQLITE_ABSOLUTE_PATH') or None
     )
-
-
-# class AxGraphQLView(GraphQLView):
-#     """ Extends GraphQLView to output GQL errors"""
-#     @staticmethod
-#     def format_error(error):
-#         logger.error(error)
-#         return GraphQLView.format_error(error)
 
 
 def init_ax():
@@ -113,6 +106,10 @@ def init_ax():
     # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
     CORS(app, automatic_options=True)  # TODO limit CORS to api folder
 
+    # Enable gzip compression for responses
+    # 'text/html','text/css','text/xml','application/json','application/java
+    Compress(app)
+
     @app.listener('before_server_start')
     async def initialize_scheduler(_app, _loop):  # pylint: disable=unused-variable
         """Initiate scheduler. It used for cron-like jobs"""
@@ -126,10 +123,26 @@ def init_ax():
         ax_routes.init_graphql_view()
         # _app.add_route(ax_routes.graphql_view, '/api/graphql')
 
+    ssl_cert = os.environ.get('SSL_CERT_ABSOLUTE_PATH', None)
+    ssl_key = os.environ.get('SSL_KEY_ABSOLUTE_PATH', None)
+    ssl_enabled = False
+    if ssl_cert and ssl_key:
+        ssl_enabled = True
+
+    if ssl_enabled:
+        @app.middleware('request')
+        async def force_ssl(request):     # pylint: disable=unused-variable
+            if request.headers.get('X-Forwarded-Proto') == 'http':
+                return response.redirect(
+                    request.url.replace('http://', 'https://', 1),
+                    status=301
+                )
+
     # Initiate all sanic server routes
     ax_routes.init_routes(
         sanic_app=app,
-        pages_path=os.environ.get('AX_PAGES_ABSOLUTE_PATH')
+        pages_path=os.environ.get('AX_PAGES_ABSOLUTE_PATH'),
+        ssl_enabled=ssl_enabled
     )
     # Initiate SQL dialects module. Different SQL queries for differents DBs
     ax_dialects.init_dialects(os.environ.get('AX_DB_DIALECT') or 'sqlite')
@@ -172,17 +185,23 @@ def main():
     """Main function"""
     arguments = docopt(__doc__)
 
-    host = str(os.environ.get('AX_HOST') or '127.0.0.1')
-    port = int(os.environ.get('AX_PORT') or 8080)
-    debug = bool(os.environ.get('AX_SANIC_DEBUG') or False)
-    access_log = bool(os.environ.get('AX_SANIC_ACCESS_LOG') or False)
-    workers = int(os.environ.get('AX_SANIC_WORKERS') or 1)
+    host = os.environ.get('AX_HOST', '127.0.0.1')
+    port = int(os.environ.get('AX_PORT', 8080))
+    debug = bool(os.environ.get('AX_SANIC_DEBUG', False))
+    access_log = bool(os.environ.get('AX_SANIC_ACCESS_LOG', False))
+    workers = int(os.environ.get('AX_SANIC_WORKERS', 1))
+    ssl_cert = os.environ.get('SSL_CERT_ABSOLUTE_PATH', None)
+    ssl_key = os.environ.get('SSL_KEY_ABSOLUTE_PATH', None)
 
     if arguments['--host']:
         host = arguments['--host']
 
     if arguments['--port']:
         port = int(arguments['--port'])
+
+    ssl = None
+    if ssl_cert and ssl_key:
+        ssl = {'cert': ssl_cert, 'key': ssl_key}
 
     print(ax_logo)
     logger.info(f'Running Ax on {host}:{port}, {workers} workers running')
@@ -191,7 +210,8 @@ def main():
         port=port,
         debug=debug,
         access_log=access_log,
-        workers=workers)
+        workers=workers,
+        ssl=ssl)
 
 
 app = Sanic()

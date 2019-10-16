@@ -1,10 +1,10 @@
 <template>
   <splitpanes class='ax-admin-splits' watch-slots>
     <div class='ax-admin-drawer-first' splitpanes-min='20' splitpanes-size='20'>
-      <TheHomeDrawer/>
+      <TheHomeDrawer />
     </div>
     <div class='ax-admin-content-pane' splitpanes-min='30' splitpanes-size='80'>
-      <TheHomeContent/>
+      <TheHomeContent />
     </div>
   </splitpanes>
 </template>
@@ -29,34 +29,7 @@ export default {
     source: String
   },
   methods: {},
-  created() {
-    // const ws = new WebSocket('ws://127.0.0.1:8080/api/echo');
-    // ws.onopen = function sendOpenSignal() {
-    //   this.$log.info('sent open signal');
-    //   ws.send('socket open');
-    // }.bind(this);
-    // ws.onclose = function sendCloseSignal(evt) {
-    //   this.$log.info(`socket closed = ${evt.data}`);
-    // }.bind(this);
-    // ws.onmessage = function onMessage(evt) {
-    //   this.$log.info(evt.data);
-    // }.bind(this);
-    // axios
-    //   .get('/api/hello', {
-    //     params: {
-    //       object_id: 12349
-    //     }
-    //   })
-    //   .then(response => {
-    //     this.$log.info(response);
-    //   })
-    //   .catch(error => {
-    //     this.$log.error(error);
-    //   })
-    //   .then(() => {
-    //     // always executed
-    //   });
-  }
+  created() {}
 };
 </script>
 

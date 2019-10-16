@@ -1,0 +1,18 @@
+{
+    "common": {
+        "lenght-error": "Must be less than {num} characters",
+        "confirm-yes": "Yes",
+        "save": "Save",
+        "confirm-no": "Cancel",
+        "position-changed": "Positions changed",
+        "error-close": "Close",
+        "field-required": "Is required",
+        "true": "True",
+        "false": "False",
+        "confirm": "Confirm",
+        "ok": "Ok",
+        "no-field-settings-error": "[{name}] - Settings error",
+        "no-column": "Column not supported for [{name}] field type",
+        "invalid-email": "Email invalid"
+    }
+}

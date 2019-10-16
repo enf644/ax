@@ -343,7 +343,7 @@ class UsersQuery(graphene.ObjectType):
         User,
         page_guid=graphene.Argument(type=graphene.String, required=True),
         update_time=graphene.Argument(type=graphene.String, required=False)
-    )    
+    )
     users_and_groups = graphene.List(
         User,
         search_string=graphene.Argument(type=graphene.String, required=False),
@@ -358,7 +358,6 @@ class UsersQuery(graphene.ObjectType):
         User,
         update_time=graphene.Argument(type=graphene.String, required=False)
     )
-
 
     @ax_admin_only
     async def resolve_all_users(
@@ -380,7 +379,6 @@ class UsersQuery(graphene.ObjectType):
                 ).all()
             return users_list
 
-
     @ax_admin_only
     async def resolve_all_groups(self, info, update_time=None):
         """Get all groups"""
@@ -397,7 +395,6 @@ class UsersQuery(graphene.ObjectType):
                 AxUser.is_everyone.is_(False)
             ).all()
             return users_list
-
 
     @ax_admin_only
     async def resolve_group_users(self, info, group_guid, update_time=None):
@@ -431,7 +428,6 @@ class UsersQuery(graphene.ObjectType):
             ret_list = query.filter(AxUser.guid.in_(user_guids)).all()
             return ret_list
 
-
     @ax_admin_only
     async def resolve_page_users(self, info, page_guid, update_time=None):
         """Get users that allowed to view page"""
@@ -447,7 +443,6 @@ class UsersQuery(graphene.ObjectType):
             query = User.get_query(info)  # SQLAlchemy query
             ret_list = query.filter(AxUser.guid.in_(user_guids)).all()
             return ret_list
-
 
     async def resolve_users_and_groups(
             self, info, search_string=None, update_time=None):
@@ -465,7 +460,6 @@ class UsersQuery(graphene.ObjectType):
                 ).all()
             return users_list
 
-
     def resolve_find_user(self, info, guid, update_time):
         """default find method"""
         del update_time
@@ -475,12 +469,14 @@ class UsersQuery(graphene.ObjectType):
             ax_user = query.filter(AxUser.guid == guid).first()
             return ax_user
 
-
     def resolve_current_ax_user(self, info, update_time):
         """ Returns current AxUser """
         del update_time
         err = 'Error in GQL query - find_user.'
         with ax_model.try_catch(info.context['session'], err, no_commit=True):
+            if not info.context['user']:
+                return None
+
             user_guid = info.context['user']['user_id']
             query = User.get_query(info)
             ax_user = query.filter(AxUser.guid == uuid.UUID(user_guid)).first()

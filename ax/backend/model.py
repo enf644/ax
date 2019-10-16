@@ -587,6 +587,8 @@ class AxPage(Base):
     code = Column(Text(convert_unicode=True))
     # options_json = Column(String(2000))
     parent = Column(GUID())
+    position = Column(Integer())  # Position in tree
+    html = None
 
 
 class AxPage2Users(Base):

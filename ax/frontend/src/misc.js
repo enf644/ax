@@ -1,4 +1,5 @@
 let axHost = null;
+let axProtocol = null;
 
 export function getAxHost() {
   if (axHost == null) {
@@ -7,17 +8,31 @@ export function getAxHost() {
     const myScript = scripts[index];
     const url = new URL(myScript.src);
     axHost = url.host;
+    axProtocol = url.protocol;
   }
   return axHost;
 }
 
 export function getAxProtocol() {
+  if (axProtocol == null) {
+    getAxHost();
+  }
+  if (axProtocol.includes('https')) return 'https';
   return 'http';
+}
+
+export function getAxWsProtocol() {
+  if (axProtocol == null) {
+    getAxHost();
+  }
+  if (axProtocol.includes('https')) return 'wss';
+  return 'ws';
 }
 
 export function getAxHostProtocol() {
   const protocol = getAxProtocol();
   const host = getAxHost();
+  console.log(`${protocol}://${host}`);
   return `${protocol}://${host}`;
 }
 

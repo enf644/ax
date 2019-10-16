@@ -77,7 +77,8 @@ def create_default_pages():
             "migration -> create_default_pages") as db_session:
         index_page = AxPage()
         index_page.name = "Index Page"
-        index_page.code = "<h1>Welcome to Ax pages</h1> <br/><br/>Hello world"
+        index_page.code = (f"<h1>Welcome to Ax pages</h1>\n"
+                           f"<br/><br/>Hello world")
         db_session.add(index_page)
         db_session.commit()
 

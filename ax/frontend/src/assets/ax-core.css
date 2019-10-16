@@ -1,8 +1,5 @@
-@import url('http://fonts.googleapis.com/css?family=Roboto');
-/* @import url('https://use.fontawesome.com/releases/v5.8.0/css/all.css'); */
-
 body {
-    font-family: 'Roboto', sans-serif !important;
+    font-family: 'Roboto', sans-serif;
 }
 
 h1 {
@@ -540,4 +537,8 @@ a {
 
 .grid-btn {
     cursor: pointer;
+}
+
+.pages-preview>p:first-child {
+    height: 100% !important;
 }

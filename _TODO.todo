@@ -661,7 +661,7 @@ AX 0.2:
             ✔ Add GQL query for current user data @done(19-09-27 20:40)
             ✔ In yandex brawser - if not 401 - no redirect happens @done(19-10-01 17:45)
             ✔ Insert action if no fields visible @done(19-10-01 17:16)
-    ☐ PAGES DESIGNER
+    ✔ PAGES DESIGNER @done(19-10-16 16:57)
         ✔ Routes work with static content @done(19-08-15 14:09)
         ✔ Routes take path from app.yaml so it can be configured @done(19-08-15 16:48)
         ✔ Model @done(19-10-02 19:33)
@@ -679,14 +679,43 @@ AX 0.2:
                 ✔ monaco editor @done(19-10-02 21:02)
                 ✔ Redraw monaco on resize @done(19-10-02 21:30)
                 ✔ Update gql on ctrl+s @done(19-10-06 23:36)
-        ☐ Vue application - WPA
-            ☐ Create and check if wpa is ok
-            ☐ Drawer - drag open
-            ☐ GQL
+        ✔ Vue application - WPA @done(19-10-16 16:56)
+            ✔ Install @done(19-10-12 07:48)
+                ✔ Roboto, awesome @done(19-10-08 10:26)
+                ✔ Apollo, gql - make pages query @done(19-10-10 18:13)
+                ✔ Locale @done(19-10-11 11:31)
+                ✔ Cookies @done(19-10-11 11:31)
+            ✔ Drawer - drag open @done(19-10-10 18:14)
+            ✔ Menu - tree from store. Opens pages. @done(19-10-11 09:27)
+            ✔ GQL @done(19-10-11 11:32)
                 ✔ Select page tree @done(19-10-06 17:29)
                 ✔ Select page @done(19-10-06 17:30)
-                ☐ Page edit subscription
-            ☐ Markdown to html
+            ✔ Markdown to html @done(19-10-11 13:14)
+            ✔ User sign-in, User logout @done(19-10-11 11:31)
+            ✔ SSL @done(19-10-15 20:07)
+                ✔ Install mkcert @done(19-10-12 09:43)
+                ✔ app.yaml sanic ssl options @done(19-10-12 09:43)
+            ✔ Check on mobile device @done(19-10-15 20:07)
+            ✔ Page permissions @done(19-10-15 21:51)
+            ✔ FROGS @done(19-10-16 16:56)
+                ✔ If signin failed - beutiful message, not console log @done(19-10-15 22:21)
+                ✔ Pages position in jstree must be same for drawer menu @done(19-10-16 14:25)
+                ✔ Pages by url @done(19-10-16 16:52)
+                ✔ Only one index page @done(19-10-16 16:56)
+    ☐ GLOB FROGS AND FIELDS, round 1
+        ☐ Email
+        ☐ Telephone number
+        ☐ Decimal
+        ☐ Int Slider
+        ☐ Switch
+        ☐ Date
+        ☐ Users
+        ☐ AdminHome - if no forms created - output message
+        ☐ Error toasts everywhere!! `[IMPORTANT]`
+        ☐ SSL - check uppy
+        ☐ tus.py max file size must be from app.yaml
+        ☐ Paging in AxGrid `[IMPORTANT]` 
+        ☐ 1toM in graphql dynamic schema `IMPORTANT`
     ☐ PHOTO PROJECT
 	☐ MARKETPLACE
 		☐ Dump application to yaml
@@ -702,13 +731,13 @@ AX 0.2:
             ✘ Server filter - must be loaded dynamicly @cancelled(19-09-08 21:11)
         ☐ Add clould logger for python and vue
         ☐ Product usage statistics
+        ☐ Redirect all http to https
     ☐ ALL FIELDS v1
-        ☐ Identification
+        ✔ Identification @done(19-10-16 15:09)
             ✔ GuId @done(19-09-08 21:26)
             ✔ Numeration * @done(19-09-08 21:26)
-        ☐ Decoration
-            ☐ Header
-            ☐ Text
+        ✔ Decoration @done(19-10-16 15:09)
+            ✔ Html @done(19-10-16 15:09)
         ☐ String
             ✔ String @done(19-06-04 17:38)
             ☐ Email
@@ -733,7 +762,7 @@ AX 0.2:
                 ☐ Add grid column
             ✔ 1:M Table @done(19-06-06 09:37)
                 ☐ Add grid column
-            ☐ Date and Time
+        ☐ Date and Time
             ☐ Date
         ☐ List
             ✔ Choise @done(19-06-07 21:39)
@@ -849,8 +878,8 @@ FROGS TODOS:
     ✔ Change AsyncioPubsub to production pubsub implementation @done(19-05-02 09:37)
     ✔ QueuePool limit of size 20 overflow 0 reached, connection timed out, timeout 30 @done(19-09-13 17:59)
         ✔ Display number of connections @done(19-09-01 10:23)
-    ☐ `[IMPORTANT]` Roboto font not working with webpack. Replace CDN dependency
-    ☐ `[IMPORTANT]` Replace CDN dependency for wont-awesome
+    ✔ Roboto font not working with webpack. Replace CDN dependency @done(19-10-08 10:24)
+    ✔ Replace CDN dependency for wont-awesome @done(19-10-08 10:24)
     ☐ Paging in AxGrid `[IMPORTANT]` 
     ☐ SSL - apollo, uppy, other ! `[IMPORTANT]`
     ☐ Error toasts everywhere!! `[IMPORTANT]`
@@ -859,6 +888,7 @@ FROGS TODOS:
         ☐ Pubsub probably wont work, move to redis?
         ☐ GQL schema reset will not work - edit throw pubsub?
         ☐ Cache and record labels probavly wont work - move to redis?
+    ☐ Python locale - change hard-coded english words. Pages, Roles names.
     ☐ Disable maximise on double click on split-panes
     ☐ Discover minimum window size for ax admin. Output warning if window is less then minimum
     ✘ Python unit-test - сделать и прогнать @cancelled(19-09-08 21:22)
@@ -879,15 +909,12 @@ FROGS TODOS:
         ☐ package.json
     ☐ Websockets not working in App Engine Standard! https://issuetracker.google.com/issues/35886348
     ☐ Remember opened nodes is JsTree
-    ☐ AdminHome - if no forms created - output message
     ☐ Cant delete last tab and last field in AxForm
     ☐ Jstree - remember opened nodes
     ☐ If form does not exist, but someone entered via url - must be error
     ☐ Close icon in form values preview
-    ☐ Every gql query error must be visible for user - popup or error toast
     ☐ Hints for every grid constructor option
     ☐ if field removed - remove all files from /uploads/from_files
-    ☐ Some fields can be added only once to form - AxNum, AxChangelog
     ☐ Form constructor - when field is dragged to folder - the folder is focused edited and selected
     ☐ Long names for form tabs - limit is too small!
     ☐ Del key when editing field names - tryes to delete whole field
@@ -895,7 +922,7 @@ FROGS TODOS:
     ☐ What if database already exists?            
     ☐ If error accured while executing field before/after code -> the exception must be seen in modal for user
     ☐ Tom name -> need to check if fields in {{}} exists
-    ☐ tus.py max file size must be from app.yaml
+    ☐ If grid schema was changed, already loaded ax-grid does not change. Even if refresh is pressed.
 
 
 
@@ -914,7 +941,7 @@ FEATURES:
     ☐ Icons of roles in workflow constructor
     ☐ MtoM Create new record inside inline tom field? Added to table and added to field value
     ☐ Grid constructor - place * near required field in jstree
-    ☐ Call workflow actions from graphql. Dbname for action.
+    ✔ Call workflow actions from graphql. Dbname for action. @done(19-10-16 15:17)
     ☐ GraphQL samples for - form, grid, action
     ☐ Custom additional form in action execution. Create form and set it as action input.
     ☐ Toasts in ax-grid and ax-form without admin (idie)
@@ -922,11 +949,11 @@ FEATURES:
     ☐ Tus upload -> checksum
     ☐ GraphQL copy help snippets - action, grid
     ☐ Workflow constructor - hints onmouseover on states and actions. Description is displayed.
-    ☐ Arguments for doAction. Can be used in python code.
+    ✔ Arguments for doAction. Can be used in python code. @done(19-10-16 15:18)
     ☐ favico for each form must be different - same as font-awesome icon
     ☐ Dynamic title and favico - changes for different AxForms
     ☐ Ax and pages must use same node_modules
-    ☐ AxGrid constructor - custom fields. Tree with column types - dragged to grid and enter name and db_name. Db_name must be specified in query.
+    ☐ `[IMPORTANT]` AxGrid constructor - custom fields. Tree with column types - dragged to grid and enter name and db_name. Db_name must be specified in query.
     ☐ Quicksearch in 1tom -> must not be case sansitive
     ☐ GAuth - зачем?
     ☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
@@ -935,15 +962,15 @@ FEATURES:
     ☐ All activities in admin are logged
     ☐ Users -> List of Substitute users
     ☐ Javascript in actions - executed after action is complete. Is param of ax-form
-    ☐ URL for executing actions. Can be placed inside emails
-    ☐ Pages -> Unread message counter
+    ☐ `[IMPORTANT]` URL for executing actions. Can be placed inside emails
+    ☐ `[IMPORTANT]` Pages -> Unread message counter
 	☐ Default tab at state settings
     ☐ Form constructor -> save entered values on form preview
     ☐ Form constructor -> delete field by drag-drop
     ☐ Ax-Field - tomConnected - Connected lists. Choose one to reveal next.
     ☐ One database can be used for authorisation of multiple AX installations
     ☐ AxGrid -> Right-click menu in grid, copy action, Export to excel
-    ☐ Group action. Multiple row can be selected in AxGrid to perform same action.
+    ☐ `[IMPORTANT]` Group action. Multiple row can be selected in AxGrid to perform same action.
     ☐ Conditions in workflow
     ☐ Timers in workflo
     ☐ Resources monitoring
@@ -951,6 +978,8 @@ FEATURES:
     ☐ `[IMPORTANT]` AxGrid, AxForm -> sign in dialog when not logged and anon icon if showing
     ☐ Pages data is stored in cache
     ☐ Page title in page-designer in toolbar
+    ☐ Pages -> ☐ Page edit subscription
+    ☐ Offline work for Pages. AxGrid, AxForm data is cached in localstorage
 
     
     

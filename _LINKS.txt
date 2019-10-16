@@ -154,6 +154,7 @@ LANDING PAGE INSPIRATION
     https://strapi.io/
     https://www.jotform.com/
     https://www.pipefy.com/developers/?ref=stackshare
+    https://chocolatey.org/install
 
 
 DYNAMIC GRAPHENE 
@@ -256,7 +257,7 @@ CI INSPIRATIONS
     https://cloud.google.com/cloud-build/?ref=stackshare
 
 
-PAGES INSPIRATIONS
+HOME INSPIRATIONS
     https://github.com/gollum/gollum#markups
     https://tray.io/
 

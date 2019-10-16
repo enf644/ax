@@ -49,3 +49,5 @@ env_variables:
   # AX_SMTP_SSL: True # defualt is False
   # AX_SMTP_LOGIN: info@ax.com
   # AX_SMTP_PASSWORD: SecretPassword
+  # SSL_CERT_ABSOLUTE_PATH: C:\Users\enf64_000\Desktop\AX\Ssl\localhost.pem
+  # SSL_KEY_ABSOLUTE_PATH: C:\Users\enf64_000\Desktop\AX\Ssl\localhost-key.pem

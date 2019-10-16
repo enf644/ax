@@ -4,16 +4,63 @@ Defines AxPages Scheme and all mutations."""
 import uuid
 import graphene
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
+import markdown2
+
 from backend.misc import convert_column_to_string
-from backend.model import GUID, AxPage, AxPage2Users
+from backend.model import GUID, AxPage, AxPage2Users, AxUser, AxGroup2Users
 from backend.auth import ax_admin_only
-from backend.schemas.types import Page
+from backend.schemas.types import Page, PositionInput
 
 import backend.model as ax_model
 # import backend.cache as ax_cache
 # import backend.dialects as ax_dialects
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
+
+
+def apply_markdown(code):
+    """ apply markdown to code """
+    return markdown2.markdown(code)
+
+
+def get_allowed_pages_guids(db_session, user_guid):
+    """ Get all users and users groups, then get all pages guids that
+        user can view """
+    page_guids = []
+    user_and_groups = []
+
+    # Add everyone group
+    everyone_group = db_session.query(AxUser).filter(
+        AxUser.is_everyone.is_(True)
+    ).first()
+    user_and_groups.append(everyone_group.guid)
+
+    if user_guid:
+        # Add current user
+        user_and_groups.append(uuid.UUID(user_guid))
+
+        # Add all-users group
+        all_users_group = db_session.query(AxUser).filter(
+            AxUser.is_all_users.is_(True)
+        ).first()
+        user_and_groups.append(all_users_group.guid)
+
+        # Get user groups
+        group2user_result = db_session.query(AxGroup2Users).filter(
+            AxGroup2Users.user_guid == uuid.UUID(user_guid)
+        ).all()
+        for g2u in group2user_result:
+            if g2u.group_guid not in user_and_groups:
+                user_and_groups.append(g2u.group_guid)
+
+    page2users_result = db_session.query(AxPage2Users).filter(
+        AxPage2Users.user_guid.in_(user_and_groups)
+    ).all()
+    for p2u in page2users_result:
+        if p2u.page_guid not in page_guids:
+            page_guids.append(p2u.page_guid)
+
+    return page_guids
 
 
 class CreatePage(graphene.Mutation):
@@ -86,7 +133,8 @@ class UpdatePage(graphene.Mutation):
             if parent:
                 ax_page.parent = uuid.UUID(parent)
 
-            db_session.flush()
+            db_session.commit()
+            ax_page.html = apply_markdown(ax_page.code)
             return UpdatePage(page=ax_page, ok=True, msg=None)
 
 
@@ -167,6 +215,36 @@ class RemoveUserFromPage(graphene.Mutation):
             return RemoveUserFromPage(ok=True)
 
 
+class ChangePagesPositions(graphene.Mutation):
+    """Change position and parent of multiple pages"""
+    class Arguments:  # pylint: disable=missing-docstring
+        positions = graphene.List(PositionInput)
+
+    ok = graphene.Boolean()
+    pages = graphene.List(Page)
+
+    @ax_admin_only
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        err = "page_schema -> ChangePagesPositions"
+        with ax_model.try_catch(info.context['session'], err) as db_session:
+            positions = args.get('positions')
+            for position in positions:
+                db_page = db_session.query(AxPage).filter(
+                    AxPage.guid == uuid.UUID(position.guid)
+                ).one()
+                current_parent = None
+                if position.parent != '#':
+                    current_parent = uuid.UUID(position.parent)
+                db_page.parent = current_parent
+                db_page.position = position.position
+
+            db_session.flush()
+
+            query = Page.get_query(info)  # SQLAlchemy query
+            pages_list = query.all()
+            return ChangePagesPositions(pages=pages_list, ok=True)
+
+
 class PagesSubscription(graphene.ObjectType):
     """ Pages ws subscriptions """
 
@@ -183,29 +261,44 @@ class PagesQuery(graphene.ObjectType):
         update_time=graphene.Argument(type=graphene.String, required=False)
     )
 
-    @ax_admin_only
     async def resolve_all_pages(self, info, update_time):
         """Get all pages"""
         del update_time
+        current_user = info.context['user']
         err = 'Error in GQL query - resolve_all_pages.'
         with ax_model.try_catch(
-                info.context['session'], err, no_commit=True):
+                info.context['session'], err, no_commit=True) as db_session:
+
+            user_guid = current_user.get(
+                "user_id", None) if current_user else None
+            user_is_admin = current_user.get(
+                'is_admin', False) if current_user else False
+
             query = Page.get_query(info)  # SQLAlchemy query
-            page_list = query.all()
-            return page_list
+            if user_is_admin:
+                page_list = query.all()
+                return page_list
+            else:
+                pages_guids = get_allowed_pages_guids(
+                    db_session=db_session, user_guid=user_guid)
+                page_list = query.filter(AxPage.guid.in_(pages_guids)).all()
+                return page_list
 
     async def resolve_page_data(self, info, guid=None, update_time=None):
         """Get specific page"""
         del update_time
         err = 'Error in GQL query - resolve_page_data.'
         with ax_model.try_catch(
-                info.context['session'], err, no_commit=True):
+                info.context['session'], err, no_commit=True) as db_session:
+            del db_session
             query = Page.get_query(info)  # SQLAlchemy query
             page = None
             if guid:
                 page = query.filter(AxPage.guid == uuid.UUID(guid)).first()
             else:
                 page = query.filter(AxPage.parent.is_(None)).first()
+
+            page.html = apply_markdown(page.code)
             return page
 
 
@@ -216,3 +309,4 @@ class PagesMutations(graphene.ObjectType):
     delete_page = DeletePage.Field()
     add_user_to_page = AddUserToPage.Field()
     remove_user_from_page = RemoveUserFromPage.Field()
+    change_pages_positions = ChangePagesPositions.Field()

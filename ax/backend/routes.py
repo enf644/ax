@@ -44,8 +44,9 @@ def init_graphql_view():  # pylint: disable=unused-variable
     this.app.add_route(this.graphql_view, '/api/graphql')
 
 
-def init_routes(sanic_app, pages_path=None):
+def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disable=unused-variable
     """Innitiate all Ax routes"""
+    del ssl_enabled
     try:
         sanic_app.static('/uploads', str(ax_misc.path('uploads')))
         sanic_app.static('/static', str(ax_misc.path('dist/ax/static')))
@@ -55,14 +56,41 @@ def init_routes(sanic_app, pages_path=None):
 
         sanic_app.static(
             '/editor.worker.js', str(ax_misc.path('dist/ax/editor.worker.js')))
+        sanic_app.static(
+            '/html.worker.js', str(ax_misc.path('dist/ax/html.worker.js')))
+        sanic_app.static(
+            'json.worker.js', str(ax_misc.path('dist/ax/json.worker.js')))
 
+        # Pages routes {
         pages_dist_path = str(ax_misc.path('dist/pages'))
         if pages_path:
             pages_dist_path = pages_path
         index_path = str(os.path.join(pages_dist_path, "index.html"))
 
-        sanic_app.static('/pages/', pages_dist_path)
+        sanic_app.static(
+            '/pages/static', str(ax_misc.path('dist/pages/static')))
+        sanic_app.static(
+            '/pages/precache-manifest.2623009802489cdbe7ec9ddecce4f4b9.js',
+            str(ax_misc.path('dist/pages/precache-manifest.2623009802489cdbe7ec9ddecce4f4b9.js')))
+        sanic_app.static(
+            '/pages/service-worker.js',
+            str(ax_misc.path('dist/pages/service-worker.js')))
+        sanic_app.static(
+            '/pages/manifest.json',
+            str(ax_misc.path('dist/pages/manifest.json')))
+        sanic_app.static(
+            '/pages/robots.txt',
+            str(ax_misc.path('dist/pages/robots.txt')))
+
         sanic_app.static('/pages', index_path)
+
+        @sanic_app.route('/pages/<path:path>')
+        def pages_index(request, path=None):  # pylint: disable=unused-variable
+            """  """
+            del request, path
+            return response.html(open(index_path).read())
+
+        # Pages routes }
 
         # Add tus upload blueprint
         sanic_app.blueprint(tus_bp)
@@ -235,7 +263,8 @@ def init_routes(sanic_app, pages_path=None):
         @sanic_app.route('/admin/<path:path>')
         @sanic_app.route('/form/<path:path>')
         @sanic_app.route('/grid/<path:path>')
-        def index(request, path):  # pylint: disable=unused-variable
+        @sanic_app.route('/signin')
+        def index(request, path=None):  # pylint: disable=unused-variable
             """ This is MAIN ROUTE. (except other routes listed in this module).
                 All requests are directed to Vue single page app. After that Vue
                 handles routing."""

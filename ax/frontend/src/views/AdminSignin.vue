@@ -35,6 +35,9 @@
           <i class='fas fa-tractor'></i>
           &nbsp;Admin sign in
         </v-btn>
+        <br />
+        <br />
+        <div class='signin-error' v-if='error'>{{error}}</div>
       </v-form>
     </v-card>
   </v-app>
@@ -66,7 +69,8 @@ export default {
           return pattern.test(value) || this.locale('common.invalid-email');
         }
       },
-      authCookiePresent: false
+      authCookiePresent: false,
+      error: null
     };
   },
   computed: {
@@ -91,6 +95,7 @@ export default {
       this.doSignIn();
     },
     doSignIn() {
+      this.error = null;
       if (this.$refs.form.validate()) {
         const host = getAxHostProtocol();
         axios
@@ -112,7 +117,8 @@ export default {
             if (this.$store.state.home.redirectFromUrl) {
               url = this.$store.state.home.redirectFromUrl;
             }
-            this.$router.push({ path: url });
+            window.location.href = url;
+            // this.$router.push({ path: url });
 
             // setTimeout(() => {
             //   console.log(window.$cookies.get('access_token'));
@@ -120,6 +126,7 @@ export default {
           })
           .catch(error => {
             this.$log.error(error);
+            this.error = this.$t('users.sigin-failed');
           });
       }
     },
@@ -147,5 +154,8 @@ export default {
 }
 .wrapper {
   background: #f8f8f8;
+}
+.signin-error {
+  color: #f44336;
 }
 </style>

@@ -5,13 +5,14 @@ import { HttpLink } from 'apollo-link-http';
 import { getMainDefinition } from 'apollo-utilities';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { setContext } from 'apollo-link-context';
-import { getAxHost } from './misc';
+import { getAxHost, getAxWsProtocol, getAxProtocol } from './misc';
 import store from './store';
 // import { ApolloClient, ApolloLink, InMemoryCache, HttpLink } from 'apollo-boost';
 // import logger from './logger';
 
 const axHost = getAxHost();
-const axMethod = 'http'
+const axProtocol = getAxProtocol()
+const axWsProtocol = getAxWsProtocol()
 let refreshingPromise = null;
 
 
@@ -27,7 +28,7 @@ const customFetch = (uri, options) => {
       if (!refreshingPromise) {
         const accessToken = store.state.auth.accessToken;
         const refreshToken = store.state.auth.refreshToken;
-        var address = `${axMethod}://${axHost}/api/auth/refresh`
+        var address = `${axProtocol}://${axHost}/api/auth/refresh`
 
         // Execute the re-authorization request and set the promise returned to this.refreshingPromise
         refreshingPromise = fetch(
@@ -58,9 +59,15 @@ const customFetch = (uri, options) => {
               })
             } else {
               // If the re-authorization request fails, handle it here
+              console.log('re-authorization request fails');
               store.dispatch('auth/logOut')
             }
-          })
+          }).catch(error => {
+            logger.error(`Re-authorization request fails => ${error}`);
+            setTimeout(() => {
+              store.dispatch('auth/logOut');
+            }, 1000);
+          });
       }
       return refreshingPromise.then((newAccessToken) => {
         // Now that the refreshing promise has been executed, set it to null
@@ -87,12 +94,12 @@ const customFetch = (uri, options) => {
 
 
 const httpLink = new HttpLink({
-  uri: `${axMethod}://${axHost}/api/graphql`,
+  uri: `${axProtocol}://${axHost}/api/graphql`,
   fetch: customFetch
 });
 
 const wsLink = new WebSocketLink({
-  uri: `ws://${axHost}/api/subscriptions`,
+  uri: `${axWsProtocol}://${axHost}/api/subscriptions`,
   options: {
     reconnect: true
   }

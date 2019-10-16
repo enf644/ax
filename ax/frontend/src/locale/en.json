@@ -135,7 +135,8 @@
         "admin-group-name": "Administrators",
         "everyone-group-name": "Everyone",
         "all-users-group-name": "All users",
-        "already-signed": "You already signed in. <br> <a href='/pages'>Pages</a> <br> <a href='/admin/home'>Admin</a>"
+        "already-signed": "You already signed in. <br> <a href='/pages'>Pages</a> <br> <a href='/admin/home'>Admin</a>",
+        "sigin-failed": "Sign in failed. Try to re-enter email and password"
     },
     "form": {
         "add-tab": "Add tab",

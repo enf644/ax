@@ -65,6 +65,7 @@ export default {
               name
               dbName
               code
+              html
               parent
             }
             ok

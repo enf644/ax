@@ -1,5 +1,5 @@
 <template>
-  <div class='pages-preview' v-html='code'></div>
+  <div class='pages-preview' v-html='html'></div>
 </template>
 
 <script>
@@ -12,10 +12,10 @@ export default {
     guid: null
   }),
   computed: {
-    code() {
+    html() {
       if (this.$store.state.pages.currentPage) {
-        if (this.$store.state.pages.currentPage.code) {
-          return this.$store.state.pages.currentPage.code;
+        if (this.$store.state.pages.currentPage.html) {
+          return this.$store.state.pages.currentPage.html;
         }
         return '';
       }

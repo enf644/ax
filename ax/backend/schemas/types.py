@@ -138,6 +138,7 @@ class Page(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
     class Meta:  # pylint: disable=missing-docstring
         model = AxPage
         interfaces = (relay.Node, )
+    html = graphene.String()
 
 
 class Page2Users(SQLAlchemyObjectType):  # pylint: disable=missing-docstring

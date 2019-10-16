@@ -50,7 +50,8 @@ const GET_ALL_FORMS = gql`
         guid,
         name,
         dbName,
-        parent     
+        parent,
+        position
       }
     }
 `;

@@ -1,7 +1,5 @@
 // Core dependencies
 
-// import 'typeface-roboto';
-// import 'roboto-npm-webfont';
 import Vue from 'vue';
 import vueCustomElement from 'vue-custom-element'; // create web component from vue component
 import 'document-register-element'; // polyfill for vue-custom-element
@@ -12,12 +10,12 @@ import VModal from 'vue-js-modal';
 
 // Admin dependencies
 import VueResize from 'vue-resize'; // detect element resize
-// import '@fortawesome/fontawesome-free/js/all.js';
 import '@fortawesome/fontawesome-free/css/all.css';
+import 'roboto-fontface/css/roboto/roboto-fontface.css';
+
 import AsyncComputed from 'vue-async-computed';
 
 import 'vue-resize/dist/vue-resize.css';
-// import vuetify from '@/plugins/vuetify';
 import Vuetify, {
   VTextField,
   VSnackbar,
@@ -76,7 +74,6 @@ Vue.use(Vuetify, {
 });
 Vue.use(vueCustomElement);
 Vue.use(VueResize);
-// Vue.use(VueDummy);
 Vue.use(AsyncComputed);
 Vue.config.productionTip = false;
 

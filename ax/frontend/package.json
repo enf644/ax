@@ -41,6 +41,7 @@
         "lodash": "^4.17.15",
         "logdown": "^3.2.7",
         "monaco-editor-webpack-plugin": "^1.7.0",
+        "roboto-fontface": "^0.10.0",
         "splitpanes": "^1.14.5",
         "sql-parser-mistic": "^1.2.3",
         "subscriptions-transport-ws": "^0.9.15",

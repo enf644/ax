@@ -16,6 +16,8 @@ import 'jstree/dist/jstree.js';
 import 'jstree/dist/themes/default/style.css';
 import TreePage from '@/components/PagesDesigner/TreePage.vue';
 import ThePageModal from '@/components/PagesDesigner/ThePageModal.vue';
+import gql from 'graphql-tag';
+import apolloClient from '@/apollo';
 
 export default {
   name: 'ThePagesDesignerDrawerFirst',
@@ -80,8 +82,12 @@ export default {
         .jstree({
           core: {
             data: jsTreeData,
-            check_callback() {
-              return true;
+            check_callback(operation, node, nodeParent, nodePosition, more) {
+              if (operation === 'move_node') {
+                if (more.ref && more.ref.parent === '#') return false;
+                return true;
+              }
+              return false;
             }
           },
           plugins: ['types', 'dnd', 'sort'],
@@ -103,6 +109,59 @@ export default {
               : -1;
           }
         });
+    },
+    changePositions(e, data) {
+      const positionData = this.getPositionList();
+      const CHANGE_PAGES_POSITIONS = gql`
+        mutation($positions: [PositionInput]) {
+          changePagesPositions(positions: $positions) {
+            pages {
+              guid
+              name
+              dbName
+              parent
+              position
+            }
+          }
+        }
+      `;
+
+      apolloClient
+        .mutate({
+          mutation: CHANGE_PAGES_POSITIONS,
+          variables: {
+            positions: positionData
+          }
+        })
+        .then(data => {
+          this.$store.commit(
+            'pages/setPages',
+            data.data.changePagesPositions.pages,
+            { root: true }
+          );
+        })
+        .catch(error => {
+          console.log(`Error in changePositions apollo client => ${error}`);
+        });
+    },
+    getPositionList() {
+      const positionList = [];
+      const tree = $(this.$refs.tree).jstree(true);
+      const jsonNodes = tree.get_json('#', { flat: true });
+      $.each(jsonNodes, (i, node) => {
+        const parentNode = tree.get_node(node.parent);
+        const newPosition = $.inArray(node.id, parentNode.children);
+        const nodeInfo = {
+          guid: node.id,
+          position: newPosition,
+          parent: node.parent
+        };
+        positionList.push(nodeInfo);
+
+        const nodeObject = tree.get_node(node.id);
+        nodeObject.data.position = newPosition;
+      });
+      return positionList;
     },
     closeModal() {
       this.$modal.hide('update-page');

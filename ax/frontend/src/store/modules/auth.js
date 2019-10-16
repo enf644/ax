@@ -27,7 +27,8 @@ const actions = {
   },
   goToPages(context) {
     const host = getAxHostProtocol();
-    window.location.href = `${host}/pages`;
+    // console.log('auth -> goToPages');
+    window.location.href = `${host}/pages/`;
   }
 };
 
