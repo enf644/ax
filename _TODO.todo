@@ -702,21 +702,21 @@ AX 0.2:
                 ✔ Pages position in jstree must be same for drawer menu @done(19-10-16 14:25)
                 ✔ Pages by url @done(19-10-16 16:52)
                 ✔ Only one index page @done(19-10-16 16:56)
-    ☐ GLOB FROGS AND FIELDS, round 1
-        ☐ Email
-        ☐ Telephone number
-        ☐ Decimal
-        ☐ Int Slider
-        ☐ Switch
-        ☐ Date
-        ☐ Users
-        ☐ AdminHome - if no forms created - output message
-        ☐ Error toasts everywhere!! `[IMPORTANT]`
-        ☐ SSL - check uppy
-        ☐ tus.py max file size must be from app.yaml
-        ☐ Paging in AxGrid `[IMPORTANT]` 
+    ✔ FIELDS, round 1 @done(19-10-18 10:14)
+        ✔ Email @done(19-10-16 17:47)
+        ✔ Telephone number @done(19-10-16 17:47)
+        ✔ Decimal @done(19-10-16 19:36)
+        ✔ Int Slider @done(19-10-16 20:35)
+        ✔ Switch @done(19-10-16 20:41)
+        ✔ Date @done(19-10-17 12:24)
+        ✔ Users @done(19-10-17 15:14)
+    ☐ GLOB FROGS round 1
+        ✔ AdminHome - if no forms created - output message @done(19-10-17 20:07)
+        ✔ tus.py max file size must be from app.yaml @done(19-10-17 21:00)
+        ✔ SSL - check uppy @done(19-10-17 21:00)
+        ✔ Error toasts everywhere @done(19-10-18 10:11)
+        ☐ Paging in AxGrid `[IMPORTANT]`
         ☐ 1toM in graphql dynamic schema `IMPORTANT`
-    ☐ PHOTO PROJECT
 	☐ MARKETPLACE
 		☐ Dump application to yaml
         ☐ Install application from yaml
@@ -725,82 +725,44 @@ AX 0.2:
         ☐ Pages in application?
         ☐ Application catalog
         ☐ Install from git repository (pages use gitcdn)
+    ☐ PHOTO PROJECT
     ☐ GLOBAL FROGS
         ☐ In yandex brawser - No modal in grid view
         ☐ Different sorting and filtering for different types
-            ✘ Server filter - must be loaded dynamicly @cancelled(19-09-08 21:11)
         ☐ Add clould logger for python and vue
         ☐ Product usage statistics
         ☐ Redirect all http to https
-    ☐ ALL FIELDS v1
-        ✔ Identification @done(19-10-16 15:09)
-            ✔ GuId @done(19-09-08 21:26)
-            ✔ Numeration * @done(19-09-08 21:26)
-        ✔ Decoration @done(19-10-16 15:09)
-            ✔ Html @done(19-10-16 15:09)
-        ☐ String
-            ✔ String @done(19-06-04 17:38)
-            ☐ Email
-            ☐ Telephone number
-        ☐ Number
-            ✔ Integer @done(19-06-06 09:37)
-            ☐ Decimal
-            ☐ Int Slider
-        ☐ Boolean
-            ✔ Checkbox @done(19-09-08 21:26)
-            ☐ Switch
-            ☐ 2D radio survey
-        ☐ Payment
-            ☐ Yandex *
-            ☐ Paypal *
-            ☐ Stripe *
-            ☐ ... check jotforms
-        ☐ Relationship
-            ✔ 1:1 Inline @done(19-06-04 17:38)
-                ☐ Add grid column
-            ✔ 1:M Inline @done(19-06-04 17:38)
-                ☐ Add grid column
-            ✔ 1:M Table @done(19-06-06 09:37)
-                ☐ Add grid column
-        ☐ Date and Time
-            ☐ Date
-        ☐ List
-            ✔ Choise @done(19-06-07 21:39)
-            ☐ Radio
-            ☐ Tags input
-        ☐ Text
-            ✔ Simple text @done(19-09-08 21:27)
-            ☐ WYSIWYG
-            ☐ Markdown editor
-            ☐ Code highlite
-        ☐ Team work
-            ☐ Approval path
-        ☐ Images
-            ☐ Public filesystem Images *
-            ✔ Database Image Crop  @done(19-07-01 15:18)
-                ☐ Add grid column
-            ☐ Webcam
-        ☐ Files
-            ✔ Filesystem Files *
-        ☐ Users
-            ☐ Users *
-        ☐ Object Control
-            ✔ Edit history (Logging) @done(19-07-02 10:38)
-        ☐ Communications
-            ☐ Comments *
+    ☐ FIELDS round 2
+        ☐ 2D radio survey
+        ☐ Yandex payment *
+        ☐ Radio
+        ☐ Tags input
+        ☐ WYSIWYG
+        ☐ Markdown editor
+        ☐ Code highlite
+        ☐ Approval path
+        ☐ Comments *
     ☐ INSTALLATION
     ☐ FEATURES
-        ☐ 1toM in graphql dynamic schema `IMPORTANT`
         ☐ Admin home widgets
+            ☐ Stack-overflow questions
+            ☐ Featured apps
+            ☐ Global message - patreon donation
         ☐ Role and user based server-filter
         ☐ Default name field. 1tomLabel = {name}
         ☐ Every modal must be moved a litle bit
+        ☐ User registration -> always throw email (Ax does not without smtp??)
+    ☐ PERFORMANCE TEST
+        ☐ Redis integration
+        ☐ 4 workers, cache problem, schema reload
+        ☐ Give huge load - stress test
     ☐ LICENSE GENERATION
         ☐ If not licensed - put watermark with logo and link everywhere
     ☐ TUTORIAL
         ☐ Each page and field have help modal with gifs
     ☐ LANDING
         ☐ Ax pages site - beutiful landing
+        ☐ Github readme with docs
     ☐ METRICS
         ☐ Ax metrics
         ☐ Landing metrics

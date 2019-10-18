@@ -482,7 +482,8 @@ const actions = {
         context.commit('setStatePermissions', newPermissions);
       })
       .catch(error => {
-        logger.error(`Error in createState apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in createState apollo client => ${error}`, { root: true });
       });
   },
 
@@ -501,7 +502,8 @@ const actions = {
         context.commit('updateState', updatedState);
       })
       .catch(error => {
-        logger.error(`Error in updateState apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in updateState apollo client => ${error}`, { root: true });
       });
   },
 
@@ -516,7 +518,8 @@ const actions = {
       }
     })
       .catch(error => {
-        logger.error(`Error in updateStatePosition apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in updateStatePosition apollo client => ${error}`, { root: true });
       });
   },
 
@@ -532,7 +535,8 @@ const actions = {
         context.commit('deleteState', deletedGuid);
       })
       .catch(error => {
-        logger.error(`Error in deleteState apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in deleteState apollo client => ${error}`, { root: true });
       });
   },
 
@@ -552,7 +556,8 @@ const actions = {
         context.commit('setAddedAction', newAction);
       })
       .catch(error => {
-        logger.error(`Error in createAction apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in createAction apollo client => ${error}`, { root: true });
       });
   },
 
@@ -576,7 +581,8 @@ const actions = {
         context.commit('updateAction', updatedAction);
       })
       .catch(error => {
-        logger.error(`Error in updateAction apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in updateAction apollo client => ${error}`, { root: true });
       });
   },
 
@@ -590,7 +596,8 @@ const actions = {
       }
     })
       .catch(error => {
-        logger.error(`Error in updateActionRadius apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in updateActionRadius apollo client => ${error}`, { root: true });
       });
   },
 
@@ -606,7 +613,8 @@ const actions = {
         context.commit('deleteAction', deletedGuid);
       })
       .catch(error => {
-        logger.error(`Error in deleteAction apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in deleteAction apollo client => ${error}`, { root: true });
       });
   },
 
@@ -623,7 +631,8 @@ const actions = {
         context.commit('updateAction', newAction);
       })
       .catch(error => {
-        logger.error(`Error in getActionData apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in getActionData apollo client => ${error}`, { root: true });
       });
   },
 
@@ -640,7 +649,8 @@ const actions = {
         context.commit('addRole', newRole);
       })
       .catch(error => {
-        logger.error(`Error in createRole apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in createRole apollo client => ${error}`, { root: true });
       });
   },
 
@@ -659,7 +669,8 @@ const actions = {
         context.commit('updateRole', newRole);
       })
       .catch(error => {
-        logger.error(`Error in updateRole apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in updateRole apollo client => ${error}`, { root: true });
       });
   },
 
@@ -675,7 +686,8 @@ const actions = {
         context.commit('deleteRole', deleted);
       })
       .catch(error => {
-        logger.error(`Error in deleteRole apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in deleteRole apollo client => ${error}`, { root: true });
       });
   },
 
@@ -692,7 +704,8 @@ const actions = {
         context.commit('addRoleToState', state2role);
       })
       .catch(error => {
-        logger.error(`Error in addRoleToState apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in addRoleToState apollo client => ${error}`, { root: true });
       });
   },
 
@@ -716,7 +729,8 @@ const actions = {
         context.commit('deleteRoleFromState', state2role);
       })
       .catch(error => {
-        logger.error(`Error in deleteRoleFromState apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in deleteRoleFromState apollo client => ${error}`, { root: true });
       });
   },
 
@@ -733,7 +747,8 @@ const actions = {
         context.commit('addRoleToAction', action2role);
       })
       .catch(error => {
-        logger.error(`Error in addRoleToAction apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in addRoleToAction apollo client => ${error}`, { root: true });
       });
   },
 
@@ -757,7 +772,8 @@ const actions = {
         context.commit('deleteRoleFromAction', action2role);
       })
       .catch(error => {
-        logger.error(`Error in deleteRoleFromAction apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in deleteRoleFromAction apollo client => ${error}`, { root: true });
       });
   },
 
@@ -778,7 +794,8 @@ const actions = {
         context.commit('setStatePermissions', permissions);
       })
       .catch(error => {
-        logger.error(`Error in setStatePermission apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in setStatePermission apollo client => ${error}`, { root: true });
       });
   }
 

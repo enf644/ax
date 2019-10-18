@@ -1,20 +1,26 @@
 <template>
-  <v-text-field
-    :disabled='isReadonly'
-    :error-messages='errors'
-    :hint='options.hint'
-    :label='name'
-    @keyup='isValid'
-    cy-data='input'
-    v-model='currentValue'
-  ></v-text-field>
+  <div>
+    <v-subheader class='pl-0'>{{name}}</v-subheader>
+    <v-slider
+      :disabled='isReadonly'
+      :error-messages='errors'
+      :max='currentMax'
+      :min='currentMin'
+      :step='currentStep'
+      :thumb-size='25'
+      cy-data='input'
+      height='55'
+      thumb-label='always'
+      v-model='currentValue'
+    ></v-slider>
+  </div>
 </template>
 
 <script>
-import i18n from '../../../locale.js';
+import i18n from '@/locale.js';
 
 export default {
-  name: 'AxString',
+  name: 'AxIntSlider',
   props: {
     name: null,
     dbName: null,
@@ -28,7 +34,20 @@ export default {
     currentValue: null,
     errors: []
   }),
-  computed: {},
+  computed: {
+    currentMin() {
+      if (this.options.minValue) return this.options.minValue;
+      else return 0;
+    },
+    currentMax() {
+      if (this.options.maxValue) return this.options.maxValue;
+      else return 100;
+    },
+    currentStep() {
+      if (this.options.step) return this.options.step;
+      else return 1;
+    }
+  },
   watch: {
     currentValue(newValue) {
       this.$emit('update:value', newValue);
@@ -42,7 +61,7 @@ export default {
   },
   methods: {
     isValid() {
-      if (this.requiredIsValid() && this.regexpIsValid()) return true;
+      if (this.requiredIsValid()) return true;
       return false;
     },
     requiredIsValid() {
@@ -51,25 +70,6 @@ export default {
           let msg = i18n.t('common.field-required');
           if (this.options.required_text) msg = this.options.required_text;
           this.errors.push(msg);
-          return false;
-        }
-        this.errors = [];
-        return true;
-      }
-      return true;
-    },
-    regexpIsValid() {
-      if (this.options.regexp) {
-        let regexp = null;
-        const regParts = this.options.regexp.match(/^\/(.*?)\/([gim]*)$/);
-        if (regParts) {
-          regexp = new RegExp(regParts[1], regParts[2]);
-        } else {
-          regexp = new RegExp(this.options.regexp);
-        }
-        const pattern = new RegExp(regexp);
-        if (!pattern.test(this.currentValue) && this.currentValue.length > 0) {
-          this.errors.push(this.options.regexp_error);
           return false;
         }
         this.errors = [];

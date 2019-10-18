@@ -247,6 +247,7 @@ def create_field_types() -> None:
                 position=1,
                 value_type="TEXT",
                 is_inline_editable=True,
+                is_columnn_avalible=True,
                 icon="align-left"))
             db_session.add(AxFieldType(
                 tag="AxMarkdown",
@@ -255,6 +256,7 @@ def create_field_types() -> None:
                 position=1,
                 value_type="TEXT",
                 is_inline_editable=True,
+                is_columnn_avalible=True,
                 icon="align-left"))
 
             # Number
@@ -303,6 +305,15 @@ def create_field_types() -> None:
                 tag="AxCheckbox",
                 parent="group-boolean",
                 default_db_name="checkbox",
+                position=1,
+                value_type="BOOL",
+                is_inline_editable=True,
+                is_columnn_avalible=True,
+                icon="toggle-on"))
+            db_session.add(AxFieldType(
+                tag="AxSwitch",
+                parent="group-boolean",
+                default_db_name="switch",
                 position=1,
                 value_type="BOOL",
                 is_inline_editable=True,
@@ -362,6 +373,7 @@ def create_field_types() -> None:
                 value_type="TIMESTAMP",
                 comparator="date",
                 is_inline_editable=True,
+                is_columnn_avalible=True,
                 icon="calendar"))
 
             # List
@@ -429,6 +441,7 @@ def create_field_types() -> None:
                 position=1,
                 default_db_name="users",
                 is_backend_available=True,
+                is_columnn_avalible=True,
                 value_type="JSON",
                 icon="user"))
 

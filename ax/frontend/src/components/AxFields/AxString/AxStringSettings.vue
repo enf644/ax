@@ -12,9 +12,9 @@
       persistent-hint
       v-model='changedOptions.regexp_error'
     ></v-text-field>
-    <br>
+    <br />
     {{testerHint}}:
-    <br>
+    <br />
     <v-text-field
       :error-messages='errors'
       :label='testerLabel'
@@ -58,6 +58,9 @@ export default {
     this.testerLabel = i18n.t('types.AxString.tester-label');
   },
   methods: {
+    locale(key) {
+      return i18n.t(key);
+    },
     checkTester() {
       let regexp = null;
       const regParts = this.changedOptions.regexp.match(/^\/(.*?)\/([gim]*)$/);

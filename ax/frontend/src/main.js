@@ -43,10 +43,15 @@ import VueCookies from 'vue-cookies'
 Vue.use(VueCookies)
 VueCookies.config('7d')
 
+import VueMask from 'v-mask'
+
 import store from './store';
 import AxTest from './components/AxTest.vue';
 import Fingerprint2 from 'fingerprintjs2'
 import { uuidWithDashes } from '@/misc';
+
+
+Vue.use(VueMask);
 
 // Dev dependencies
 // import VueDummy from 'vue-dummy'; // create lorum ipsum

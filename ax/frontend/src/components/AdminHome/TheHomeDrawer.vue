@@ -1,7 +1,14 @@
 <template>
   <div>
-    <h3>{{$t("home.ax-forms")}}:</h3>
-    <div data-cy='forms-tree' ref='tree'></div>
+    <div class='no-forms' v-show='noForms'>
+      <i class='fas fa-cat'></i>
+      &nbsp;
+      {{$t("home.no-forms")}}
+    </div>
+    <div v-show='noForms == false'>
+      <h3>{{$t("home.ax-forms")}}:</h3>
+      <div data-cy='forms-tree' ref='tree'></div>
+    </div>
     <br />
     <v-btn @click='openFormModal' class='mb-3' data-cy='create-form-btn' small>
       <i class='fas fa-plus'></i>
@@ -67,6 +74,10 @@ export default {
   computed: {
     forms() {
       return this.$store.state.home.forms;
+    },
+    noForms() {
+      if (!this.forms || this.forms.length == 0) return true;
+      return false;
     }
   },
   watch: {

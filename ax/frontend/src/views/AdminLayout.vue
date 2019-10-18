@@ -27,6 +27,12 @@ export default {
     },
     authToken() {
       return this.$store.state.auth.accessToken;
+    },
+    showErrorMsg() {
+      return this.$store.state.home.showErrorMsg;
+    },
+    showToastMsg() {
+      return this.$store.state.home.showToastMsg;
     }
   },
   watch: {
@@ -61,6 +67,24 @@ export default {
       if (newValue) {
         this.$router.push({ path: newValue });
         this.$store.commit('home/setRedirectNeededUrl', null);
+      }
+    },
+    showErrorMsg(newValue) {
+      if (newValue) {
+        this.$log.error(newValue);
+
+        this.$dialog.message.error(newValue, {
+          properties: {
+            timeoot: 50000
+          }
+        });
+        this.$store.commit('home/setShowErrorMsg', null);
+      }
+    },
+    showToastMsg(newValue) {
+      if (newValue) {
+        this.$dialog.message.success(newValue);
+        this.$store.commit('home/setShowToastMsg', null);
       }
     }
   },

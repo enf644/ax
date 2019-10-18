@@ -3,6 +3,8 @@
 # import asyncio
 import uuid
 import graphene
+from sqlalchemy import or_
+import ujson as json
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from passlib.hash import pbkdf2_sha256
 # from loguru import logger
@@ -347,6 +349,7 @@ class UsersQuery(graphene.ObjectType):
     users_and_groups = graphene.List(
         User,
         search_string=graphene.Argument(type=graphene.String, required=False),
+        guids=graphene.Argument(type=graphene.String, required=False),
         update_time=graphene.Argument(type=graphene.String, required=False)
     )
     find_user = graphene.Field(
@@ -445,19 +448,39 @@ class UsersQuery(graphene.ObjectType):
             return ret_list
 
     async def resolve_users_and_groups(
-            self, info, search_string=None, update_time=None):
+            self, info, search_string=None, update_time=None, guids=None):
         """Get all users and groups in one search"""
         del update_time
         err = 'Error in GQL query - users_and_groups.'
         with ax_model.try_catch(info.context['session'], err, no_commit=True):
             query = User.get_query(info)
             users_list = []
-            if not search_string:
-                users_list = query.all()
-            else:
+            if search_string and guids:
+                real_guids = []
+                guids_dict = json.loads(guids)
+                for guid in guids_dict["items"]:
+                    real_guids.append(uuid.UUID(guid))
+
+                users_list = query.filter(
+                    or_(
+                        AxUser.short_name.ilike(f"%{search_string}%"),
+                        AxUser.guid.in_(real_guids))
+                ).all()
+            elif not search_string and guids:
+                real_guids = []
+                guids_dict = json.loads(guids)
+                for guid in guids_dict["items"]:
+                    real_guids.append(uuid.UUID(guid))
+
+                users_list = query.filter(
+                    AxUser.guid.in_(real_guids)
+                ).all()
+            elif search_string and not guids:
                 users_list = query.filter(
                     AxUser.short_name.ilike(f"%{search_string}%")
                 ).all()
+            else:
+                users_list = query.all()
             return users_list
 
     def resolve_find_user(self, info, guid, update_time):

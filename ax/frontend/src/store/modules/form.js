@@ -483,25 +483,10 @@ const actions = {
         }
       })
       .catch(error => {
-        logger.error(`Error in getFormData apollo client => ${error}`);
+        const msg = `Error in getFormData apollo client => ${error}`
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
-
-  // getFields(context, payload) {
-  //   apolloClient.query({
-  //     query: GET_FIELDS,
-  //     variables: {
-  //       formGuid: payload.formGuid
-  //     }
-  //   })
-  //     .then(data => {
-  //       context.commit('setFields', data.data.allFields);
-  //       context.commit('setFieldsLoadedGuid', payload.formGuid);
-  //     })
-  //     .catch(error => {
-  //       logger.error(`Error in getFields apollo client => ${error}`);
-  //     });
-  // },
 
   getFieldTypes(context) {
     apolloClient.query({
@@ -511,7 +496,8 @@ const actions = {
         context.commit('setFieldTypes', data.data.fieldTypes);
       })
       .catch(error => {
-        logger.error(`Error in getFieldTypes apollo client => ${error}`);
+        const msg = `Error in getFieldTypes apollo client => ${error}`
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
 
@@ -529,7 +515,8 @@ const actions = {
         context.commit('setCreatedFieldGuid', newField.guid);
       })
       .catch(error => {
-        logger.error(`Error in createTab apollo client => ${error}`);
+        const msg = `Error in createTab apollo client => ${error}`
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
 
@@ -546,7 +533,8 @@ const actions = {
         context.commit('updateField', newField);
       })
       .catch(error => {
-        logger.error(`Error in updateTab apollo client => ${error}`);
+        const msg = `Error in updateTab apollo client => ${error}`
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
 
@@ -563,7 +551,8 @@ const actions = {
         context.commit('deleteField', deletedGuid);
       })
       .catch(error => {
-        logger.error(`Error in deleteTab apollo client => ${error}`);
+        const msg = `Error in deleteTab apollo client => ${error}`
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
 
@@ -588,7 +577,8 @@ const actions = {
         context.commit('workflow/setFieldPermissions', newPermissions, { root: true });
       })
       .catch(error => {
-        logger.error(`Error in createField apollo client => ${error}`);
+        const msg = `Error in createField apollo client => ${error}`
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
 
@@ -614,7 +604,8 @@ const actions = {
         context.commit('updateField', newField);
       })
       .catch(error => {
-        logger.error(`Error in updateField apollo client => ${error}`);
+        const msg = `Error in updateField apollo client => ${error}`
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
 
@@ -632,6 +623,8 @@ const actions = {
         context.commit('grids/deleteField', deletedGuid, { root: true });
       })
       .catch(error => {
+        const msg = `Error in deleteField apollo client => ${error}`
+        context.commit('home/setShowErrorMsg', msg, { root: true });
         logger.error(`Error in deleteField apollo client => ${error}`);
       });
   },
@@ -648,7 +641,8 @@ const actions = {
         context.commit('setFields', data.data.changeFieldsPositions.fields);
       })
       .catch(error => {
-        logger.error(`Error in changeFieldsPositions apollo client => ${error}`);
+        const msg = `Error in changeFieldsPositions apollo client => ${error}`
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   }
 

@@ -25,6 +25,7 @@
         "pages-designer-btn": "Pages designer",
         "create-new-grid-btn": "Create new grid",
         "logout": "Log out",
+        "no-forms": "No forms created",
         "toolbar": {
             "form-btn": "Form",
             "workflow-btn": "Workflow",
@@ -35,6 +36,7 @@
             "update-header": "Updating form",
             "form-name": "Form name",
             "form-database-name": "Database table name",
+            "form-database-name-hint": "Must be PascalCase. Used as database table name and Graphql fields",
             "create-btn": "Create new form",
             "update-btn": "Update form",
             "name-required": "Form name is required",
@@ -334,13 +336,18 @@
             "error-label": "Error text",
             "error-hint": "Error text that will be displayed if value does not match regexp.",
             "tester-label": "Regexp test string",
-            "tester-hint": "Test your regular expression. Enter string to see if it is valid."
+            "tester-hint": "Test your regular expression. Enter string to see if it is valid.",
+            "mask-label": "String mask",
+            "mask-hint": "Entered value will be formated according to this mask"
         },
         "AxEmail": {
-            "name": "Email"
+            "name": "Email",
+            "email-invalid": "Please enter valid email"
         },
         "AxTelephone": {
-            "name": "Telephone"
+            "name": "Telephone",
+            "mask-label": "String mask",
+            "mask-hint": "Entered value will be formated according to this mask"
         },
         "AxText": {
             "name": "Text"
@@ -352,13 +359,28 @@
             "name": "Integer"
         },
         "AxDecimal": {
-            "name": "Decimal"
+            "name": "Decimal",
+            "currencySymbol-label": "Currency symbol",
+            "currencySymbol-hint": "Sample - $, €, ₽, ¥, £, 圓, ₹",
+            "decimalCharacter-label": "Decimal separator character",
+            "decimalPlaces-label": "Decimal places to show",
+            "digitGroupSeparator-label": "Thousand separator character",
+            "wheelStep-label": "Wheel event step",
+            "wheelStep-hint": "Wheel event will change value by specified step",
+            "minimumValue-label": "Minimal value",
+            "maximumValue-label": "Maximum value"
         },
         "AxIntSlider": {
-            "name": "Slider"
+            "name": "Slider",
+            "minValue-label": "Minimum value",
+            "maxValue-label": "Maximum value",
+            "step-label": "Step size"
         },
         "AxCheckbox": {
             "name": "Checkbox"
+        },
+        "AxSwitch": {
+            "name": "Switch"
         },
         "Ax1to1": {
             "name": "Dictionary 1:1",
@@ -382,7 +404,8 @@
             "settings-inline-height": "Height of inline grid"
         },
         "AxDate": {
-            "name": "Date"
+            "name": "Date",
+            "defaultNow-label": "Set default value to today"
         },
         "AxChoise": {
             "name": "Choise",

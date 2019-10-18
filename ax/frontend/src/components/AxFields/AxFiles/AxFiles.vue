@@ -33,7 +33,7 @@
 <script>
 import i18n from '@/locale';
 import uuid4 from 'uuid4';
-import { getAxHost, uuidWithDashes } from '../../../misc';
+import { getAxHost, uuidWithDashes, getAxHostProtocol } from '../../../misc';
 import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
 import getClassNameForExtension from 'font-awesome-filetypes';
@@ -126,7 +126,7 @@ export default {
         }
       });
       this.uppy.use(Tus, {
-        endpoint: `http://${getAxHost()}/api/upload`
+        endpoint: `${getAxHostProtocol()}/api/upload`
       });
       this.uppy.use(Dashboard, {
         trigger: `#${this.btnId}`,
@@ -144,7 +144,10 @@ export default {
         this.options.enableWebcam == null ||
         this.options.enableWebcam === undefined
       ) {
-        this.uppy.use(Webcam, { target: Dashboard });
+        this.uppy.use(Webcam, {
+          target: Dashboard,
+          modes: ['video-audio', 'video-only', 'audio-only', 'picture']
+        });
       }
 
       this.uppy.on('upload-success', (file, response) => {
@@ -205,9 +208,9 @@ export default {
       let rowGuid = uuidWithDashes(this.rowGuid);
       if (file.isTmp) rowGuid = 'null';
 
-      const url = `http://${getAxHost()}/api/file/${this.formGuid}/${rowGuid}/${
-        this.fieldGuid
-      }/${file.guid}/${file.name}`;
+      const url = `${getAxHostProtocol()}/api/file/${
+        this.formGuid
+      }/${rowGuid}/${this.fieldGuid}/${file.guid}/${file.name}`;
       Object.assign(document.createElement('a'), {
         target: '_blank',
         href: url

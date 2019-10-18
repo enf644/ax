@@ -81,7 +81,7 @@ import Vue from 'vue';
 import Croppa from 'vue-croppa';
 import uuid4 from 'uuid4';
 import i18n from '@/locale';
-import { getAxHost } from '../../../misc';
+import { getAxHost, getAxHostProtocol } from '../../../misc';
 import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
 import getClassNameForExtension from 'font-awesome-filetypes';
@@ -269,7 +269,7 @@ export default {
         }
       });
       this.uppy.use(Tus, {
-        endpoint: `http://${getAxHost()}/api/upload`
+        endpoint: `${getAxHostProtocol()}/api/upload`
       });
       this.uppy.use(Dashboard, {
         inline: false,

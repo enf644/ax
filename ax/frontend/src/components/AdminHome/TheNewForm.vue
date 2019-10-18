@@ -15,6 +15,7 @@
         v-model='name'
       />
       <v-text-field
+        :hint='$t("home.new-form.form-database-name-hint")'
         :label='$t("home.new-form.form-database-name")'
         :rules='dbNameRules'
         @input='resetDbNameValid'
@@ -107,10 +108,12 @@ export default {
       dbNameRules: [
         v => !!v || this.$t('home.new-form.db-name-required'),
         v => v.length <= 127 || this.$t('common.lenght-error', { num: 127 }),
-        v => (v && this.dbNameIsAvalible)
-          || this.$t('home.new-form.db-name-not-avalible'),
-        v => /^((\d)|([A-Z0-9][a-z0-9]+))*([A-Z])?$/.test(v)
-          || this.$t('home.new-form.db-name-valid-letters')
+        v =>
+          (v && this.dbNameIsAvalible) ||
+          this.$t('home.new-form.db-name-not-avalible'),
+        v =>
+          /^((\d)|([A-Z0-9][a-z0-9]+))*([A-Z])?$/.test(v) ||
+          this.$t('home.new-form.db-name-valid-letters')
       ],
       tomLabel: null,
       icon: null,

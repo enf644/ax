@@ -13,7 +13,9 @@ const getDefaultState = () => {
     dbNameChanged: false,
     redirectNeededUrl: null,
     redirectFromUrl: null,
-    currentUser: null
+    currentUser: null,
+    showErrorMsg: null,
+    showToastMsg: null
   }
 }
 
@@ -294,6 +296,12 @@ const mutations = {
         }
       }
     }
+  },
+  setShowErrorMsg(state, msg) {
+    state.showErrorMsg = msg;
+  },
+  setShowToastMsg(state, msg) {
+    state.showToastMsg = msg;
   }
 };
 
@@ -403,9 +411,13 @@ const actions = {
         commit('setForms', data.data.allForms);
         commit('users/setCurrentUser', data.data.currentAxUser, { root: true });
         commit('pages/setPages', data.data.allPages, { root: true });
+
       })
       .catch(error => {
-        logger.error(`Error in getAllForms apollo client -> ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in getAllForms apollo client -> ${error}`,
+          { root: true });
+
         setTimeout(() => {
           dispatch('auth/goToPages', null, { root: true });
         }, 2000);
@@ -442,7 +454,9 @@ const actions = {
         }
       })
       .catch(error => {
-        logger.error(`Error in createForm apollo client => ${error}`);
+        context.commit('home/setShowErrorMsg',
+          `Error in createForm apollo client => ${error}`,
+          { root: true });
       });
   },
   updateForm(context, payload) {
@@ -472,7 +486,8 @@ const actions = {
         }
       })
       .catch(error => {
-        logger.error(`Error in updateForm apollo client => ${error}`);
+        const msg = `Error in updateForm apollo client => ${error}`
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
   deleteForm(context, payload) {
@@ -491,7 +506,8 @@ const actions = {
         apolloClient.resetStore();
       })
       .catch(error => {
-        logger.error(`Error in deleteForm apollo client => ${error}`);
+        const msg = `Error in deleteForm apollo client => ${error}`
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
   createFolder(context, payload) {
@@ -507,7 +523,8 @@ const actions = {
         context.commit('setModalMustClose', true);
       })
       .catch(error => {
-        logger.error(`Error in createFolder apollo client => ${error}`);
+        const msg = `Error in createFolder apollo client => ${error}`
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
   updateFolder(context, payload) {
@@ -524,7 +541,8 @@ const actions = {
         context.commit('setModalMustClose', true);
       })
       .catch(error => {
-        logger.error(`Error in updateFolder apollo client => ${error}`);
+        const msg = `Error in updateFolder apollo client => ${error}`
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
   deleteFolder(context, payload) {
@@ -539,7 +557,8 @@ const actions = {
         context.commit('setModalMustClose', true);
       })
       .catch(error => {
-        logger.error(`Error in deleteFolder apollo client => ${error}`);
+        const msg = `Error in deleteFolder apollo client => ${error}`
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
   changeFormsPositions(context, payload) {
@@ -554,7 +573,8 @@ const actions = {
         context.commit('setForms', data.data.changeFormsPositions.forms);
       })
       .catch(error => {
-        logger.error(`Error in changeFormsPositions apollo client => ${error}`);
+        const msg = `Error in changeFormsPositions apollo client => ${error}`
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   }
 };

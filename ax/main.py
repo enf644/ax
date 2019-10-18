@@ -132,11 +132,11 @@ def init_ax():
     if ssl_enabled:
         @app.middleware('request')
         async def force_ssl(request):     # pylint: disable=unused-variable
-            if request.headers.get('X-Forwarded-Proto') == 'http':
+            if request.scheme == 'http':
                 return response.redirect(
                     request.url.replace('http://', 'https://', 1),
                     status=301
-                )
+                )                
 
     # Initiate all sanic server routes
     ax_routes.init_routes(

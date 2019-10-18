@@ -1,43 +1,18 @@
 
 
-DB CHANGES
-    AxUsers -> + short_name (varchar 255)
-    AxUsers -> + avatar (largeBinary)
-    AxUsers -> + info (Text)
-    AxUser -> + is_email_confirmed (Boolean)
 
-
------------------------
-
-On user sign in -> each form.field permissions are stored in cache
-    - ttl = 18min
-    - refreshed on token refresh
-
-
-Check if user is admin. If so - write cache
-
-For each form
-    Get roles of user
-    Get AxRoleFieldPermission for those roles
-
-    For each field
-        For each state
-            For each perm
-                If field_guid == ax_form.guid -> set cache field perm
-                If field_guid == tab.guid -> set cache field perm
-                if field_guid == current field.guid -> set cache field perm
-
-schema ->
-    for each field - check in cache.
-
-form data ->
-    for each field - check in cache.
-
-updade schema ->
-    for each field - check in cache.
-
-
-
+Pro version:
+    - Python actions
+    - Custom query
+    - * AgGrid enterprice
+        - Groupping, Agg functions
+        - Export to excel
+        - Copy-paste
+    - * Email customer support
+    - * User substitutes
+    - * Active directoy, Google apps users
+    - Inline editing
+    - Schedulled action jobs
 
 ---------------------------
 
@@ -54,8 +29,6 @@ THINK ABOUT
     Ax - rapid automation tool
 
 
-// prettier-ignore
-
 AX - rapid automation tool
 
 
@@ -66,13 +39,6 @@ AX Pages
     Must be able to host static content!!
     Pages is npm package that works with Ax throw GQL
     Mobile ready - PWA! draggable drawer
-    
-
-
-
-Without Ax:
-    Upload form
-    Custom items form
 
 
 How to use Ax:
@@ -124,7 +90,7 @@ Lead sources
         GraphQL
         Docker marketplace
         App engine marketplace
-        Windows store??
+        Windows store
     DIRECT MARKETING (until 2000 users)
         Offer consulting services to one client each week. 
             Each hacker-news article is followed by invite to participate in free consulting session.
@@ -210,6 +176,7 @@ Posts queue:
 
 Marketing news themes 
     Introducing Ax. Installing Ax and Creating workflow application in 5 minutes.
+        Payment fields, mobile
     Unique features
         GraphQL
         Python tasks

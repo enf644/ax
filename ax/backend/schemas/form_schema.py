@@ -350,6 +350,8 @@ class UpdateField(graphene.Mutation):
 
             schema_needs_update = False
 
+            raise
+
             ax_field = db_session.query(AxField).filter(
                 AxField.guid == uuid.UUID(guid)
             ).first()

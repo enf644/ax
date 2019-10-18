@@ -284,7 +284,8 @@ const actions = {
         }
       })
       .catch(error => {
-        logger.error(`Error in getGridData apollo client => ${error}`);
+        const msg = `Error in getGridData apollo client => ${error}`;
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
 
@@ -305,7 +306,8 @@ const actions = {
         context.commit('setUpdateTime', Date.now());
       })
       .catch(error => {
-        logger.error(`Error in createColumn apollo client => ${error}`);
+        const msg = `Error in createColumn apollo client => ${error}`;
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
 
@@ -322,7 +324,8 @@ const actions = {
         context.commit('setUpdateTime', Date.now());
       })
       .catch(error => {
-        logger.error(`Error in deleteColumn apollo client => ${error}`);
+        const msg = `Error in deleteColumn apollo client => ${error}`;
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
 
@@ -339,7 +342,8 @@ const actions = {
         context.commit('setUpdateTime', Date.now());
       })
       .catch(error => {
-        logger.error(`Error in changeColumnsPositions apollo client => ${error}`);
+        const msg = `Error in changeColumnsPositions apollo client => ${error}`;
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
 
@@ -361,7 +365,8 @@ const actions = {
         context.commit('home/setRedirectNeededUrl', url, { root: true });
       })
       .catch(error => {
-        logger.error(`Error in createGrid apollo client => ${error}`);
+        const msg = `Error in createGrid apollo client => ${error}`;
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
 
@@ -413,7 +418,8 @@ const actions = {
         }
       })
       .catch(error => {
-        logger.error(`Error in updateGrid apollo client => ${error}`);
+        const msg = `Error in updateGrid apollo client => ${error}`;
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
 
@@ -432,7 +438,8 @@ const actions = {
         context.commit('home/setRedirectNeededUrl', url, { root: true });
       })
       .catch(error => {
-        logger.error(`Error in deleteGrid apollo client => ${error}`);
+        const msg = `Error in deleteGrid apollo client => ${error}`;
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   }
 

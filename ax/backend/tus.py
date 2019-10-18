@@ -25,7 +25,8 @@ upload_url = 'upload'
 tus_api_version = '1.0.0'
 tus_api_version_supported = '1.0.0'
 tus_api_extensions = ['creation', 'termination', 'file-check']
-tus_max_file_size = 4294967296  # 4GByte
+# tus_max_file_size = int(os.environ.get('AX_UPLOADS_MAX_FILESIZE', 4294967))
+# 4294967296  # 4GByte
 
 
 def write_info(data):
@@ -72,7 +73,7 @@ async def tus_file_upload(request):
                 'Tus-Resumable': this.tus_api_version,
                 'Tus-Version': this.tus_api_version_supported,
                 'Tus-Extension': ",".join(this.tus_api_extensions),
-                'Tus-Max-Size': this.tus_max_file_size
+                'Tus-Max-Size': int(os.environ.get('AX_UPLOADS_MAX_FILESIZE', 4294967))
             },
             status=204
         )
@@ -89,7 +90,8 @@ async def tus_file_upload(request):
         metadata[key] = base64.b64decode(value)
 
     file_size = int(request.headers.get("Upload-Length", "0"))
-    if file_size > this.tus_max_file_size:
+    max_file_size = int(os.environ.get('AX_UPLOADS_MAX_FILESIZE', 4294967))
+    if file_size > max_file_size:
         return response.text(msg, status=413)  # REQUEST_ENTITY_TOO_LARGE
 
     file_guid = str(uuid.uuid4())

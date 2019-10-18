@@ -97,8 +97,8 @@ const actions = {
         store.commit('pages/setCurrentPage', fullPage);
       })
       .catch(error => {
-        console.log(`Error in loadPageData gql => ${error}`);
-        window.dialog.message.error(`${error}`);
+        const msg = `Error in loadPageData gql => ${error}`;
+        context.commit('home/setShowErrorMsg', msg, { root: true });
       });
   },
 };

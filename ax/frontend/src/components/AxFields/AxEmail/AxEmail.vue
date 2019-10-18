@@ -14,7 +14,7 @@
 import i18n from '../../../locale.js';
 
 export default {
-  name: 'AxString',
+  name: 'AxEmail',
   props: {
     name: null,
     dbName: null,
@@ -28,7 +28,6 @@ export default {
     currentValue: null,
     errors: []
   }),
-  computed: {},
   watch: {
     currentValue(newValue) {
       this.$emit('update:value', newValue);
@@ -59,22 +58,16 @@ export default {
       return true;
     },
     regexpIsValid() {
-      if (this.options.regexp) {
-        let regexp = null;
-        const regParts = this.options.regexp.match(/^\/(.*?)\/([gim]*)$/);
-        if (regParts) {
-          regexp = new RegExp(regParts[1], regParts[2]);
-        } else {
-          regexp = new RegExp(this.options.regexp);
-        }
-        const pattern = new RegExp(regexp);
-        if (!pattern.test(this.currentValue) && this.currentValue.length > 0) {
-          this.errors.push(this.options.regexp_error);
-          return false;
-        }
-        this.errors = [];
-        return true;
+      const pattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+      if (
+        this.currentValue &&
+        this.currentValue.length > 0 &&
+        !pattern.test(this.currentValue)
+      ) {
+        this.errors.push(this.$t('types.AxEmail.email-invalid'));
+        return false;
       }
+      this.errors = [];
       return true;
     }
   }

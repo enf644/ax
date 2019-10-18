@@ -3,6 +3,7 @@
     <v-toolbar-title align-center class='logo-div'>
       <router-link to='/admin/home'>
         <img class='logo' src='../../assets/small_axe.png' />
+        <div class='beta-div'>β</div>
       </router-link>
     </v-toolbar-title>
 
@@ -121,7 +122,7 @@
       <template v-slot:activator='{ on }'>
         <v-avatar class='logout' v-on='on'>
           <div class='user-avatar-div'>
-            {{currentUserShortName}} &nbsp;
+            <span class='user-name'>{{currentUserShortName}} &nbsp;</span>
             <i class='user-avatar fas fa-user-circle'></i>
           </div>
         </v-avatar>
@@ -298,6 +299,7 @@ export default {
 }
 .top-toolbar {
   z-index: 100;
+  white-space: nowrap;
 }
 .buttons-div {
   vertical-align: middle;
@@ -333,5 +335,27 @@ export default {
   margin-right: 60px;
   white-space: nowrap;
   color: #999;
+}
+.beta-div {
+  position: absolute;
+  top: 19px;
+  left: 56px;
+  font-size: 12px;
+  color: #f44336;
+}
+.grids-div {
+  white-space: nowrap;
+}
+
+@media only screen and (max-width: 1200px) {
+  .user-name {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  .beta-div {
+    display: none;
+  }
 }
 </style>
