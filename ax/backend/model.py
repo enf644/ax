@@ -391,6 +391,13 @@ class AxField(Base):
         )
         return files_path
 
+    @property
+    def is_tom_filed(self):
+        """Check is field is of realtion type """
+        if self.field_type.tag in ['Ax1to1', 'Ax1tom', 'Ax1tomTable']:
+            return True
+        return False
+
 
 class AxGrid(Base):
     """Stores Ax grids"""

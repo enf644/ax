@@ -2,17 +2,25 @@
 
 
 Pro version:
-    - Python actions
-    - Custom query
-    - * AgGrid enterprice
+    +++ Python actions
+    +++ Custom query
+    +++ Custom grid columns
+    - AgGrid enterprice
         - Groupping, Agg functions
         - Export to excel
         - Copy-paste
-    - * Email customer support
-    - * User substitutes
-    - * Active directoy, Google apps users
+        - Infinite scroll in AxGrid. Server-side filtering, soring.
+        - Copy action
+    - Email customer support
+    - User substitutes
+    - Active directoy, Google apps users
     - Inline editing
     - Schedulled action jobs
+    - Action on multiple rows
+    - Sub-tabs in AxForm
+    - Payment fields
+    - Action execution throw 
+    - Unread records pages menu counter
 
 ---------------------------
 

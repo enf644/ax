@@ -15,6 +15,7 @@ const getDefaultState = () => {
     grids: [],
     fieldTypes: [],
     isNameChangeOperation: false,
+    dbNameIsFocused: false,
     openSettingsFlag: null,
     createdFieldGuid: null,
     updateTime: null
@@ -305,6 +306,9 @@ const mutations = {
   },
   setIsNameChangeOperation(state, flag) {
     state.isNameChangeOperation = flag;
+  },
+  setDbNameIsFocused(state, flag) {
+    state.dbNameIsFocused = flag;
   },
   setOpenSettingsFlag(state, guid) {
     state.openSettingsFlag = guid;

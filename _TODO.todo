@@ -715,8 +715,7 @@ AX 0.2:
         ✔ tus.py max file size must be from app.yaml @done(19-10-17 21:00)
         ✔ SSL - check uppy @done(19-10-17 21:00)
         ✔ Error toasts everywhere @done(19-10-18 10:11)
-        ☐ Paging in AxGrid `[IMPORTANT]`
-        ☐ 1toM in graphql dynamic schema `IMPORTANT`
+        ☐ 1toM in graphql dynamic schema
 	☐ MARKETPLACE
 		☐ Dump application to yaml
         ☐ Install application from yaml
@@ -842,115 +841,107 @@ FROGS TODOS:
         ✔ Display number of connections @done(19-09-01 10:23)
     ✔ Roboto font not working with webpack. Replace CDN dependency @done(19-10-08 10:24)
     ✔ Replace CDN dependency for wont-awesome @done(19-10-08 10:24)
-    ☐ Paging in AxGrid `[IMPORTANT]` 
-    ☐ SSL - apollo, uppy, other ! `[IMPORTANT]`
-    ☐ Error toasts everywhere!! `[IMPORTANT]`
-    ☐ Database is locked in sqlite `[IMPORTANT]`
-    ☐ Only 1 worker is working - test with 4 workers `[IMPORTANT]`
-        ☐ Pubsub probably wont work, move to redis?
-        ☐ GQL schema reset will not work - edit throw pubsub?
-        ☐ Cache and record labels probavly wont work - move to redis?
-    ☐ Python locale - change hard-coded english words. Pages, Roles names.
-    ☐ Disable maximise on double click on split-panes
-    ☐ Discover minimum window size for ax admin. Output warning if window is less then minimum
-    ✘ Python unit-test - сделать и прогнать @cancelled(19-09-08 21:22)
-    ☐ Webpack - additional minification
+    ✔ Disable maximise on double click on split-panes @done(19-10-18 11:55)
+    ✔ Cant delete last tab and last field in AxForm @done(19-10-18 12:01)
+    ✔ Close icon in form values preview @done(19-10-18 12:02)
+    ✔ Long names for form tabs - limit is too small! @done(19-10-18 12:17)
+    ✔ Del key when editing field names - tryes to delete whole field @done(19-10-18 17:39)
+    ☐ IMPORTANT 
+        ☐ Database is locked in sqlite `[IMPORTANT]`
+        ☐ Only 1 worker is working - test with 4 workers `[IMPORTANT]`
+            ☐ Pubsub probably wont work, move to redis?
+            ☐ GQL schema reset will not work - edit throw pubsub?
+            ☐ Cache and record labels probavly wont work - move to redis?
+    ☐ MODERATE
+        ☐ Python locale - change hard-coded english words. Pages, Roles names.
+        ☐ if field removed - remove all files from /uploads/from_files
+        ☐ What if database already exists?            
+        ☐ Tom name -> need to check if fields in {{}} exists
+        ☐ If grid schema was changed, already loaded ax-grid does not change. Even if refresh is pressed.
+        ☐ If error accured while executing field before/after code -> the exception must be seen in modal for user
+    ☐ SOMEDAY
+        ☐ Discover minimum window size for ax admin. Output warning if window is less then minimum
+        ☐ Webpack - additional minification
         ☐ Roboto - load only one, include in js
         ☐ Font-awesome - only regular, include in js
             ☐ https://github.com/FortAwesome/vue-fontawesome
             ☐ https://codepen.io/Goji/pen/mLKMVR
         ☐ Include images in js
-    ☐ Margins in ax-form and ax-grid must be responsive. 0% on mobile
-    ☐ Do Lazy loading with webpack - load grid first, then form.
-    ☐ Setup must set data in many files:
-        ☐ apollo.js - ip, port
-        ✔ alembic - database @done(19-03-12 09:25)
-        ✔ cache - redis settings (take from app.yaml) @done(19-03-12 09:25)
-        ✔ scheduler - UTC zone from app.yaml @done(19-03-12 09:25)
-        ☐ model - database constring, set binary=False if DB have uuid type
-        ☐ package.json
-    ☐ Websockets not working in App Engine Standard! https://issuetracker.google.com/issues/35886348
-    ☐ Remember opened nodes is JsTree
-    ☐ Cant delete last tab and last field in AxForm
-    ☐ Jstree - remember opened nodes
-    ☐ If form does not exist, but someone entered via url - must be error
-    ☐ Close icon in form values preview
-    ☐ Hints for every grid constructor option
-    ☐ if field removed - remove all files from /uploads/from_files
-    ☐ Form constructor - when field is dragged to folder - the folder is focused edited and selected
-    ☐ Long names for form tabs - limit is too small!
-    ☐ Del key when editing field names - tryes to delete whole field
-    ☐ If app engine -> disable Web-sockets
-    ☐ What if database already exists?            
-    ☐ If error accured while executing field before/after code -> the exception must be seen in modal for user
-    ☐ Tom name -> need to check if fields in {{}} exists
-    ☐ If grid schema was changed, already loaded ax-grid does not change. Even if refresh is pressed.
+        ☐ Margins in ax-form and ax-grid must be responsive. 0% on mobile
+        ☐ Do Lazy loading with webpack - load grid first, then form.
+        ☐ Remember opened nodes is JsTree
+        ☐ If form does not exist, but someone entered via url - must be error
+        ☐ Form constructor - when field is dragged to folder - the folder is focused edited and selected
+    ☐ LATER MAYBE
+        ☐ Websockets not working in App Engine Standard! https://issuetracker.google.com/issues/35886348
+            ☐ If app engine -> disable Web-sockets
 
 
 
 FEATURES:
-    ☐ Use simple grid (no need for 700kb ag-grid)
-    ☐ Remember the width of constructor drawers in cookies
-    ☐ Allow one level of subfolders for AxForm - https://vuetifyjs.com/en/components/lists#expansion-lists
-    ☐ AxForm - make dynamic form header. If wide form - it is in drawer. If it is slim - it is in form.
-    ☐ `[IMPORTANT]` Подключение дополнительных полей и плагинов
-        ☐ Подключается поле через lazy-loading - unpkg.com
-    ☐ `[IMPORTANT]` Billing for Sass services that run ontop of AX
-    ☐ Custom error pages for admin
-    ☐ Detect unsuported browsers and print error
-    ☐ Backup mechanism
-    ☐ If js exception - show toast with rerort button
-    ☐ Icons of roles in workflow constructor
-    ☐ MtoM Create new record inside inline tom field? Added to table and added to field value
-    ☐ Grid constructor - place * near required field in jstree
     ✔ Call workflow actions from graphql. Dbname for action. @done(19-10-16 15:17)
-    ☐ GraphQL samples for - form, grid, action
-    ☐ Custom additional form in action execution. Create form and set it as action input.
-    ☐ Toasts in ax-grid and ax-form without admin (idie)
-    ☐ Tus upload -> concationation
-    ☐ Tus upload -> checksum
-    ☐ GraphQL copy help snippets - action, grid
-    ☐ Workflow constructor - hints onmouseover on states and actions. Description is displayed.
+    ✔ Toasts in ax-grid and ax-form without admin (idie) @done(19-10-18 17:52)
     ✔ Arguments for doAction. Can be used in python code. @done(19-10-16 15:18)
-    ☐ favico for each form must be different - same as font-awesome icon
-    ☐ Dynamic title and favico - changes for different AxForms
-    ☐ Ax and pages must use same node_modules
-    ☐ `[IMPORTANT]` AxGrid constructor - custom fields. Tree with column types - dragged to grid and enter name and db_name. Db_name must be specified in query.
-    ☐ Quicksearch in 1tom -> must not be case sansitive
-    ☐ GAuth - зачем?
-    ☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
-        ☐ Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные
-    ☐ Form and grid constructors can be used with keyboard only
-    ☐ All activities in admin are logged
-    ☐ Users -> List of Substitute users
-    ☐ Javascript in actions - executed after action is complete. Is param of ax-form
-    ☐ `[IMPORTANT]` URL for executing actions. Can be placed inside emails
-    ☐ `[IMPORTANT]` Pages -> Unread message counter
-	☐ Default tab at state settings
-    ☐ Form constructor -> save entered values on form preview
-    ☐ Form constructor -> delete field by drag-drop
-    ☐ Ax-Field - tomConnected - Connected lists. Choose one to reveal next.
-    ☐ One database can be used for authorisation of multiple AX installations
-    ☐ AxGrid -> Right-click menu in grid, copy action, Export to excel
-    ☐ `[IMPORTANT]` Group action. Multiple row can be selected in AxGrid to perform same action.
-    ☐ Conditions in workflow
-    ☐ Timers in workflo
-    ☐ Resources monitoring
-    ☐ `[IMPORTANT]` AxGrid, AxForm -> auth needed setting
-    ☐ `[IMPORTANT]` AxGrid, AxForm -> sign in dialog when not logged and anon icon if showing
-    ☐ Pages data is stored in cache
-    ☐ Page title in page-designer in toolbar
-    ☐ Pages -> ☐ Page edit subscription
-    ☐ Offline work for Pages. AxGrid, AxForm data is cached in localstorage
+    ✔ Conditions in workflow (done throw action abort) @done(19-10-18 18:01)
+    ☐ PRO VERSION
+        ☐ Infinite scroll in AxGrid
+            ☐ Setting in constructor
+            ☐ Change ag-grid with getData() - https://www.ag-grid.com/javascript-grid-infinite-scrolling/
+            ☐ Schema takes view params.
+            ☐ Add <ax_filters> and <ax_order> to grid query    
+        ☐ AxGrid constructor - custom fields. Tree with column types - dragged to grid and enter name and db_name. Db_name must be specified in query.
+        ☐ Админ дает доступ пользователю или группе на Папку в списке объектов.
+            ☐ Если доступ есть - пользователь может в этой папке создавать объекты и менять уже созданные
+        ☐ Users -> List of Substitute users
+        ☐ URL for executing actions. Can be placed inside emails
+        ☐ Pages -> Unread message counter
+        ☐ AxGrid -> Right-click menu in grid, copy action, Export to excel
+        ☐ Group action. Multiple row can be selected in AxGrid to perform same action.
+        ☐ Resources monitoring
+        ☐ Timers in workflow
+        ☐ Allow one level of sub-tabs for AxForm - https://vuetifyjs.com/en/components/lists#expansion-lists
+    ☐ MODERATE
+        ☐ Detect unsuported browsers and print error
+        ☐ Custom error pages
+        ☐ Quicksearch in 1tom -> must not be case sansitive
+        ☐ Grid constructor - place * near required field in jstree
+        ☐ All activities in admin are logged
+        ☐ Pages -> Page edit subscription
+        ☐ Default tab at state settings
+        ☐ Ax-Field - tomConnected - Connected lists. Choose one to reveal next.
+        ☐ AxGrid, AxForm -> auth needed setting
+        ☐ AxGrid, AxForm -> sign in dialog when not logged and anon icon if showing    
+        ☐ GraphQL samples for - form, grid, action
+            ☐ GraphQL copy help snippets - action, grid
+        ☐ MtoM Create new record inside inline tom field? Added to table and added to field value
+    ☐ THINK THROW, BIG
+        ☐ Billing for Sass services that run ontop of AX
+        ☐ Custom additional form in action execution. Create form and set it as action input.
+        ☐ Offline work for Pages. AxGrid, AxForm data is cached in localstorage
+        ☐ Backup mechanism
+        ☐ GAuth - зачем?
+        ☐ Javascript in actions - executed after action is complete. Is param of ax-form
+        ☐ One database can be used for authorisation of multiple AX installations
+        ☐ Plugin system, custom fields system
+            ☐ Подключается поле через lazy-loading - unpkg.com
+    ☐ SOMEDAY
+        ☐ AxForm - make dynamic form header. If wide form - it is in drawer. If it is slim - it is in form.
+        ☐ Form constructor -> delete field by drag-drop
+        ☐ Form constructor -> save entered values on form preview
+        ☐ favico for each form must be different - same as font-awesome icon
+        ☐ Workflow constructor - hints onmouseover on states and actions. Description is displayed.
+        ☐ Icons of roles in workflow constructor
+        ☐ Tus upload -> concationation
+        ☐ Tus upload -> checksum    
+        ☐ Ax and pages must use same node_modules
+        ☐ Form and grid constructors can be used with keyboard only
+        ☐ Pages data is stored in cache
+        ☐ Page title in page-designer in toolbar
+        ☐ If js exception - show toast with rerort button
+    ☐ LATER MAYBE    
+        ☐ Use simple grid (no need for 700kb ag-grid)
+        ☐ Remember the width of constructor drawers in cookies
 
-    
-    
-MAYBE LATER:
-    ☐ python autodoc
-    ☐ Автодокументирование vue.js кода
-    ☐ Automatic version from Git - https://pypi.org/project/setuptools-git-version/
-    ☐ PBR - automatic versioning based on Git - https://docs.openstack.org/pbr/latest/user/features.html
-    ☐ Делаем инструкцию по настройке рабочего места
 
 
 ==============================================================================================

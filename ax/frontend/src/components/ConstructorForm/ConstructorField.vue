@@ -17,8 +17,10 @@
         title='Open settings'
       ></i>
       <input
+        @blur='preventFieldDelete(false)'
         @change='applyDbChange'
         @click='focusDbName'
+        @focus='preventFieldDelete(true)'
         @keyup='preventNameError'
         class='db-input'
         ref='dbInput'
@@ -59,7 +61,8 @@ export default {
       if (!this.tag) {
         return null;
       }
-      return () => import(`@/components/AxFields/${this.tag}/${this.tag}Settings.vue`);
+      return () =>
+        import(`@/components/AxFields/${this.tag}/${this.tag}Settings.vue`);
     }
   },
   watch: {
@@ -104,6 +107,10 @@ export default {
       });
   },
   methods: {
+    preventFieldDelete(doPrevent) {
+      console.log(`prevent -> ${doPrevent}`);
+      store.commit('form/setDbNameIsFocused', true);
+    },
     focusName() {
       setTimeout(() => {
         this.$refs.nameInput.focus();
@@ -117,7 +124,6 @@ export default {
       }, 10);
     },
     async applyNameChange() {
-      store.commit('form/setIsNameChangeOperation', true);
       store
         .dispatch('form/updateField', {
           guid: this.guid,

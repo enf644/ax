@@ -11,7 +11,7 @@
       v-if='dbName'
     ></ax-form>
 
-    <div class='footer'>
+    <!-- <div class='footer'>
       <v-btn
         :to='"/admin/" + this.$route.params.db_name + "/workflow"'
         class='constructor-button'
@@ -25,7 +25,7 @@
         &nbsp;
         <i class='fas fa-code-branch'></i>
       </v-btn>
-    </div>
+    </div>-->
   </div>
 </template>
 

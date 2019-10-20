@@ -33,7 +33,7 @@
                   <v-list-item-content class='drawer-folder-item'>
                     <v-list-item-title>{{ tab.name }}</v-list-item-title>
                   </v-list-item-content>
-                  <v-list-item-avatar>
+                  <v-list-item-avatar v-if='tab.errors'>
                     <transition
                       enter-active-class='animated flipInY'
                       leave-active-class='animated flipOutY'
@@ -548,7 +548,7 @@ export default {
             }
           });
           if (this.opened_tab) this.activeTab = this.opened_tab;
-          else this.activeTab = this.tabs[0].guid;
+          else if (this.tabs.length > 0) this.activeTab = this.tabs[0].guid;
           this.updateValue();
           this.subscribeToActions();
           this.subscribeToConsole();

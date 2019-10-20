@@ -101,7 +101,7 @@ class Subscription(UsersSubscription, ActionSubscription, graphene.ObjectType):
 
 
 def exec_grid_code(form, grid, arguments=None):
-    """ Execute python code to get SQL query """
+    """ Execute python code to get SQL query for specific grid """
     localz = dict()
     ax = DotMap()  # javascript style dicts item['guid'] == item.guid
     ax.row.guid = form.row_guid
@@ -175,7 +175,7 @@ def make_resolver(db_name, type_class):
 
             if quicksearch or guids:
                 # Quicksearch or 1tom query
-                # TODO check if permissions needed
+                # TODO check if permissions needed !IMPORTANT
                 results = await ax_dialects.dialect.select_all(
                     db_session=db_session,
                     ax_form=ax_form,
@@ -263,10 +263,14 @@ def init_schema(db_session):
 
                 # Add fields for each field of AxForm
                 for field in form.db_fields:
-                    field_type = (
-                        type_dictionary[field.field_type.value_type])
-                    # TODO maybe add label as description?
-                    class_fields[field.db_name] = field_type()
+                    if field.is_tom_field:
+                        # HELP NEEDED ????
+                        class_fields[field.db_name] = graphene.String()
+                    else:
+                        field_type = (
+                            type_dictionary[field.field_type.value_type])
+                        # TODO maybe add label as description?
+                        class_fields[field.db_name] = field_type()
 
                 # Create graphene class and append class dict
                 graph_class = type(
