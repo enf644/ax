@@ -22,8 +22,7 @@ from backend.schemas.workflow_schema import WorkflowMutations
 from backend.schemas.action_schema import ActionQuery, ActionMutations, \
     ActionSubscription
 from backend.schemas.grids_schema import GridsQuery, GridsMutations
-from backend.schemas.pages_schema import PagesQuery, PagesMutations, \
-    PagesSubscription
+from backend.schemas.pages_schema import PagesQuery, PagesMutations
 from backend.schemas.types import Form, FieldType, Field, Grid, \
     Column, User, Role, State, Action, RoleFieldPermission, Group2Users, \
     Action2Role, State2Role, Role2Users, PositionInput, Page, Page2Users
@@ -51,6 +50,40 @@ type_dictionary = {
     'BLOB': graphene.String
 }
 
+
+# class Character(graphene.Interface):
+#     guid = graphene.String(required=True)
+#     axState = graphene.String()
+#     axLabel = graphene.String()
+#     name = graphene.String()
+
+#     # @classmethod
+#     # def resolve_type(cls, instance, info):
+#     #     if instance.type == 'Hero':
+#     #         return Hero
+#     #     return Villain
+
+
+# class Hero(graphene.ObjectType):
+#     class Meta:
+#         interfaces = (Character, )
+
+#     name = graphene.String()
+
+#     def resolve_name(parent, info):
+#         return "Hero name"
+
+
+# class Villain(graphene.ObjectType):
+#     class Meta:
+#         interfaces = (Character, )
+
+#     name = graphene.String()
+
+#     def resolve_name(parent, info):
+#         return "Villain name"
+
+
 # Static GQL types. Are same as SqlAlchemy model.
 gql_types = [
     Form,
@@ -71,6 +104,9 @@ gql_types = [
     Page2Users,
     PositionInput
 ]
+
+# Dynamic GQL types.
+type_classes = {}
 
 
 class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery,
@@ -128,7 +164,7 @@ def exec_grid_code(form, grid, arguments=None):
         return None
 
 
-def make_resolver(db_name, type_class):
+def make_query_resolver(db_name, type_class):
     """ Dynamicly create resolver for GrapQL query based on
         db_name - db_name of AxForm + db_name of AxGrid.
         or only db_name of AxForm for default view grid
@@ -233,8 +269,139 @@ def make_resolver(db_name, type_class):
 
             return result_items
 
-    resolver.__name__ = 'resolve_%s' % db_name
+    resolver.__name__ = f'resolve_{db_name}'
     return resolver
+
+
+def make_to1_resolver(ax_field_guid, to1_field_db_name, related_form_db_name,
+                      class_name):
+    """ Creates resolver for to1 field. It gets value of field (guid)
+        then makes sql query and returns right graphene field as query result"""
+
+    async def resolver(parent, info):
+        err = f"Error in {class_name} -> {ax_field_guid} resolver"
+        with ax_model.try_catch(info.context['session'], err) as db_session:
+
+            kwargs = {}
+            field_value = getattr(parent, to1_field_db_name)
+            if field_value:
+                ax_form = db_session.query(AxForm).filter(
+                    AxForm.db_name == related_form_db_name
+                ).first()
+
+                results = await ax_dialects.dialect.select_one(
+                    db_session=db_session,
+                    form=ax_form,
+                    fields_list=ax_form.db_fields,
+                    row_guid=field_value)
+
+                if results:
+                    for key, value in results[0].items():
+                        kwargs[key] = value
+
+                return type_classes[class_name](**kwargs)
+            return None
+
+    resolver.__name__ = f'resolve_{to1_field_db_name}'
+    return resolver
+
+
+def make_tom_resolver(ax_field_guid, to1_field_db_name, related_form_db_name,
+                      class_name):
+    """ Creates resolver for tom field. It gets value of field
+        (json with list of guids). then makes sql query and returns graphene
+        List as query result"""
+
+    async def resolver(parent, info):
+        err = f"Error in {class_name} -> {ax_field_guid} resolver"
+        with ax_model.try_catch(info.context['session'], err) as db_session:
+
+            ret_result = []
+
+            field_value = getattr(parent, to1_field_db_name)
+            if field_value:
+                guids_list = json.loads(field_value)
+                ax_form = db_session.query(AxForm).filter(
+                    AxForm.db_name == related_form_db_name
+                ).first()
+
+                items = {
+                    "items": guids_list
+                }
+
+                results = await ax_dialects.dialect.select_all(
+                    db_session=db_session,
+                    ax_form=ax_form,
+                    quicksearch=None,
+                    guids=json.dumps(items))
+
+                if results:
+                    for row in results:
+                        kwargs = {}
+                        for key, value in row.items():
+                            kwargs[key] = value
+                        row_class = type_classes[class_name](**kwargs)
+                        ret_result.append(row_class)
+
+            return ret_result
+
+    resolver.__name__ = f'resolve_{to1_field_db_name}'
+    return resolver
+
+
+def get_class_name(form_db_name, grid_db_name):
+    """ makes form db_name uppercase + grid db_name """
+    capital_form_db_name = form_db_name[0].upper() + form_db_name[1:]
+    class_name = capital_form_db_name + grid_db_name
+    return class_name
+
+
+def create_class_fields(form):
+    """ Creates graphene fields for each AxField of form.
+        If field is to1 or tom - creates resolver for that field
+     """
+    class_fields = {}
+    class_fields['guid'] = graphene.String()
+    class_fields['axState'] = graphene.String()
+    class_fields['axLabel'] = graphene.String()
+
+    # Add fields for each field of AxForm
+    for field in form.db_fields:
+        if (field.is_relation_field and field.options and
+                field.options['form'] and field.options['grid']):
+
+            form_db_name = field.options['form']
+            grid_db_name = field.options['grid']
+            class_name = get_class_name(form_db_name, grid_db_name)
+
+            # This is same as -> field_class = lambda: type_classes[class_name]
+            def field_class():
+                return type_classes[class_name]
+
+            if field.is_to1_field:
+                resolver = make_to1_resolver(
+                    ax_field_guid=field.guid,
+                    class_name=class_name,
+                    related_form_db_name=form_db_name,
+                    to1_field_db_name=field.db_name)
+
+                class_fields[field.db_name] = graphene.Field(field_class)
+                class_fields[f'resolve_{field.db_name}'] = resolver
+            elif field.is_tom_field:
+                resolver = make_tom_resolver(
+                    ax_field_guid=field.guid,
+                    class_name=class_name,
+                    related_form_db_name=form_db_name,
+                    to1_field_db_name=field.db_name)
+
+                class_fields[field.db_name] = graphene.List(field_class)
+                class_fields[f'resolve_{field.db_name}'] = resolver
+        else:
+            field_type = (
+                type_dictionary[field.field_type.value_type])
+            class_fields[field.db_name] = field_type()
+
+    return class_fields
 
 
 def init_schema(db_session):
@@ -244,7 +411,6 @@ def init_schema(db_session):
     with ax_model.try_catch(db_session, error_msg) as db_session:
         # Create typeClass based on each AxForm
         this.schema = None
-        type_classes = {}
         all_types = gql_types.copy()  # Add dynamic types to GQL schema
 
         ax_forms = db_session.query(AxForm).all()
@@ -254,23 +420,8 @@ def init_schema(db_session):
                 capital_form_db_name = form.db_name[0].upper(
                 ) + form.db_name[1:]
                 class_name = capital_form_db_name + grid.db_name
-                class_fields = {}
-                class_fields['guid'] = graphene.String()
-                class_fields['axNum'] = graphene.Int()
-                class_fields['axState'] = graphene.String()
-                class_fields['axLabel'] = graphene.String()
-                class_fields['axIcon'] = graphene.String()
 
-                # Add fields for each field of AxForm
-                for field in form.db_fields:
-                    if field.is_tom_field:
-                        # HELP NEEDED ????
-                        class_fields[field.db_name] = graphene.String()
-                    else:
-                        field_type = (
-                            type_dictionary[field.field_type.value_type])
-                        # TODO maybe add label as description?
-                        class_fields[field.db_name] = field_type()
+                class_fields = create_class_fields(form)
 
                 # Create graphene class and append class dict
                 graph_class = type(
@@ -281,7 +432,6 @@ def init_schema(db_session):
                     description=form.name
                 )
                 type_classes[class_name] = graph_class
-                all_types.append(graph_class)
 
                 # if grid is default view we add enother class with name
                 # Form without Grid name
@@ -296,13 +446,13 @@ def init_schema(db_session):
                         name=default_class_name,
                         description=form.name
                     )
-                    type_classes[default_class_name] = graph_class
-                    all_types.append(default_graph_class)
+                    type_classes[default_class_name] = default_graph_class
 
         # Dynamicly crate resolvers for each typeClass
         # Iterate throw created classes and create resolver for each
         dynamic_fields = {}
         for key, type_class in type_classes.items():
+            all_types.append(type_class)
             dynamic_fields[key] = graphene.List(
                 type_class,
                 update_time=graphene.Argument(
@@ -315,7 +465,7 @@ def init_schema(db_session):
                     type=graphene.String, required=False)
             )
 
-            dynamic_fields['resolve_%s' % key] = make_resolver(
+            dynamic_fields['resolve_%s' % key] = make_query_resolver(
                 key, type_class)
 
         # Combine static schema query and dynamic query

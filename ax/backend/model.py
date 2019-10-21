@@ -392,9 +392,23 @@ class AxField(Base):
         return files_path
 
     @property
-    def is_tom_filed(self):
+    def is_relation_field(self):
         """Check is field is of realtion type """
         if self.field_type.tag in ['Ax1to1', 'Ax1tom', 'Ax1tomTable']:
+            return True
+        return False
+
+    @property
+    def is_to1_field(self):
+        """Check is field is of realtion type """
+        if self.field_type.tag == 'Ax1to1':
+            return True
+        return False
+
+    @property
+    def is_tom_field(self):
+        """Check is field is of realtion type """
+        if self.field_type.tag in ['Ax1tom', 'Ax1tomTable']:
             return True
         return False
 

@@ -715,7 +715,9 @@ AX 0.2:
         ✔ tus.py max file size must be from app.yaml @done(19-10-17 21:00)
         ✔ SSL - check uppy @done(19-10-17 21:00)
         ✔ Error toasts everywhere @done(19-10-18 10:11)
-        ☐ 1toM in graphql dynamic schema
+        ✔ 1toM in graphql dynamic schema @done(19-10-21 22:51)
+        ☐ form -> field db_name focus on tab not working
+        ☐ If form created - you cant create 1to1 to this form right after
 	☐ MARKETPLACE
 		☐ Dump application to yaml
         ☐ Install application from yaml
