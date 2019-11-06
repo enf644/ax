@@ -50,8 +50,10 @@ export default {
     }
   },
   created() {
-    this.currentValue = this.value;
-    this.formatedValue = this.value;
+    if (this.value) {
+      this.currentValue = this.value;
+      this.formatedValue = this.value;
+    }
   },
   mounted() {
     this.initAutoNumeric();

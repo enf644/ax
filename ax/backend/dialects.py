@@ -230,10 +230,6 @@ class PorstgreDialect(object):
 
                 guids_string = ''
                 if guids_array:
-                    for idx, guid in enumerate(guids_array):
-                        del guid
-                        guids_array[idx] = guids_array[idx].replace('-', '')
-
                     for check_guid in guids_array:
                         try:
                             uuid.UUID(check_guid)
@@ -373,7 +369,7 @@ class PorstgreDialect(object):
                 sql = (f'SELECT {fields_string} '
                        f'FROM "{form_db_name}" '
                        f'WHERE guid=:row_guid')
-                query_params = {"row_guid": str(row_guid).replace('-', '')}
+                query_params = {"row_guid": str(row_guid)}
             elif num_fields:
                 num_where = []
                 for num_field in num_fields:
@@ -409,12 +405,14 @@ class PorstgreDialect(object):
             List(Dict(column_name: value)): result of SQL query
         """
         try:
-            row_guid_stripped = row_guid.replace('-', '')
             sql = (f"SELECT \"{field_db_name}\" "
                    f"FROM {form_db_name} "
-                   f"WHERE guid='{row_guid_stripped}'"
+                   f"WHERE guid=:row_guid"
                    )
-            result = db_session.execute(sql).fetchall()
+            params = {
+                "row_guid": row_guid
+            }
+            result = db_session.execute(sql, params).fetchall()
             return result[0][field_db_name] if result else None
         except Exception:
             logger.exception(
@@ -438,7 +436,7 @@ class PorstgreDialect(object):
             fields_db_names = []
             query_params = {
                 "ax_state": to_state_name,
-                "row_guid": str(new_guid).replace('-', ''),
+                "row_guid": str(new_guid)
             }
 
             value_strings = []
@@ -605,7 +603,7 @@ class PorstgreDialect(object):
                 WHERE g2u.user_guid = us.guid AND g2u.group_guid=:group_guid;            
             """
             query_params = {
-                "group_guid": group_guid.replace('-', '')
+                "group_guid": group_guid
             }
             result = db_session.execute(sql, query_params).fetchall()
             return result
@@ -623,7 +621,7 @@ class PorstgreDialect(object):
                 WHERE r2u.user_guid = us.guid AND r2u.role_guid=:role_guid;            
             """
             query_params = {
-                "role_guid": role_guid.replace('-', '')
+                "role_guid": role_guid
             }
             result = db_session.execute(sql, query_params).fetchall()
             return result
@@ -641,7 +639,7 @@ class PorstgreDialect(object):
                 WHERE p2u.user_guid = us.guid AND p2u.page_guid=:page_guid;            
             """
             query_params = {
-                "page_guid": uuid.UUID(page_guid.replace('-', ''))
+                "page_guid": uuid.UUID(page_guid)
             }
             result = db_session.execute(sql, query_params).fetchall()
             return result

@@ -145,11 +145,11 @@ class GUID(TypeDecorator):  # pylint: disable=W0223
             return str(value)
         else:
             if not isinstance(value, uuid.UUID):
-                # return str(uuid.UUID(value))
-                return "%.32x" % uuid.UUID(value).int
+                return str(uuid.UUID(value))
+                # return "%.32x" % uuid.UUID(value).int
             else:
-                # return str(value)
-                return "%.32x" % value.int
+                return str(value)
+                # return "%.32x" % value.int
 
     def process_result_value(self, value, dialect):
         if value is None:

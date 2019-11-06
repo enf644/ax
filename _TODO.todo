@@ -716,15 +716,16 @@ AX 0.2:
         ✔ SSL - check uppy @done(19-10-17 21:00)
         ✔ Error toasts everywhere @done(19-10-18 10:11)
         ✔ 1toM in graphql dynamic schema @done(19-10-21 22:51)
-    ☐ MARKETPLACE
+    ✔ MARKETPLACE @done(19-11-06 15:35)
         ✔ New app modal - prompt install data @done(19-10-24 22:12)
         ✔ GQL mutation - create application. For each ax form -> @done(19-11-03 16:27)
             ✔ Creates files in tmp @done(19-10-28 11:39)
             ✔ Gzips it @done(19-11-03 16:27)
-        ☐ Install application from archive
-        ☐ Update application from archive
-    ☐ PHOTO PROJECT
+        ✔ Install application from archive @done(19-11-06 15:35)
+        ✔ Update application from archive @done(19-11-06 15:35)
     ☐ GLOBAL FROGS
+        ✔ UUID must only be with dashes @done(19-11-06 15:35)
+        ☐ 1to1 not working when inside pages!!
         ☐ Not working user selection in postgre
         ☐ Clear ag-grid filters
         ☐ 1tom gql schema error - 1to1 and 1tom in same form
@@ -735,6 +736,7 @@ AX 0.2:
         ☐ Add clould logger for python and vue
         ☐ Product usage statistics
         ☐ Redirect all http to https
+        ☐ On market install - check if database already have table before install
     ☐ FIELDS round 2
         ☐ 2D radio survey
         ☐ Yandex payment *
@@ -745,6 +747,7 @@ AX 0.2:
         ☐ Code highlite
         ☐ Approval path
         ☐ Comments *
+    ☐ PHOTO PROJECT
     ☐ INSTALLATION
     ☐ FEATURES
         ☐ Admin home widgets

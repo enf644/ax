@@ -123,21 +123,13 @@ export default {
       }
     },
     value(newValue, oldValue) {
-      if (newValue) {
-        this.currentValue = newValue.split('-').join('');
-        this.loadData();
-      } else {
-        this.currentValue = newValue;
-      }
+      this.currentValue = newValue;
+      if (newValue) this.loadData();
     }
   },
   created() {
-    if (this.value) {
-      this.currentValue = this.value.split('-').join('');
-      this.loadData();
-    } else {
-      this.currentValue = this.value;
-    }
+    this.currentValue = this.value;
+    if (this.currentValue) this.loadData();
     this.modalGuid = uuid4();
   },
   methods: {
