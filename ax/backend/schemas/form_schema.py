@@ -280,23 +280,7 @@ class CreateField(graphene.Mutation):
                         field.position = pos.position
                         field.parent = current_parent
 
-            # add permission for default admin role on every state
-            # admin_role = db_session.query(AxRole).filter(
-            #     AxRole.is_admin.is_(True)
-            # ).filter(AxRole.form_guid == ax_form.guid).first()
-
             permissions = []
-            # for state in ax_form.states:
-            #     perm = AxRoleFieldPermission()
-            #     perm.form_guid = ax_form.guid
-            #     perm.state_guid = state.guid
-            #     perm.role_guid = admin_role.guid
-            #     perm.field_guid = ax_field.guid
-            #     perm.read = True
-            #     perm.edit = True
-            #     db_session.add(perm)
-            #     permissions.append(perm)
-
             db_session.commit()
             ax_schema.init_schema(db_session)  # re-create GQL schema
 

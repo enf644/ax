@@ -9,7 +9,7 @@ import graphene
 import ujson as json
 
 from backend.model import AxForm, AxGrid, AxColumn, AxField
-# import backend.dialects as ax_dialects
+import backend.dialects as ax_dialects
 import backend.model as ax_model
 
 
@@ -18,13 +18,12 @@ from backend.schemas.types import Grid, Column, PositionInput
 from backend.auth import ax_admin_only
 
 
-def get_default_grid_code(db_name):
+def get_default_grid_code():
     """ Returns default code for grid.
         Used in createTable (grids_schema)
         and createForm (home_schema)  """
-    del db_name
     code = f"""ax.query = \"\"\"
-    SELECT <ax_fields> FROM "<ax_table>";
+    {ax_dialects.default_grid_query}
 \"\"\""""
     return code
 
@@ -228,7 +227,7 @@ class CreateGrid(graphene.Mutation):
             ax_grid.name = cur_name
             ax_grid.db_name = db_name + str(cur_num)
             ax_grid.form_guid = ax_form.guid
-            ax_grid.code = get_default_grid_code(ax_form.db_name)
+            ax_grid.code = None
             ax_grid.position = len(ax_form.grids) + 1
 
             default_options = {
@@ -332,7 +331,10 @@ class UpdateGrid(graphene.Mutation):
                 ax_grid.options_json = options_json
 
             if code:
-                ax_grid.code = code
+                if code == get_default_grid_code():
+                    ax_grid.code = None
+                else:
+                    ax_grid.code = code
 
             if is_default_view:
                 all_grids = db_session.query(AxGrid).filter(
@@ -390,13 +392,8 @@ class GridsQuery(graphene.ObjectType):
             grid = query.filter(AxGrid.form_guid == ax_form.guid).filter(
                 AxGrid.db_name == grid_db_name).first()
 
-            # if field is_virtual - we must switch current dbName with
-            # field_type.default_db_name
-            # if grid:
-            #     for column in grid.columns:
-            #         if column.field.field_type.is_virtual:
-            #             column.field.db_name = (
-            #                 column.field.field_type.virtual_source)
+            if not grid.code:
+                grid.code = get_default_grid_code()
 
             return grid
 

@@ -27,6 +27,7 @@ export default {
     ThePagesDesignerDrawerSecond,
     Splitpanes
   },
+  mounted() {},
   methods: {
     redrawMonaco() {
       this.$refs.monacoDrawer.handleResize();

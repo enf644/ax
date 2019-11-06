@@ -1,19 +1,30 @@
 <template>
-  <div>AxTest</div>
+  <div>
+    <!-- <v-autocomplete :items='components' label='Components'></v-autocomplete> -->
+    {{propD}}
+  </div>
 </template>
 
 <script>
-import i18n from '@/locale';
-
 export default {
-  mounted() {
-    console.log(i18n.t('common.field-required'));
-  },
-  methods: {
-    locale(key) {
-      return i18n.t(key);
+  props: {
+    propD: {
+      type: String,
+      default: 'wtf'
     }
-  }
+  },
+  mounted() {},
+  data() {
+    return {};
+  },
+  mounted() {
+    // console.log(this.$vuetify.lang.t('wtf'));
+    // console.log(this.echo('wtf'));
+    setTimeout(() => {
+      console.log(this.$vuetify);
+    }, 1000);
+  },
+  methods: {}
 };
 </script>
 

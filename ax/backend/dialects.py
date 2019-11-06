@@ -16,6 +16,7 @@ this = sys.modules[__name__]
 dialect_name = None
 dialect = None
 
+default_grid_query = f'SELECT <ax_fields> FROM "<ax_table>";'
 
 class PorstgreDialect(object):
     """SQL query for Postgre SQL database"""
@@ -100,7 +101,10 @@ class PorstgreDialect(object):
         """
         ret_val = None
         if "BLOB" in type_name:
-            ret_val = f"octet_length({db_name}) as {db_name}"
+            ret_val = f'octet_length("{db_name}") as "{db_name}"'
+        elif "TIMESTAMP" in type_name:
+            ret_val = f'cast(extract(epoch from "{db_name}") as integer) as "{db_name}"'
+            # ret_val = f'date_part("{db_name}"::text, CURRENT_TIMESTAMP)::integer'
         else:
             ret_val = f'"{db_name}"'
         return ret_val
@@ -119,14 +123,11 @@ class PorstgreDialect(object):
             str: SQL statement to be placed in value section
                 SET <db_name>=<this function>
         """
-        del type_name
         ret_val = None
-        # if "TIMESTAMP" in type_name:
-        #     ret_val = f"CAST(:{db_name} AS INTEGER)"
-        # elif "DECIMAL" in type_name:
-        #     ret_val = f"CAST(:{db_name} AS REAL)"
-        # else:
-        ret_val = f":{db_name}"
+        if "TIMESTAMP" in type_name:
+            ret_val = f"to_timestamp(:{db_name})"
+        else:
+            ret_val = f":{db_name}"
         return ret_val
 
 
@@ -601,7 +602,7 @@ class PorstgreDialect(object):
             sql = """
                 SELECT us.guid, us.short_name
                 FROM "_ax_group2user" g2u, "_ax_users" us
-                WHERE g2u.user_guid == us.guid AND g2u.group_guid=:group_guid;            
+                WHERE g2u.user_guid = us.guid AND g2u.group_guid=:group_guid;            
             """
             query_params = {
                 "group_guid": group_guid.replace('-', '')
@@ -619,7 +620,7 @@ class PorstgreDialect(object):
             sql = """
                 SELECT us.guid, us.short_name
                 FROM "_ax_role2user" r2u, "_ax_users" us
-                WHERE r2u.user_guid == us.guid AND r2u.role_guid=:role_guid;            
+                WHERE r2u.user_guid = us.guid AND r2u.role_guid=:role_guid;            
             """
             query_params = {
                 "role_guid": role_guid.replace('-', '')
@@ -637,10 +638,10 @@ class PorstgreDialect(object):
             sql = """
                 SELECT us.guid, us.short_name
                 FROM "_ax_page2user" p2u, "_ax_users" us
-                WHERE p2u.user_guid == us.guid AND p2u.page_guid=:page_guid;            
+                WHERE p2u.user_guid = us.guid AND p2u.page_guid=:page_guid;            
             """
             query_params = {
-                "page_guid": page_guid.replace('-', '')
+                "page_guid": uuid.UUID(page_guid.replace('-', ''))
             }
             result = db_session.execute(sql, query_params).fetchall()
             return result
@@ -725,7 +726,17 @@ class SqliteDialect(PorstgreDialect):
         if "DECIMAL" in type_name:
             ret_param = str(value).replace(",", ".") if value else None
         elif "JSON" in type_name:
-            ret_param = json.dumps(value) if value else None
+            if not value:
+                return None
+            obj_value = value
+            if isinstance(value, str):
+                try:
+                    obj_value = json.loads(value)
+                except Exception:
+                    obj_value = None
+                    logger.error(
+                        f'Error in dialect -> get_value_param -> cant json.loads value')
+            ret_param = json.dumps(obj_value) if obj_value else None
         else:
             ret_param = value if value else None
         return ret_param

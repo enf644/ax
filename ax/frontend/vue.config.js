@@ -11,8 +11,8 @@ module.exports = {
     extract: false,
     loaderOptions: {
       sass: {
-        implementation: require('sass'),
-        fiber: require('fibers')
+        implementation: require('sass')
+        // fiber: require('fibers')
       }
     }
   },

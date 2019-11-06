@@ -118,16 +118,26 @@ export default {
       this.$emit('update:value', newValue);
     },
     search(newValue) {
-      if (newValue && newValue !== this.select) this.doQuicksearch(newValue);
+      if (newValue && newValue !== this.select) {
+        this.doQuicksearch(newValue);
+      }
     },
-    value(newValue) {
-      this.currentValue = newValue;
-      if (this.currentValue) this.loadData();
+    value(newValue, oldValue) {
+      if (newValue) {
+        this.currentValue = newValue.split('-').join('');
+        this.loadData();
+      } else {
+        this.currentValue = newValue;
+      }
     }
   },
   created() {
-    this.currentValue = this.value;
-    if (this.currentValue) this.loadData();
+    if (this.value) {
+      this.currentValue = this.value.split('-').join('');
+      this.loadData();
+    } else {
+      this.currentValue = this.value;
+    }
     this.modalGuid = uuid4();
   },
   methods: {
@@ -200,6 +210,7 @@ export default {
           }
         })
         .then(data => {
+          console.log(data);
           this.axItems = data.data[this.viewDbName];
           this.formIcon = data.data.axForm.icon;
         })
@@ -244,6 +255,7 @@ export default {
         })
         .then(data => {
           this.axItems = data.data[this.viewDbName];
+          console.log(this.axItems);
           this.formIcon = data.data.axForm.icon;
         })
         .catch(error => {

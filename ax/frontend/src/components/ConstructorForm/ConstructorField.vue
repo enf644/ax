@@ -108,7 +108,6 @@ export default {
   },
   methods: {
     preventFieldDelete(doPrevent) {
-      console.log(`prevent -> ${doPrevent}`);
       store.commit('form/setDbNameIsFocused', true);
     },
     focusName() {

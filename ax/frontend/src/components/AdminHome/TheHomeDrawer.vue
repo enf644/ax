@@ -26,7 +26,15 @@
     </v-btn>
 
     <modal adaptive height='auto' name='new-folder'>
-      <TheNewFolder :guid='currentFolderGuid' @created='closeFolderModal' />
+      <TheNewFolder
+        :guid='currentFolderGuid'
+        @created='closeFolderModal'
+        @openAppModal='openAppModal'
+      />
+    </modal>
+
+    <modal adaptive height='auto' name='create-app'>
+      <TheNewAppModal :folderGuid='currentFolderGuid' @close='closeAppModal' />
     </modal>
 
     <br />
@@ -59,12 +67,14 @@ import 'jstree/dist/jstree.js';
 import 'jstree/dist/themes/default/style.css';
 import TheNewForm from '@/components/AdminHome/TheNewForm.vue';
 import TheNewFolder from '@/components/AdminHome/TheNewFolder.vue';
+import TheNewAppModal from '@/components/Marketplace/TheNewAppModal.vue';
 
 export default {
   name: 'home-drawer',
   components: {
     TheNewForm,
-    TheNewFolder
+    TheNewFolder,
+    TheNewAppModal
   },
   data() {
     return {
@@ -76,7 +86,7 @@ export default {
       return this.$store.state.home.forms;
     },
     noForms() {
-      if (!this.forms || this.forms.length == 0) return true;
+      if (!this.forms || this.forms.length === 0) return true;
       return false;
     }
   },
@@ -183,6 +193,14 @@ export default {
               : -1;
           }
         });
+    },
+    openAppModal(folderGuid) {
+      this.currentFolderGuid = folderGuid;
+      this.$modal.hide('new-folder');
+      this.$modal.show('create-app');
+    },
+    closeAppModal() {
+      this.$modal.hide('create-app');
     }
   }
 };

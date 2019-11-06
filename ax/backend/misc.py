@@ -4,6 +4,7 @@
 import os
 import sys
 import uuid
+import zipfile
 import shutil
 from pathlib import Path
 from datetime import datetime
@@ -12,7 +13,7 @@ import graphene
 import pytz
 import yaml
 from loguru import logger
-from dotmap import DotMap
+# from dotmap import DotMap
 
 this = sys.modules[__name__]
 root_path = None
@@ -155,3 +156,26 @@ def string_is_guid(string_guid):
         return uuid.UUID(string_guid).version
     except ValueError:
         return None
+
+
+def guid_or_none(string_guid):
+    """ returns uuid or None """
+    if string_is_guid(string_guid):
+        return uuid.UUID(string_guid)
+    return None
+
+
+async def zip_folder(output_filename, source_dir):
+    """ Archive folder """
+    relroot = source_dir
+    with zipfile.ZipFile(output_filename, "w", zipfile.ZIP_DEFLATED) as z_file:
+        for root, dirs, files in os.walk(source_dir):
+            del dirs
+            # add directory (needed for empty dirs)
+            # zip.write(root, os.path.relpath(root, relroot))
+            for file in files:
+                filename = os.path.join(root, file)
+                if os.path.isfile(filename):  # regular files only
+                    arcname = os.path.join(
+                        os.path.relpath(root, relroot), file)
+                    z_file.write(filename, arcname)

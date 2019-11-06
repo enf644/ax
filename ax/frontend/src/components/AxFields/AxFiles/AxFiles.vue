@@ -33,7 +33,7 @@
 <script>
 import i18n from '@/locale';
 import uuid4 from 'uuid4';
-import { getAxHost, uuidWithDashes, getAxHostProtocol } from '../../../misc';
+import { getAxHost, uuidWithDashes, getAxHostProtocol } from '@/misc';
 import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
 import getClassNameForExtension from 'font-awesome-filetypes';
@@ -53,7 +53,10 @@ export default {
     options: null,
     value: null,
     isRequired: null,
-    isReadonly: false,
+    isReadonly: {
+      type: Boolean,
+      default: false
+    },
     formGuid: null,
     rowGuid: null,
     fieldGuid: null

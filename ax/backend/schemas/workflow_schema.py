@@ -64,35 +64,10 @@ class CreateState(graphene.Mutation):
                 update_action.to_state_guid = new_state.guid
                 db_session.add(update_action)
 
-            # Add default admin role
-            admin_role = db_session.query(AxRole).filter(
-                AxRole.form_guid == ax_form_guid
-            ).filter(
-                AxRole.is_admin.is_(True)
-            ).first()
-
-            # Add permissions for default admin role
-            permissions = []
-            if admin_role:
-                state2role = AxState2Role()
-                state2role.state_guid = new_state.guid
-                state2role.role_guid = admin_role.guid
-                db_session.add(state2role)
-
-                perm = AxRoleFieldPermission()
-                perm.form_guid = ax_form_guid
-                perm.state_guid = new_state.guid
-                perm.role_guid = admin_role.guid
-                perm.field_guid = None
-                perm.read = True
-                perm.edit = True
-                db_session.add(perm)
-                permissions.append(perm)
-
             return CreateState(
                 state=new_state,
                 action=update_action,
-                permissions=permissions,
+                permissions=[],
                 ok=True)
 
 
@@ -173,19 +148,6 @@ class CreateAction(graphene.Mutation):
             new_action.from_state_guid = args.get('from_state_guid')
             new_action.to_state_guid = args.get('to_state_guid')
             db_session.add(new_action)
-
-            # Add default admin role
-            admin_role = db_session.query(AxRole).filter(
-                AxRole.form_guid == uuid.UUID(args.get('form_guid'))
-            ).filter(
-                AxRole.is_admin.is_(True)
-            ).first()
-
-            if admin_role:
-                action2role = AxAction2Role()
-                action2role.action_guid = new_action.guid
-                action2role.role_guid = admin_role.guid
-                db_session.add(action2role)
 
             return CreateAction(action=new_action, ok=True)
 

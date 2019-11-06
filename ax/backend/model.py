@@ -145,9 +145,10 @@ class GUID(TypeDecorator):  # pylint: disable=W0223
             return str(value)
         else:
             if not isinstance(value, uuid.UUID):
+                # return str(uuid.UUID(value))
                 return "%.32x" % uuid.UUID(value).int
             else:
-                # hexstring
+                # return str(value)
                 return "%.32x" % value.int
 
     def process_result_value(self, value, dialect):
@@ -215,6 +216,7 @@ class AxForm(Base):
     permissions = relationship(
         "AxRoleFieldPermission", cascade="all, delete-orphan")
 
+
     @property
     def db_fields(self):
         """Only AxFields that are database columns"""
@@ -233,6 +235,15 @@ class AxForm(Base):
                 db_fields.append(field)
         return db_fields
 
+    @property
+    def perm_states(self):
+        """Only AxStates that have perms - all without deleted and all"""
+        states = []
+        for state in self.states:
+            if state.is_all is False and state.is_deleted is False:
+                states.append(state)
+        return states
+
     def get_row_data(self):
         """Set current AxForm to match specific row in database table"""
         return "GET ROW DATA"
@@ -244,14 +255,6 @@ class AxForm(Base):
                 return field
         return None
 
-    @property
-    def perm_states(self):
-        """Only AxStates that have perms - all without deleted and all"""
-        states = []
-        for state in self.states:
-            if state.is_all is False and state.is_deleted is False:
-                states.append(state)
-        return states
 
 
 class AxFieldType(Base):
@@ -507,8 +510,6 @@ class AxRole(Base):
     form = relationship("AxForm")
     users = relationship("AxUser", secondary='_ax_role2user')
     icon = Column(String(255)) # font-awesome key
-    is_admin = Column(Boolean, unique=False, default=False)
-
 
 class AxState2Role(Base):
     """Stores Roles that are assigned for state of workflow"""

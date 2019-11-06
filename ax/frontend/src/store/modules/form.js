@@ -80,8 +80,7 @@ const GET_FORM_DATA = gql`
           node {
             guid,  
             name,
-            icon,
-            isAdmin
+            icon
           }
         }
       },          

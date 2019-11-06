@@ -10,22 +10,6 @@
       ref='form'
       v-if='dbName'
     ></ax-form>
-
-    <!-- <div class='footer'>
-      <v-btn
-        :to='"/admin/" + this.$route.params.db_name + "/workflow"'
-        class='constructor-button'
-        small
-        text
-      >
-        &nbsp;
-        <b>Next</b> &nbsp;
-        <i class='fas fa-arrow-right'></i> &nbsp;
-        build Workflow
-        &nbsp;
-        <i class='fas fa-code-branch'></i>
-      </v-btn>
-    </div>-->
   </div>
 </template>
 
@@ -66,6 +50,9 @@ export default {
     },
     updateTab() {
       this.openedTab = this.$refs.form.activeTab;
+    },
+    handleResize() {
+      this.$refs.form.handleResize();
     }
   }
 };

@@ -2,10 +2,10 @@
   <div class='card'>
     <v-form @submit.prevent='updateSettings' ref='form' v-model='valid'>
       <h1>{{header}}</h1>
-      <v-btn :ripple='false' @click='closeModal' class='close' color='black' text icon>
+      <v-btn :ripple='false' @click='closeModal' class='close' color='black' icon text>
         <i class='fas fa-times close-ico'></i>
       </v-btn>
-      <br>
+      <br />
       <v-layout align-left row wrap>
         <v-flex xs5>
           <v-switch

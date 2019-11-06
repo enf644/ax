@@ -23,6 +23,8 @@ from backend.schemas.action_schema import ActionQuery, ActionMutations, \
     ActionSubscription
 from backend.schemas.grids_schema import GridsQuery, GridsMutations
 from backend.schemas.pages_schema import PagesQuery, PagesMutations
+from backend.schemas.marketplace_schema import MarketplaceQuery,\
+    MarketplaceMutations
 from backend.schemas.types import Form, FieldType, Field, Grid, \
     Column, User, Role, State, Action, RoleFieldPermission, Group2Users, \
     Action2Role, State2Role, Role2Users, PositionInput, Page, Page2Users
@@ -50,40 +52,6 @@ type_dictionary = {
     'BLOB': graphene.String
 }
 
-
-# class Character(graphene.Interface):
-#     guid = graphene.String(required=True)
-#     axState = graphene.String()
-#     axLabel = graphene.String()
-#     name = graphene.String()
-
-#     # @classmethod
-#     # def resolve_type(cls, instance, info):
-#     #     if instance.type == 'Hero':
-#     #         return Hero
-#     #     return Villain
-
-
-# class Hero(graphene.ObjectType):
-#     class Meta:
-#         interfaces = (Character, )
-
-#     name = graphene.String()
-
-#     def resolve_name(parent, info):
-#         return "Hero name"
-
-
-# class Villain(graphene.ObjectType):
-#     class Meta:
-#         interfaces = (Character, )
-
-#     name = graphene.String()
-
-#     def resolve_name(parent, info):
-#         return "Villain name"
-
-
 # Static GQL types. Are same as SqlAlchemy model.
 gql_types = [
     Form,
@@ -110,7 +78,7 @@ type_classes = {}
 
 
 class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery,
-            ActionQuery, PagesQuery, graphene.ObjectType):
+            ActionQuery, PagesQuery, MarketplaceQuery, graphene.ObjectType):
     """Combines all schemas queryes"""
     # TODO - check if this fields are needed? Maybe custom queryes are enough?
     forms = SQLAlchemyConnectionField(Form)
@@ -128,7 +96,7 @@ class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery,
 
 class Mutations(HomeMutations, FormMutations, UsersMutations, GridsMutations,
                 WorkflowMutations, PagesMutations, ActionMutations,
-                graphene.ObjectType):
+                MarketplaceMutations, graphene.ObjectType):
     """Combines all schemas mutations"""
 
 
@@ -228,8 +196,14 @@ def make_query_resolver(db_name, type_class):
                             f'Error reading arguments for grid query - {err}')
                         raise
 
-                sql = exec_grid_code(
-                    form=ax_form, grid=grid_to_use, arguments=arguments_dict)
+                sql = None
+                if grid_to_use.code:
+                    sql = exec_grid_code(
+                        form=ax_form,
+                        grid=grid_to_use,
+                        arguments=arguments_dict)
+                else:
+                    sql = ax_dialects.default_grid_query
 
                 results = await ax_dialects.dialect.select_custom_query(
                     db_session=db_session,

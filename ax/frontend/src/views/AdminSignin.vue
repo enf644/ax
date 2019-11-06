@@ -26,15 +26,16 @@
           type='password'
           v-model='password'
         ></v-text-field>
-        <br />
-        <v-btn @click='doSignIn()'>
-          <i class='fas fa-sign-in-alt'></i>
-          &nbsp;{{$t("users.do-sign-in")}}
-        </v-btn>&nbsp;
-        <v-btn @click='adminSignIn()'>
-          <i class='fas fa-tractor'></i>
-          &nbsp;Admin sign in
-        </v-btn>
+        <div class='actions'>
+          <v-btn @click='doSignIn()' small>
+            <i class='fas fa-sign-in-alt'></i>
+            &nbsp;{{$t("users.do-sign-in")}}
+          </v-btn>&nbsp;
+          <v-btn @click='adminSignIn()' small>
+            <i class='fas fa-tractor'></i>
+            &nbsp;Admin sign in
+          </v-btn>
+        </div>
         <br />
         <br />
         <div class='signin-error' v-if='error'>{{error}}</div>
@@ -78,6 +79,7 @@ export default {
       if (this.$store.state.users.currentUser) {
         return this.$store.state.users.currentUser.shortName;
       }
+      return null;
     }
   },
   watch: {},
@@ -90,8 +92,10 @@ export default {
       return this.$t(key);
     },
     adminSignIn() {
+      const host = getAxHostProtocol();
       this.email = 'default@ax-workflow.com';
       this.password = 'deleteme';
+      this.$store.commit('home/setRedirectFromUrl', `${host}/admin/home`);
       this.doSignIn();
     },
     doSignIn() {
@@ -157,5 +161,9 @@ export default {
 }
 .signin-error {
   color: #f44336;
+}
+.actions {
+  justify-content: space-between;
+  display: flex;
 }
 </style>

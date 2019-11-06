@@ -16,8 +16,6 @@
       <br />
       <!-- <ax-form form='Wine'></ax-form> -->
       <!-- <AxForm db_name='Wine'></AxForm> -->
-      <!-- <AxGrid arguments='{"num":1}' form='Marathon' grid='Custom' height='400px' width='100%'></AxGrid> -->
-      <!-- <AxGrid :arguments='gridArgs' form='Marathon' grid='Custom' height='400px' width='100%'></AxGrid> -->
       <!-- <ax-test></ax-test> -->
     </v-sheet>
   </div>

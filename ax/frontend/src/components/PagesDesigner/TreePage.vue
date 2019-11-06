@@ -65,7 +65,7 @@ export default {
       const CREATE_PAGE = gql`
         mutation($name: String!, $parent: String!) {
           createPage(name: $name, parent: $parent) {
-            pages {
+            page {
               guid
               name
               dbName

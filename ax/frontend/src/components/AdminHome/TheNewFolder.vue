@@ -16,14 +16,29 @@
       />
     </v-form>
     <br />
-    <v-btn @click='doSomething' data-cy='new-folder-btn' small>
-      <i class='far fa-folder'></i>
-      &nbsp; {{buttonLabel}}
-    </v-btn>
-    <v-btn @click='deleteFolder' data-cy='new-folder-delete-btn' small v-if='guid'>
-      <i class='far fa-trash-alt'></i>
-      &nbsp; {{$t("home.new-folder.delete-btn")}}
-    </v-btn>
+    <div class='actions'>
+      <v-btn @click='doSomething' data-cy='new-folder-btn' small>
+        <i class='far fa-folder'></i>
+        &nbsp; {{buttonLabel}}
+      </v-btn>
+
+      <v-btn @click='openCreateAppModal' small text v-if='guid'>
+        <i class='fas fa-store'></i>
+        &nbsp; {{$t("marketplace.open-create-modal")}}
+      </v-btn>
+
+      <v-btn
+        @click='deleteFolder'
+        color='error'
+        data-cy='new-folder-delete-btn'
+        small
+        text
+        v-if='guid'
+      >
+        <i class='far fa-trash-alt'></i>
+        &nbsp; {{$t("home.new-folder.delete-btn")}}
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -131,6 +146,9 @@ export default {
     closeModal() {
       this.$emit('created');
       this.$store.commit('home/setModalMustClose', false);
+    },
+    openCreateAppModal() {
+      this.$emit('openAppModal', this.guid);
     }
   }
 };
@@ -147,5 +165,9 @@ export default {
 }
 .close-ico {
   font-size: 20px;
+}
+.actions {
+  justify-content: space-between;
+  display: flex;
 }
 </style>

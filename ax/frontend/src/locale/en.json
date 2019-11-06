@@ -450,5 +450,24 @@
             "name": "Custom html",
             "settings-code": "Html"
         }
+    },
+    "marketplace": {
+        "open-create-modal": "Create App",
+        "create-app": "Create application",
+        "create-modal-header": "Create new marketplace application",
+        "name-input": "Application name",
+        "version-input": "Application version",
+        "version-input-hint": "Decimal value",
+        "db-name-input": "Code name",
+        "db-name-input-hint": "Must be kebeb-case. Used as archive name. Please use same name for your github repo.",
+        "kebab-db-name-error": "Must be kebab-case-only",
+        "root-page-input": "Application root page",
+        "root-page-input-hint": "Enter code name of Ax page you want to be saved with application. All subpages will be saved too.",
+        "include-data-input": "Save form data? Otherwise only application structure will be saved.",
+        "upload-app-btn": "Upload app package",
+        "terminal-header": "Application terminal",
+        "download-package-header": "Application package created",
+        "download-package-btn": "Download package",
+        "app-installed-toast": "Application installed"
     }
 }

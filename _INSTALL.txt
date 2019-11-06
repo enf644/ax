@@ -57,6 +57,8 @@ Install:
     npm run serve
 
 
+    npm-check
+
 ============= CYPRESS ===============
 npm run test:e2e
 

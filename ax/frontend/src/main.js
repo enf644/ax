@@ -28,11 +28,13 @@ import Vuetify, {
   VCardTitle,
   VCardActions,
   VSpacer,
-  VBtn
+  VBtn,
+  VAutocomplete,
+  VSelect
 } from 'vuetify/lib';
-// import 'vuetify/dist/vuetify.min.css';
+import en from 'vuetify/lib/locale/en'
 
-// import 'vuetify/src/stylus/app.styl';
+
 import VuetifyDialog from 'vuetify-dialog';
 import 'vuetify-dialog/dist/vuetify-dialog.css';
 import App from './App.vue';
@@ -40,6 +42,9 @@ import router from './router';
 import i18n from './locale.js';
 
 import VueCookies from 'vue-cookies'
+
+
+
 Vue.use(VueCookies)
 VueCookies.config('7d')
 
@@ -61,7 +66,12 @@ Vue.use(VueMask);
 // the one currently starting to execute is the last one;
 
 Vue.use(VModal, { dynamic: true, injectModalsContainer: true });
+
 Vue.use(Vuetify, {
+  lang: {
+    locales: { en },
+    current: 'en'
+  },
   components: {
     VTextField,
     VSnackbar,
@@ -74,7 +84,9 @@ Vue.use(Vuetify, {
     VCardText,
     VCardActions,
     VSpacer,
-    VBtn
+    VBtn,
+    VSelect,
+    VAutocomplete
   }
 });
 Vue.use(vueCustomElement);
@@ -93,9 +105,6 @@ Vue.customElement(
 
 const formPromise = () => import(/* webpackChunkName: "ax-form" */ './components/AxForm.vue').then(m => m.default);
 Vue.customElement('ax-form', formPromise, { props: ['db_name', 'row_guid', 'update_time', 'opened_tab'] });
-
-Vue.customElement('ax-test', AxTest);
-
 
 const vuetify = new Vuetify({
   icons: {
@@ -135,3 +144,30 @@ new Vue({
   i18n,
   render: h => h(App)
 }).$mount('#ax-app');
+
+
+
+const echoFunc = msg => {
+  console.log(msg)
+  return msg;
+};
+
+AxTest.echo = echoFunc;
+AxTest.translation = { a: 'b' }
+AxTest.propD = 'works works';
+
+Vue.customElement('ax-test', AxTest, {
+  // beforeCreateVueInstance(RootComponentDefinition) {
+  //   // let modifiedRoot = { ...RootComponentDefinition };
+
+  //   // modifiedRoot.$vuetify = { lang: { t : echoFunc } };
+  //   RootComponentDefinition.blabala = { asd: 'asda' }; // eslint-disable-line no-param-reassign
+  //   this.blabala = { asd: '1111' };
+  //   console.log(RootComponentDefinition)
+  //   return RootComponentDefinition;
+  // }
+  vueInstanceCreatedCallback() {
+    console.log(this);
+    // this.propD = "This works!";
+  }
+});

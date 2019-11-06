@@ -78,7 +78,7 @@
 <script>
 import i18n from '@/locale';
 import gql from 'graphql-tag';
-import apolloClient from '../../../apollo.js';
+import apolloClient from '@/apollo.js';
 import uuid4 from 'uuid4';
 import AxForm from '@/components/AxForm.vue';
 import AxGrid from '@/components/AxGrid.vue';
@@ -94,16 +94,18 @@ export default {
     isRequired: null,
     isReadonly: null
   },
-  data: () => ({
-    currentValue: null,
-    errors: [],
-    loading: false,
-    search: null,
-    axItems: [],
-    formIcon: null,
-    modalGuid: null,
-    activeItemGuid: null
-  }),
+  data() {
+    return {
+      currentValue: null,
+      errors: [],
+      loading: false,
+      search: null,
+      axItems: [],
+      formIcon: null,
+      modalGuid: null,
+      activeItemGuid: null
+    };
+  },
   components: { AxForm, AxGrid },
   computed: {
     guidsString() {
@@ -179,7 +181,7 @@ export default {
     requiredIsValid() {
       if (this.isRequired) {
         if (!this.currentValue || this.currentValue.length === 0) {
-          let msg = i18n.t('common.field-required');
+          let msg = this.locale('common.field-required');
           if (this.options.required_text) msg = this.options.required_text;
           this.errors.push(msg);
           return false;
