@@ -91,7 +91,11 @@ def init_model(dialect: str, host: str, port: str, login: str, password: str,
                 this.db_url = 'sqlite:///' + db_path
 
             logger.debug('DB url = {url}', url=this.db_url)
-            this.engine = create_engine(this.db_url, pool_threadlocal=True)
+            this.engine = create_engine(
+                this.db_url,
+                pool_threadlocal=True,
+                connect_args={'timeout': 10})
+                # TODO take sql timeout from app.yaml
         elif dialect == 'postgre':
             this.db_url = (
                 f'postgresql://{login}:{password}@{host}:{port}/{database}')
@@ -104,7 +108,8 @@ def init_model(dialect: str, host: str, port: str, login: str, password: str,
                 pool_use_lifo=True,
                 max_overflow=0,
                 pool_recycle=3600,
-                pool_pre_ping=True)
+                pool_pre_ping=True,
+                connect_args={'connect_timeout': 10})
         else:
             msg = 'This database dialect is not supported'
             logger.error(msg)

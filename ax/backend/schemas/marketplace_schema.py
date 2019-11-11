@@ -8,6 +8,8 @@ import ast
 import copy
 import uuid
 import asyncio
+from packaging import version
+from loguru import logger
 import graphene
 import aiopubsub
 import ruamel.yaml
@@ -368,7 +370,7 @@ class CreateMarketplaceApplication(graphene.Mutation):
     ok = graphene.Boolean()
     download_url = graphene.String()
 
-    # @ax_admin_only
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "marketplace_schema -> CreateMarketplaceApplication"
         code_name = args.get('db_name')
@@ -415,12 +417,13 @@ class CreateMarketplaceApplication(graphene.Mutation):
             with open(app_yaml_path, 'w', encoding="utf-8") as yaml_file:
                 app_info = {
                     "Application name": args.get('name'),
-                    "Version": version,
+                    "Application version": version,
                     "Code name": code_name,
                     "Root folder": args.get('folder_guid'),
                     "Forms": await get_forms_db_names(app_forms),
                     "Folders": await get_folders_dump(app_folders),
-                    "Pages": pages_data
+                    "Pages": pages_data,
+                    "Ax version": os.environ.get('AX_VERSION')
                 }
                 yaml.dump(app_info, yaml_file)
 
@@ -519,6 +522,8 @@ async def create_form(db_session, form):
             existing_form.icon = form['icon']
         else:
             form_is_new = True
+            db_name = form['db_name']
+
             new_form = AxForm()
             new_form.guid = uuid.UUID(form['guid'])
             new_form.name = form['name']
@@ -982,6 +987,63 @@ async def create_form_objects(db_session, form_name, package_directory):
                     f'Form already exists, data was not inserted')
 
 
+
+async def check_existing_form(db_session, package_directory, form_db_name):
+    form_directory = package_directory / form_db_name
+    yaml_path = form_directory / f'{form_db_name}.yaml'
+    form_guid = None
+    with open(yaml_path, 'r', encoding="utf-8") as form_yaml_file:
+        form_yaml = yaml.load(form_yaml_file)
+        form_guid = form_yaml["AxForm"]["guid"]
+
+    existing_form = db_session.query(AxForm).filter(
+        AxForm.db_name == form_db_name
+    ).first()
+
+    if existing_form.guid != uuid.UUID(form_guid):
+        err = (f'Can not create AxForm [{form_db_name}]. Form with same '
+                f'db_name already exists.\nInstallation is aborted ☠️')
+        logger.exception(err)
+        await terminal_log(f'\n\n\n{err}')
+        raise Exception(err)
+
+
+async def check_package(db_session, app_yaml, package_directory):
+    """ Check if package can be installed """
+    # Check ax version
+    code_name = app_yaml["Code name"]
+    app_ax_version = app_yaml["Ax version"]
+    system_ax_version = os.environ.get('AX_VERSION')
+    if version.parse(system_ax_version) < version.parse(app_ax_version):
+        msg = (f'Error installing application [{code_name}].'
+               f'Current version of Ax [{system_ax_version}] must be upgraded '
+               f'to [{app_ax_version}] for this application. '
+               f'\nInstallation is aborted ☠️')
+        logger.exception(msg)
+        await terminal_log(f'\n\n\n{msg}')
+        raise Exception(msg)
+
+    # Check if table names of application is already present in database 
+    ax_forms = db_session.query(AxForm).with_entities(AxForm.db_name).all()
+    existing_db_names = [form.db_name for form in ax_forms]
+    for form_db_name in app_yaml['Forms']:
+        if form_db_name in existing_db_names:
+            # Check if guid of existing form is same as application form
+            await check_existing_form(
+                db_session=db_session,
+                package_directory=package_directory,
+                form_db_name=form_db_name)
+        else:
+            # Check if table exists
+            if ax_model.engine.dialect.has_table(ax_model.engine,form_db_name):
+                err = (f'Database already contains table [{form_db_name}],'
+                       f'but it is not registered as AxForm'
+                       f'.\nInstallation is aborted ☠️')
+                logger.exception(err)
+                await terminal_log(f'\n\n\n{err}')
+                raise Exception(err)
+
+
 class InstallFromPackage(graphene.Mutation):
     """ Installs marketplace application from zip archive uploaded
         to tmp folder """
@@ -992,6 +1054,7 @@ class InstallFromPackage(graphene.Mutation):
     ok = graphene.Boolean()
     msg = graphene.String()
 
+    @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
                 
@@ -1012,6 +1075,12 @@ class InstallFromPackage(graphene.Mutation):
 
             with open(archive_dir / 'ax_app.yaml', 'r', encoding="utf-8") as app_yaml_file:
                 app_yaml = yaml.load(app_yaml_file)
+
+                # Check if package can be installed
+                await check_package(
+                    db_session=db_session,
+                    app_yaml=app_yaml,
+                    package_directory=archive_dir)
 
                 # Create pages
                 await terminal_log('Creating pages:\n')

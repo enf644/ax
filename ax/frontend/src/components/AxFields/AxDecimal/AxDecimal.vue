@@ -35,8 +35,13 @@ export default {
   computed: {},
   watch: {
     formatedValue(newValue) {
-      if (this.currentValue != this.numericObject.getNumericString())
+      if (
+        newValue &&
+        this.numericObject &&
+        this.currentValue != this.numericObject.getNumericString()
+      ) {
         this.currentValue = this.numericObject.getNumericString();
+      }
     },
     currentValue(newValue) {
       this.$emit('update:value', newValue);

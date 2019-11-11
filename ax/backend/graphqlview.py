@@ -1,5 +1,7 @@
 """ Local fork of sanic_graphql lib """
 
+import re
+import time
 from collections import Mapping
 from functools import partial
 from cgi import parse_header
@@ -20,6 +22,36 @@ from loguru import logger
 import backend.model as ax_model
 import backend.auth as ax_auth
 import backend.schema as ax_schema
+
+
+start_time = None
+
+
+def log_reguest(request, time=None):
+    """ Logs graphql reuests """
+    request_type = 'query'
+    type_match = re.search('^(.*?) ', request.json['query'])
+    if type_match:
+        request_type = type_match.group(0)
+    names_match = re.findall('([a-zA-Z].+?)\(', request.json['query'])
+
+    if not names_match:
+        # query without params
+        without_match = re.findall('(.[a-zA-Z]+?) *?{', request.json['query'])
+        command_names = without_match[0] + '...'
+    else:
+        clear_match = []
+        for name in names_match:
+            if 'query' not in name and 'mutation' not in name:
+                clear_match.append(name)
+        command_names = ', '.join(clear_match)
+
+    # msg = request.json['query']
+    msg = f'{request_type} -> {command_names}'
+    # if time:
+    #     msg += f' : {time}'
+
+    logger.debug(msg)
 
 
 class GraphQLView(HTTPMethodView):
@@ -57,6 +89,7 @@ class GraphQLView(HTTPMethodView):
             self.schema, GraphQLSchema), 'A Schema is required'
 
     # noinspection PyUnusedLocal
+
     def get_root_value(self, request):  # pylint: disable=unused-argument
         """ Some getter """
         return self.root_value
@@ -71,6 +104,10 @@ class GraphQLView(HTTPMethodView):
         )
         if isinstance(context, Mapping) and 'request' not in context:
             context.update({'request': request})
+
+        # log_reguest(request)
+        # logger.debug(request.json['query'])
+
         return context
 
     def get_middleware(self, request):  # pylint: disable=unused-argument
@@ -86,6 +123,8 @@ class GraphQLView(HTTPMethodView):
 
     async def dispatch_request(self, request, *args, **kwargs):
         """ Sanic view request dispatch.  """
+        start_time = time.time()  # TODO this is debug profile
+
         with ax_model.scoped_session("GQL error -") as db_session:
             try:
                 request_method = request.method.lower()
@@ -132,14 +171,15 @@ class GraphQLView(HTTPMethodView):
                         format_error=self.format_error,
                         encode=partial(self.encode, pretty=pretty)
                     )
+                    log_reguest(request, (time.time() - start_time))
 
                     return HTTPResponse(
                         result,
                         status=status_code,
                         content_type='application/json'
                     )
-
                 else:
+                    log_reguest(request, (time.time() - start_time))
                     return self.process_preflight(request)
 
             except HttpQueryError as err:

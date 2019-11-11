@@ -18,6 +18,12 @@
       </v-btn>
     </v-badge>
 
+    <v-btn @click='saveSortFilterModel()' class='save-model-btn' small>
+      <i class='fas fa-sort-amount-down-alt'></i>
+      &nbsp;
+      {{$t("grids.save-filter-order-btn")}}
+    </v-btn>
+
     <modal adaptive height='auto' name='query-modal' scrollable width='1000px'>
       <TheQueryModal @close='closeQueryModal' />
     </modal>
@@ -182,6 +188,9 @@ export default {
     // this.options = this.$store.state.grids.options;
   },
   methods: {
+    saveSortFilterModel() {
+      this.$store.commit('grids/setDoSaveSortFilterModel', true);
+    },
     openQueryModal() {
       this.$modal.show('query-modal');
     },
@@ -189,13 +198,13 @@ export default {
       this.$modal.hide('query-modal');
     },
     saveOptions() {
+      console.log('save options');
       if (this.$store.state.grids.loadingDone) {
         this.$store.commit('grids/combineOptions', this.changedOptions);
         this.$store
           .dispatch('grids/updateGrid', { updateNeeded: true })
           .then(() => {
             const msg = this.$t('grids.grid-updated');
-            this.$store.commit('grids/setUpdateTime', Date.now());
             this.$dialog.message.success(
               `<i class="fas fa-columns"></i> &nbsp ${msg}`
             );
@@ -263,7 +272,9 @@ export default {
     },
     initColumnTree(jsTreeData) {
       $(this.$refs.tree)
-        .on('move_node.jstree', (e, data) => this.changeColumnPositions(e, data))
+        .on('move_node.jstree', (e, data) =>
+          this.changeColumnPositions(e, data)
+        )
         .on('copy_node.jstree', (e, data) => this.createColumn(e, data))
         .on('ready.jstree', () => this.openAllNodes())
         .on('refresh.jstree', () => this.openAllNodes())
@@ -310,8 +321,8 @@ export default {
           },
           sort(a, b) {
             if (this.get_node(a).data && this.get_node(b).data) {
-              return this.get_node(a).data.position
-                > this.get_node(b).data.position
+              return this.get_node(a).data.position >
+                this.get_node(b).data.position
                 ? 1
                 : -1;
             }
@@ -359,5 +370,8 @@ export default {
 }
 .options-switcher .v-label {
   font-size: 14px !important;
+}
+.save-model-btn {
+  margin-top: 10px;
 }
 </style>

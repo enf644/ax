@@ -42,6 +42,11 @@
 
     <h3>{{$t("home.settings")}}:</h3>
     <br />
+    <v-btn class='mb-3' small to='/admin/explorer'>
+      <i class='fas fa-database'></i>
+      &nbsp; {{$t("home.explorer-btn")}}
+    </v-btn>
+    <br />
     <v-btn class='mb-3' small to='/admin/users'>
       <i class='far fa-user'></i>
       &nbsp; {{$t("home.users-btn")}}

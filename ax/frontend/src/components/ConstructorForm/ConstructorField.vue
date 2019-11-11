@@ -2,7 +2,7 @@
   <span class='wrap'>
     <i :class='iconClass'></i>
     <input
-      @change='applyNameChange'
+      @change='tryApplyNameChange'
       @click='focusName'
       class='name-input'
       ref='nameInput'
@@ -33,8 +33,8 @@
 
 <script>
 // import AxFieldSettings from '@/components/AxFieldSettings.vue';
-import i18n from '../../locale.js';
-import store from '../../store';
+import i18n from '@/locale.js';
+import store from '@/store';
 
 export default {
   name: 'construcor-field',
@@ -51,7 +51,8 @@ export default {
     currentName: null,
     currentDbName: null,
     okDbName: null,
-    component: null
+    component: null,
+    dbNameIsActive: false
   }),
   computed: {
     iconClass() {
@@ -108,7 +109,8 @@ export default {
   },
   methods: {
     preventFieldDelete(doPrevent) {
-      store.commit('form/setDbNameIsFocused', true);
+      this.dbNameIsActive = doPrevent;
+      store.commit('form/setDbNameIsFocused', doPrevent);
     },
     focusName() {
       setTimeout(() => {
@@ -121,6 +123,14 @@ export default {
         this.$refs.dbInput.focus();
         this.$refs.dbInput.select();
       }, 10);
+    },
+    tryApplyNameChange() {
+      setTimeout(() => {
+        if (!this.dbNameIsActive) {
+          console.log('save name');
+          this.applyNameChange();
+        }
+      }, 50);
     },
     async applyNameChange() {
       store
@@ -142,6 +152,7 @@ export default {
       store
         .dispatch('form/updateField', {
           guid: this.guid,
+          name: this.currentName,
           dbName: this.currentDbName
         })
         .then(() => {

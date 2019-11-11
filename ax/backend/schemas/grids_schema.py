@@ -293,7 +293,6 @@ class UpdateGrid(graphene.Mutation):
         name = graphene.String()
         db_name = graphene.String()
         options_json = graphene.String()
-        code = graphene.String()
         is_default_view = graphene.Boolean()
 
     ok = graphene.Boolean()
@@ -308,7 +307,6 @@ class UpdateGrid(graphene.Mutation):
             name = args.get('name')
             db_name = args.get('db_name')
             options_json = args.get('options_json')
-            code = args.get('code')
             is_default_view = args.get('is_default_view')
             schema_reload_needed = False
             tom_sync_needed = False
@@ -329,12 +327,6 @@ class UpdateGrid(graphene.Mutation):
 
             if options_json:
                 ax_grid.options_json = options_json
-
-            if code:
-                if code == get_default_grid_code():
-                    ax_grid.code = None
-                else:
-                    ax_grid.code = code
 
             if is_default_view:
                 all_grids = db_session.query(AxGrid).filter(
@@ -363,6 +355,34 @@ class UpdateGrid(graphene.Mutation):
             return UpdateGrid(grid=ax_grid, ok=True)
 
 
+class UpdateGridCode(graphene.Mutation):
+    """ Update code of AxGrid """
+    class Arguments:  # pylint: disable=missing-docstring
+        guid = graphene.String()
+        code = graphene.String()
+
+    ok = graphene.Boolean()
+
+    @ax_admin_only
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        err = 'Error in gql mutation - grids_schema -> UpdateGridCode.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
+            guid = args.get('guid')
+            code = args.get('code')
+
+            ax_grid = db_session.query(AxGrid).filter(
+                AxGrid.guid == uuid.UUID(guid)
+            ).first()
+
+            if code == get_default_grid_code():
+                ax_grid.code = None
+            else:
+                ax_grid.code = code
+
+            db_session.commit()
+            return UpdateGridCode(ok=True)
+
+
 class GridsQuery(graphene.ObjectType):
     """Query all data of AxGrid and related classes"""
     ax_grid = graphene.Field(
@@ -384,16 +404,18 @@ class GridsQuery(graphene.ObjectType):
         err = 'grids_schema -> resolve_grid'
         with ax_model.try_catch(
                 info.context['session'], err, no_commit=True) as db_session:
+            grid = None
             ax_form = db_session.query(AxForm).filter(
                 AxForm.db_name == form_db_name
             ).first()
 
-            query = Grid.get_query(info=info)
-            grid = query.filter(AxGrid.form_guid == ax_form.guid).filter(
-                AxGrid.db_name == grid_db_name).first()
+            if ax_form:
+                query = Grid.get_query(info=info)
+                grid = query.filter(AxGrid.form_guid == ax_form.guid).filter(
+                    AxGrid.db_name == grid_db_name).first()
 
-            if not grid.code:
-                grid.code = get_default_grid_code()
+                if not grid.code:
+                    grid.code = get_default_grid_code()
 
             return grid
 
@@ -420,3 +442,4 @@ class GridsMutations(graphene.ObjectType):
     create_grid = CreateGrid.Field()
     delete_grid = DeleteGrid.Field()
     update_grid = UpdateGrid.Field()
+    update_grid_code = UpdateGridCode.Field()

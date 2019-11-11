@@ -200,15 +200,6 @@ async def do_exec(
     """
     import backend.schema as ax_schema
 
-    # async def console_print(msg):
-    #     ax_pubsub.publisher.publish(
-    #         aiopubsub.Key('console_log'),
-    #         {
-    #             'text': msg,
-    #             'modal_guid': modal_guid
-    #         })
-    #     await asyncio.sleep(1)
-
     localz = dict()
     ax = DotMap()  # javascript style dicts item['guid'] == item.guid
     ax.row.guid = form.row_guid
@@ -881,10 +872,12 @@ class ActionQuery(graphene.ObjectType):
             ax_form = db_session.query(AxForm).filter(
                 AxForm.db_name == form_db_name
             ).first()
-            ax_actions = await get_actions(
-                form=ax_form,
-                current_state=current_state,
-                current_user=current_user)
+            ax_actions = None
+            if ax_form:
+                ax_actions = await get_actions(
+                    form=ax_form,
+                    current_state=current_state,
+                    current_user=current_user)
 
             return ax_actions
 

@@ -36,9 +36,9 @@ export default {
   mounted() {
     window.jQuery = $;
     window.$ = $;
-    // setTimeout(() => {
-    //   this.initJstree(this.$store.getters['home/explorerTreeData']);
-    // }, 300);
+    setTimeout(() => {
+      this.initJstree(this.$store.getters['home/explorerTreeData']);
+    }, 100);
   },
   methods: {
     gotoGrid(e, data) {
@@ -69,8 +69,8 @@ export default {
             }
           },
           sort(a, b) {
-            return this.get_node(a).data.position
-              > this.get_node(b).data.position
+            return this.get_node(a).data.position >
+              this.get_node(b).data.position
               ? 1
               : -1;
           }

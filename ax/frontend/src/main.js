@@ -43,8 +43,6 @@ import i18n from './locale.js';
 
 import VueCookies from 'vue-cookies'
 
-
-
 Vue.use(VueCookies)
 VueCookies.config('7d')
 
@@ -55,11 +53,9 @@ import AxTest from './components/AxTest.vue';
 import Fingerprint2 from 'fingerprintjs2'
 import { uuidWithDashes } from '@/misc';
 
+Vue.config.productionTip = false;
 
 Vue.use(VueMask);
-
-// Dev dependencies
-// import VueDummy from 'vue-dummy'; // create lorum ipsum
 
 // Getting hostname of server from src of included script
 // no matter how many scripts a page contains,
@@ -92,36 +88,38 @@ Vue.use(Vuetify, {
 Vue.use(vueCustomElement);
 Vue.use(VueResize);
 Vue.use(AsyncComputed);
-Vue.config.productionTip = false;
 
-const gridPromise = () => import(/* webpackChunkName: "ax-grid" */ './components/AxGrid.vue').then(m => m.default);
-Vue.customElement(
-  'ax-grid',
-  gridPromise,
+const vuetify = new Vuetify({
+  icons: { iconfont: 'fa' }
+});
+
+
+const gridPromise = () => import(/* webpackChunkName: "ax-grid" */ './components/AxGrid.vue').then(m => {
+  return {
+    ...m.default,
+    vuetify
+  }
+});
+Vue.customElement('ax-grid', gridPromise,
   {
     props: ['form', 'grid', 'update_time', 'arguments', 'width', 'height']
   }
 );
 
-const formPromise = () => import(/* webpackChunkName: "ax-form" */ './components/AxForm.vue').then(m => m.default);
-Vue.customElement('ax-form', formPromise, { props: ['db_name', 'row_guid', 'update_time', 'opened_tab'] });
-
-const vuetify = new Vuetify({
-  icons: {
-    iconfont: 'fa'
+const formPromise = () => import(/* webpackChunkName: "ax-form" */ './components/AxForm.vue').then(m => {
+  return {
+    ...m.default,
+    vuetify
   }
 });
-Vue.config.productionTip = false;
+Vue.customElement('ax-form', formPromise, { props: ['db_name', 'row_guid', 'update_time', 'opened_tab'] });
 
 Vue.use(VuetifyDialog, {
-  context: {
-    vuetify
-  },
+  context: { vuetify },
   toast: { position: 'bottom-right' }
 });
 
 Vue.prototype.$log = logger; // Custom logger
-
 
 // Write device guid using fingerprintjs. Used in sanic-jwt to enable
 // user login in multiple devices
@@ -156,18 +154,7 @@ AxTest.echo = echoFunc;
 AxTest.translation = { a: 'b' }
 AxTest.propD = 'works works';
 
-Vue.customElement('ax-test', AxTest, {
-  // beforeCreateVueInstance(RootComponentDefinition) {
-  //   // let modifiedRoot = { ...RootComponentDefinition };
-
-  //   // modifiedRoot.$vuetify = { lang: { t : echoFunc } };
-  //   RootComponentDefinition.blabala = { asd: 'asda' }; // eslint-disable-line no-param-reassign
-  //   this.blabala = { asd: '1111' };
-  //   console.log(RootComponentDefinition)
-  //   return RootComponentDefinition;
-  // }
-  vueInstanceCreatedCallback() {
-    console.log(this);
-    // this.propD = "This works!";
-  }
+Vue.customElement('ax-test', {
+  ...AxTest,
+  vuetify
 });

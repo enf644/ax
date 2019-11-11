@@ -19,7 +19,8 @@
         "ax-forms": "Ax Forms",
         "create-form-btn": "Create form",
         "create-folder-btn": "Create folder",
-        "settings": "Settings",
+        "settings": "Manage Ax",
+        "explorer-btn": "Data explorer",
         "users-btn": "Users",
         "marketplace-btn": "Marketplace",
         "pages-designer-btn": "Pages designer",
@@ -208,7 +209,9 @@
         "query-builder-header": "Query constructor",
         "select-relation": "Select",
         "open-select-dialog": "Add relation",
-        "error-in-query": "Error occurred while querying data"
+        "error-in-query": "Error occurred while querying data",
+        "error-grid-not-found": "Grid not found. Check db_name of AxForm and AxGrid",
+        "save-filter-order-btn": "Save grid model"
     },
     "workflow": {
         "state": {

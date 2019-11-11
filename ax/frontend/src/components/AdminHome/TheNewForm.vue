@@ -167,7 +167,8 @@ export default {
     dbNameIsAvalible() {
       this.$refs.form.validate();
     },
-    modalMustClose() {
+    modalMustClose(newValue) {
+      console.log(newValue);
       this.$dialog.message.success(this.okToast);
       if (this.isDeleteAction) this.isDeleteAction = false;
       this.closeModal();
@@ -218,16 +219,11 @@ export default {
           })
           .then(() => {
             if (dbNameChanged) {
-              // console.log(`${this.dbName} != ${this.$store.state.form.dbName}`);
               const url = `/admin/${this.dbName}/form`;
-              // const url = '/admin/home';
               this.$store.commit('home/setRedirectNeededUrl', url);
-              // this.$router.push({ path: `/admin/${this.dbName}/form` });
-              this.$store.commit('home/setModalMustClose', true);
               this.$store.commit('home/setDbNameChanged', null);
             } else {
               this.$store.commit('form/setUpdateTime', Date.now());
-              this.$store.commit('home/setModalMustClose', true);
             }
           });
       }
@@ -269,7 +265,9 @@ export default {
     closeModal() {
       this.$emit('created');
       this.$store.commit('home/setDbNameIsAvalible', true);
-      this.$store.commit('home/setModalMustClose', false);
+      setTimeout(() => {
+        this.$store.commit('home/setModalMustClose', false);
+      }, 100);
     },
     openIconPicker(e) {
       e.preventDefault();

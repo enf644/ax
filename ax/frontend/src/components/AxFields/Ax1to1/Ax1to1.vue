@@ -202,7 +202,6 @@ export default {
           }
         })
         .then(data => {
-          console.log(data);
           this.axItems = data.data[this.viewDbName];
           this.formIcon = data.data.axForm.icon;
         })
@@ -247,7 +246,6 @@ export default {
         })
         .then(data => {
           this.axItems = data.data[this.viewDbName];
-          console.log(this.axItems);
           this.formIcon = data.data.axForm.icon;
         })
         .catch(error => {

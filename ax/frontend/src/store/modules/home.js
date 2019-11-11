@@ -126,6 +126,17 @@ const UPDATE_FORM = gql`
         parent,
         position,
         icon,
+        grids {
+          edges {
+            node {
+              guid,
+              name,
+              dbName,
+              position,
+              isDefaultView
+            }
+          }
+        },        
         tomLabel
       }
       avalible,
@@ -249,6 +260,7 @@ const mutations = {
     state.dbNameIsAvalible = avalible;
   },
   setModalMustClose(state, created) {
+    console.log(created);
     state.modalMustClose = created;
   },
   setPositionChangedFlag(state, changed) {

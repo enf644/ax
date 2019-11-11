@@ -7,7 +7,7 @@
     <h3>{{$t("grids.query-builder-header")}}</h3>
 
     <div id='monacoDock'>
-      <div :class='monacoWrapperClass' id='monacoWrapper'>
+      <div id='monacoWrapper'>
         <monaco-editor
           :options='monacoOptions'
           @editorDidMount='initMonaco'
@@ -23,7 +23,7 @@
 
     <br />
     <div class='actions'>
-      <v-btn @click='updateGrid' small>
+      <v-btn @click='updateGridCode' small>
         <i class='fas fa-filter'></i>
         &nbsp; {{$t("common.save")}}
       </v-btn>
@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import apolloClient from '@/apollo';
+import gql from 'graphql-tag';
 import MonacoEditor from 'vue-monaco';
 import * as monaco from 'monaco-editor';
 
@@ -48,14 +50,18 @@ export default {
     fullScreenMode: false
   }),
   // components: { MonacoEditor },
-  computed: {},
+  computed: {
+    gridGuid() {
+      return this.$store.state.grids.guid;
+    }
+  },
   mounted() {
     this.code = this.$store.state.grids.code;
   },
   methods: {
     initMonaco(editor) {
       editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
-        this.updateAction(false);
+        this.updateGridCode(false);
       });
       editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
         if (!this.fullScreenMode) {
@@ -77,17 +83,46 @@ export default {
     closeModal() {
       this.$emit('close');
     },
-    updateGrid() {
+    updateGridCode() {
       this.$store.commit('grids/setCode', this.code);
 
-      this.$store.dispatch('grids/updateGrid', {}).then(() => {
-        const msg = this.$t('grids.grid-updated');
-        this.$store.commit('grids/setUpdateTime', Date.now());
-        this.$dialog.message.success(
-          `<i class="fas fa-columns"></i> &nbsp ${msg}`
-        );
-        this.closeModal();
-      });
+      const UPDATE_CODE = gql`
+        mutation($guid: String!, $code: String) {
+          updateGridCode(guid: $guid, code: $code) {
+            ok
+          }
+        }
+      `;
+      apolloClient
+        .mutate({
+          mutation: UPDATE_CODE,
+          variables: {
+            guid: this.gridGuid,
+            code: this.code
+          }
+        })
+        .then(data => {
+          // const newForm = data.data.getForm.form;
+          const msg = this.$t('grids.grid-updated');
+          this.$store.commit('grids/setUpdateTime', Date.now());
+          this.$dialog.message.success(
+            `<i class="fas fa-columns"></i> &nbsp ${msg}`
+          );
+          this.closeModal();
+        })
+        .catch(error => {
+          const msg = `Error in updateGridCode apollo client => ${error}`;
+          this.$store.commit('home/setShowErrorMsg', msg);
+        });
+
+      // this.$store.dispatch('grids/updateGrid', {}).then(() => {
+      //   const msg = this.$t('grids.grid-updated');
+      //   this.$store.commit('grids/setUpdateTime', Date.now());
+      //   this.$dialog.message.success(
+      //     `<i class="fas fa-columns"></i> &nbsp ${msg}`
+      //   );
+      //   this.closeModal();
+      // });
     }
   }
 };

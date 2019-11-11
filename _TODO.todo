@@ -723,45 +723,47 @@ AX 0.2:
             ✔ Gzips it @done(19-11-03 16:27)
         ✔ Install application from archive @done(19-11-06 15:35)
         ✔ Update application from archive @done(19-11-06 15:35)
-    ☐ GLOBAL FROGS
+    ✔ GLOBAL FROGS round 2 @done(19-11-11 12:19)
         ✔ UUID must only be with dashes @done(19-11-06 15:35)
-        ☐ 1to1 not working when inside pages!!
-        ☐ Not working user selection in postgre
-        ☐ Clear ag-grid filters
-        ☐ 1tom gql schema error - 1to1 and 1tom in same form
-        ☐ form -> field db_name focus on tab not working
-        ☐ If form created - you cant create 1to1 to this form right after
-        ☐ In yandex brawser - No modal in grid view
-        ☐ Different sorting and filtering for different types
-        ☐ Add clould logger for python and vue
-        ☐ Product usage statistics
-        ☐ Redirect all http to https
-        ☐ On market install - check if database already have table before install
+        ✔ 1to1 not working when inside pages!! @done(19-11-06 16:08)
+        ✔ Not working user selection in postgre @done(19-11-06 16:08)
+        ✔ Sql timeout @done(19-11-08 21:01)
+        ✔ Clear ag-grid filters @done(19-11-08 21:01)
+        ✔ Marketplace mutations only for admins @done(19-11-08 21:05)
+        ✔ Warn when opening query editor @done(19-11-08 21:05)
+        ✔ form -> field db_name focus on tab not working @done(19-11-10 09:09)
+        ✔ If form created - you cant create 1to1 to this form right after @done(19-11-10 09:30)
+        ✔ Form modal not closing after update @done(19-11-10 10:13)
+        ✔ In yandex brawser - No modal in grid view @done(19-11-10 10:17)
+        ✔ On market install - check if database already have table before install @done(19-11-11 11:01)
+        ✔ Data brawser link @done(19-11-11 11:14)
+        ✔ 1tom gql schema error - 1to1 and 1tom in same form @done(19-11-11 12:19)
     ☐ FIELDS round 2
         ☐ 2D radio survey
-        ☐ Yandex payment *
         ☐ Radio
         ☐ Tags input
-        ☐ WYSIWYG
         ☐ Markdown editor
-        ☐ Code highlite
         ☐ Approval path
-        ☐ Comments *
-    ☐ PHOTO PROJECT
-    ☐ INSTALLATION
+        ☐ Yandex payment *
+    ☐ PERFORMANCE TEST
+        ☐ Redis integration
+        ☐ 4 workers, cache problem, schema reload
+        ☐ Give huge load - stress test
+        ☐ Profile execution
+            https://stackoverflow.com/a/49526932/784789
+            https://github.com/mgedmin/profilehooks
     ☐ FEATURES
         ☐ Admin home widgets
             ☐ Stack-overflow questions
             ☐ Featured apps
             ☐ Global message - patreon donation
+            ☐ Sponsors
         ☐ Role and user based server-filter
+        ☐ Users menu
         ☐ Default name field. 1tomLabel = {name}
         ☐ Every modal must be moved a litle bit
-        ☐ User registration -> always throw email (Ax does not without smtp??)
-    ☐ PERFORMANCE TEST
-        ☐ Redis integration
-        ☐ 4 workers, cache problem, schema reload
-        ☐ Give huge load - stress test
+        ☐ User registration -> always throw email (Ax does not work without smtp??)
+    ☐ INSTALLATION
     ☐ LICENSE GENERATION
         ☐ If not licensed - put watermark with logo and link everywhere
     ☐ TUTORIAL
@@ -814,7 +816,6 @@ AX 0.3:
 
 
 
-
 BEFORE LAUNCH:
     ☐ Landing page
     ☐ Documentation
@@ -860,6 +861,7 @@ FROGS TODOS:
             ☐ GQL schema reset will not work - edit throw pubsub?
             ☐ Cache and record labels probavly wont work - move to redis?
     ☐ MODERATE
+        ☐ Redirect all http to https
         ☐ Python locale - change hard-coded english words. Pages, Roles names.
         ☐ if field removed - remove all files from /uploads/from_files
         ☐ What if database already exists?            
@@ -892,6 +894,7 @@ FEATURES:
     ✔ Arguments for doAction. Can be used in python code. @done(19-10-16 15:18)
     ✔ Conditions in workflow (done throw action abort) @done(19-10-18 18:01)
     ☐ PRO VERSION
+        ☐ Different sorting and filtering for different types
         ☐ Infinite scroll in AxGrid
             ☐ Setting in constructor
             ☐ Change ag-grid with getData() - https://www.ag-grid.com/javascript-grid-infinite-scrolling/
@@ -909,6 +912,7 @@ FEATURES:
         ☐ Timers in workflow
         ☐ Allow one level of sub-tabs for AxForm - https://vuetifyjs.com/en/components/lists#expansion-lists
     ☐ MODERATE
+        ☐ Add clould logger for python and vue
         ☐ Detect unsuported browsers and print error
         ☐ Custom error pages
         ☐ Quicksearch in 1tom -> must not be case sansitive
@@ -924,7 +928,7 @@ FEATURES:
         ☐ MtoM Create new record inside inline tom field? Added to table and added to field value
         ☐ Marketplace -> Application catalog
         ☐ Marketplace -> Install from git repository (pages use gitcdn)
-    ☐ THINK THROW, BIG
+    ☐ THINK THRU, BIG
         ☐ Billing for Sass services that run ontop of AX
         ☐ Custom additional form in action execution. Create form and set it as action input.
         ☐ Offline work for Pages. AxGrid, AxForm data is cached in localstorage
@@ -1077,7 +1081,7 @@ Every commit checklist:
         ☐ All cypress tests passed on app engine
 
 Every new version checklist:
-    ☐ Locale is updated. All translations are done
+    ☐ Locale is updated (Outsource). All translations are done
     ☐ Pypi package is updated
     ☐ App engine file storage is updated
     ☐ App engine application is created from market
@@ -1105,24 +1109,22 @@ ALL AX FIELDS:
 	☐ Identification
 		✔ GuId @done(19-09-14 09:03)
 		✔ Numeration `[COMPLEX]` @done(19-09-14 09:03)
-	☐ Decoration
-		☐ Header
-        ☐ Text
-        ☐ Icon column
-        ☐ Color column
+	✔ Decoration @done(19-11-07 10:49)
+        ✔ Html @done(19-11-07 10:45)
 	☐ String
 		✔ Simple String @done(19-09-14 09:03)
-		☐ Email
+        ✔ Email @done(19-11-07 10:45)
+        ✔ Telephone number @done(19-11-07 10:45)
 	☐ Number
 		✔ Integer @done(19-09-14 09:03)
-		☐ Decimal
-		☐ Telephone number
-		☐ Slider
+		✔ Decimal @done(19-11-07 10:46)
+		✔ Slider @done(19-11-07 10:46)
 	☐ Boolean
 		✔ Checkbox @done(19-09-14 09:03)
-        ☐ Switch
+        ✔ Switch @done(19-11-07 10:46)
         ☐ 2D radio survey
     ☐ Payment
+        ☐ Yandex Kassa `[COMPLEX]`
         ☐ Paypal `[COMPLEX]`
         ☐ Stripe `[COMPLEX]`
         ☐ ... check jotforms
@@ -1131,12 +1133,12 @@ ALL AX FIELDS:
 		✔ 1:M @done(19-09-14 09:03)
 		✔ 1:M Table @done(19-09-14 09:03)
 	☐ Date and Time
-		☐ Date
+		✔ Date @done(19-11-07 10:46)
 		☐ Date Range
 		☐ Date and Time
 		☐ Spinner Date
 	☐ List
-		☐ Select
+		✔ Choise @done(19-11-07 10:48)
 		☐ Cascade ajax select
 		☐ Radio
 		☐ Json Table
@@ -1144,21 +1146,21 @@ ALL AX FIELDS:
 	☐ Text
 		✔ Simple text @done(19-09-14 09:04)
 		☐ WYSIWYG
-		☐ BB Code
+		☐ Markdown
 		☐ Code highlite
 		☐ Static text
 	☐ Images
 		☐ Filesystem Images `[COMPLEX]`
 		☐ Filesystem Image Crop `[COMPLEX]`
 		☐ Database Images
-		☐ Database Image Crop
+		✔ Database Image Crop @done(19-11-07 10:48)
 		☐ Google Drive Images `[COMPLEX]`
 	☐ Files
 		✔ Filesystem Files `[COMPLEX]` @done(19-09-14 09:05)
 		☐ Database Files
 		☐ Google Disk Files `[COMPLEX]`
 	☐ Users
-		☐ Users `[COMPLEX]`
+		✔ Users `[COMPLEX]` @done(19-11-07 10:48)
 		☐ Approval path `[COMPLEX]`
 	☐ Itegration
 		☐ Google Maps `[COMPLEX]`
@@ -1170,7 +1172,9 @@ ALL AX FIELDS:
 		☐ D3 Graph
 	☐ Calculated values
 		☐ Condition styling
-		☐ Ajax request field `[COMPLEX]`
+        ☐ Ajax request field `[COMPLEX]`
+        ☐ Icon grid column
+        ☐ Color grid column        
 	☐ Object Control
 		✔ Edit history (Logging) `[COMPLEX]` @done(19-09-14 09:05)
         ☐ Detailed edit history (Version control) `[COMPLEX]`

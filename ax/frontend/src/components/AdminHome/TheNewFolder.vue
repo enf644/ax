@@ -145,7 +145,9 @@ export default {
     },
     closeModal() {
       this.$emit('created');
-      this.$store.commit('home/setModalMustClose', false);
+      setTimeout(() => {
+        this.$store.commit('home/setModalMustClose', false);
+      }, 50);
     },
     openCreateAppModal() {
       this.$emit('openAppModal', this.guid);

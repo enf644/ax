@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- <v-autocomplete :items='components' label='Components'></v-autocomplete> -->
+    <v-autocomplete :items='components' label='Components'></v-autocomplete>
     {{propD}}
   </div>
 </template>

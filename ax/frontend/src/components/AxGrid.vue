@@ -15,6 +15,8 @@
       type='error'
     >{{locale("grids.error-in-query")}} {{this.form}} {{this.grid}}</v-alert>
 
+    <v-alert :value='this.gridNotFound' type='error'>{{locale("grids.error-grid-not-found")}}</v-alert>
+
     <v-sheet
       :class='sheetClass'
       elevation='5'
@@ -40,7 +42,13 @@
       <div :class='gridClass' ref='grid'></div>
 
       <div class='actions' v-show='actionsEnabled'>
-        <v-btn :key='action.guid' @click='doAction(action)' small v-for='action in this.actions'>
+        <v-btn
+          :key='action.guid'
+          @click='doAction(action)'
+          class='action-btn'
+          small
+          v-for='action in this.actions'
+        >
           <i :class='getActionIconClass(action)'></i>
           &nbsp;
           {{ action.name }}
@@ -111,7 +119,14 @@ export default {
     arguments: null,
     width: null,
     height: null,
-    tom_disabled: false
+    tom_disabled: {
+      type: Boolean,
+      default: false
+    },
+    constructor_mode: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -132,7 +147,8 @@ export default {
       gridInitialized: false,
       modalGuid: null,
       actions: null,
-      gqlException: false
+      gqlException: false,
+      gridNotFound: false
     };
   },
   asyncComputed: {
@@ -358,6 +374,8 @@ export default {
   methods: {
     reloadGrid() {
       if (this.gridObj) {
+        console.log(this.gridObj.gridOptions);
+        console.log(this.gridObj.gridOptions.api);
         if (this.gridObj.gridOptions && this.gridObj.gridOptions.api) {
           this.gridObj.gridOptions.api.destroy();
         }
@@ -510,21 +528,25 @@ export default {
         })
         .then(data => {
           const gridData = data.data.axGrid;
-          this.guid = gridData.guid;
-          this.name = gridData.name;
-          this.dbName = gridData.dbName;
-          this.formGuid = gridData.formGuid;
-          this.formName = data.data.axForm.name;
-          this.formIcon = data.data.axForm.icon;
-          this.isDefaultView = gridData.isDefaultView;
-          this.options = JSON.parse(gridData.optionsJson);
-          this.columns = gridData.columns
-            ? gridData.columns.edges.map(edge => edge.node)
-            : null;
-          this.actions = data.data.actionsAvalible;
+          if (gridData == null) {
+            this.gridNotFound = true;
+          } else {
+            this.guid = gridData.guid;
+            this.name = gridData.name;
+            this.dbName = gridData.dbName;
+            this.formGuid = gridData.formGuid;
+            this.formName = data.data.axForm.name;
+            this.formIcon = data.data.axForm.icon;
+            this.isDefaultView = gridData.isDefaultView;
+            this.options = JSON.parse(gridData.optionsJson);
+            this.columns = gridData.columns
+              ? gridData.columns.edges.map(edge => edge.node)
+              : null;
+            this.actions = data.data.actionsAvalible;
 
-          if (this.options.enableSubscription) this.subscribeToActions();
-          this.loadData();
+            if (this.options.enableSubscription) this.subscribeToActions();
+            this.loadData();
+          }
         })
         .catch(error => {
           logger.error(
@@ -653,44 +675,59 @@ export default {
           'ax-highlited-row': params => params.data.isHighlited === true
         };
 
-        this.gridObj.gridOptions.onColumnResized = event => {
-          const fieldDbName = event.column.colId;
-          const fieldWidth = event.column.actualWidth;
-          if (event.finished === true) {
-            const eventData = {
-              name: 'column-width',
-              column: fieldDbName,
-              width: fieldWidth
-            };
-            this.$emit('modify', eventData);
-          }
-        };
-
-        this.gridObj.gridOptions.onFilterModified = () => {
-          const filterModel = this.gridObj.gridOptions.api.getFilterModel();
-          const eventData = {
-            name: 'filter-change',
-            data: filterModel
+        if (this.constructor_mode) {
+          this.gridObj.gridOptions.onColumnResized = event => {
+            if (this.gridInitialized) {
+              const fieldDbName = event.column.colId;
+              const fieldWidth = event.column.actualWidth;
+              if (event.finished === true) {
+                console.log('onColumnResized');
+                const eventData = {
+                  name: 'column-width',
+                  column: fieldDbName,
+                  width: fieldWidth
+                };
+                this.$emit('modify', eventData);
+              }
+            }
           };
-          if (this.gridInitialized) this.$emit('modify', eventData);
-        };
+          //   this.gridObj.gridOptions.onFilterModified = () => {
+          //     if (this.gridInitialized) {
+          //       const filterModel = this.gridObj.gridOptions.api.getFilterModel();
+          //       if (this.options.filterModel != filterModel) {
+          //         console.log('onFilterModified');
+          //         const eventData = {
+          //           name: 'filter-change',
+          //           data: filterModel
+          //         };
+          //         this.$emit('modify', eventData);
+          //       }
+          //     }
+          //   };
+          //   this.gridObj.gridOptions.onSortChanged = () => {
+          //     if (this.gridInitialized) {
+          //       const sortModel = this.gridObj.gridOptions.api.getSortModel();
+          //       if (this.options.sortModel != sortModel) {
+          //         console.log('onSortChanged');
+          //         const eventData = {
+          //           name: 'sort-change',
+          //           data: sortModel
+          //         };
+          //         this.$emit('modify', eventData);
+          //       }
+          //     }
+          //   };
+        }
 
-        this.gridObj.gridOptions.onSortChanged = () => {
-          const sortModel = this.gridObj.gridOptions.api.getSortModel();
-          const eventData = {
-            name: 'sort-change',
-            data: sortModel
-          };
-          if (this.gridInitialized) this.$emit('modify', eventData);
-        };
+        this.gridObj.gridOptions.api.getSortModel();
+        this.gridObj.gridOptions.api.getFilterModel();
 
         if (this.rowData == null) {
           this.gridObj.gridOptions.api.showNoRowsOverlay();
         }
 
-        this.gridInitialized = true;
-
         setTimeout(() => {
+          this.gridInitialized = true;
           if (this.isTomMode) {
             this.gridObj.gridOptions.suppressRowClickSelection = true;
             this.doPreselect(this.preselect);
@@ -750,6 +787,12 @@ export default {
         target: '_blank',
         href: url
       }).click();
+    },
+    getFilterModel() {
+      return this.gridObj.gridOptions.api.getFilterModel();
+    },
+    getSortModel() {
+      return this.gridObj.gridOptions.api.getSortModel();
     }
   }
 };
@@ -827,5 +870,8 @@ export default {
   width: 300px;
   margin-left: auto;
   margin-right: 25px;
+}
+.action-btn {
+  margin-right: 10px;
 }
 </style>

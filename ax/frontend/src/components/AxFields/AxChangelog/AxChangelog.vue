@@ -2,7 +2,7 @@
   <div>
     <h3>{{name}}</h3>
     <div :key='item.timestamp' class='changelog-row' v-for='item in currentValue'>
-      {{ $d(getDate(item.timestamp), 'normal') }} : [{{item.user}}] :
+      {{ dateLocale(getDate(item.timestamp), 'normal') }} : [{{item.user}}] :
       <b>{{ item.action.name }}</b>
       &nbsp;
       <i class='fas fa-arrow-right'></i>
@@ -43,6 +43,9 @@ export default {
   methods: {
     locale(key) {
       return i18n.t(key);
+    },
+    dateLocale(key) {
+      return i18n.d(key);
     },
     isValid() {
       return true;

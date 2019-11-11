@@ -1,7 +1,7 @@
-import apolloClient from '../../apollo';
+import apolloClient from '@/apollo';
 import gql from 'graphql-tag';
-import logger from '../../logger';
-import i18n from '../../locale.js';
+import logger from '@/logger';
+import i18n from '@/locale.js';
 
 const getDefaultState = () => {
   return {
@@ -18,7 +18,8 @@ const getDefaultState = () => {
     gotoGridDbName: null,
     updateTime: null,
     deletedFlag: null,
-    loadingDone: false
+    loadingDone: false,
+    doSaveSortFilterModel: false
   }
 }
 
@@ -133,14 +134,13 @@ const DELETE_GRID = gql`
 
 
 const UPDATE_GRID = gql`
-  mutation ($guid: String!, $name: String!, $dbName: String, $optionsJson: String, $isDefaultView: Boolean, $code: String) {
-    updateGrid(guid: $guid, name: $name, dbName: $dbName, optionsJson: $optionsJson, isDefaultView: $isDefaultView, code: $code) {
+  mutation ($guid: String!, $name: String!, $dbName: String, $optionsJson: String, $isDefaultView: Boolean) {
+    updateGrid(guid: $guid, name: $name, dbName: $dbName, optionsJson: $optionsJson, isDefaultView: $isDefaultView) {
       grid {
         guid,
         name,
         dbName,
         formGuid,
-        code,
         optionsJson,
         isDefaultView,
         columns {
@@ -223,10 +223,11 @@ const mutations = {
     state.options.widths[colData.column] = colData.width;
   },
   setFilterModel(state, colData) {
-    state.options.filterModel = colData.data;
+
+    state.options.filterModel = colData;
   },
   setSortModel(state, colData) {
-    state.options.sortModel = colData.data;
+    state.options.sortModel = colData;
   },
   combineOptions(state, optionsPart) {
     Object.keys(optionsPart).forEach(key => {
@@ -238,6 +239,9 @@ const mutations = {
   },
   setCode(state, code) {
     state.code = code;
+  },
+  setDoSaveSortFilterModel(state, doSave) {
+    state.doSaveSortFilterModel = doSave;
   }
 };
 
@@ -392,7 +396,6 @@ const actions = {
         name: currentName,
         dbName: currentDbName,
         optionsJson: currentOptionsJson,
-        code: context.state.code,
         isDefaultView: currentIsDefaultView
       }
     })
