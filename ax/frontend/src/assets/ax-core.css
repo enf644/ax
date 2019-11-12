@@ -342,7 +342,10 @@ a {
 /******************* D3 styles }************************/
 
 
-
+/* mavon-editor used in AxMarkdown */
+.v-note-wrapper {
+    z-index: 105 !important;
+}
 
 
 .ax-form-app .application--wrap {

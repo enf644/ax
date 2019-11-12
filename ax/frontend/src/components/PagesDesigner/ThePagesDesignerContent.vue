@@ -1,5 +1,5 @@
 <template>
-  <div class='pages-preview' v-html='html'></div>
+  <div class='pages-preview markdown-body' v-html='html'></div>
 </template>
 
 <script>

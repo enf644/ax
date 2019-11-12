@@ -739,12 +739,14 @@ AX 0.2:
         ✔ Data brawser link @done(19-11-11 11:14)
         ✔ 1tom gql schema error - 1to1 and 1tom in same form @done(19-11-11 12:19)
     ☐ FIELDS round 2
-        ☐ 2D radio survey
-        ☐ Radio
-        ☐ Tags input
-        ☐ Markdown editor
-        ☐ Approval path
-        ☐ Yandex payment *
+        ✔ Radio @done(19-11-11 13:16)
+        ✔ Tags input - AxTags @done(19-11-12 11:11)
+        ✔ 2D radio survey - AxRadioSurvey @done(19-11-12 15:35)
+        ✔ Markdown editor - AxMarkdown @done(19-11-12 20:57)
+        ☐ AxComments
+        ☐ Approval path - AxApproval
+        ☐ Paypal patment - AxPaymentPaypal
+        ☐ Yandex payment - AxPaymentYandex
     ☐ PERFORMANCE TEST
         ☐ Redis integration
         ☐ 4 workers, cache problem, schema reload
@@ -813,6 +815,7 @@ AX 0.3:
         ☐ While code in fullscreen mode - the debugger is avalible. You can choose some row from db_table and run action. The result will be displayed in modal. The database will not be modified.
         ☐ Erros in acction that was launched within actions
         ☐ Action can be canceled. From console or on button click
+        ☐ Page designer. click markdown icons like in https://nhn.github.io/tui.editor/latest/tutorial-example01-editor-basic
 
 
 
@@ -938,6 +941,9 @@ FEATURES:
         ☐ One database can be used for authorisation of multiple AX installations
         ☐ Plugin system, custom fields system
             ☐ Подключается поле через lazy-loading - unpkg.com
+        ☐ Fields
+            ☐ Surveyjs - all fields
+            ☐ https://awesome-vue.js.org/components-and-libraries/ui-components.html
     ☐ SOMEDAY
         ☐ AxForm - make dynamic form header. If wide form - it is in drawer. If it is slim - it is in form.
         ☐ Form constructor -> delete field by drag-drop
@@ -952,6 +958,7 @@ FEATURES:
         ☐ Pages data is stored in cache
         ☐ Page title in page-designer in toolbar
         ☐ If js exception - show toast with rerort button
+        ☐ When marketplace app is made - workflow is saved as img - https://github.com/mycurelabs/vue-html2canvas
     ☐ LATER MAYBE    
         ☐ Use simple grid (no need for 700kb ag-grid)
         ☐ Remember the width of constructor drawers in cookies

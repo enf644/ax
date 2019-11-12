@@ -419,7 +419,15 @@
             "placeholder-hint": "This text will be displayed if nothing was selected"
         },
         "AxRadio": {
-            "name": "Radio"
+            "name": "Radio",
+            "items-editor-title": "Avalible choises",
+            "horizontal-setting": "Align horizontally"
+        },
+        "AxRadioSurvey": {
+            "name": "Radio survey"
+        },
+        "AxTags": {
+            "name": "Tags"
         },
         "AxImageCropDb": {
             "name": "Image Crop",
@@ -448,6 +456,9 @@
         },
         "AxComments": {
             "name": "Comments"
+        },
+        "AxApproval": {
+            "name": "Approval path"
         },
         "AxHtml": {
             "name": "Custom html",

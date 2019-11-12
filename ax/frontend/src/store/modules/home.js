@@ -260,7 +260,6 @@ const mutations = {
     state.dbNameIsAvalible = avalible;
   },
   setModalMustClose(state, created) {
-    console.log(created);
     state.modalMustClose = created;
   },
   setPositionChangedFlag(state, changed) {

@@ -5,7 +5,9 @@ import vueCustomElement from 'vue-custom-element'; // create web component from 
 import 'document-register-element'; // polyfill for vue-custom-element
 import 'animate.css/animate.min.css';
 import logger from './logger';
-import './assets/ax-core.css'; // TODO check if ./ needed
+import './assets/ax-core.css';
+import './assets/github-markdown.css';
+
 import VModal from 'vue-js-modal';
 
 // Admin dependencies

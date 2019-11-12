@@ -62,7 +62,7 @@
       </v-btn>
     </div>
 
-    <modal adaptive height='auto' name='update-form' scrollable>
+    <modal adaptive class='update-form-modal' height='auto' name='update-form' scrollable>
       <TheNewForm :guid='this.$store.state.form.guid' @created='closeFormModal' />
     </modal>
 
@@ -110,7 +110,7 @@
       </v-card>
     </v-menu>
 
-    <modal adaptive height='auto' name='update-grid' scrollable>
+    <modal adaptive class='update-grid-modal' height='auto' name='update-grid' scrollable>
       <TheGridModal :guid='this.$store.state.grids.guid' @updated='closeGridModal' />
     </modal>
 
@@ -210,6 +210,7 @@ export default {
       if (this.$store.state.users.currentUser) {
         return this.$store.state.users.currentUser.shortName;
       }
+      return null;
     }
   },
   methods: {
@@ -345,6 +346,10 @@ export default {
 }
 .grids-div {
   white-space: nowrap;
+}
+
+.update-form-modal {
+  z-index: 200;
 }
 
 @media only screen and (max-width: 1200px) {

@@ -253,10 +253,10 @@ def create_field_types() -> None:
                 tag="AxMarkdown",
                 parent="group-text",
                 default_db_name="markdown",
-                position=1,
+                position=2,
                 value_type="TEXT",
-                is_inline_editable=True,
                 is_columnn_avalible=True,
+                is_always_whole_row=True,
                 icon="align-left"))
 
             # Number
@@ -398,6 +398,22 @@ def create_field_types() -> None:
                 value_type="VARCHAR(255)",
                 is_inline_editable=True,
                 icon="list"))
+            db_session.add(AxFieldType(
+                tag="AxTags",
+                parent="group-list",
+                default_db_name="tags",
+                position=1,
+                value_type="JSON",
+                is_inline_editable=True,
+                icon="list"))
+            db_session.add(AxFieldType(
+                tag="AxRadioSurvey",
+                parent="group-list",
+                default_db_name="survey",
+                position=1,
+                value_type="JSON",
+                is_inline_editable=False,
+                icon="poll"))
 
             # Images
             db_session.add(AxFieldType(
@@ -456,6 +472,15 @@ def create_field_types() -> None:
                 parent="group-communication",
                 position=4,
                 default_db_name="comments",
+                value_type="GUID",
+                is_always_whole_row=True,
+                is_backend_available=True,
+                icon="comments"))
+            db_session.add(AxFieldType(
+                tag="AxApproval",
+                parent="group-communication",
+                position=4,
+                default_db_name="approval",
                 value_type="JSON",
                 is_always_whole_row=True,
                 is_backend_available=True,
