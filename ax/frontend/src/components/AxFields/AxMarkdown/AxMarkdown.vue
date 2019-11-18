@@ -1,14 +1,5 @@
 <template>
   <div>
-    <!-- <v-textarea
-    :disabled='isReadonly'
-    :error-messages='errors'
-    :hint='options.hint'
-    :label='name'
-    @keyup='isValid'
-    auto-grow
-    v-model='currentValue'
-    ></v-textarea>-->
     <span class='label'>{{name}}</span>
     <div class='markdown-body' v-html='mdValue' v-if='isReadonly'></div>
     <mavon-editor

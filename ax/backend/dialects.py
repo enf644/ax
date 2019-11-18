@@ -147,6 +147,8 @@ class PorstgreDialect(object):
             ret_param = str(value).replace(",", ".") if value else None
         elif "JSON" in type_name:
             ret_param = json.dumps(value) if value else None
+        elif "GUID" in type_name:
+            ret_param = str(value)
         else:
             ret_param = value if value else None
         return ret_param
@@ -723,6 +725,8 @@ class SqliteDialect(PorstgreDialect):
         ret_param = None
         if "DECIMAL" in type_name:
             ret_param = str(value).replace(",", ".") if value else None
+        elif "GUID" in type_name:
+            ret_param = str(value)            
         elif "JSON" in type_name:
             if not value:
                 return None
@@ -845,6 +849,61 @@ class SqliteDialect(PorstgreDialect):
         except Exception:
             logger.exception('Error executing SQL - drop_column')
             raise
+
+
+    async def select_group_users(self, db_session, group_guid):
+        """ Select of users of group """
+        try:
+            sql = """
+                SELECT us.guid, us.short_name
+                FROM "_ax_group2user" g2u, "_ax_users" us
+                WHERE g2u.user_guid = us.guid AND g2u.group_guid=:group_guid;            
+            """
+            query_params = {
+                "group_guid": str(group_guid)
+            }
+            result = db_session.execute(sql, query_params).fetchall()
+            return result
+        except Exception:
+            logger.exception('Error executing SQL - select_group_users')
+            raise
+
+
+    async def select_role_users(self, db_session, role_guid):
+        """ Select of users of group """
+        try:
+            sql = """
+                SELECT us.guid, us.short_name
+                FROM "_ax_role2user" r2u, "_ax_users" us
+                WHERE r2u.user_guid = us.guid AND r2u.role_guid=:role_guid;            
+            """
+            query_params = {
+                "role_guid": str(role_guid)
+            }
+            result = db_session.execute(sql, query_params).fetchall()
+            return result
+        except Exception:
+            logger.exception('Error executing SQL - select_role_users')
+            raise
+
+
+    async def select_page_users(self, db_session, page_guid):
+        """ Select of users that can view page """
+        try:
+            sql = """
+                SELECT us.guid, us.short_name
+                FROM "_ax_page2user" p2u, "_ax_users" us
+                WHERE p2u.user_guid = us.guid AND p2u.page_guid=:page_guid;            
+            """
+            query_params = {
+                "page_guid": str(uuid.UUID(page_guid))
+            }
+            result = db_session.execute(sql, query_params).fetchall()
+            return result
+        except Exception:
+            logger.exception('Error executing SQL - select_page_users')
+            raise
+
 
 
 class MysqlDialect(object):

@@ -36,6 +36,7 @@ import backend.fields.AxChangelog as AxFieldAxChangelog  # pylint: disable=unuse
 import backend.fields.AxFiles as AxFieldAxFiles  # pylint: disable=unused-import
 import backend.fields.AxImageCropDb as AxFieldAxImageCropDb  # pylint: disable=unused-import
 import backend.fields.AxNum as AxFieldAxNum  # pylint: disable=unused-import
+import backend.fields.AxComments as AxFieldAxComments  # pylint: disable=unused-import
 
 
 this = sys.modules[__name__]
@@ -614,6 +615,8 @@ async def execute_action(
                         tobe_form=after_form,
                         current_user=current_user)
 
+            db_session.commit()
+
             # 10. Fire all web-socket subscribtions. Notify of action performed
             notify_message = {
                 "form_guid": tobe_form.guid,
@@ -753,10 +756,15 @@ class DoAction(graphene.Mutation):
 
 class ActionSubscription(graphene.ObjectType):
     """GraphQL subscriptions"""
+
     action_notify = graphene.Field(
         ActionNotifyMessage,
         form_db_name=graphene.Argument(type=graphene.String, required=True),
         row_guid=graphene.Argument(type=graphene.String, required=False))
+
+    console_notify = graphene.Field(
+        ConsoleMessage,
+        modal_guid=graphene.Argument(type=graphene.String, required=True))
 
     async def resolve_action_notify(self, info, form_db_name, row_guid=None):
         """ Web-socket subscription on every performed action
@@ -808,10 +816,6 @@ class ActionSubscription(graphene.ObjectType):
         except asyncio.CancelledError:
             await subscriber.remove_all_listeners()
 
-
-    console_notify = graphene.Field(
-        ConsoleMessage,
-        modal_guid=graphene.Argument(type=graphene.String, required=True))
 
     async def resolve_console_notify(self, info, modal_guid):
         """ Web-socket subscription on ax terminal print

@@ -10,10 +10,11 @@ from sanic_jwt import exceptions, initialize, Configuration
 from sanic_jwt.decorators import _do_protection
 
 from backend.model import AxUser, AxGroup2Users, AxRole2Users, \
-    AxRoleFieldPermission, AxForm, AxAction2Role
+    AxRoleFieldPermission, AxForm, AxAction2Role, AxField
 import backend.cache as ax_cache
 import backend.model as ax_model
 import backend.misc as ax_misc
+import backend.dialects as ax_dialects
 
 this = sys.modules[__name__]
 users = None
@@ -34,7 +35,7 @@ async def get_state_guid(ax_form, state_name):
 
 
 async def check_action_perm(user_guid, action_guid):
-    """ Checks for action_perm_ cache record """
+    """ Checks for action_perm_ cache record. """
     user_guid_str = str(user_guid)
     action_guid_str = str(action_guid)
     action_key = f"action_perm_{user_guid_str}_{action_guid_str}"
@@ -44,7 +45,7 @@ async def check_action_perm(user_guid, action_guid):
 
 async def get_allowed_fields_dict(ax_form, user_guid, state_guid):
     """ Gets allowed fields for user for specific state
-         -> dict['field_guid'] = 1/2 """
+         -> dict['field_guid'] = 1/2  ; 1 - read, 2 - edit"""
     cache_keys = []
     field_guids = []
     allowed_fields_dict = {}
@@ -63,6 +64,34 @@ async def get_allowed_fields_dict(ax_form, user_guid, state_guid):
         allowed_fields_dict[field_guid] = perm_value
 
     return allowed_fields_dict
+
+
+async def check_field_perm(db_session, current_user, field_guid, row_guid):
+    """ Checks if user can view or modify for specific field and row
+        returns None = forbidden, 1 = read, 2 = edit"""
+
+    user_guid = current_user.get("user_id", None) if current_user else None
+    user_id_admin = current_user.get(
+        "is_admin", False) if current_user else False
+
+    if user_id_admin:
+        return 2
+
+    ax_field = db_session.query(AxField).filter(
+        AxField.guid == uuid.UUID(str(field_guid))
+    ).first()
+
+    result = await ax_dialects.dialect.select_one(
+        db_session=db_session,
+        form=ax_field.form,
+        fields_list=[],
+        row_guid=row_guid)
+
+    state_name = result[0]['axState']
+    state_guid = get_state_guid(ax_form=ax_field.form, state_name=state_name)
+    key = f"perm_{user_guid}_{ax_field.guid}_{state_guid}"
+    perm = await ax_cache.cache.get(key)
+    return perm
 
 
 async def get_grid_allowed_fields_dict(ax_form, user_guid):

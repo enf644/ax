@@ -743,10 +743,27 @@ AX 0.2:
         ✔ Tags input - AxTags @done(19-11-12 11:11)
         ✔ 2D radio survey - AxRadioSurvey @done(19-11-12 15:35)
         ✔ Markdown editor - AxMarkdown @done(19-11-12 20:57)
-        ☐ AxComments
+        ✔ AxComments @done(19-11-18 00:04)
+            ✔ Model @done(19-11-13 16:51)
+            ✔ Gql mutation @done(19-11-13 16:51)
+                ✔ Create @done(19-11-13 16:51)
+                ✔ Query @done(19-11-13 16:51)
+                ✔ Subscription @done(19-11-13 16:51)
+            ✔ Vue component @done(19-11-17 23:09)
+                ✔ Create https://leaverou.github.io/bubbly/  @done(19-11-14 23:22)
+                ✔ Select all @done(19-11-14 23:22)
+                ✔ Notify @done(19-11-17 23:07)
+            ✔ Anon users @done(19-11-18 00:04)
+            ✔ Max height - scroll. On message - scroll to bottom @done(19-11-17 23:40)
+            ✔ Not woking on pages @done(19-11-18 00:04)
         ☐ Approval path - AxApproval
         ☐ Paypal patment - AxPaymentPaypal
         ☐ Yandex payment - AxPaymentYandex
+    ☐ FROGS round 3
+        ☐ Delete from AxGrid - not updated
+        ☐ Move to JSON fields in model
+        ☐ Index page - must be default perm for all users
+        ☐ Pages not working
     ☐ PERFORMANCE TEST
         ☐ Redis integration
         ☐ 4 workers, cache problem, schema reload
@@ -762,20 +779,81 @@ AX 0.2:
             ☐ Sponsors
         ☐ Role and user based server-filter
         ☐ Users menu
+        ☐ Web-component copy-paste options
+        ☐ GQL copy-paste options
         ☐ Default name field. 1tomLabel = {name}
         ☐ Every modal must be moved a litle bit
         ☐ User registration -> always throw email (Ax does not work without smtp??)
+            ☐ Users can modify their info
+            ☐ First enter - must reset password
     ☐ INSTALLATION
     ☐ LICENSE GENERATION
         ☐ If not licensed - put watermark with logo and link everywhere
     ☐ TUTORIAL
         ☐ Each page and field have help modal with gifs
-    ☐ LANDING
-        ☐ Ax pages site - beutiful landing
-        ☐ Github readme with docs
     ☐ METRICS
         ☐ Ax metrics
         ☐ Landing metrics
+    ☐ Publish to pypi, clean old versions
+    =======================================================================:
+    ☐ LANDING
+        ☐ Github readme with docs
+            ☐ Basic
+                ☐ Installing Ax on local machine
+                    ☐ Windows
+                    ☐ Ios
+                    ☐ Ubuntu
+                ☐ Create form
+                ☐ Create workflow
+                ☐ Create grid
+                ☐ Page designer
+                ☐ Marketplace
+                    ☐ Install marketplace app
+            ☐ Advanced
+                ☐ Installing Ax on server
+                    ☐ Ubuntu
+                    ☐ CentOs
+                    ☐ Configure database
+                    ☐ Configure email
+                ☐ Form
+                    ☐ Ralation forms 1to1, 1tom
+                    ☐ Html field - using table inside form
+                ☐ Grid
+                    ☐ Query builder (pro)
+                    ☐ Grid with params
+                ☐ Workflow - Python code (pro)
+                    ☐ ax.message
+                    ☐ ax.abort
+                    ☐ ax.email
+                    ☐ change field value in action
+                    ☐ useful snippets
+                        ☐ Creating xls
+                        ☐ Grab site
+                ☐ Marketplace
+                    ☐ Create marketplace app
+                ☐ Manage users
+            ☐ Hacker
+                ☐ Installing 
+                    ☐ Cloud platforms
+                        ☐ App engine
+                        ☐ Aws
+                        ☐ Azure
+                    ☐ Configure cache - redis                        
+                    ☐ Back-proxy - nginx
+                    ☐ Running ax on WSGI web-server (gunicorn)
+                ☐ Form
+                    ☐ <ax-form />
+                    ☐ <ax-grid />
+                ☐ Grid
+                    ☐ Gql query on grids
+                    ☐ Send grid params
+                ☐ Workflow
+                    ☐ ax.print
+                    ☐ Chain actions. Call action inside action.
+                    ☐ Call action throw GQL
+                ☐ Marketplace
+                    ☐ Create marketplace app with custom front-end and publish it to github
+        ☐ Ax pages site - beutiful landing with gifs
     ☐ START REACHING OUT
         ☐ Indie hackers post - intro and ask how to maximise user reach
         ☐ Friends - vs, facebook
@@ -915,6 +993,7 @@ FEATURES:
         ☐ Timers in workflow
         ☐ Allow one level of sub-tabs for AxForm - https://vuetifyjs.com/en/components/lists#expansion-lists
     ☐ MODERATE
+        ☐ AxFieldTypes must be taken from directories, not database. If tag is not found - AxText is used
         ☐ Add clould logger for python and vue
         ☐ Detect unsuported browsers and print error
         ☐ Custom error pages
@@ -944,6 +1023,8 @@ FEATURES:
         ☐ Fields
             ☐ Surveyjs - all fields
             ☐ https://awesome-vue.js.org/components-and-libraries/ui-components.html
+            ☐ QR code generator + QR code reader for pages - https://awesome-vue.js.org/components-and-libraries/ui-components.html#qr-code
+            ☐ Document generation action example
     ☐ SOMEDAY
         ☐ AxForm - make dynamic form header. If wide form - it is in drawer. If it is slim - it is in form.
         ☐ Form constructor -> delete field by drag-drop
@@ -1113,32 +1194,32 @@ Every new version checklist:
 
 
 ALL AX FIELDS:
-	☐ Identification
+	✔ Identification @done(19-11-18 13:06)
 		✔ GuId @done(19-09-14 09:03)
-		✔ Numeration `[COMPLEX]` @done(19-09-14 09:03)
+		✔ Numeration `[COMPLEX]` @done(19-09-14 09:03) (pro)
 	✔ Decoration @done(19-11-07 10:49)
-        ✔ Html @done(19-11-07 10:45)
-	☐ String
+        ✔ Html @done(19-11-07 10:45) (pro)
+	✔ String @done(19-11-18 13:06)
 		✔ Simple String @done(19-09-14 09:03)
         ✔ Email @done(19-11-07 10:45)
-        ✔ Telephone number @done(19-11-07 10:45)
-	☐ Number
+        ✔ Telephone number @done(19-11-18 13:06)
+	✔ Number @done(19-11-18 13:06)
 		✔ Integer @done(19-09-14 09:03)
 		✔ Decimal @done(19-11-07 10:46)
 		✔ Slider @done(19-11-07 10:46)
-	☐ Boolean
+	✔ Boolean @done(19-11-18 13:06)
 		✔ Checkbox @done(19-09-14 09:03)
         ✔ Switch @done(19-11-07 10:46)
-        ☐ 2D radio survey
+        ✔ 2D radio survey @done(19-11-18 13:05)
     ☐ Payment
-        ☐ Yandex Kassa `[COMPLEX]`
-        ☐ Paypal `[COMPLEX]`
-        ☐ Stripe `[COMPLEX]`
+        ☐ Yandex Kassa `[COMPLEX]` (pro)
+        ☐ Paypal `[COMPLEX]` (pro)
+        ☐ Stripe `[COMPLEX]` (pro)
         ☐ ... check jotforms
-	☐ Relationship
+	✔ Relationship @done(19-11-18 13:06)
 		✔ 1:1 @done(19-09-14 09:03)
 		✔ 1:M @done(19-09-14 09:03)
-		✔ 1:M Table @done(19-09-14 09:03)
+		✔ 1:M Table @done(19-09-14 09:03)  (pro)
 	☐ Date and Time
 		✔ Date @done(19-11-07 10:46)
 		☐ Date Range
@@ -1146,16 +1227,15 @@ ALL AX FIELDS:
 		☐ Spinner Date
 	☐ List
 		✔ Choise @done(19-11-07 10:48)
-		☐ Cascade ajax select
-		☐ Radio
+		☐ Cascade ajax select (pro)
+		✔ Radio @done(19-11-18 13:05)
 		☐ Json Table
-		☐ Tags input
+		✔ Tags input @done(19-11-18 13:05)
 	☐ Text
 		✔ Simple text @done(19-09-14 09:04)
 		☐ WYSIWYG
-		☐ Markdown
+		✔ Markdown @done(19-11-18 13:06)
 		☐ Code highlite
-		☐ Static text
 	☐ Images
 		☐ Filesystem Images `[COMPLEX]`
 		☐ Filesystem Image Crop `[COMPLEX]`
@@ -1165,10 +1245,10 @@ ALL AX FIELDS:
 	☐ Files
 		✔ Filesystem Files `[COMPLEX]` @done(19-09-14 09:05)
 		☐ Database Files
-		☐ Google Disk Files `[COMPLEX]`
+		☐ Google Disk Files `[COMPLEX]` (pro)
 	☐ Users
 		✔ Users `[COMPLEX]` @done(19-11-07 10:48)
-		☐ Approval path `[COMPLEX]`
+		☐ Approval path `[COMPLEX]` (pro)
 	☐ Itegration
 		☐ Google Maps `[COMPLEX]`
 		☐ Google SpreadSheet
@@ -1184,8 +1264,7 @@ ALL AX FIELDS:
         ☐ Color grid column        
 	☐ Object Control
 		✔ Edit history (Logging) `[COMPLEX]` @done(19-09-14 09:05)
-        ☐ Detailed edit history (Version control) `[COMPLEX]`
+        ☐ Detailed edit history (Version control) `[COMPLEX]` (pro)
         ☐ Position drag
-    ☐ Communications
-        ☐ Comments
-		☐ Google Comments `[COMPLEX]`
+    ✔ Communications @done(19-11-18 13:06)
+        ✔ Comments @done(19-11-18 13:06)

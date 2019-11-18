@@ -473,7 +473,6 @@ def create_field_types() -> None:
                 position=4,
                 default_db_name="comments",
                 value_type="GUID",
-                is_always_whole_row=True,
                 is_backend_available=True,
                 icon="comments"))
             db_session.add(AxFieldType(

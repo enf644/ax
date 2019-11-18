@@ -16,6 +16,9 @@ module.exports = {
     'import/order': "off",
     "import/no-extraneous-dependencies": "off",
     "arrow-parens": ["error", "as-needed"],
+    "vue/no-unused-components": ["error", {
+      "ignoreWhenBindingPresent": true
+    }],
     "no-param-reassign": [
       "error",
       {

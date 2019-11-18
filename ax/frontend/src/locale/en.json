@@ -21,7 +21,7 @@
         "create-folder-btn": "Create folder",
         "settings": "Manage Ax",
         "explorer-btn": "Data explorer",
-        "users-btn": "Users",
+        "users-btn": "Manage Users",
         "marketplace-btn": "Marketplace",
         "pages-designer-btn": "Pages designer",
         "create-new-grid-btn": "Create new grid",
@@ -455,7 +455,10 @@
             "name": "Users"
         },
         "AxComments": {
-            "name": "Comments"
+            "name": "Comments",
+            "new-row-warning": "Comments avalible only for created records",
+            "no-anon-warning": "Comments avalible only to Ax users",
+            "settings-height": "Comments box height"
         },
         "AxApproval": {
             "name": "Approval path"

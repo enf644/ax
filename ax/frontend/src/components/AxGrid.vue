@@ -601,6 +601,7 @@ export default {
           this.gqlException = false;
           const rowsWithEmptyRows = data.data[this.viewDbName];
 
+          this.rowData = null;
           // If all fields but guid is null - hide row
           if (rowsWithEmptyRows && rowsWithEmptyRows.length > 0) {
             this.rowData = rowsWithEmptyRows.filter(row => {
@@ -615,13 +616,13 @@ export default {
 
           if (!this.gridInitialized) this.initAgGrid();
           else {
-            if (this.rowData == null) {
-              this.gridObj.gridOptions.api.showNoRowsOverlay();
-            }
-
             const filterModel = this.gridObj.gridOptions.api.getFilterModel();
             this.gridObj.gridOptions.api.setRowData(this.rowData);
             this.gridObj.gridOptions.api.setFilterModel(filterModel);
+
+            if (this.rowData == null) {
+              this.gridObj.gridOptions.api.showNoRowsOverlay();
+            }
           }
           // this.gridObj.gridOptions.api.setRowData(this.rowData);
         })
@@ -691,32 +692,6 @@ export default {
               }
             }
           };
-          //   this.gridObj.gridOptions.onFilterModified = () => {
-          //     if (this.gridInitialized) {
-          //       const filterModel = this.gridObj.gridOptions.api.getFilterModel();
-          //       if (this.options.filterModel != filterModel) {
-          //         console.log('onFilterModified');
-          //         const eventData = {
-          //           name: 'filter-change',
-          //           data: filterModel
-          //         };
-          //         this.$emit('modify', eventData);
-          //       }
-          //     }
-          //   };
-          //   this.gridObj.gridOptions.onSortChanged = () => {
-          //     if (this.gridInitialized) {
-          //       const sortModel = this.gridObj.gridOptions.api.getSortModel();
-          //       if (this.options.sortModel != sortModel) {
-          //         console.log('onSortChanged');
-          //         const eventData = {
-          //           name: 'sort-change',
-          //           data: sortModel
-          //         };
-          //         this.$emit('modify', eventData);
-          //       }
-          //     }
-          //   };
         }
 
         this.gridObj.gridOptions.api.getSortModel();

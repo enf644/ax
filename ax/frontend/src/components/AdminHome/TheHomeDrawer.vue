@@ -10,7 +10,7 @@
       <div data-cy='forms-tree' ref='tree'></div>
     </div>
     <br />
-    <v-btn @click='openFormModal' class='mb-3' data-cy='create-form-btn' small>
+    <v-btn @click='openFormModal' class='mb-3 home-btn' data-cy='create-form-btn' small>
       <i class='fas fa-plus'></i>
       &nbsp; {{$t("home.create-form-btn")}}
     </v-btn>
@@ -20,7 +20,7 @@
       <TheNewForm @created='closeFormModal' />
     </modal>
     <br />
-    <v-btn @click='openFolderModal()' data-cy='create-folder-btn' small>
+    <v-btn @click='openFolderModal()' class='home-btn' data-cy='create-folder-btn' small>
       <i class='far fa-folder'></i>
       &nbsp; {{$t("home.create-folder-btn")}}
     </v-btn>
@@ -39,25 +39,23 @@
 
     <br />
     <br />
-
-    <h3>{{$t("home.settings")}}:</h3>
-    <br />
-    <v-btn class='mb-3' small to='/admin/explorer'>
+    <h3 class='manage-label'>{{$t("home.settings")}}:</h3>
+    <v-btn class='mb-3 home-btn' small to='/admin/explorer'>
       <i class='fas fa-database'></i>
       &nbsp; {{$t("home.explorer-btn")}}
     </v-btn>
     <br />
-    <v-btn class='mb-3' small to='/admin/users'>
+    <v-btn class='mb-3 home-btn' small to='/admin/users'>
       <i class='far fa-user'></i>
       &nbsp; {{$t("home.users-btn")}}
     </v-btn>
     <br />
-    <v-btn class='mb-3' small to='/admin/marketplace'>
+    <v-btn class='mb-3 home-btn' small to='/admin/marketplace'>
       <i class='fas fa-store'></i>
       &nbsp; {{$t("home.marketplace-btn")}}
     </v-btn>
     <br />
-    <v-btn class='mb-3' small to='/admin/pages'>
+    <v-btn class='mb-3 home-btn' small to='/admin/pages'>
       <i class='fas fa-desktop'></i>
       &nbsp; {{$t("home.pages-designer-btn")}}
     </v-btn>
@@ -212,4 +210,10 @@ export default {
 </script>
 
 <style scoped>
+.home-btn {
+  /* width: 150px; */
+}
+.manage-label {
+  margin-bottom: 15px;
+}
 </style>

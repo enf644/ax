@@ -6,16 +6,18 @@ in GQL query we must discribe row_guid again in Form type.
 
 """
 import graphene
+from sqlalchemy import JSON
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from backend.model import AxForm, AxField, AxFieldType, AxGrid, AxColumn, \
     AxUser, AxGroup2Users, AxRole, AxState, AxAction, AxAction2Role, \
     AxState2Role, AxRoleFieldPermission, AxRole2Users, GUID, AxPage, \
-    AxPage2Users
+    AxPage2Users, AxMessage
 from backend.misc import convert_column_to_string
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
+convert_sqlalchemy_type.register(JSON)(convert_column_to_string)
 
 
 class Action(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
@@ -144,4 +146,10 @@ class Page(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
 class Page2Users(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
     class Meta:  # pylint: disable=missing-docstring
         model = AxPage2Users
+        interfaces = (relay.Node, )
+
+
+class Message(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
+    class Meta:  # pylint: disable=missing-docstring
+        model = AxMessage
         interfaces = (relay.Node, )

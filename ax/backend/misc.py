@@ -153,7 +153,7 @@ def string_is_guid(string_guid):
         [str]: version of uuid or None
     """
     try:
-        return uuid.UUID(string_guid).version
+        return uuid.UUID(str(string_guid)).version
     except ValueError:
         return None
 

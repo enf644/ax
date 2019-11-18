@@ -25,6 +25,8 @@ from backend.schemas.grids_schema import GridsQuery, GridsMutations
 from backend.schemas.pages_schema import PagesQuery, PagesMutations
 from backend.schemas.marketplace_schema import MarketplaceQuery,\
     MarketplaceMutations
+from backend.schemas.fields_schema import FieldsQuery, FieldsMutations,\
+    FieldsSubscription
 from backend.schemas.types import Form, FieldType, Field, Grid, \
     Column, User, Role, State, Action, RoleFieldPermission, Group2Users, \
     Action2Role, State2Role, Role2Users, PositionInput, Page, Page2Users
@@ -78,7 +80,8 @@ type_classes = {}
 
 
 class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery,
-            ActionQuery, PagesQuery, MarketplaceQuery, graphene.ObjectType):
+            ActionQuery, PagesQuery, MarketplaceQuery, FieldsQuery,
+            graphene.ObjectType):
     """Combines all schemas queryes"""
     # TODO - check if this fields are needed? Maybe custom queryes are enough?
     forms = SQLAlchemyConnectionField(Form)
@@ -96,11 +99,12 @@ class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery,
 
 class Mutations(HomeMutations, FormMutations, UsersMutations, GridsMutations,
                 WorkflowMutations, PagesMutations, ActionMutations,
-                MarketplaceMutations, graphene.ObjectType):
+                MarketplaceMutations, FieldsMutations, graphene.ObjectType):
     """Combines all schemas mutations"""
 
 
-class Subscription(UsersSubscription, ActionSubscription, graphene.ObjectType):
+class Subscription(UsersSubscription, ActionSubscription, FieldsSubscription,
+                   graphene.ObjectType):
     """Combines all schemas subscription"""
 
 

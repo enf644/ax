@@ -5,13 +5,15 @@ Contains class structure of Ax storage.
 import os
 import sys
 from pathlib import Path
+from datetime import datetime
 from contextlib import contextmanager
 import uuid
 from loguru import logger
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy import Text, String, CHAR, Float, Unicode, Boolean, Integer
+from sqlalchemy import Text, String, CHAR, Float, Unicode, Boolean, Integer,\
+     TIMESTAMP, JSON
 from sqlalchemy import TypeDecorator, Column, LargeBinary
 from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
@@ -612,7 +614,7 @@ class AxPage(Base):
     name = Column(String(255))
     db_name = Column(String(255))
     code = Column(Text(convert_unicode=True))
-    # options_json = Column(String(2000))
+    options_json = Column(JSON())
     parent = Column(GUID())
     position = Column(Integer())  # Position in tree
     html = None
@@ -625,3 +627,33 @@ class AxPage2Users(Base):
                   default=uuid.uuid4, unique=True, nullable=False)
     page_guid = Column(GUID(), ForeignKey('_ax_pages.guid'))
     user_guid = Column(GUID(), ForeignKey('_ax_users.guid'))
+
+
+class AxMessage(Base):
+    """ Messages used in AxMessages, AxApproval """
+    __tablename__ = '_ax_messages'
+    guid = Column(GUID(), primary_key=True,
+                  default=uuid.uuid4, unique=True, nullable=False)
+    created = Column(TIMESTAMP(), default=datetime.utcnow, nullable=False)
+    edited = Column(TIMESTAMP())
+    author_guid = Column(GUID(), ForeignKey('_ax_users.guid'))
+    author = relationship('AxUser')
+    text = Column(Text(convert_unicode=True))
+    data_json = Column(JSON())
+    thread_guid = Column(GUID(), ForeignKey('_ax_message_threads.guid'))
+    # thread = relationship('AxMessageThread')
+
+
+class AxMessageThread(Base):
+    """ Used to roup AxMessages and get permissions """
+    __tablename__ = '_ax_message_threads'
+    guid = Column(GUID(), primary_key=True,
+                  default=uuid.uuid4, unique=True, nullable=False)
+    parent = Column(GUID()) # Not used for now. Can be used for threads
+    field_guid = Column(GUID(), ForeignKey('_ax_fields.guid'))
+    field = relationship('AxField')
+    row_guid = Column(GUID())
+    code_name = Column(String(255))
+    messages = relationship("AxMessage")
+
+
