@@ -756,21 +756,32 @@ AX 0.2:
             ✔ Anon users @done(19-11-18 00:04)
             ✔ Max height - scroll. On message - scroll to bottom @done(19-11-17 23:40)
             ✔ Not woking on pages @done(19-11-18 00:04)
-        ☐ Approval path - AxApproval
+        ✔ Approval path - AxApproval @done(19-11-25 21:00)
+            ✔ JSON structure - test json @done(19-11-19 11:35)
+            ✔ Visualisation @done(19-11-20 21:02)
+            ✔ AxUserChip component @done(19-11-20 21:02)
+            ✔ Add users modal @done(19-11-20 21:02)
+            ✔ First level add  user button @done(19-11-20 21:03)
+            ✔ Branch add user btn - only if reviwer is current user @done(19-11-22 12:18)
+            ✔ Update py code @done(19-11-22 12:18)
+            ✔ Set status @done(19-11-22 16:47)
+            ✔ AxMessage component @done(19-11-22 18:41)
+            ✔ Create AxMessage on action @done(19-11-22 19:29)
+            ✔ Notify @done(19-11-25 13:19)
+            ✔ Frogs @done(19-11-25 20:54)
+                ✔ If terminal console - the value is not updated @done(19-11-25 20:54)
         ☐ Paypal patment - AxPaymentPaypal
         ☐ Yandex payment - AxPaymentYandex
     ☐ FROGS round 3
+        ✔ Insert action without closing form - new values are not set! @done(19-11-25 20:55)
         ☐ Delete from AxGrid - not updated
         ☐ Move to JSON fields in model
         ☐ Index page - must be default perm for all users
         ☐ Pages not working
-    ☐ PERFORMANCE TEST
-        ☐ Redis integration
-        ☐ 4 workers, cache problem, schema reload
-        ☐ Give huge load - stress test
-        ☐ Profile execution
-            https://stackoverflow.com/a/49526932/784789
-            https://github.com/mgedmin/profilehooks
+        ☐ Users - block users?. Delete login column.
+        ☐ AxComments - no comments sign
+        ☐ get_ax_host - get from app yaml
+        ☐ current_user['email'] can be None !!! must return 403
     ☐ FEATURES
         ☐ Admin home widgets
             ☐ Stack-overflow questions
@@ -786,74 +797,25 @@ AX 0.2:
         ☐ User registration -> always throw email (Ax does not work without smtp??)
             ☐ Users can modify their info
             ☐ First enter - must reset password
-    ☐ INSTALLATION
     ☐ LICENSE GENERATION
-        ☐ If not licensed - put watermark with logo and link everywhere
     ☐ TUTORIAL
         ☐ Each page and field have help modal with gifs
     ☐ METRICS
         ☐ Ax metrics
-        ☐ Landing metrics
+    ☐ INSTALATION - ??
+    ☐ PERFORMANCE TEST
+        ☐ Redis integration
+        ☐ 4 workers, cache problem, schema reload
+        ☐ Give huge load - stress test
+        ☐ Profile execution
+            https://stackoverflow.com/a/49526932/784789
+            https://github.com/mgedmin/profilehooks        
     ☐ Publish to pypi, clean old versions
     =======================================================================:
     ☐ LANDING
         ☐ Github readme with docs
-            ☐ Basic
-                ☐ Installing Ax on local machine
-                    ☐ Windows
-                    ☐ Ios
-                    ☐ Ubuntu
-                ☐ Create form
-                ☐ Create workflow
-                ☐ Create grid
-                ☐ Page designer
-                ☐ Marketplace
-                    ☐ Install marketplace app
-            ☐ Advanced
-                ☐ Installing Ax on server
-                    ☐ Ubuntu
-                    ☐ CentOs
-                    ☐ Configure database
-                    ☐ Configure email
-                ☐ Form
-                    ☐ Ralation forms 1to1, 1tom
-                    ☐ Html field - using table inside form
-                ☐ Grid
-                    ☐ Query builder (pro)
-                    ☐ Grid with params
-                ☐ Workflow - Python code (pro)
-                    ☐ ax.message
-                    ☐ ax.abort
-                    ☐ ax.email
-                    ☐ change field value in action
-                    ☐ useful snippets
-                        ☐ Creating xls
-                        ☐ Grab site
-                ☐ Marketplace
-                    ☐ Create marketplace app
-                ☐ Manage users
-            ☐ Hacker
-                ☐ Installing 
-                    ☐ Cloud platforms
-                        ☐ App engine
-                        ☐ Aws
-                        ☐ Azure
-                    ☐ Configure cache - redis                        
-                    ☐ Back-proxy - nginx
-                    ☐ Running ax on WSGI web-server (gunicorn)
-                ☐ Form
-                    ☐ <ax-form />
-                    ☐ <ax-grid />
-                ☐ Grid
-                    ☐ Gql query on grids
-                    ☐ Send grid params
-                ☐ Workflow
-                    ☐ ax.print
-                    ☐ Chain actions. Call action inside action.
-                    ☐ Call action throw GQL
-                ☐ Marketplace
-                    ☐ Create marketplace app with custom front-end and publish it to github
         ☐ Ax pages site - beutiful landing with gifs
+        ☐ Landing metrics        
     ☐ START REACHING OUT
         ☐ Indie hackers post - intro and ask how to maximise user reach
         ☐ Friends - vs, facebook
@@ -880,11 +842,72 @@ AX 0.2:
     ☐ START SCALING AND IMPROVING
 
 
+DOCUMENTATION:
+    ☐ Basic
+        ☐ Installing Ax on local machine
+            ☐ Windows
+            ☐ Ios
+            ☐ Ubuntu
+        ☐ Create form
+        ☐ Create workflow
+        ☐ Create grid
+        ☐ Page designer
+        ☐ Marketplace
+            ☐ Install marketplace app
+    ☐ Advanced
+        ☐ Installing Ax on server
+            ☐ Ubuntu
+            ☐ CentOs
+            ☐ Configure database
+            ☐ Configure email
+        ☐ Form
+            ☐ Ralation forms 1to1, 1tom
+            ☐ Html field - using table inside form
+        ☐ Grid
+            ☐ Query builder (pro)
+            ☐ Grid with params
+        ☐ Workflow - 
+            ☐ python code (pro)
+            ☐ ax.message
+            ☐ ax.abort
+            ☐ ax.email
+            ☐ change field value in action
+            ☐ useful snippets
+                ☐ Creating xls
+                ☐ Grab site
+        ☐ Marketplace
+            ☐ Create marketplace app
+        ☐ Manage users
+    ☐ Hacker
+        ☐ Installing 
+            ☐ Cloud platforms
+                ☐ App engine
+                ☐ Aws
+                ☐ Azure
+            ☐ Configure cache - redis                        
+            ☐ Back-proxy - nginx
+            ☐ Running ax on WSGI web-server (gunicorn)
+        ☐ Form
+            ☐ <ax-form />
+            ☐ <ax-grid />
+        ☐ Grid
+            ☐ Gql query on grids
+            ☐ Send grid params
+        ☐ Workflow
+            ☐ ax.print
+            ☐ Chain actions. Call action inside action.
+            ☐ Call action throw GQL
+        ☐ Marketplace
+            ☐ Create marketplace app with custom front-end and publish it to github
+
+
+
 AX 0.3:
     ☐ ACTION EXPERIENCE
         ✔ Feature -> ctrl+s in code editor saves action without closing @done(19-08-03 10:49)
         ✔ Feature -> full screen code mode ctrl+enter @done(19-08-03 10:49)
         ☐ Feature -> Relation forms (1to1 1tom) must be avalivle via GQL query - https://github.com/graphql-python/graphene/issues/798
+        ☐ Feaute -> Hints or stack links inside field options. Example - how to nitify on approval
         ☐ Logging code 
         ☐ Code highlite and autocomplete
             ☐ Monaco language server, language client
@@ -950,6 +973,8 @@ FROGS TODOS:
         ☐ If grid schema was changed, already loaded ax-grid does not change. Even if refresh is pressed.
         ☐ If error accured while executing field before/after code -> the exception must be seen in modal for user
         ☐ Form constructor -> preview form for different role/state
+        ☐ Remove lodash
+        ☐ You can drag groups in Manage users - it does nothing
     ☐ SOMEDAY
         ☐ Discover minimum window size for ax admin. Output warning if window is less then minimum
         ☐ Webpack - additional minification
@@ -992,6 +1017,7 @@ FEATURES:
         ☐ Resources monitoring
         ☐ Timers in workflow
         ☐ Allow one level of sub-tabs for AxForm - https://vuetifyjs.com/en/components/lists#expansion-lists
+        ☐ Groups inside groups
     ☐ MODERATE
         ☐ AxFieldTypes must be taken from directories, not database. If tag is not found - AxText is used
         ☐ Add clould logger for python and vue

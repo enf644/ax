@@ -48,6 +48,7 @@
         "splitpanes": "^1.14.5",
         "sql-parser-mistic": "^1.2.3",
         "subscriptions-transport-ws": "^0.9.15",
+        "tree-model": "^1.0.7",
         "uppy": "^1.5.2",
         "uuid4": "^1.1.4",
         "v-mask": "^2.0.2",

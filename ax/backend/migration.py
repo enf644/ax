@@ -481,9 +481,8 @@ def create_field_types() -> None:
                 position=4,
                 default_db_name="approval",
                 value_type="JSON",
-                is_always_whole_row=True,
                 is_backend_available=True,
-                icon="comments"))
+                icon="hands-helping"))
 
             db_session.commit()
     except Exception:

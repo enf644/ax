@@ -3,6 +3,7 @@
 
 import os
 import sys
+import re
 import uuid
 import zipfile
 import shutil
@@ -20,7 +21,6 @@ root_path = None
 timezone = None
 tmp_root_dir = None
 uploads_root_dir = None
-email_sender = None
 
 
 def init_misc(timezone_name, tmp_absolute_path, uploads_absolute_path) -> None:
@@ -179,3 +179,29 @@ async def zip_folder(output_filename, source_dir):
                     arcname = os.path.join(
                         os.path.relpath(root, relroot), file)
                     z_file.write(filename, arcname)
+
+
+async def get_tom_label(form):
+    """ Gets AxForm with field values and constructs tom_label by replacing
+        {{tags}} with field values """
+    tom_label_modified = form.tom_label.replace(
+        "{{ax_form_name}}", form.name
+    ).replace(
+        "{{ax_db_name}}", form.db_name
+    ).replace(
+        "{{guid}}", str(form.row_guid)
+    )
+
+    tags = re.findall("{{(.*?)}}", tom_label_modified)
+    for field in form.fields:
+        if field.db_name in tags:
+            tom_label_modified = tom_label_modified.replace(
+                "{{" + field.db_name + "}}", str(field.value)
+            )
+
+    return tom_label_modified
+
+
+async def get_ax_host():
+    """ Returns ax instance url with method and port. From app.yaml """
+    return "http://127.0.0.1:8081"

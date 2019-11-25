@@ -1,4 +1,8 @@
 """ Sends emails
+Use like this -
+    import backend.emails as ax_emails
+    ax_emails.email_sender(to='', text='', html=None, subject='')
+
 """
 
 import sys

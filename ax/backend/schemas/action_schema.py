@@ -37,7 +37,7 @@ import backend.fields.AxFiles as AxFieldAxFiles  # pylint: disable=unused-import
 import backend.fields.AxImageCropDb as AxFieldAxImageCropDb  # pylint: disable=unused-import
 import backend.fields.AxNum as AxFieldAxNum  # pylint: disable=unused-import
 import backend.fields.AxComments as AxFieldAxComments  # pylint: disable=unused-import
-
+import backend.fields.AxApproval as AxFieldAxApproval  # pylint: disable=unused-import
 
 this = sys.modules[__name__]
 action_loop = None
@@ -201,10 +201,16 @@ async def do_exec(
     """
     import backend.schema as ax_schema
 
+    host = await ax_misc.get_ax_host()
     localz = dict()
     ax = DotMap()  # javascript style dicts item['guid'] == item.guid
     ax.row.guid = form.row_guid
     ax.arguments = arguments
+    ax.user_email = current_user.get("email", None)
+    ax.user_guid = current_user.get("user_id", None)
+    ax.tom_label = await ax_misc.get_tom_label(form)
+    ax.host = host
+    ax.form_url = f'{host}/form/{form.db_name}/{form.row_guid}'
     ax.form = form
     ax.action = action
     ax.schema = ax_schema.schema
@@ -223,8 +229,6 @@ async def do_exec(
     line_number = None
 
     try:
-        # exec(str(action.code), globals(), localz)   # pylint: disable=exec-used
-        # await eval('exec(str(action.code), globals(), localz)')
         ret_ax = await ax_exec.aexec(
             code=str(action.code), localz=localz, ax=ax)
         ret_ax = localz['ax']
@@ -515,17 +519,19 @@ async def execute_action(
             # 4. Assemble tobe_object - fill it with values from AxForm.vue
             if not tobe_form.row_guid:
                 tobe_form.row_guid = new_guid
-            for field in tobe_form.db_fields:
-                if field.db_name in values.keys():
-                    field.value = values[field.db_name]
-                    field.needs_sql_update = True
-                if field.field_type.is_updated_always:
-                    field.needs_sql_update = True
+            for idx, field in enumerate(tobe_form.fields):
+                if field.is_tab is False and not field.field_type.is_virtual:
+                    if field.db_name in values.keys():
+                        tobe_form.fields[idx].value = values[field.db_name]
+                        tobe_form.fields[idx].needs_sql_update = True
+                    if field.field_type.is_updated_always:
+                        tobe_form.fields[idx].needs_sql_update = True
 
             # 5. Run before backend code for each field.
-            for field in tobe_form.no_tab_fields:
-                if field.field_type.is_backend_available:
-                    field.value = await run_field_backend(
+            for idx, field in enumerate(tobe_form.fields):
+                if (field.is_tab is False
+                        and field.field_type.is_backend_available):
+                    tobe_form.fields[idx].value = await run_field_backend(
                         db_session=db_session,
                         when='before',
                         query_type=query_type,

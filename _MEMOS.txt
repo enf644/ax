@@ -69,7 +69,12 @@ Pro version:
     - Schedulled action jobs
     - Action on multiple rows
     - Sub-tabs in AxForm
-    - Payment fields
+    - Fields
+        - Payment fields
+        - html
+        - Numeration
+        - 1tom table
+        - Approval
     - Action execution throw 
     - Unread records pages menu counter
 

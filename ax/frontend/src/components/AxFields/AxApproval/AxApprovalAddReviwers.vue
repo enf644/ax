@@ -1,12 +1,13 @@
 <template>
-  <div class='nobr'>
+  <div class='users-wrapper'>
+    <h1>{{locale("types.AxApproval.add-users-header")}}</h1>
+    <v-btn :ripple='false' @click='closeModal()' class='close' color='black' icon text>
+      <i class='fas fa-times close-ico'></i>
+    </v-btn>
     <v-autocomplete
-      :disabled='isReadonly'
-      :error-messages='errors'
       :hide-no-data='hideNoData'
-      :hint='this.options.hint'
       :items='axUsers'
-      :label='name'
+      :label='locale("types.AxApproval.add-users-label")'
       :loading='loading'
       :search-input.sync='search'
       @change='isValid'
@@ -20,12 +21,7 @@
       v-model='currentValue'
     >
       <template v-slot:selection='{ item, selected }'>
-        <v-chip
-          @click:close='clearValue(item)'
-          @click.stop='openFormModal(item)'
-          class='chip'
-          close
-        >
+        <v-chip @click:close='clearValue(item)' class='chip' close>
           <v-avatar class='grey mr-2' left>
             <i :class='`ax-chip-icon fas fa-user`'></i>
           </v-avatar>
@@ -39,95 +35,56 @@
         </v-btn>
       </template>
     </v-autocomplete>
+
+    <br />
+    <v-btn @click='addReviwers()' small>
+      <i class='fas fa-user-plus'></i>
+      &nbsp;
+      {{$t("types.AxApproval.add-users-btn")}}
+    </v-btn>
   </div>
 </template>
 
 <script>
+// import CatalogItem from '@/components/CatalogItem.vue';
 import i18n from '@/locale';
 import gql from 'graphql-tag';
 import apolloClient from '@/apollo.js';
 import uuid4 from 'uuid4';
 
 export default {
-  name: 'AxUsers',
-  props: {
-    name: null,
-    dbName: null,
-    tag: null,
-    options: null,
-    value: null,
-    isRequired: null,
-    isReadonly: null
-  },
+  name: 'AxApprovalAddReviwers',
+  components: {},
   data: () => ({
+    isSequence: false,
     currentValue: null,
     errors: [],
     loading: false,
     search: null,
     axUsers: []
   }),
-  components: {},
   computed: {
+    hideNoData() {
+      if (this.search && this.search.length >= 2) return false;
+      return true;
+    },
     guidsString() {
       if (!this.currentValue || this.currentValue.length == 0) return null;
       const retObj = {
         items: this.currentValue
       };
       return JSON.stringify(retObj);
-    },
-    hideNoData() {
-      if (this.search && this.search.length >= 2) return false;
-      return true;
     }
   },
   watch: {
-    currentValue(newValue) {
-      if (newValue !== this.value) {
-        this.$emit('update:value', newValue);
-      }
-    },
     search(newValue) {
       if (newValue && newValue !== this.select) this.doQuicksearch();
-    },
-    value(newValue) {
-      if (newValue != this.currentValue) {
-        this.currentValue = newValue;
-        if (this.currentValue) this.loadData();
-      }
     }
   },
-  created() {
-    if (this.value) {
-      this.currentValue = this.value;
-      this.loadData();
-    }
-  },
+  mounted() {},
   methods: {
     locale(key) {
       return i18n.t(key);
-    },
-    clearValue(axItem) {
-      this.currentValue = [
-        ...this.currentValue.filter(guid => guid !== axItem.guid)
-      ];
-    },
-    isValid() {
-      this.search = null;
-      if (this.requiredIsValid()) return true;
-      return false;
-    },
-    requiredIsValid() {
-      if (this.isRequired) {
-        if (!this.currentValue || this.currentValue.length === 0) {
-          let msg = i18n.t('common.field-required');
-          if (this.options.required_text) msg = this.options.required_text;
-          this.errors.push(msg);
-          return false;
-        }
-        this.errors = [];
-        return true;
-      }
-      return true;
     },
     doQuicksearch() {
       const searchQuery = this.search;
@@ -135,12 +92,15 @@ export default {
       this.loadData();
       return true;
     },
+    isValid() {
+      this.search = null;
+    },
     loadData() {
-      if (!this.currentValue && !this.search) return false;
+      if (!this.search) return false;
 
       const SEARCH_USERS = gql`
         query($updateTime: String, $guids: String, $searchString: String) {
-          usersAndGroups(
+          onlyUsers(
             updateTime: $updateTime
             guids: $guids
             searchString: $searchString
@@ -162,7 +122,7 @@ export default {
           }
         })
         .then(data => {
-          this.axUsers = data.data.usersAndGroups;
+          this.axUsers = data.data.onlyUsers;
           // We re-create values incase some of items were deleted or permission was denied.
           const checkedValues = [];
           this.axUsers.forEach(element => {
@@ -173,31 +133,41 @@ export default {
           this.currentValue = [...checkedValues];
         })
         .catch(error => {
-          this.$log.error(`Error in AxUsers -> loadData gql => ${error}`);
+          this.$log.error(
+            `Error in AxApprovalAddReviewrs -> loadData gql => ${error}`
+          );
           this.$dialog.message.error(`${error}`);
         });
 
       return true;
+    },
+    closeModal() {
+      this.$emit('close');
+    },
+    addReviwers() {
+      const realUsers = [];
+      this.axUsers.forEach(user => {
+        if (this.currentValue.includes(user.guid)) realUsers.push(user);
+      });
+
+      const retValue = {
+        users: realUsers,
+        isSequence: this.isSequence
+      };
+      this.$emit('selected', retValue);
     }
   }
 };
 </script>
 
 <style scoped>
-.chip {
-  cursor: pointer;
-}
-.settings-error {
-  color: #f44336;
-}
-.nobr {
-  white-space: nowrap;
+.users-wrapper {
+  padding: 25px;
 }
 .close {
   position: absolute;
   right: 10px;
   top: 10px;
-  z-index: 100;
 }
 .close-ico {
   font-size: 20px;

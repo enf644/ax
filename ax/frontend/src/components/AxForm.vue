@@ -224,7 +224,7 @@ import { WebLinksAddon } from 'xterm-addon-web-links';
 import { FitAddon } from 'xterm-addon-fit';
 import { SearchAddon } from 'xterm-addon-search';
 import 'xterm/css/xterm.css';
-import { getAxHost, getAxProtocol } from '@/misc';
+import { getAxHost, getAxProtocol, uuidWithDashes } from '@/misc';
 
 // import { settings } from 'cluster';
 
@@ -446,6 +446,7 @@ export default {
       this.hideDrawer();
     },
     loadData(dbName, rowGuid) {
+      const rowDashGuid = uuidWithDashes(rowGuid);
       const GET_DATA = gql`
         query($dbName: String!, $rowGuid: String, $updateTime: String) {
           formData(
@@ -502,13 +503,14 @@ export default {
         .query({
           query: GET_DATA,
           variables: {
-            rowGuid,
+            rowGuid: rowDashGuid,
             dbName,
             updateTime: Date.now()
           }
         })
         .then(data => {
           const currentFormData = data.data.formData;
+
           this.rowGuid = currentFormData.rowGuid;
           this.formGuid = currentFormData.guid;
           this.name = currentFormData.name;
@@ -539,7 +541,6 @@ export default {
             ) {
               thisField.value = JSON.parse(field.value);
             }
-            // console.log(thisField);
 
             if (field.isRequired) thisField.name = `${field.name} *`;
             if (field.isTab) this.tabs.push(thisField);
@@ -571,7 +572,7 @@ export default {
       this.$modal.show(`terminal-${this.modalGuid}`);
       setTimeout(() => {
         this.terminal.open(this.$refs.terminalDiv);
-        this.terminal.fit();
+        // this.terminal.fit();
         // this.terminal.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ');
       }, 100);
     },
@@ -716,7 +717,7 @@ export default {
 
           let retGuid = this.guid;
           if (!this.guid && dataRowGuid) {
-            this.insertedGuid = dataRowGuid.replace(/-/g, '');
+            this.insertedGuid = dataRowGuid;
             retGuid = this.insertedGuid;
             this.subscribeToActions();
           }
@@ -736,7 +737,6 @@ export default {
         })
         .catch(error => {
           this.doActionTimeout = true;
-          // console.log('DoAction timeout');
           this.$log.error(
             `Error in AxGrid => doAction apollo client => ${error}`
           );
@@ -748,8 +748,6 @@ export default {
         let res = false;
         if (actionResult.messages && actionResult.messages.error) {
           let errorText = actionResult.messages.error;
-          // console.log(errorText);
-          // console.log(errorText.includes("$i18n('form.row-locked')"));
           if (errorText.includes("$i18n('form.row-locked')")) {
             errorText = errorText.replace(
               "$i18n('form.row-locked')",
@@ -770,7 +768,6 @@ export default {
             action_name: actionResult.messages.exception.action_name,
             detail: actionResult.messages.exception.detail
           });
-          // console.log(msg);
           res = await this.$dialog.error({
             text: msg,
             persistent: false
@@ -891,7 +888,6 @@ export default {
         .subscribe(
           data => {
             const msg = data.data.consoleNotify.text;
-            // console.log(msg);
             if (msg === 'ax_console::reload' && this.doActionTimeout) {
               this.doActionTimeout = false;
               this.reloadData();

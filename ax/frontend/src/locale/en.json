@@ -458,10 +458,28 @@
             "name": "Comments",
             "new-row-warning": "Comments avalible only for created records",
             "no-anon-warning": "Comments avalible only to Ax users",
-            "settings-height": "Comments box height"
+            "settings-height": "Comments box height",
+            "enter-message": "Enter message text"
         },
         "AxApproval": {
-            "name": "Approval path"
+            "name": "Approval path",
+            "add-users-btn": "Add reviewers",
+            "add-users-is-sequence": "Approve in sequnce. One user at a time",
+            "add-users-header": "Add reviewers",
+            "add-users-label": "Search users",
+            "no-path": "Approval path is empty",
+            "approved-status": "Approved",
+            "waiting-status": "Waiting for other reviewers",
+            "action-status": "Action needed from this reviewer",
+            "question-status": "Reviewer added question or comment",
+            "rejected-status": "Rejected",
+            "not-saved-warning": "Warning! Current change is not saved. Perform form action to save.",
+            "approve-action": "Approve",
+            "reject-action": "Reject",
+            "question-action": "Add question",
+            "enter-question-prompt": "Enter your question to initiator of this approval. Answer will be avalible in comments.",
+            "enter-approve-resolution-prompt": "You are about to APPROVE current form. Please enter your resolution.",
+            "enter-reject-resolution-prompt": "You are about to REJECT current form. Please enter your resolution."
         },
         "AxHtml": {
             "name": "Custom html",

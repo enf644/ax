@@ -256,6 +256,15 @@ CI INSPIRATIONS
     https://aws.amazon.com/ru/codepipeline/
     https://cloud.google.com/cloud-build/?ref=stackshare
 
+    AppVeyor
+    Gitlab CI
+    CircleCI
+    Bamboo
+    Jenkins / Hudson
+    TeamCity
+    CruiseControl
+    Travis CI
+
 
 HOME INSPIRATIONS
     https://github.com/gollum/gollum#markups
