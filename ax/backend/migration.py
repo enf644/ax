@@ -138,7 +138,7 @@ def create_field_types() -> None:
                 tag='group-id',
                 is_group=True,
                 position=1,
-                icon="key"))
+                icon="fas fa-key"))
             db_session.add(AxFieldType(
                 tag="AxGuid",
                 parent="group-id",
@@ -147,7 +147,7 @@ def create_field_types() -> None:
                 is_virtual=True,
                 virtual_source='guid',
                 comparator="",
-                icon="key"))
+                icon="fas fa-key"))
             db_session.add(AxFieldType(
                 tag='AxNum',
                 parent="group-id",
@@ -156,14 +156,14 @@ def create_field_types() -> None:
                 position=2,
                 is_readonly=True,
                 is_backend_available=True,
-                icon="sort-numeric-up"))
+                icon="fas fa-sort-numeric-up"))
 
             # Process controll
             db_session.add(AxFieldType(
                 tag='group-process',
                 is_group=True,
                 position=2,
-                icon="code-branch"))
+                icon="fas fa-code-branch"))
             db_session.add(AxFieldType(
                 tag="AxState",
                 parent="group-process",
@@ -171,7 +171,7 @@ def create_field_types() -> None:
                 position=1,
                 is_virtual=True,
                 virtual_source='axState',
-                icon="code-branch"))
+                icon="fas fa-code-branch"))
             db_session.add(AxFieldType(
                 tag="AxChangelog",
                 parent="group-process",
@@ -183,14 +183,14 @@ def create_field_types() -> None:
                 is_readonly=True,
                 is_updated_always=True,
                 is_always_whole_row=True,
-                icon="code-branch"))
+                icon="fas fa-code-branch"))
 
             # String
             db_session.add(AxFieldType(
                 tag='group-string',
                 is_group=True,
                 position=3,
-                icon="font"))
+                icon="fas fa-font"))
             db_session.add(AxFieldType(
                 tag="AxString",
                 parent="group-string",
@@ -198,7 +198,7 @@ def create_field_types() -> None:
                 position=1,
                 value_type="VARCHAR(255)",
                 is_inline_editable=True,
-                icon="font"))
+                icon="fas fa-font"))
             db_session.add(AxFieldType(
                 tag="AxEmail",
                 parent="group-string",
@@ -206,7 +206,7 @@ def create_field_types() -> None:
                 position=2,
                 value_type="VARCHAR(255)",
                 is_inline_editable=True,
-                icon="font"))
+                icon="fas fa-font"))
             db_session.add(AxFieldType(
                 tag="AxTelephone",
                 parent="group-string",
@@ -215,14 +215,14 @@ def create_field_types() -> None:
                 value_type="VARCHAR(255)",
                 is_columnn_avalible=True,
                 is_inline_editable=True,
-                icon="font"))
+                icon="fas fa-font"))
 
             # Decoration
             db_session.add(AxFieldType(
                 tag='group-decoration',
                 is_group=True,
                 position=4,
-                icon="code"))
+                icon="fas fa-code"))
             db_session.add(AxFieldType(
                 tag="AxHtml",
                 parent="group-decoration",
@@ -231,7 +231,7 @@ def create_field_types() -> None:
                 is_virtual=True,
                 virtual_source='guid',
                 is_display_backend_avalible=True,
-                icon="code"))
+                icon="fas fa-code"))
 
             # Text
             db_session.add(AxFieldType(
@@ -239,7 +239,7 @@ def create_field_types() -> None:
                 name="types.text",
                 is_group=True,
                 position=5,
-                icon="align-left"))
+                icon="fas fa-align-left"))
             db_session.add(AxFieldType(
                 tag="AxText",
                 parent="group-text",
@@ -248,7 +248,7 @@ def create_field_types() -> None:
                 value_type="TEXT",
                 is_inline_editable=True,
                 is_columnn_avalible=True,
-                icon="align-left"))
+                icon="fas fa-align-left"))
             db_session.add(AxFieldType(
                 tag="AxMarkdown",
                 parent="group-text",
@@ -257,14 +257,14 @@ def create_field_types() -> None:
                 value_type="TEXT",
                 is_columnn_avalible=True,
                 is_always_whole_row=True,
-                icon="align-left"))
+                icon="fas fa-align-left"))
 
             # Number
             db_session.add(AxFieldType(
                 tag='group-number',
                 is_group=True,
                 position=6,
-                icon="hashtag"))
+                icon="fas fa-hashtag"))
             db_session.add(AxFieldType(
                 tag="AxInteger",
                 parent="group-number",
@@ -274,7 +274,7 @@ def create_field_types() -> None:
                 comparator="number",
                 is_inline_editable=True,
                 is_columnn_avalible=True,
-                icon="hashtag"))
+                icon="fas fa-hashtag"))
             db_session.add(AxFieldType(
                 tag="AxDecimal",
                 parent="group-number",
@@ -284,7 +284,7 @@ def create_field_types() -> None:
                 comparator="number",
                 is_columnn_avalible=True,
                 is_inline_editable=True,
-                icon="hashtag"))
+                icon="fas fa-hashtag"))
             db_session.add(AxFieldType(
                 tag="AxIntSlider",
                 parent="group-number",
@@ -293,14 +293,14 @@ def create_field_types() -> None:
                 value_type="INT",
                 comparator="number",
                 is_inline_editable=True,
-                icon="hashtag"))
+                icon="fas fa-hashtag"))
 
             # Boolean
             db_session.add(AxFieldType(
                 tag='group-boolean',
                 is_group=True,
                 position=7,
-                icon="toggle-on"))
+                icon="fas fa-toggle-on"))
             db_session.add(AxFieldType(
                 tag="AxCheckbox",
                 parent="group-boolean",
@@ -309,7 +309,7 @@ def create_field_types() -> None:
                 value_type="BOOL",
                 is_inline_editable=True,
                 is_columnn_avalible=True,
-                icon="toggle-on"))
+                icon="fas fa-toggle-on"))
             db_session.add(AxFieldType(
                 tag="AxSwitch",
                 parent="group-boolean",
@@ -318,14 +318,14 @@ def create_field_types() -> None:
                 value_type="BOOL",
                 is_inline_editable=True,
                 is_columnn_avalible=True,
-                icon="toggle-on"))
+                icon="fas fa-toggle-on"))
 
             # Relationship
             db_session.add(AxFieldType(
                 tag='group-relationship',
                 is_group=True,
                 position=8,
-                icon="link"))
+                icon="fas fa-link"))
             db_session.add(AxFieldType(
                 tag="Ax1to1",
                 parent="group-relationship",
@@ -335,7 +335,7 @@ def create_field_types() -> None:
                 value_type="GUID",
                 is_inline_editable=False,
                 is_columnn_avalible=True,
-                icon="link"))
+                icon="fas fa-link"))
             db_session.add(AxFieldType(
                 tag="Ax1tom",
                 parent="group-relationship",
@@ -346,7 +346,7 @@ def create_field_types() -> None:
                 is_backend_available=True,
                 is_columnn_avalible=True,
                 is_inline_editable=False,
-                icon="link"))
+                icon="fas fa-link"))
             db_session.add(AxFieldType(
                 tag="Ax1tomTable",
                 parent="group-relationship",
@@ -357,14 +357,14 @@ def create_field_types() -> None:
                 is_backend_available=True,
                 is_columnn_avalible=True,
                 is_inline_editable=True,
-                icon="link"))
+                icon="fas fa-link"))
 
             #Date and Time
             db_session.add(AxFieldType(
                 tag='group-date',
                 is_group=True,
                 position=9,
-                icon="calendar"))
+                icon="fas fa-calendar"))
             db_session.add(AxFieldType(
                 tag="AxDate",
                 parent="group-date",
@@ -374,14 +374,14 @@ def create_field_types() -> None:
                 comparator="date",
                 is_inline_editable=True,
                 is_columnn_avalible=True,
-                icon="calendar"))
+                icon="fas fa-calendar"))
 
             # List
             db_session.add(AxFieldType(
                 tag='group-list',
                 is_group=True,
                 position=10,
-                icon="list"))
+                icon="fas fa-list"))
             db_session.add(AxFieldType(
                 tag="AxChoise",
                 parent="group-list",
@@ -389,7 +389,7 @@ def create_field_types() -> None:
                 position=1,
                 value_type="VARCHAR(255)",
                 is_inline_editable=True,
-                icon="list"))
+                icon="fas fa-list"))
             db_session.add(AxFieldType(
                 tag="AxRadio",
                 parent="group-list",
@@ -397,7 +397,7 @@ def create_field_types() -> None:
                 position=1,
                 value_type="VARCHAR(255)",
                 is_inline_editable=True,
-                icon="list"))
+                icon="fas fa-list"))
             db_session.add(AxFieldType(
                 tag="AxTags",
                 parent="group-list",
@@ -405,7 +405,7 @@ def create_field_types() -> None:
                 position=1,
                 value_type="JSON",
                 is_inline_editable=True,
-                icon="list"))
+                icon="fas fa-list"))
             db_session.add(AxFieldType(
                 tag="AxRadioSurvey",
                 parent="group-list",
@@ -413,14 +413,14 @@ def create_field_types() -> None:
                 position=1,
                 value_type="JSON",
                 is_inline_editable=False,
-                icon="poll"))
+                icon="fas fa-poll"))
 
             # Images
             db_session.add(AxFieldType(
                 tag='group-images',
                 is_group=True,
                 position=11,
-                icon="image"))
+                icon="fas fa-image"))
             db_session.add(AxFieldType(
                 tag="AxImageCropDb",
                 parent="group-images",
@@ -428,14 +428,14 @@ def create_field_types() -> None:
                 default_db_name="cropImage",
                 is_backend_available=True,
                 value_type="BLOB",
-                icon="image"))
+                icon="fas fa-image"))
 
             # Files
             db_session.add(AxFieldType(
                 tag='group-files',
                 is_group=True,
                 position=12,
-                icon="file"))
+                icon="fas fa-file"))
             db_session.add(AxFieldType(
                 tag="AxFiles",
                 parent="group-files",
@@ -443,14 +443,14 @@ def create_field_types() -> None:
                 default_db_name="files",
                 value_type="JSON",
                 is_backend_available=True,
-                icon="file"))
+                icon="fas fa-file"))
 
             # Users
             db_session.add(AxFieldType(
                 tag='group-users',
                 is_group=True,
                 position=13,
-                icon="user"))
+                icon="fas fa-user"))
             db_session.add(AxFieldType(
                 tag="AxUsers",
                 parent="group-users",
@@ -459,14 +459,14 @@ def create_field_types() -> None:
                 is_backend_available=True,
                 is_columnn_avalible=True,
                 value_type="JSON",
-                icon="user"))
+                icon="fas fa-user"))
 
             # Communication
             db_session.add(AxFieldType(
                 tag='group-communication',
                 is_group=True,
                 position=14,
-                icon="comments"))
+                icon="fas fa-comments"))
             db_session.add(AxFieldType(
                 tag="AxComments",
                 parent="group-communication",
@@ -474,7 +474,7 @@ def create_field_types() -> None:
                 default_db_name="comments",
                 value_type="GUID",
                 is_backend_available=True,
-                icon="comments"))
+                icon="fas fa-comments"))
             db_session.add(AxFieldType(
                 tag="AxApproval",
                 parent="group-communication",
@@ -482,7 +482,30 @@ def create_field_types() -> None:
                 default_db_name="approval",
                 value_type="JSON",
                 is_backend_available=True,
-                icon="hands-helping"))
+                icon="fas fa-hands-helping"))
+
+            # Payment
+            db_session.add(AxFieldType(
+                tag='group-payment',
+                is_group=True,
+                position=14,
+                icon="fas fa-money-bill-alt"))
+            db_session.add(AxFieldType(
+                tag="AxPaymentStripe",
+                parent="group-payment",
+                position=4,
+                default_db_name="stripe",
+                value_type="JSON",
+                is_backend_available=True,
+                icon="fab fa-stripe-s"))
+            db_session.add(AxFieldType(
+                tag="AxPaymentYandex",
+                parent="group-payment",
+                position=4,
+                default_db_name="kassa",
+                value_type="JSON",
+                is_backend_available=True,
+                icon="fab fa-yandex"))
 
             db_session.commit()
     except Exception:

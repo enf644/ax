@@ -377,7 +377,7 @@ const getters = {
         const node = {
           id: fieldType.tag,
           parent,
-          text: `<i class="fas fa-${fieldType.icon}"></i> ${name}`,
+          text: `<i class="${fieldType.icon}"></i> ${name}`,
           type: 'group',
           data: {
             position: fieldType.position
@@ -390,7 +390,7 @@ const getters = {
         const node = {
           id: fieldType.tag,
           parent,
-          text: `<i class="fas fa-${fieldType.icon}"></i> ${name}`,
+          text: `<i class="${fieldType.icon}"></i> ${name}`,
           type: 'default',
           data: {
             position: fieldType.position,
@@ -451,7 +451,7 @@ const getters = {
         const node = {
           id: field.guid,
           parent: field.parent,
-          text: `<i class='fas fa-${field.fieldType.icon}'></i>&nbsp;<span id='${field.guid}' >${field.name}</span>`,
+          text: `<i class='${field.fieldType.icon}'></i>&nbsp;<span id='${field.guid}' >${field.name}</span>`,
           data: {
             guid: field.guid,
             position: field.position

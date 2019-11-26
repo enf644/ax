@@ -32,6 +32,7 @@ env_variables:
   AX_LOGS_LEVEL: DEBUG # ERROR, WARNING, INFO, DEBUG. default = ERROR
   # AX_LOGS_FILENAME: ax_logs.log #  If not set, logs only output to stdio
   # AX_LOGS_ABSOLUTE_PATH: '/home/wineuser/.local/lib/python3.6/site-packages/ax/' #  default =
+
   # AX_DB_DIALECT: postgre   # sqlite, postgre, mysql. Default is sqlite
   # AX_DB_HOST: 84.201.174.246
   # AX_DB_PORT: '5432'
@@ -40,15 +41,24 @@ env_variables:
   # AX_DB_DATABASE: wine
   # AX_DB_SQLITE_FILENAME: "wine.db" #  default='ax_sqlite.db
   # AX_DB_SQLITE_ABSOLUTE_PATH: "C:\\Users\\enf64_000\\Desktop\\Dimiant\\WineProject\\Archive" #  default=None
+
   # AX_LOCALE: ru # default=en
+
   # AX_TMP_ABSOLUTE_PATH: '/tmp' #'D:\Projects\tmp'
   # AX_UPLOADS_ABSOLUTE_PATH: '/tmp/uploads'
   # AX_UPLOADS_MAX_FILESIZE: 4294967 #
+
   # AX_PAGES_ABSOLUTE_PATH: 'C:\Users\enf64_000\Desktop\Dimiant\WineProject\wine\dist'
+
   # AX_SMTP_HOST: smtp.yandex.com
   # AX_SMTP_PORT: 465 # default is 465
   # AX_SMTP_SSL: True # defualt is False
   # AX_SMTP_LOGIN: info@ax.com
   # AX_SMTP_PASSWORD: SecretPassword
+
   # SSL_CERT_ABSOLUTE_PATH: C:\Users\enf64_000\Desktop\AX\Ssl\localhost.pem
   # SSL_KEY_ABSOLUTE_PATH: C:\Users\enf64_000\Desktop\AX\Ssl\localhost-key.pem
+
+  STRIPE_API_VERSION: "2019-11-05"
+  STRIPE_SECRET_KEY: sk_test_Mqbmdyo8dRyPGdkJq31tvb7y00bk4YHj7V
+  STRIPE_PUBLISHABLE_KEY: pk_test_ek8JDpu65MSXcSn1sAvHBfH800SJKrcVP6

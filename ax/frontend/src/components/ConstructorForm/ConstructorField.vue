@@ -56,7 +56,7 @@ export default {
   }),
   computed: {
     iconClass() {
-      return `fas fa-${this.icon}`;
+      return `${this.icon}`;
     },
     loader() {
       if (!this.tag) {

@@ -313,6 +313,7 @@
         "group-users": "Users",
         "group-communication": "Communication",
         "group-decoration": "Decoration",
+        "group-payment": "Payments",
         "AxGuid": {
             "name": "Guid"
         },
@@ -484,6 +485,19 @@
         "AxHtml": {
             "name": "Custom html",
             "settings-code": "Html"
+        },
+        "AxPaymentYandex": {
+            "name": "Yandex kassa"
+        },
+        "AxPaymentStripe": {
+            "name": "Stripe",
+            "button-default": "Make payment - {amount}{currency}",
+            "button-text-setting": "Payment button label",
+            "success-message-default": "Payment succesuful - {amount}{currency}",
+            "success-message-setting": "Text that is dispalayed after payment recieved",
+            "intent-not-set": "Stripe Intent not set. Check field documentation",
+            "stripe-not-avalible": "Payment is not avalible. Stripe API not found. Please check internet connection and reload page.",
+            "required-default": "Payment is required"
         }
     },
     "marketplace": {

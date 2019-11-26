@@ -63,3 +63,36 @@ export function isGuid(strGuid) {
 export function getVersion() {
   return '0.0.1';
 }
+
+
+
+// export function injectScript(scriptSource) {
+//   let self = this;
+//   let el = document.createElement('SCRIPT');
+//   let ctr = 0;
+//   let scripts = document.getElementsByTagName('script');
+//   let scriptExists = false;
+//   for (var i in scripts) {
+//     if (scripts[i].src == scriptSource) {
+//       scriptExists = true;
+//     }
+//   }
+//   el.setAttribute('src', scriptSource);
+//   if (!scriptExists) {
+//     document.head.appendChild(el);
+//   }
+//   return new Promise((resolve, reject) => {
+//     let handle = window.setInterval(function () {
+//       if (window.Stripe) {
+//         self.loaded = true;
+//         resolve();
+//         clearInterval(handle)
+//       }
+//       ctr++;
+//       if (ctr > 1000) {
+//         reject("vue-stripe: Unable to load checkout.js");
+//         clearInterval(handle);
+//       }
+//     }, 5);
+//   });
+// }

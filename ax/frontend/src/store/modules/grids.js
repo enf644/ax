@@ -257,7 +257,7 @@ const getters = {
       const node = {
         id: column.guid,
         parent: column.columnType,
-        text: `<i class='fas fa-${column.field.fieldType.icon}'></i>&nbsp;${column.field.name}`,
+        text: `<i class='${column.field.fieldType.icon}'></i>&nbsp;${column.field.name}`,
         type: 'default',
         data: { position: column.position }
       };

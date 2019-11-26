@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import i18n from '../../../locale.js';
+import i18n from '@/locale.js';
 
 export default {
   name: 'AxString',

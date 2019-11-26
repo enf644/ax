@@ -22,6 +22,9 @@ from sanic_compress import Compress
 from loguru import logger
 from docopt import docopt
 
+# fields specific
+import stripe
+
 # Add folder with main.py to sys.path.
 root_path = Path(__file__).parent.resolve()
 if root_path not in sys.path:
@@ -29,6 +32,7 @@ if root_path not in sys.path:
 
 # from backend.daemon import daemon
 # import daemonocle
+
 
 # pylint: disable=wrong-import-position
 import backend.logger as ax_logger
@@ -61,6 +65,13 @@ def init_model():
         sqlite_absolute_path=os.environ.get(
             'AX_DB_SQLITE_ABSOLUTE_PATH') or None
     )
+
+
+def init_fields():
+    """ Initiate stripe. Used in AxPaymentStripe """
+    if os.getenv('STRIPE_SECRET_KEY') and os.getenv('STRIPE_API_VERSION'):
+        stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
+        stripe.api_version = os.getenv('STRIPE_API_VERSION')
 
 
 def init_ax():
@@ -136,7 +147,7 @@ def init_ax():
                 return response.redirect(
                     request.url.replace('http://', 'https://', 1),
                     status=301
-                )                
+                )
 
     # Initiate all sanic server routes
     ax_routes.init_routes(
@@ -159,6 +170,8 @@ def init_ax():
     # Initiate auth module
     ax_auth.init_auth(
         sanic_app=app, secret=os.environ.get('AX_AUTH_SECRET'))
+
+    init_fields()
 
 
 ax_logo = """

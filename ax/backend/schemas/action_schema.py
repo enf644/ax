@@ -26,6 +26,9 @@ import backend.emails as ax_emails
 import backend.exec as ax_exec
 import backend.auth as ax_auth
 
+# Fields specific:
+import stripe
+
 import backend.cache as ax_cache
 from backend.schemas.types import Action, Form, ConsoleMessage, \
     ActionNotifyMessage
@@ -38,6 +41,7 @@ import backend.fields.AxImageCropDb as AxFieldAxImageCropDb  # pylint: disable=u
 import backend.fields.AxNum as AxFieldAxNum  # pylint: disable=unused-import
 import backend.fields.AxComments as AxFieldAxComments  # pylint: disable=unused-import
 import backend.fields.AxApproval as AxFieldAxApproval  # pylint: disable=unused-import
+import backend.fields.AxPaymentStripe as AxFieldAxPaymentStripe  # pylint: disable=unused-import
 
 this = sys.modules[__name__]
 action_loop = None
@@ -206,6 +210,7 @@ async def do_exec(
     ax = DotMap()  # javascript style dicts item['guid'] == item.guid
     ax.row.guid = form.row_guid
     ax.arguments = arguments
+    ax.stripe = stripe
     ax.user_email = current_user.get("email", None)
     ax.user_guid = current_user.get("user_id", None)
     ax.tom_label = await ax_misc.get_tom_label(form)

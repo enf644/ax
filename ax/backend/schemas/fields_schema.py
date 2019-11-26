@@ -6,9 +6,10 @@ import aiopubsub
 import graphene
 from loguru import logger
 from sqlalchemy.orm import joinedload
+import stripe
 import ujson as json
-from backend.model import AxMessage, AxMessageThread
 
+from backend.model import AxMessage, AxMessageThread
 import backend.model as ax_model
 import backend.misc as ax_misc
 import backend.auth as ax_auth
@@ -88,6 +89,28 @@ class CreateMessage(graphene.Mutation):
             return CreateMessage(message=new_message, ok=True)
 
 
+class GetStripeIntent(graphene.Mutation):
+    """ Gets intent data from Stripe. Used to refresh payment status """
+    class Arguments:  # pylint: disable=missing-docstring
+        inten_id = graphene.String()
+
+    ok = graphene.Boolean()
+    intent = graphene.String()
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        try:
+            del info
+            inten_id = args.get('inten_id')
+            intent = stripe.PaymentIntent.retrieve(id=inten_id)
+            intent_str = json.dumps(intent)
+
+            ok = True
+            return GetStripeIntent(intent=intent_str, ok=ok)
+        except Exception:
+            logger.exception('Error in gql mutation - GetStripeIntent.')
+            raise
+
+
 class FieldsSubscription(graphene.ObjectType):
     """GraphQL subscriptions"""
 
@@ -162,3 +185,4 @@ class FieldsQuery(graphene.ObjectType):
 class FieldsMutations(graphene.ObjectType):
     """Contains all mutations"""
     create_message = CreateMessage.Field()
+    get_stripe_intent = GetStripeIntent.Field()

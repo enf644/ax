@@ -770,8 +770,15 @@ AX 0.2:
             ✔ Notify @done(19-11-25 13:19)
             ✔ Frogs @done(19-11-25 20:54)
                 ✔ If terminal console - the value is not updated @done(19-11-25 20:54)
-        ☐ Paypal patment - AxPaymentPaypal
-        ☐ Yandex payment - AxPaymentYandex
+        ✔ Stripe payment @done(19-11-27 00:17)
+            ✔ Working demo - https://stripe.com/docs/payments/accept-a-payment#python @done(19-11-26 16:07)
+            ✔ Button text settings @done(19-11-26 19:30)
+            ✔ Hint @done(19-11-26 19:30)
+            ✔ Show loading when proccessing @done(19-11-26 21:57)
+            ✔ When success - show success info @done(19-11-26 21:57)
+            ✔ Warning when no intent @done(19-11-26 21:57)
+            ✔ Required option @done(19-11-26 23:43)
+            ✔ Refresh payment status on load @done(19-11-26 23:43)
     ☐ FROGS round 3
         ✔ Insert action without closing form - new values are not set! @done(19-11-25 20:55)
         ☐ Delete from AxGrid - not updated
@@ -793,7 +800,6 @@ AX 0.2:
         ☐ Web-component copy-paste options
         ☐ GQL copy-paste options
         ☐ Default name field. 1tomLabel = {name}
-        ☐ Every modal must be moved a litle bit
         ☐ User registration -> always throw email (Ax does not work without smtp??)
             ☐ Users can modify their info
             ☐ First enter - must reset password
@@ -975,6 +981,7 @@ FROGS TODOS:
         ☐ Form constructor -> preview form for different role/state
         ☐ Remove lodash
         ☐ You can drag groups in Manage users - it does nothing
+        ☐ AxPaymentStripe - Inject script insted of <script> in index.html - https://github.com/matfish2/vue-stripe/blob/master/src/StripeCheckout.vue
     ☐ SOMEDAY
         ☐ Discover minimum window size for ax admin. Output warning if window is less then minimum
         ☐ Webpack - additional minification
@@ -1019,6 +1026,7 @@ FEATURES:
         ☐ Allow one level of sub-tabs for AxForm - https://vuetifyjs.com/en/components/lists#expansion-lists
         ☐ Groups inside groups
     ☐ MODERATE
+        ☐ Every modal must be moved a litle bit
         ☐ AxFieldTypes must be taken from directories, not database. If tag is not found - AxText is used
         ☐ Add clould logger for python and vue
         ☐ Detect unsuported browsers and print error
