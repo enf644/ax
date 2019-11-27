@@ -8,7 +8,9 @@ code like so  (stripe1)-
         currency='usd',
     )
 
-
+4242424242424242	Succeeds and immediately processes the payment.
+4000002500003155	Requires authentication. Stripe will trigger a modal asking for the customer to authenticate.
+4000000000009995	Always fails with a decline code of insufficient_funds.
 
 """
 import os

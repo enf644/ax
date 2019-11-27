@@ -148,7 +148,8 @@ export default {
       modalGuid: null,
       actions: null,
       gqlException: false,
-      gridNotFound: false
+      gridNotFound: false,
+      reloadIsActive: false
     };
   },
   asyncComputed: {
@@ -373,13 +374,13 @@ export default {
   },
   methods: {
     reloadGrid() {
-      if (this.gridObj) {
-        console.log(this.gridObj.gridOptions);
-        console.log(this.gridObj.gridOptions.api);
+      if (this.gridObj && this.reloadIsActive == false) {
+        this.reloadIsActive = true;
         if (this.gridObj.gridOptions && this.gridObj.gridOptions.api) {
+          // if (this.gridInitialized) {
           this.gridObj.gridOptions.api.destroy();
+          this.gridInitialized = false;
         }
-        this.gridInitialized = false;
         this.loadOptions(this.form, this.grid);
       }
     },
@@ -454,7 +455,6 @@ export default {
       }
     },
     loadOptions(formDbName, gridDbName) {
-      // console.log(`get grid data - ${formDbName} , ${gridDbName}`);
       const GET_GRID_DATA = gql`
         query(
           $formDbName: String!
@@ -625,6 +625,7 @@ export default {
             }
           }
           // this.gridObj.gridOptions.api.setRowData(this.rowData);
+          this.reloadIsActive = false;
         })
         .catch(error => {
           this.gqlException = true;
@@ -682,7 +683,6 @@ export default {
               const fieldDbName = event.column.colId;
               const fieldWidth = event.column.actualWidth;
               if (event.finished === true) {
-                console.log('onColumnResized');
                 const eventData = {
                   name: 'column-width',
                   column: fieldDbName,

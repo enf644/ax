@@ -134,7 +134,6 @@ export default {
   },
   watch: {
     currentValue(newValue) {
-      console.log('value emit');
       this.$emit('update:value', newValue);
     },
     value(newValue) {
@@ -148,9 +147,7 @@ export default {
     this.currentValue = this.value;
   },
   mounted() {
-    injectScript('https://js.stripe.com/v3/')
-      .then(this.initStripe())
-      .catch(e => console.error(e));
+    this.initStripe();
   },
   methods: {
     locale(key, param = null) {

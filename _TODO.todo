@@ -781,7 +781,6 @@ AX 0.2:
             ✔ Refresh payment status on load @done(19-11-26 23:43)
     ☐ FROGS round 3
         ✔ Insert action without closing form - new values are not set! @done(19-11-25 20:55)
-        ☐ Delete from AxGrid - not updated
         ☐ Move to JSON fields in model
         ☐ Index page - must be default perm for all users
         ☐ Pages not working
