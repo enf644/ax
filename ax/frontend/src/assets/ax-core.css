@@ -263,6 +263,7 @@ a {
     text-anchor: middle;
     alignment-baseline: middle;
     pointer-events: all;
+    transition: fill 0.5s;
 }
 
 .d3_action_text:hover {
@@ -309,6 +310,11 @@ a {
 
 .d3_dragover_line {
     stroke: #FF5722;
+    opacity: 1;
+}
+
+.d3_dragover_text {
+    fill: #FF5722;
     opacity: 1;
 }
 

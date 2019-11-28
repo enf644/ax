@@ -60,6 +60,9 @@
             ></v-text-field>
           </v-col>
         </v-row>
+        <v-row>
+          <v-switch :label='$t("users.modal-block-switch")' v-model='isBlocked'></v-switch>
+        </v-row>
       </v-container>
 
       <br />
@@ -118,6 +121,7 @@ export default {
       shortName: null,
       password: null,
       rePassword: null,
+      isBlocked: null,
       info: null,
       avatarTmp: null,
       valid: false,
@@ -196,6 +200,7 @@ export default {
             name
             shortName
             info
+            isBlocked
           }
         }
       `;
@@ -213,6 +218,7 @@ export default {
           this.userName = data.data.findUser.name;
           this.shortName = data.data.findUser.shortName;
           this.info = data.data.findUser.info;
+          this.isBlocked = data.data.findUser.isBlocked;
         })
         .catch(error => {
           this.$log.error(`Error in findUser gql => ${error}`);
@@ -229,6 +235,7 @@ export default {
             $password: String!
             $avatarTmp: String
             $info: String
+            $isBlocked: Boolean
           ) {
             createUser(
               email: $email
@@ -237,6 +244,7 @@ export default {
               password: $password
               avatarTmp: $avatarTmp
               info: $info
+              isBlocked: $isBlocked
             ) {
               user {
                 guid
@@ -257,7 +265,8 @@ export default {
               shortName: this.shortName,
               password: this.password,
               avatarTmp: this.avatarTmp,
-              info: this.info
+              info: this.info,
+              isBlocked: this.isBlocked
             }
           })
           .then(data => {
@@ -287,6 +296,7 @@ export default {
             $password: String
             $avatarTmp: String
             $info: String
+            $isBlocked: Boolean
           ) {
             updateUser(
               guid: $guid
@@ -295,6 +305,7 @@ export default {
               password: $password
               avatarTmp: $avatarTmp
               info: $info
+              isBlocked: $isBlocked
             ) {
               user {
                 guid
@@ -314,7 +325,8 @@ export default {
               shortName: this.shortName,
               password: this.password,
               avatarTmp: this.avatarTmp,
-              info: this.info
+              info: this.info,
+              isBlocked: this.isBlocked
             }
           })
           .then(data => {

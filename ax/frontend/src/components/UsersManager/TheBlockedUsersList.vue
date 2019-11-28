@@ -2,13 +2,9 @@
   <div class='grid-wrapper'>
     <div class='header-div'>
       <h1>
-        <i class='far fa-user'></i>
-        &nbsp; {{$t("users.all-users-header")}}
-      </h1>
-      <v-btn @click='gotoBlockedUsers' small>
         <i class='fas fa-user-slash'></i>
-        &nbsp; {{$t("users.blocked-users-btn")}}
-      </v-btn>
+        &nbsp; {{$t("users.blocked-users-header")}}
+      </h1>
     </div>
     <div class='ag-theme-material grid-class' ref='grid'></div>
     <v-btn @click='openNewUserModal' class='mb-3' data-cy='create-form-btn' small>
@@ -58,9 +54,9 @@ export default {
       }, 200);
     },
     loadData() {
-      const ALL_USERS = gql`
+      const BLOCKED_USERS = gql`
         query($updateTime: String!) {
-          allUsers(updateTime: $updateTime) {
+          blockedUsers(updateTime: $updateTime) {
             guid
             email
             shortName
@@ -71,13 +67,13 @@ export default {
 
       apolloClient
         .query({
-          query: ALL_USERS,
+          query: BLOCKED_USERS,
           variables: {
             updateTime: Date.now()
           }
         })
         .then(data => {
-          this.rowData = data.data.allUsers;
+          this.rowData = data.data.blockedUsers;
 
           if (!this.gridInitialized) this.initAgGrid(this.rowData);
           else {
@@ -92,7 +88,7 @@ export default {
         })
         .catch(error => {
           this.gqlException = true;
-          logger.error(
+          this.$log.error(
             `Error in TheUsersList => loadData apollo client => ${error}`
           );
         });
@@ -121,10 +117,6 @@ export default {
       };
       this.gridObj = new Grid(this.$refs.grid, gridOptions);
       this.gridInitialized = true;
-    },
-    gotoBlockedUsers() {
-      const url = `/admin/users/blocked`;
-      if (url != this.$route.fullPath) this.$router.push({ path: url });
     }
   }
 };

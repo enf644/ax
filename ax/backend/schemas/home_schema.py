@@ -74,7 +74,7 @@ async def create_ax_form(db_session, name, db_name) -> object:
         ax_form = AxForm()
         ax_form.name = name
         ax_form.db_name = db_name
-        ax_form.tom_label = "{{ax_form_name}} - {{ax_num}}"
+        ax_form.tom_label = "{{guid}}"
         ax_form.icon = "dice-d6"  # TODO: move default icon to Vue
         db_session.add(ax_form)
         db_session.flush()

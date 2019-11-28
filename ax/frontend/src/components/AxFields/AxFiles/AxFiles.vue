@@ -36,7 +36,9 @@ import uuid4 from 'uuid4';
 import { getAxHost, uuidWithDashes, getAxHostProtocol } from '@/misc';
 import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
+import '@uppy/webcam/dist/style.css';
 import getClassNameForExtension from 'font-awesome-filetypes';
+
 // prettier-ignore
 import {
   Core, Dashboard, Webcam, Tus

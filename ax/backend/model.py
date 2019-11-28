@@ -22,8 +22,6 @@ from sqlalchemy.dialects.postgresql import UUID
 import ujson as json
 import backend.misc as ax_misc
 
-# TODO: replace String(2000) for json fields with dialect agnostic JSON field
-
 this = sys.modules[__name__]
 engine = None
 # db_session = None
@@ -359,7 +357,7 @@ class AxField(Base):
     db_name = Column(String(255))   # Must be camelCase. It used to create
     # database table columns and GQL fields
     position = Column(Integer())  # tree position
-    options_json = Column(String(2000))  # Stores JSON with params used by Vue
+    options_json = Column(JSON())  # Stores JSON with params used by Vue
     # component. It is passed to UI
     # Stores JSON that is used only in python actions. AxAction code or fields
     # before/after methods
@@ -432,7 +430,7 @@ class AxGrid(Base):
     # Must be PascalCase, used in GQL schema Types
     db_name = Column(String(255))
     position = Column(Integer())    # Position in tree
-    options_json = Column(String(2000))  # JSON key/value see
+    options_json = Column(JSON()) # JSON key/value see
                                         # TheConstructorGridsDrawerSecond.vue
     code = Column(Text(convert_unicode=True)) # code to build SQL query
     # Columns widths stored here too
@@ -449,7 +447,7 @@ class AxColumn(Base):
     guid = Column(GUID(), primary_key=True,
                   default=uuid.uuid4, unique=True, nullable=False)
     position = Column(Integer())    # Position in grid and in tree
-    options_json = Column(String(2000))  # Currently not used
+    options_json = Column(JSON()) # Currently not used
     field_guid = Column(GUID(), ForeignKey('_ax_fields.guid'))
     field = relationship("AxField")
     grid_guid = Column(GUID(), ForeignKey('_ax_grids.guid'))
@@ -485,6 +483,7 @@ class AxUser(Base):
     parent = Column(GUID())
     avatar = Column(LargeBinary)
     position = Column(Integer)
+    is_blocked = Column(Boolean, unique=False, default=False)
     users = relationship(
         "AxUser",
         secondary='_ax_group2user',

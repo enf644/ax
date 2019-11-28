@@ -425,13 +425,13 @@ const actions = {
 
       })
       .catch(error => {
-        context.commit('home/setShowErrorMsg',
+        commit('home/setShowErrorMsg',
           `Error in getAllForms apollo client -> ${error}`,
           { root: true });
 
         setTimeout(() => {
           dispatch('auth/goToPages', null, { root: true });
-        }, 2000);
+        }, 100);
       });
   },
   createForm(context, payload) {

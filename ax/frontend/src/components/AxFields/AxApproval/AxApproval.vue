@@ -8,7 +8,7 @@
 
     <div v-if='noPath'>
       <i class='fas fa-user-slash'></i>
-      &nbsp; {{$t("types.AxApproval.no-path")}}
+      &nbsp; {{locale("types.AxApproval.no-path")}}
     </div>
 
     <div class='parallel-path'>
@@ -28,7 +28,7 @@
       <v-btn @click='openUsersModal()' small text>
         <i class='fas fa-user-plus'></i>
         &nbsp;
-        {{$t("types.AxApproval.add-users-btn")}}
+        {{locale("types.AxApproval.add-users-btn")}}
       </v-btn>
     </div>
     <modal adaptive class='update-form-modal' height='auto' name='add-reviwers'>

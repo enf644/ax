@@ -63,6 +63,11 @@ export default new Router({
           component: UsersManager
         },
         {
+          path: 'users/blocked',
+          name: 'blocked-users-manager',
+          component: UsersManager
+        },
+        {
           path: 'group/:group_alias',
           name: 'users-group',
           component: UsersGroup

@@ -10,6 +10,7 @@ When user approves - AxMessage created in all branches that user is set
 
 Incase you want to email added person - you must do it in action python code
 like so:
+    ============================================================================
 
     initiator_email = ax.row.approval1.get('initiator')
     modifications = ax.row.approval1.get('modifications' , [])
@@ -32,6 +33,22 @@ like so:
             ax.print(f'Email was sent to - {address} \n')
             ax.print(f'Current user email - {ax.user_email} \n')
             ax.print(f'Initiator email - {initiator_email} \n')
+
+    ============================================================================
+
+If you want a default approval path - you can create in in insert action like so
+
+    field.value = {
+        initiator: 'enf644@gmail.com',
+        created: int(time.time()),
+        branches: [{
+            id: str(uuid.uuid4())
+            reviewer: 'admin@someone.com',
+            created: int(time.time()),
+            status: 1,
+            branches: [],
+        }],
+    }
 
 
 Statuses:

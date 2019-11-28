@@ -34,7 +34,7 @@ async def before_update(db_session, field, before_form, tobe_form, action,
                     changed_field = {
                         "name": f_after.name,
                         "db_name": f_after.db_name,
-                        "value": f_after.value
+                        "value": str(f_after.value)
                     }
                     changed_fields.append(changed_field)
 
@@ -65,7 +65,7 @@ async def before_insert(db_session, field, before_form, tobe_form, action,
             changed_field = {
                 "name": f_after.name,
                 "db_name": f_after.db_name,
-                "value": f_after.value
+                "value": str(f_after.value)
             }
             changed_fields.append(changed_field)
 

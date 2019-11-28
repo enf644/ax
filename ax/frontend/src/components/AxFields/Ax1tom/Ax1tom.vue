@@ -228,17 +228,24 @@ export default {
           }
         })
         .then(data => {
-          this.axItems = data.data[this.viewDbName];
-          this.formIcon = data.data.axForm.icon;
+          const recivedData = data.data[this.viewDbName];
+          if (!recivedData) this.axItems = [];
+          else {
+            this.axItems = data.data[this.viewDbName];
+            this.formIcon = data.data.axForm.icon;
 
-          // We re-create values incase some of items were deleted or permission was denied.
-          const checkedValues = [];
-          this.axItems.forEach(element => {
-            if (this.currentValue && this.currentValue.includes(element.guid)) {
-              checkedValues.push(element.guid);
-            }
-          });
-          this.currentValue = [...checkedValues];
+            // We re-create values incase some of items were deleted or permission was denied.
+            const checkedValues = [];
+            this.axItems.forEach(element => {
+              if (
+                this.currentValue &&
+                this.currentValue.includes(element.guid)
+              ) {
+                checkedValues.push(element.guid);
+              }
+            });
+            this.currentValue = [...checkedValues];
+          }
         })
         .catch(error => {
           this.$log.error(

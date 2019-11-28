@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import i18n from '../../../locale.js';
+import i18n from '@/locale.js';
 
 export default {
   name: 'AxEmail',
@@ -40,6 +40,9 @@ export default {
     this.currentValue = this.value;
   },
   methods: {
+    locale(key, params = null) {
+      return i18n.t(key, params);
+    },
     isValid() {
       if (this.requiredIsValid() && this.regexpIsValid()) return true;
       return false;
@@ -64,7 +67,7 @@ export default {
         this.currentValue.length > 0 &&
         !pattern.test(this.currentValue)
       ) {
-        this.errors.push(this.$t('types.AxEmail.email-invalid'));
+        this.errors.push(this.locale('types.AxEmail.email-invalid'));
         return false;
       }
       this.errors = [];

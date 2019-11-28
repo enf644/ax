@@ -27,8 +27,8 @@ async def get_state_guid(ax_form, state_name):
     for state in ax_form.states:
         if state_name and state.name == state_name:
             state_guid = str(state.guid)
-        elif ((state_name is None or state_name == '') and
-              state.is_start is True):
+        elif ((state_name is None or state_name == '')
+              and state.is_start is True):
             state_guid = str(state.guid)
 
     return state_guid
@@ -257,16 +257,16 @@ async def write_perm_cache(db_session, user_guid):
                 edit = False
                 # For each perm
                 form_perms = [p for p in perms if (
-                    p.form_guid == ax_form.guid and
-                    p.state_guid == ax_state.guid)]
+                    p.form_guid == ax_form.guid
+                    and p.state_guid == ax_state.guid)]
                 for perm in form_perms:
                     # if perm is set to whole form
                     # if perm is set to tab
                     # if perm is set to field
 
-                    if (perm.field_guid is None or
-                            perm.field_guid == ax_field.parent or
-                            perm.field_guid == ax_field.guid):
+                    if (perm.field_guid is None
+                            or perm.field_guid == ax_field.parent
+                            or perm.field_guid == ax_field.guid):
 
                         if perm.read is True:
                             read = True
@@ -295,6 +295,14 @@ async def write_perm_cache(db_session, user_guid):
     await ax_cache.cache.multi_set(perm_cache_pairs, ttl=expire_seconds)
 
 
+async def write_info_cache(user):
+    """ Save short_name and email in cache """
+    name_key = f'user_short_name_{user.guid}'
+    await ax_cache.cache.set(name_key, user.short_name)
+    email_key = f'user_email_{user.guid}'
+    await ax_cache.cache.set(email_key, user.email)
+
+
 async def authenticate(request, *args, **kwargs):
     """ - """
     del args, kwargs
@@ -308,6 +316,8 @@ async def authenticate(request, *args, **kwargs):
 
         user = db_session.query(AxUser).filter(
             AxUser.email == email
+        ).filter(
+            AxUser.is_blocked.is_(False)
         ).first()
 
         if user is None:
@@ -318,12 +328,7 @@ async def authenticate(request, *args, **kwargs):
 
         await check_if_admin(user_guid=str(user.guid), db_session=db_session)
         await write_perm_cache(db_session=db_session, user_guid=str(user.guid))
-
-        # Save short_name and email in cache
-        name_key = f'user_short_name_{user.guid}'
-        await ax_cache.cache.set(name_key, user.short_name)
-        email_key = f'user_email_{user.guid}'
-        await ax_cache.cache.set(email_key, user.email)
+        await write_info_cache(user)
 
         db_session.expunge(user)
         return user
@@ -380,10 +385,18 @@ async def retrieve_user(request, payload, *args, **kwargs):
         if not email:
             msg = "Auth -> retrieve_user"
             with ax_model.scoped_session(msg) as db_session:
+                user = db_session.query(AxUser).filter(
+                    AxUser.guid == ax_misc.guid_or_none(user_id)
+                ).first()
+
+                if user is None:
+                    raise exceptions.AuthenticationFailed("User not found.")
+
                 await check_if_admin(user_guid=user_id, db_session=db_session)
                 await write_perm_cache(db_session=db_session, user_guid=user_id)
-                email = await ax_cache.cache.get(f'user_email_{user_id}')
+                await write_info_cache(user)
 
+        email = await ax_cache.cache.get(f'user_email_{user_id}')
         short_name = await ax_cache.cache.get(f'user_short_name_{user_id}')
         is_admin = await ax_cache.cache.get(f'user_is_admin_{user_id}')
 

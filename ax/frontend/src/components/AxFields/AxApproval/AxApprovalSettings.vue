@@ -1,23 +1,15 @@
 <template>
   <AxFieldSettings :guid='guid' :options='changedOptions' @closed='$emit("closed")'>
-    {{locale("types.AxRadio.items-editor-title")}}:
-    <monaco-editor
+    <!-- {{locale("types.AxRadio.items-editor-title")}}: -->
+    <!-- <monaco-editor
       class='editor'
       language='json'
       ref='editor'
       theme='vs-dark'
       v-model='changedOptions.items'
-    ></monaco-editor>
-    <br />
-
+    ></monaco-editor>-->
     <!-- 
-      message - You invited message
-      message - All branch approval is recieved. Action needed.
-      message - Reviwer made action
-      bool - comment needed on approve
-      bool - comment needed on reject
-
-
+   
     -->
   </AxFieldSettings>
 </template>
@@ -40,13 +32,6 @@ export default {
   }),
   created() {
     this.changedOptions = this.options;
-    if (!this.changedOptions.items) {
-      const defaultItems = {
-        x: ['one', 'two', 'three'],
-        y: ['Bad', 'Normal', 'Good']
-      };
-      this.changedOptions.items = JSON.stringify(defaultItems, null, 4);
-    }
   },
   mounted() {},
   methods: {

@@ -71,7 +71,7 @@
 <script>
 import i18n from '@/locale';
 import gql from 'graphql-tag';
-import apolloClient from '../../../apollo.js';
+import apolloClient from '@/apollo.js';
 import uuid4 from 'uuid4';
 import AxForm from '@/components/AxForm.vue';
 import AxGrid from '@/components/AxGrid.vue';
@@ -202,8 +202,12 @@ export default {
           }
         })
         .then(data => {
-          this.axItems = data.data[this.viewDbName];
-          this.formIcon = data.data.axForm.icon;
+          const recivedData = data.data[this.viewDbName];
+          if (!recivedData) this.axItems = [];
+          else {
+            this.axItems = data.data[this.viewDbName];
+            this.formIcon = data.data.axForm.icon;
+          }
         })
         .catch(error => {
           this.gqlError = true;

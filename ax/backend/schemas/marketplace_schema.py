@@ -387,7 +387,7 @@ class CreateMarketplaceApplication(graphene.Mutation):
 
             # Get AxForms and folders to dump
             root_folder = db_session.query(AxForm).filter(
-                AxForm.guid == uuid.UUID(str(args.get('folder_guid')))
+                AxForm.guid == ax_misc.guid_or_none(str(args.get('folder_guid')))
             ).first()
             if not root_folder:
                 raise Exception('Cant find app root folder')
@@ -464,22 +464,22 @@ async def create_page(db_session, page, package_directory):
                 code = page_file.read()
 
         existing_page = db_session.query(AxPage).filter(
-            AxPage.guid == uuid.UUID(page['guid'])
+            AxPage.guid == ax_misc.guid_or_none(page['guid'])
         ).first()
 
         if existing_page:
             existing_page.name = page['name']
             existing_page.db_name = page['db_name']
             existing_page.position = int(page['position'] or 0)
-            existing_page.parent = uuid.UUID(page['parent'])
+            existing_page.parent = ax_misc.guid_or_none(page['parent'])
             existing_page.code = code
         else:
             new_page = AxPage()
-            new_page.guid = uuid.UUID(page['guid'])
+            new_page.guid = ax_misc.guid_or_none(page['guid'])
             new_page.name = page['name']
             new_page.db_name = page['db_name']
             new_page.position = int(page['position'] or 0)
-            new_page.parent = uuid.UUID(page['parent'])
+            new_page.parent = ax_misc.guid_or_none(page['parent'])
             new_page.code = code
             db_session.add(new_page)
 
@@ -489,7 +489,7 @@ async def create_folder(db_session, folder):
     err = "marketplace_schema -> create_folder"
     with ax_model.try_catch(db_session, err) as db_session:
         existing_folder = db_session.query(AxForm).filter(
-            AxForm.guid == uuid.UUID(folder['guid'])
+            AxForm.guid == ax_misc.guid_or_none(folder['guid'])
         ).filter(
             AxForm.is_folder.is_(True)
         ).first()
@@ -498,7 +498,7 @@ async def create_folder(db_session, folder):
             existing_folder.name = folder['name']
         else:
             new_folder = AxForm()
-            new_folder.guid = uuid.UUID(folder['guid'])
+            new_folder.guid = ax_misc.guid_or_none(folder['guid'])
             new_folder.name = folder['name']
             new_folder.is_folder = True
             new_folder.position = int(folder['position'] or 0)
@@ -511,7 +511,7 @@ async def create_form(db_session, form):
     err = "marketplace_schema -> create_form"
     with ax_model.try_catch(db_session, err) as db_session:
         existing_form = db_session.query(AxForm).filter(
-            AxForm.guid == uuid.UUID(form['guid'])
+            AxForm.guid == ax_misc.guid_or_none(form['guid'])
         ).first()
         new_form = None
         form_is_new = False
@@ -525,7 +525,7 @@ async def create_form(db_session, form):
             db_name = form['db_name']
 
             new_form = AxForm()
-            new_form.guid = uuid.UUID(form['guid'])
+            new_form.guid = ax_misc.guid_or_none(form['guid'])
             new_form.name = form['name']
             new_form.db_name = form['db_name']
             new_form.position = int(form['position'] or 0)
@@ -549,12 +549,12 @@ async def create_metric(db_session, metric):
     err = "marketplace_schema -> create_metric"
     with ax_model.try_catch(db_session, err) as db_session:
         existing_metric = db_session.query(AxMetric).filter(
-            AxMetric.guid == uuid.UUID(metric['guid'])
+            AxMetric.guid == ax_misc.guid_or_none(metric['guid'])
         ).first()
 
         if not existing_metric:
             new_metric = AxMetric()
-            new_metric.guid = uuid.UUID(metric['guid'])
+            new_metric.guid = ax_misc.guid_or_none(metric['guid'])
             new_metric.key = metric['key']
             new_metric.value = metric['value']
             db_session.add(new_metric)
@@ -565,7 +565,7 @@ async def create_field(db_session, ax_form, field):
     err = "marketplace_schema -> create_field"
     with ax_model.try_catch(db_session, err) as db_session:
         existing_field = db_session.query(AxField).filter(
-            AxField.guid == uuid.UUID(field['guid'])
+            AxField.guid == ax_misc.guid_or_none(field['guid'])
         ).first()
 
         if existing_field:
@@ -578,7 +578,7 @@ async def create_field(db_session, ax_form, field):
             existing_field.position = int(field['position'] or 0)
         else:
             new_field = AxField()
-            new_field.guid = uuid.UUID(field['guid'])
+            new_field.guid = ax_misc.guid_or_none(field['guid'])
             new_field.form_guid = ax_form.guid
             new_field.name = field['name']
             new_field.db_name = field['db_name']
@@ -613,7 +613,7 @@ async def create_column(db_session, grid_guid, column):
     err = "marketplace_schema -> create_column"
     with ax_model.try_catch(db_session, err) as db_session:
         existing_column = db_session.query(AxColumn).filter(
-            AxColumn.guid == uuid.UUID(column['guid'])
+            AxColumn.guid == ax_misc.guid_or_none(column['guid'])
         ).first()
         new_column = None
 
@@ -624,11 +624,11 @@ async def create_column(db_session, grid_guid, column):
             existing_column.aggregation_type = column['aggregation_type']
         else:
             new_column = AxColumn()
-            new_column.guid = uuid.UUID(column['guid'])
+            new_column.guid = ax_misc.guid_or_none(column['guid'])
             new_column.position = int(column['position'] or 0)
             new_column.options_json = column['options_json']
-            new_column.field_guid = uuid.UUID(column['field_guid'])
-            new_column.grid_guid = uuid.UUID(grid_guid)
+            new_column.field_guid = ax_misc.guid_or_none(column['field_guid'])
+            new_column.grid_guid = ax_misc.guid_or_none(grid_guid)
             new_column.column_type = column['column_type']
             new_column.aggregation_type = column['aggregation_type']
             db_session.add(new_column)
@@ -640,7 +640,7 @@ async def create_grid(db_session, form_directory, ax_form, grid):
     with ax_model.try_catch(db_session, err) as db_session:
         code = None
         existing_grid = db_session.query(AxGrid).filter(
-            AxGrid.guid == uuid.UUID(grid['guid'])
+            AxGrid.guid == ax_misc.guid_or_none(grid['guid'])
         ).first()
         new_grid = None
 
@@ -658,7 +658,7 @@ async def create_grid(db_session, form_directory, ax_form, grid):
             existing_grid.is_default_view = grid['is_default_view']
         else:
             new_grid = AxGrid()
-            new_grid.guid = uuid.UUID(grid['guid'])
+            new_grid.guid = ax_misc.guid_or_none(grid['guid'])
             new_grid.name = grid['name']
             new_grid.db_name = grid['db_name']
             new_grid.position = int(grid['position'] or 0)
@@ -682,7 +682,7 @@ async def create_role(db_session, ax_form, role):
     err = "marketplace_schema -> create_role"
     with ax_model.try_catch(db_session, err) as db_session:
         existing_role = db_session.query(AxRole).filter(
-            AxRole.guid == uuid.UUID(role['guid'])
+            AxRole.guid == ax_misc.guid_or_none(role['guid'])
         ).first()
         new_role = None
 
@@ -691,7 +691,7 @@ async def create_role(db_session, ax_form, role):
             existing_role.icon = role['icon']
         else:
             new_role = AxRole()
-            new_role.guid = uuid.UUID(role['guid'])
+            new_role.guid = ax_misc.guid_or_none(role['guid'])
             new_role.name = role['name']
             new_role.form_guid = ax_form.guid
             new_role.icon = role['icon']
@@ -703,15 +703,15 @@ async def create_state2role(db_session, state_guid, role_guid):
     err = "marketplace_schema -> create_state2role"
     with ax_model.try_catch(db_session, err) as db_session:
         existing_s2r = db_session.query(AxState2Role).filter(
-            AxState2Role.state_guid == uuid.UUID(state_guid)
+            AxState2Role.state_guid == ax_misc.guid_or_none(state_guid)
         ).filter(
-            AxState2Role.role_guid == uuid.UUID(role_guid)
+            AxState2Role.role_guid == ax_misc.guid_or_none(role_guid)
         ).first()
 
         if not existing_s2r:
             new_s2r = AxState2Role()
-            new_s2r.state_guid = uuid.UUID(state_guid)
-            new_s2r.role_guid = uuid.UUID(role_guid)
+            new_s2r.state_guid = ax_misc.guid_or_none(state_guid)
+            new_s2r.role_guid = ax_misc.guid_or_none(role_guid)
             db_session.add(new_s2r)
 
 
@@ -720,7 +720,7 @@ async def create_state(db_session, ax_form, state):
     err = "marketplace_schema -> create_state"
     with ax_model.try_catch(db_session, err) as db_session:
         existing_state = db_session.query(AxState).filter(
-            AxState.guid == uuid.UUID(state['guid'])
+            AxState.guid == ax_misc.guid_or_none(state['guid'])
         ).first()
         new_state = None
 
@@ -730,7 +730,7 @@ async def create_state(db_session, ax_form, state):
             existing_state.y = float(state['y'] or 0)
         else:
             new_state = AxState()
-            new_state.guid = uuid.UUID(state['guid'])
+            new_state.guid = ax_misc.guid_or_none(state['guid'])
             new_state.name = state['name']
             new_state.form_guid = ax_form.guid
             new_state.is_start = state['is_start']
@@ -752,15 +752,15 @@ async def create_action2role(db_session, action_guid, role_guid):
     err = "marketplace_schema -> create_action2role"
     with ax_model.try_catch(db_session, err) as db_session:
         existing_a2r = db_session.query(AxAction2Role).filter(
-            AxAction2Role.action_guid == uuid.UUID(action_guid)
+            AxAction2Role.action_guid == ax_misc.guid_or_none(action_guid)
         ).filter(
-            AxAction2Role.role_guid == uuid.UUID(role_guid)
+            AxAction2Role.role_guid == ax_misc.guid_or_none(role_guid)
         ).first()
 
         if not existing_a2r:
             new_a2r = AxAction2Role()
-            new_a2r.action_guid = uuid.UUID(action_guid)
-            new_a2r.role_guid = uuid.UUID(role_guid)
+            new_a2r.action_guid = ax_misc.guid_or_none(action_guid)
+            new_a2r.role_guid = ax_misc.guid_or_none(role_guid)
             db_session.add(new_a2r)
 
 
@@ -789,12 +789,12 @@ async def create_action(db_session, form_directory, ax_form, action):
                 code = action_file.read()
 
         new_action = AxAction()
-        new_action.guid = uuid.UUID(action['guid'])
+        new_action.guid = ax_misc.guid_or_none(action['guid'])
         new_action.name = action['name']
         new_action.db_name = action['db_name']
         new_action.form_guid = ax_form.guid
-        new_action.from_state_guid = uuid.UUID(action['from_state_guid'])
-        new_action.to_state_guid = uuid.UUID(action['to_state_guid'])
+        new_action.from_state_guid = ax_misc.guid_or_none(action['from_state_guid'])
+        new_action.to_state_guid = ax_misc.guid_or_none(action['to_state_guid'])
         new_action.code = code
         new_action.confirm_text = action['confirm_text']
         new_action.close_modal = action['close_modal']
@@ -814,9 +814,9 @@ async def create_role_field_perm(db_session, ax_form, perm):
     err = "marketplace_schema -> create_role_field_perm"
     with ax_model.try_catch(db_session, err) as db_session:
         new_perm = AxRoleFieldPermission()
-        new_perm.role_guid = uuid.UUID(perm['role_guid'])
-        new_perm.state_guid = uuid.UUID(perm['state_guid'])
-        new_perm.field_guid = uuid.UUID(perm['field_guid'])
+        new_perm.role_guid = ax_misc.guid_or_none(str(perm['role_guid']))
+        new_perm.state_guid = ax_misc.guid_or_none(str(perm['state_guid']))
+        new_perm.field_guid = ax_misc.guid_or_none(str(perm['field_guid']))
         new_perm.form_guid = ax_form.guid
         new_perm.read = perm['read']
         new_perm.edit = perm['edit']
@@ -836,10 +836,10 @@ async def create_tom_references(db_session, ax_form, form_directory):
             for ref in tom_yaml:
                 new_ref = Ax1tomReference()
                 new_ref.form_guid = ax_form.guid
-                new_ref.field_guid = uuid.UUID(ref['field_guid'])
-                new_ref.row_guid = uuid.UUID(ref['row_guid'])
-                new_ref.child_guid = uuid.UUID(ref['child_guid'])
-                new_ref.field_guid = uuid.UUID(ref['field_guid'])
+                new_ref.field_guid = ax_misc.guid_or_none(ref['field_guid'])
+                new_ref.row_guid = ax_misc.guid_or_none(ref['row_guid'])
+                new_ref.child_guid = ax_misc.guid_or_none(ref['child_guid'])
+                new_ref.field_guid = ax_misc.guid_or_none(ref['field_guid'])
                 db_session.add(new_ref)
 
 
@@ -848,7 +848,15 @@ def clean_yaml_value(row, field):
         but when readed - qoutes stays in string. We must remove them """
     value = row[field.db_name]
     if value and field.field_type.value_type == 'JSON':
-        value = ast.literal_eval(value)
+        try:
+            value = json.loads(value)
+        except:
+            try:
+                value = ast.literal_eval(value)
+            except:
+                value_str = str(value)
+                logger.error(f'clean_yaml_value -> could not decode json {value_str}')
+                value = None
     return value
 
 
@@ -876,7 +884,7 @@ async def insert_data(db_session, ax_form, form_directory):
                     db_session=db_session,
                     form=tobe_form,
                     to_state_name=row["axState"],
-                    new_guid=uuid.UUID(row['guid']))
+                    new_guid=ax_misc.guid_or_none(row['guid']))
 
 
 async def create_form_objects(db_session, form_name, package_directory):
@@ -1000,7 +1008,7 @@ async def check_existing_form(db_session, package_directory, form_db_name):
         AxForm.db_name == form_db_name
     ).first()
 
-    if existing_form.guid != uuid.UUID(form_guid):
+    if existing_form.guid != ax_misc.guid_or_none(form_guid):
         err = (f'Can not create AxForm [{form_db_name}]. Form with same '
                 f'db_name already exists.\nInstallation is aborted ☠️')
         logger.exception(err)

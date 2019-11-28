@@ -1,21 +1,6 @@
 <template>
   <div id='workflowContainer' ref='workflowContainer'>
     <div id='d3div' ref='d3div'></div>
-    <!-- <div class='footer'>
-      <v-btn
-        :to='"/admin/" + this.$route.params.db_name + "/grids/" + defaultGridDbName'
-        class='constructor-button'
-        text
-        small
-      >
-        &nbsp;
-        <b>Next</b> &nbsp;
-        <i class='fas fa-arrow-right'></i> &nbsp;
-        build Grids
-        &nbsp;
-        <i class='fas fa-columns'></i>
-      </v-btn>
-    </div>-->
     <resize-observer @notify='debounceResize' />
 
     <modal adaptive height='auto' name='update-state' scrollable width='1000px'>
@@ -116,6 +101,7 @@ export default {
   watch: {
     hightlightedRole(newValue) {
       if (newValue) {
+        // Turn on highlite
         const states2lite = [];
         this.$store.state.workflow.states.forEach(state => {
           state.roles.edges.forEach(edge => {
@@ -151,8 +137,16 @@ export default {
           currentArrow.style('stroke', newValue.color);
           currentArrow.style('fill', newValue.color);
           currentArrow.classed('d3_highlighted_action', true);
+
+          const currentText = d3.select(`#d3_action_text_${action.guid}`);
+          currentText.style('fill', newValue.color);
+
+          const currentSelfAction = d3.select(`#d3_self_action_text_${action.guid}`);
+          currentSelfAction.style('fill', newValue.color);
         });
       } else {
+        // Turn off highlite
+
         this.axStates.forEach(state => {
           const currentState = d3.select(`#d3_rect_${state.guid}`);
           currentState.style('fill', null);
@@ -168,6 +162,12 @@ export default {
           currentArrow.style('stroke', null);
           currentArrow.style('fill', null);
           currentArrow.classed('d3_highlighted_action', false);
+
+          const currentText = d3.select(`#d3_action_text_${action.guid}`);
+          currentText.style('fill', null);
+
+          const currentSelfAction = d3.select(`#d3_self_action_text_${action.guid}`);
+          currentSelfAction.style('fill', null);          
         });
 
         const startState = d3.select('#d3_start');
@@ -789,6 +789,23 @@ export default {
               })
               .on('mouseleave', () => {
                 this.selectedActionId = null;
+              })
+              .on('dragover', () => {
+                // Allow drop
+                d3.event.preventDefault();
+                const currentText = d3.select(`#d3_self_action_text_${actionD.guid}`);
+                currentText.classed('d3_dragover_text', true);
+              })
+              .on('dragleave', () => {
+                const currentText = d3.select(`#d3_self_action_text_${actionD.guid}`);
+                currentText.classed('d3_dragover_text', false);
+              })
+              .on('drop', data => {
+                const currentText = d3.select(`#d3_self_action_text_${actionD.guid}`);
+                currentText.classed('d3_dragover_text', false);
+
+                const roleGuid = d3.event.dataTransfer.getData('roleGuid');
+                this.handleAddRoleToAction(roleGuid, actionD.guid);
               });
             startHeight += 20; // incremental_offset
           });

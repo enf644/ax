@@ -63,7 +63,8 @@ class PorstgreDialect(object):
                 true_texts.append(text)
 
         if not true_tags:
-            return f"{true_texts[0]}"
+            return f'"guid"'
+            # return f"{true_texts[0]}"
 
         zip_result = zip(true_texts, true_tags)
         tom_view_arr = [x for item in zip_result for x in item]

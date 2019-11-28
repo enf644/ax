@@ -26,7 +26,7 @@
       </v-flex>
       <v-flex offset-xs1 xs5>
         <v-switch
-          :label='this.$t("types.AxImageCropDb.settings-is-round")'
+          :label='this.locale("types.AxImageCropDb.settings-is-round")'
           v-model='changedOptions.isRound'
         ></v-switch>
       </v-flex>

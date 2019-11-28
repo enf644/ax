@@ -40,7 +40,7 @@
     <v-btn @click='addReviwers()' small>
       <i class='fas fa-user-plus'></i>
       &nbsp;
-      {{$t("types.AxApproval.add-users-btn")}}
+      {{locale("types.AxApproval.add-users-btn")}}
     </v-btn>
   </div>
 </template>

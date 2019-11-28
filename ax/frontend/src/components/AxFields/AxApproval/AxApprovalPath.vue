@@ -29,22 +29,22 @@
       <v-btn @click='openUsersModal()' small text>
         <i class='fas fa-user-plus'></i>
         &nbsp;
-        {{$t("types.AxApproval.add-users-btn")}}
+        {{locale("types.AxApproval.add-users-btn")}}
       </v-btn>
       <v-btn @click='approve()' small text>
         <i class='fas fa-check approved-color'></i>
         &nbsp;
-        {{$t("types.AxApproval.approve-action")}}
+        {{locale("types.AxApproval.approve-action")}}
       </v-btn>
       <v-btn @click='reject()' small text>
         <i class='fas fa-times rejected-color'></i>
         &nbsp;
-        {{$t("types.AxApproval.reject-action")}}
+        {{locale("types.AxApproval.reject-action")}}
       </v-btn>
       <v-btn @click='question()' small text>
         <i class='fas fa-question question-color'></i>
         &nbsp;
-        {{$t("types.AxApproval.question-action")}}
+        {{locale("types.AxApproval.question-action")}}
       </v-btn>
     </div>
 
@@ -66,6 +66,7 @@
 </template>
 
 <script>
+import i18n from '@/locale';
 import AxUserChip from '@/components/AxUserChip.vue';
 import AxApprovalPath from '@/components/AxFields/AxApproval/AxApprovalPath.vue';
 import AxApprovalAddReviwers from '@/components/AxFields/AxApproval/AxApprovalAddReviwers.vue';
@@ -132,6 +133,9 @@ export default {
   },
   mounted() {},
   methods: {
+    locale(key, params = null) {
+      return i18n.t(key, params);
+    },
     openUsersModal() {
       this.$modal.show(`add-reviwers-${this.id}`);
     },
@@ -155,10 +159,10 @@ export default {
     },
     async approve() {
       const res = await this.$dialog.prompt({
-        text: this.$t('types.AxApproval.enter-approve-resolution-prompt'),
+        text: this.locale('types.AxApproval.enter-approve-resolution-prompt'),
         actions: {
           true: {
-            text: this.$t('types.AxApproval.approve-action')
+            text: this.locale('types.AxApproval.approve-action')
           }
         }
       });
@@ -166,10 +170,10 @@ export default {
     },
     async reject() {
       const res = await this.$dialog.prompt({
-        text: this.$t('types.AxApproval.enter-reject-resolution-prompt'),
+        text: this.locale('types.AxApproval.enter-reject-resolution-prompt'),
         actions: {
           true: {
-            text: this.$t('types.AxApproval.reject-action')
+            text: this.locale('types.AxApproval.reject-action')
           }
         }
       });
@@ -177,10 +181,10 @@ export default {
     },
     async question() {
       const res = await this.$dialog.prompt({
-        text: this.$t('types.AxApproval.enter-question-prompt'),
+        text: this.locale('types.AxApproval.enter-question-prompt'),
         actions: {
           true: {
-            text: this.$t('types.AxApproval.question-action')
+            text: this.locale('types.AxApproval.question-action')
           }
         }
       });

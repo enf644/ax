@@ -204,4 +204,4 @@ async def get_tom_label(form):
 
 async def get_ax_host():
     """ Returns ax instance url with method and port. From app.yaml """
-    return "http://127.0.0.1:8081"
+    return os.environ.get('AX_URL')

@@ -779,15 +779,16 @@ AX 0.2:
             ✔ Warning when no intent @done(19-11-26 21:57)
             ✔ Required option @done(19-11-26 23:43)
             ✔ Refresh payment status on load @done(19-11-26 23:43)
-    ☐ FROGS round 3
+    ✔ FROGS round 3 @done(19-11-28 08:54)
         ✔ Insert action without closing form - new values are not set! @done(19-11-25 20:55)
-        ☐ Move to JSON fields in model
-        ☐ Index page - must be default perm for all users
-        ☐ Pages not working
-        ☐ Users - block users?. Delete login column.
-        ☐ AxComments - no comments sign
-        ☐ get_ax_host - get from app yaml
-        ☐ current_user['email'] can be None !!! must return 403
+        ✔ Move to JSON fields in model @done(19-11-27 13:01)
+        ✔ Index page - must be default perm for all users @done(19-11-27 17:00)
+        ✔ Users - block users?. Delete login column. @done(19-11-27 20:21)
+        ✔ AxComments - no comments sign @done(19-11-27 20:56)
+        ✔ get_ax_host - get from app yaml @done(19-11-27 21:33)
+        ✔ Uppy camera in files - modal size @done(19-11-27 21:44)
+        ✔ workflow - drag role to self-action @done(19-11-27 22:11)
+        ✔ current_user['email'] can be None must return 403 @done(19-11-28 08:54)
     ☐ FEATURES
         ☐ Admin home widgets
             ☐ Stack-overflow questions
@@ -802,6 +803,8 @@ AX 0.2:
         ☐ User registration -> always throw email (Ax does not work without smtp??)
             ☐ Users can modify their info
             ☐ First enter - must reset password
+        ☐ Marketplace
+            ☐ Some text and links
     ☐ LICENSE GENERATION
     ☐ TUTORIAL
         ☐ Each page and field have help modal with gifs
@@ -815,6 +818,7 @@ AX 0.2:
         ☐ Profile execution
             https://stackoverflow.com/a/49526932/784789
             https://github.com/mgedmin/profilehooks        
+        ☐ Two sample apps
     ☐ Publish to pypi, clean old versions
     =======================================================================:
     ☐ LANDING
@@ -837,6 +841,8 @@ AX 0.2:
         ☐ Yandex.Kassa field
         ☐ User registration app for marketplace
         ☐ Patreon
+    ☐ MARKETPLACE APPS
+        ☐ Copy Less workflow
     ☐ CYPRESS TESTS FOR MAIN FUNCTIONS
     ☐ ESTABLISH CI
         ☐ Each commit runs tests - installs from pip, runs cypress tests
@@ -1025,6 +1031,10 @@ FEATURES:
         ☐ Allow one level of sub-tabs for AxForm - https://vuetifyjs.com/en/components/lists#expansion-lists
         ☐ Groups inside groups
     ☐ MODERATE
+        ☐ Move to letter user avatars like AxMessages
+        ☐ Create user image avatars
+        ☐ Create reference records (default reference field). Form have 1tomTable field. You must be abble to create reference form without leaving root form. (option)
+        ☐ Create separate 1tom database table for each 1tom reference.
         ☐ Every modal must be moved a litle bit
         ☐ AxFieldTypes must be taken from directories, not database. If tag is not found - AxText is used
         ☐ Add clould logger for python and vue

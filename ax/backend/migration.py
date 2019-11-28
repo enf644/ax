@@ -20,7 +20,7 @@ from alembic import command
 import backend.model as ax_model
 import backend.misc as ax_misc
 from backend.model import AxAlembicVersion, AxFieldType, AxUser, AxGroup2Users,\
-    AxPage
+    AxPage, AxPage2Users
 
 this = sys.modules[__name__]
 alembic_cfg = None
@@ -80,6 +80,16 @@ def create_default_pages():
         index_page.code = (f"<h1>Welcome to Ax pages</h1>\n"
                            f"<br/><br/>Hello world")
         db_session.add(index_page)
+
+        all_user = db_session.query(AxUser).filter(
+            AxUser.is_all_users.is_(True)
+        ).first()
+
+        p2u = AxPage2Users()
+        p2u.page_guid = index_page.guid
+        p2u.user_guid = all_user.guid
+        db_session.add(p2u)
+
         db_session.commit()
 
 

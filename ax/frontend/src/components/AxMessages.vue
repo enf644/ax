@@ -6,6 +6,11 @@
 
     <div class='all-messages' v-if='this.currentUserShortName'>
       <div :style='{ height: this.height + "px" }' class='scrollBox' ref='scrollBox'>
+        <div v-if='noMessages'>
+          <i class='far fa-comment-alt'></i>
+          &nbsp;&nbsp;
+          {{$t("types.AxComments.no-messages")}}
+        </div>
         <div :key='message.guid' v-for='message in messages'>
           <div class='message-wrapper' v-if='isSelfMessage(message) == false'>
             <div class='message-body'>
@@ -95,7 +100,11 @@ export default {
   computed: {
     label() {
       if (this.inputLabel) return this.inputLabel;
-      return this.$t('types.AxComments.enter-message');
+      return this.locale('types.AxComments.enter-message');
+    },
+    noMessages() {
+      if (!this.messages || this.messages.length == 0) return true;
+      return false;
     }
   },
   watch: {},

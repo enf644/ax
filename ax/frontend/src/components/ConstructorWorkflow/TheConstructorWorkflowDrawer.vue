@@ -62,9 +62,8 @@ export default {
       ev.dataTransfer.setData('roleGuid', role.guid);
     },
     getIconClass(role) {
-      let roleIcon = 'user-tie';
-      if (role.icon) roleIcon = role.icon;
-      return `fas fa-${roleIcon}`;
+      if (role.icon) return `fas fa-${role.icon}`;
+      return 'fas fa-user-friends';
     },
     async createRole() {
       const res = await this.$dialog.prompt({

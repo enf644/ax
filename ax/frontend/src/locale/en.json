@@ -97,6 +97,7 @@
         "modal-password": "Password",
         "modal-password-hint": "Minimum 6 characters. Must contain large letter and digit.",
         "modal-re-password": "Re-enter password",
+        "modal-block-switch": "Block user. User will not be able to sign-in to Ax. You will not be charged for this user in PRO version",
         "create-user-btn": "Create user",
         "update-user-btn": "Update user",
         "delete-user-btn": "Delete user",
@@ -112,10 +113,13 @@
         "grid-email": "Email",
         "grid-short-name": "Short name",
         "grid-name": "User name",
+        "grid-blocked": "Blocked",
         "invalid-new-password": "Password is invalid. Note password rules",
         "re-password-invalid": "Not equal to password",
         "all-users-header": "All users",
         "all-users-btn": "All users",
+        "blocked-users-header": "Blocked users",
+        "blocked-users-btn": "Blocked users",
         "drawer-users-header": "Manage users",
         "drawer-groups-header": "Manage groups",
         "add-group-prompt": "Enter group name ",
@@ -460,7 +464,8 @@
             "new-row-warning": "Comments avalible only for created records",
             "no-anon-warning": "Comments avalible only to Ax users",
             "settings-height": "Comments box height",
-            "enter-message": "Enter message text"
+            "enter-message": "Enter message text",
+            "no-messages": "No messages"
         },
         "AxApproval": {
             "name": "Approval path",

@@ -31,6 +31,7 @@ class CreateUser(graphene.Mutation):
         password = graphene.String()
         avatar_tmp = graphene.String()
         info = graphene.String()
+        is_blocked = graphene.Boolean()
 
     ok = graphene.Boolean()
     user = graphene.Field(User)
@@ -55,6 +56,7 @@ class CreateUser(graphene.Mutation):
             new_user.short_name = args.get('short_name')
             new_user.info = args.get('info')
             new_user.password = pbkdf2_sha256.hash(args.get('password'))
+            new_user.is_blocked = args.get('is_blocked')
             db_session.add(new_user)
             db_session.flush()
 
@@ -70,6 +72,7 @@ class UpdateUser(graphene.Mutation):
         info = graphene.String()
         password = graphene.String(required=False, default_value=None)
         avatar_tmp = graphene.String(required=False, default_value=None)
+        is_blocked = graphene.Boolean()
 
     ok = graphene.Boolean()
     user = graphene.Field(User)
@@ -93,6 +96,8 @@ class UpdateUser(graphene.Mutation):
                 ax_user.info = args.get('info')
             if args.get('password'):
                 ax_user.password = pbkdf2_sha256.hash(args.get('password'))
+
+            ax_user.is_blocked = args.get('is_blocked')
 
             db_session.flush()
             return UpdateUser(user=ax_user, ok=True)
@@ -328,6 +333,11 @@ class UsersQuery(graphene.ObjectType):
         search_string=graphene.Argument(type=graphene.String, required=False),
         update_time=graphene.Argument(type=graphene.String, required=False)
     )
+    blocked_users = graphene.List(
+        User,
+        search_string=graphene.Argument(type=graphene.String, required=False),
+        update_time=graphene.Argument(type=graphene.String, required=False)
+    )    
     all_groups = graphene.List(
         User,
         update_time=graphene.Argument(type=graphene.String, required=False)
@@ -359,7 +369,7 @@ class UsersQuery(graphene.ObjectType):
         guids=graphene.Argument(type=graphene.String, required=False),
         emails=graphene.Argument(type=graphene.String, required=False),
         update_time=graphene.Argument(type=graphene.String, required=False)
-    )    
+    )
     find_user = graphene.Field(
         User,
         guid=graphene.Argument(type=graphene.String, required=True),
@@ -381,14 +391,39 @@ class UsersQuery(graphene.ObjectType):
             query = User.get_query(info)  # SQLAlchemy query
             users_list = []
             if not search_string:
-                users_list = query.filter(AxUser.is_group.is_(False)).all()
+                users_list = query.filter(
+                    AxUser.is_group.is_(False)
+                ).filter(
+                    AxUser.is_blocked.is_(False)
+                ).all()
             else:
                 users_list = query.filter(
                     AxUser.is_group.is_(False)
                 ).filter(
                     AxUser.short_name.ilike(f"%{search_string}%")
+                ).filter(
+                    AxUser.is_blocked.is_(False)
                 ).all()
             return users_list
+
+
+    @ax_admin_only
+    async def resolve_blocked_users(
+            self, info, update_time=None):
+        """Get all users"""
+        del update_time
+        err = 'Error in GQL query - all_users.'
+        with ax_model.try_catch(
+                info.context['session'], err, no_commit=True):
+            query = User.get_query(info)  # SQLAlchemy query
+            users_list = []
+            users_list = query.filter(
+                AxUser.is_group.is_(False)
+            ).filter(
+                AxUser.is_blocked.is_(True)
+            ).all()
+            return users_list
+
 
     @ax_admin_only
     async def resolve_all_groups(self, info, update_time=None):
@@ -404,6 +439,8 @@ class UsersQuery(graphene.ObjectType):
                 AxUser.is_all_users.is_(False)
             ).filter(
                 AxUser.is_everyone.is_(False)
+            ).filter(
+                AxUser.is_blocked.is_(False)
             ).all()
             return users_list
 
@@ -420,7 +457,11 @@ class UsersQuery(graphene.ObjectType):
             for user in user_list:
                 user_guids.append(user['guid'])
             query = User.get_query(info)  # SQLAlchemy query
-            ret_list = query.filter(AxUser.guid.in_(user_guids)).all()
+            ret_list = query.filter(
+                AxUser.guid.in_(user_guids)
+            ).filter(
+                AxUser.is_blocked.is_(False)
+            ).all()
             return ret_list
 
     @ax_admin_only
@@ -436,7 +477,11 @@ class UsersQuery(graphene.ObjectType):
             for user in user_list:
                 user_guids.append(user['guid'])
             query = User.get_query(info)  # SQLAlchemy query
-            ret_list = query.filter(AxUser.guid.in_(user_guids)).all()
+            ret_list = query.filter(
+                AxUser.guid.in_(user_guids)
+            ).filter(
+                AxUser.is_blocked.is_(False)
+            ).all()
             return ret_list
 
     @ax_admin_only
@@ -452,7 +497,11 @@ class UsersQuery(graphene.ObjectType):
             for user in user_list:
                 user_guids.append(user['guid'])
             query = User.get_query(info)  # SQLAlchemy query
-            ret_list = query.filter(AxUser.guid.in_(user_guids)).all()
+            ret_list = query.filter(
+                AxUser.guid.in_(user_guids)
+            ).filter(
+                AxUser.is_blocked.is_(False)
+            ).all()
             return ret_list
 
     async def resolve_users_and_groups(
@@ -473,6 +522,8 @@ class UsersQuery(graphene.ObjectType):
                     or_(
                         AxUser.short_name.ilike(f"%{search_string}%"),
                         AxUser.guid.in_(real_guids))
+                ).filter(
+                    AxUser.is_blocked.is_(False)
                 ).all()
             elif not search_string and guids:
                 real_guids = []
@@ -482,15 +533,20 @@ class UsersQuery(graphene.ObjectType):
 
                 users_list = query.filter(
                     AxUser.guid.in_(real_guids)
+                ).filter(
+                    AxUser.is_blocked.is_(False)
                 ).all()
             elif search_string and not guids:
                 users_list = query.filter(
                     AxUser.short_name.ilike(f"%{search_string}%")
+                ).filter(
+                    AxUser.is_blocked.is_(False)
                 ).all()
             else:
-                users_list = query.all()
+                users_list = query.filter(
+                    AxUser.is_blocked.is_(False)
+                ).all()
             return users_list
-
 
     async def resolve_only_users(
             self, info, search_string=None, update_time=None,
@@ -513,6 +569,8 @@ class UsersQuery(graphene.ObjectType):
                         AxUser.guid.in_(real_guids))
                 ).filter(
                     AxUser.is_group.is_(False)
+                ).filter(
+                    AxUser.is_blocked.is_(False)
                 ).all()
             elif not search_string and guids:
                 real_guids = []
@@ -524,12 +582,16 @@ class UsersQuery(graphene.ObjectType):
                     AxUser.guid.in_(real_guids)
                 ).filter(
                     AxUser.is_group.is_(False)
+                ).filter(
+                    AxUser.is_blocked.is_(False)
                 ).all()
             elif search_string and not guids:
                 users_list = query.filter(
                     AxUser.short_name.ilike(f"%{search_string}%")
                 ).filter(
                     AxUser.is_group.is_(False)
+                ).filter(
+                    AxUser.is_blocked.is_(False)
                 ).all()
             elif not search_string and not guids and emails:
                 email_list = ast.literal_eval(emails)
@@ -537,21 +599,26 @@ class UsersQuery(graphene.ObjectType):
                     AxUser.email.in_(email_list)
                 ).filter(
                     AxUser.is_group.is_(False)
+                ).filter(
+                    AxUser.is_blocked.is_(False)
                 ).all()
 
             return users_list
 
-
-    def resolve_find_user(self, info, guid, update_time):
+    @ax_admin_only
+    async def resolve_find_user(self, info, guid, update_time):
         """default find method"""
         del update_time
         err = 'Error in GQL query - find_user.'
         with ax_model.try_catch(info.context['session'], err, no_commit=True):
             query = User.get_query(info)
-            ax_user = query.filter(AxUser.guid == guid).first()
+            ax_user = query.filter(
+                AxUser.guid == guid
+            ).first()
             return ax_user
 
-    def resolve_current_ax_user(self, info, update_time):
+
+    async def resolve_current_ax_user(self, info, update_time):
         """ Returns current AxUser """
         del update_time
         err = 'Error in GQL query - find_user.'
@@ -561,7 +628,11 @@ class UsersQuery(graphene.ObjectType):
 
             user_guid = info.context['user']['user_id']
             query = User.get_query(info)
-            ax_user = query.filter(AxUser.guid == uuid.UUID(user_guid)).first()
+            ax_user = query.filter(
+                AxUser.guid == uuid.UUID(user_guid)
+            ).filter(
+                AxUser.is_blocked.is_(False)
+            ).first()
             return ax_user
 
 
