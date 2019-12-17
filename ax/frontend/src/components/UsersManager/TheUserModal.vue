@@ -7,7 +7,7 @@
       <i class='fas fa-times close-ico'></i>
     </v-btn>
     <br />
-    <v-form @submit.prevent='updateGrid' ref='form' v-model='valid'>
+    <v-form @submit.prevent='updateUser' ref='form' v-model='valid'>
       <v-container>
         <v-row>
           <v-col>
@@ -42,6 +42,7 @@
           </v-col>
         </v-row>
         <v-row>
+          {{$t("users.change-password-admin-warning")}}
           <v-col>
             <v-text-field
               :hint='$t("users.modal-password-hint")'

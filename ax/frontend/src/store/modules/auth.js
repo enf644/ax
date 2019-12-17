@@ -23,7 +23,7 @@ const getters = {};
 const actions = {
   logOut(context) {
     const host = getAxHostProtocol();
-    window.location.href = `${host}/api/signout`;
+    window.location.href = `${host}/api/signout?to_admin=1`;
   },
   goToPages(context) {
     const host = getAxHostProtocol();

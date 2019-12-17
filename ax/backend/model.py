@@ -475,6 +475,7 @@ class AxUser(Base):
     info = Column(Text(convert_unicode=True))
     email = Column(String(255))
     password = Column(String(255))
+    password_must_change = Column(Boolean, unique=False, default=False)
     is_group = Column(Boolean, unique=False, default=False)
     is_admin = Column(Boolean, unique=False, default=False)
     is_everyone = Column(Boolean, unique=False, default=False)
@@ -491,6 +492,7 @@ class AxUser(Base):
         secondaryjoin="AxUser.guid==AxGroup2Users.user_guid",
         backref="users_in_group"
     )
+    is_active_admin = False
 
     def to_dict(self):
         """ Required for sanic-jwt """
@@ -654,5 +656,3 @@ class AxMessageThread(Base):
     row_guid = Column(GUID())
     code_name = Column(String(255))
     messages = relationship("AxMessage")
-
-

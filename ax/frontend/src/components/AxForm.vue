@@ -214,8 +214,8 @@
 <script>
 // import AxGrid from './AxGrid.vue';
 // import smoothReflow from 'vue-smooth-reflow';
-import i18n from '../locale.js';
-import apolloClient from '../apollo';
+import i18n from '@/locale';
+import apolloClient from '@/apollo';
 import AxField from '@/components/AxField.vue';
 import gql from 'graphql-tag';
 import uuid4 from 'uuid4';

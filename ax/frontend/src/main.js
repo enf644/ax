@@ -5,8 +5,8 @@ import vueCustomElement from 'vue-custom-element'; // create web component from 
 import 'document-register-element'; // polyfill for vue-custom-element
 import 'animate.css/animate.min.css';
 import logger from './logger';
-import './assets/ax-core.css';
-import './assets/github-markdown.css';
+import '@/assets/ax-core.css';
+import '@/assets/github-markdown.css';
 
 import VModal from 'vue-js-modal';
 
@@ -54,6 +54,7 @@ import store from './store';
 import AxTest from './components/AxTest.vue';
 import Fingerprint2 from 'fingerprintjs2'
 import { uuidWithDashes } from '@/misc';
+// import ThePasswordChange from '@/components/UsersManager/ThePasswordChange.vue';
 
 Vue.config.productionTip = false;
 
@@ -115,6 +116,25 @@ const formPromise = () => import(/* webpackChunkName: "ax-form" */ './components
   }
 });
 Vue.customElement('ax-form', formPromise, { props: ['db_name', 'row_guid', 'update_time', 'opened_tab'] });
+
+const changePasswordPromise = () => import('@/components/UsersManager/ThePasswordChange.vue').then(m => {
+  return {
+    ...m.default,
+    vuetify
+  }
+});
+Vue.customElement('ax-change-password', changePasswordPromise, { props: ['guid', 'is_new'] });
+
+
+const signInPromise = () => import('@/components/AxSignIn.vue').then(m => {
+  return {
+    ...m.default,
+    vuetify
+  }
+});
+Vue.customElement('ax-sign-in', signInPromise, { props: [] });
+
+
 
 Vue.use(VuetifyDialog, {
   context: { vuetify },

@@ -15,10 +15,17 @@
       <br />
       <a @click='doLogOut()' class='cursor-pointer'>{{$t("sign-out")}}</a>
       <br />
-      <a @click='gotoAdmin()' class='cursor-pointer'>{{$t("goto-admin")}}</a>
+      <a
+        @click='gotoAdmin()'
+        class='cursor-pointer to-admin'
+        v-if='currentUserIsAdmin'
+      >{{$t("goto-admin")}}</a>
     </div>
     <br />
     <br />
+    <modal adaptive height='auto' name='change-password' scrollable>
+      <ax-change-password :guid='currentUserGuid' :is_new='true' @close='closePasswordModal' />
+    </modal>
   </div>
 </template>
 
@@ -52,12 +59,32 @@ export default {
         return this.$store.state.currentUser.shortName;
       }
       return null;
+    },
+    currentUserGuid() {
+      if (this.$store.state.currentUser) {
+        return this.$store.state.currentUser.guid;
+      }
+      return null;
+    },
+    currentUserIsAdmin() {
+      if (this.$store.state.currentUser) {
+        return this.$store.state.currentUser.isActiveAdmin;
+      }
+      return null;
+    },
+    passwordMustChange() {
+      return this.$store.state.passwordMustChange;
     }
   },
   watch: {
     treeDataStore(newValue) {
       if (newValue && newValue.length > 0) {
         this.treeData = newValue;
+      }
+    },
+    passwordMustChange(newValue) {
+      if (newValue) {
+        this.openPasswordModal();
       }
     }
   },
@@ -95,15 +122,18 @@ export default {
         console.log('Tokens not found -> signout');
         this.doLogOut();
       }
+    },
+    openPasswordModal() {
+      this.$modal.show('change-password');
+    },
+    closePasswordModal() {
+      this.$modal.hide('change-password');
     }
   }
 };
 </script>
 
 <style scoped>
-.drawer-wrapper a {
-  color: initial;
-}
 .logo {
   margin: auto;
   margin-bottom: 15px;
@@ -119,5 +149,8 @@ export default {
 }
 .user-div a {
   text-decoration: underline;
+}
+.to-admin {
+  color: #7cb342;
 }
 </style>

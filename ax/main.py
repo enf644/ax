@@ -143,7 +143,12 @@ def init_ax():
     if ssl_enabled:
         @app.middleware('request')
         async def force_ssl(request):     # pylint: disable=unused-variable
-            if request.scheme == 'http':
+            if request.scheme == 'ws':
+                return response.redirect(
+                    request.url.replace('wss://', 'https://', 1),
+                    status=301
+                )
+            elif request.scheme == 'http':
                 return response.redirect(
                     request.url.replace('http://', 'https://', 1),
                     status=301

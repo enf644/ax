@@ -10,6 +10,7 @@ from loguru import logger
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from graphql_ws.websockets_lib import WsLibSubscriptionServer
 from sanic_jwt.decorators import inject_user
+import markdown2
 import ujson as json
 
 from backend.graphqlview import GraphQLView
@@ -69,9 +70,10 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
 
         sanic_app.static(
             '/pages/static', str(ax_misc.path('dist/pages/static')))
+        # TODO WTF this guid? maybe must be part of build?
         sanic_app.static(
             '/pages/precache-manifest.2623009802489cdbe7ec9ddecce4f4b9.js',
-            str(ax_misc.path('dist/pages/precache-manifest.2623009802489cdbe7ec9ddecce4f4b9.js')))
+            str(ax_misc.path('dist/pages/precache-manifest.2623009802489cdbe7ec9ddecce4f4b9.js')))     # pylint: disable=line-too-long
         sanic_app.static(
             '/pages/service-worker.js',
             str(ax_misc.path('dist/pages/service-worker.js')))
@@ -85,6 +87,7 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
         sanic_app.static('/pages', index_path)
 
         @sanic_app.route('/pages/<path:path>')
+        @sanic_app.route('/signin')
         def pages_index(request, path=None):  # pylint: disable=unused-variable
             """  """
             del request, path
@@ -102,13 +105,17 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
         @ax_protected()
         async def signout(request, user=None):   # pylint: disable=unused-variable
             """ Delete all auth cookies and redirect to signin """
-            del request
+
             user_guid = user.get('user_id', None) if user else None
             if user_guid:
                 key = f'refresh_token_{user_guid}'
                 await ax_cache.cache.delete(key)
 
-            resp = response.redirect('/signin')
+            to_url = '/signin'
+            if request.args.get('to_admin', False):
+                to_url = '/admin/signin'
+
+            resp = response.redirect(to_url)
             del resp.cookies['ax_auth']
             del resp.cookies['access_token']
             del resp.cookies['refresh_token']
@@ -155,9 +162,9 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
 
                 field_guid = str(ax_field.guid)
                 if not user_is_admin:
-                    if (field_guid not in allowed_field_dict
-                            or allowed_field_dict[field_guid] == 0
-                            or allowed_field_dict[field_guid] is None):
+                    if (field_guid not in allowed_field_dict or
+                            allowed_field_dict[field_guid] == 0 or
+                            allowed_field_dict[field_guid] is None):
                         email = current_user.get('email', None)
                         msg = (
                             f'Error in db_file_viewer. ',
@@ -235,9 +242,9 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
                     state_guid=state_guid)
 
                 if not user_is_admin:
-                    if (field_guid not in allowed_field_dict
-                            or allowed_field_dict[field_guid] == 0
-                            or allowed_field_dict[field_guid] is None):
+                    if (field_guid not in allowed_field_dict or
+                            allowed_field_dict[field_guid] == 0 or
+                            allowed_field_dict[field_guid] is None):
                         email = current_user['email']
                         msg = (
                             f'Error in file_viewer. ',
@@ -263,7 +270,7 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
         @sanic_app.route('/admin/<path:path>')
         @sanic_app.route('/form/<path:path>')
         @sanic_app.route('/grid/<path:path>')
-        @sanic_app.route('/signin')
+        @sanic_app.route('/admin/signin')
         def index(request, path=None):  # pylint: disable=unused-variable
             """ This is MAIN ROUTE. (except other routes listed in this module).
                 All requests are directed to Vue single page app. After that Vue
@@ -278,6 +285,7 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
             return response.redirect('/pages')
 
         @sanic_app.route('/draw_ax')
+        @sanic_app.route('/api/draw_ax')
         async def draw_ax(request):  # pylint: disable=unused-variable
             """ Outputs bundle.js. Used when Ax web-components
                 are inputed somewhere. Users can use this url for <script> tag
@@ -311,6 +319,35 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
             result = schema.execute("query { ping }")
             test_str = json.dumps(result.data, sort_keys=True, indent=4)
             return response.text(test_str)
+
+        @sanic_app.route('/api/blog_rss')
+        async def blog_rss(request):  # pylint: disable=unused-variable
+            """ Fetches medium blog rss """
+            del request
+            feed = await ax_misc.fetch('https://medium.com/feed/@enf644')   # pylint: disable=line-too-long
+            return response.text(feed)
+
+        @sanic_app.route('/api/stackoverflow_rss')
+        async def stackoverflow_rss(request):  # pylint: disable=unused-variable
+            """ Fetches stackoverflow tag rss """
+            del request
+            feed = await ax_misc.fetch('https://stackexchange.com/feeds/tagsets/381786/ax-workflow?sort=active')   # pylint: disable=line-too-long
+            return response.text(feed)
+
+        @sanic_app.route('/api/home_welcome')
+        async def home_welcome(request):  # pylint: disable=unused-variable
+            """ Fetches welcome_free.md from ax-info """
+            del request
+            feed = await ax_misc.fetch('https://raw.githubusercontent.com/enf644/ax-info/master/welcome_free.md')   # pylint: disable=line-too-long
+            html = markdown2.markdown(feed)
+            return response.text(html)
+
+        @sanic_app.route('/api/marketplace_featured')
+        async def marketplace_featured(request):  # pylint: disable=unused-variable
+            """ Fetches featured apps json """
+            del request
+            feed = await ax_misc.fetch('https://raw.githubusercontent.com/enf644/ax-info/master/featured_apps.json')   # pylint: disable=line-too-long
+            return response.text(feed)
 
         @sanic_app.route('/api/test')
         async def test(request):  # pylint: disable=unused-variable

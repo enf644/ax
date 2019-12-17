@@ -25,7 +25,7 @@
         "marketplace-btn": "Marketplace",
         "pages-designer-btn": "Pages designer",
         "create-new-grid-btn": "Create new grid",
-        "logout": "Log out",
+        "logout": "Sign out",
         "no-forms": "No forms created",
         "toolbar": {
             "form-btn": "Form",
@@ -143,7 +143,11 @@
         "everyone-group-name": "Everyone",
         "all-users-group-name": "All users",
         "already-signed": "You already signed in. <br> <a href='/pages'>Pages</a> <br> <a href='/admin/home'>Admin</a>",
-        "sigin-failed": "Sign in failed. Try to re-enter email and password"
+        "sigin-failed": "Sign in failed. Try to re-enter email and password",
+        "change-password": "Change password",
+        "change-password-toast": "Password was changed",
+        "change-password-admin-warning": "Enter temporary password. User will need to change password on first sign-in.",
+        "change-password-user-warning": "Welcome to Ax. You signed using temporary password. Please enter new password."
     },
     "form": {
         "add-tab": "Add tab",

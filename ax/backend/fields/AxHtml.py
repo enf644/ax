@@ -14,11 +14,12 @@ async def before_display(db_session, field, form, current_user):
     if not field.private_options_json or field.private_options_json == '{}':
         return None
 
-    # get current counter from AxMetric for current key
-    # if there is none -> create one
-
-    options = json.loads(field.private_options_json)
-    code = options['code']
-    ax = await ax_exec.execute_field_code(code=code, form=form)
-    field.value = ax.value
-    return field.value
+    try:
+        options = json.loads(field.private_options_json)
+        code = options['code']
+        ax = await ax_exec.execute_field_code(code=code, form=form)
+        field.value = ax.value
+        return field.value
+    except Exception as exc:
+        return (f"There was error with executing AxHtml."
+                f"Please check field options: {exc}")

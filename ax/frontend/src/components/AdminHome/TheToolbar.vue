@@ -2,7 +2,7 @@
   <v-app-bar :height='40' app class='top-toolbar' clipped-left>
     <v-toolbar-title align-center class='logo-div'>
       <router-link to='/admin/home'>
-        <img class='logo' src='../../assets/small_axe.png' />
+        <img class='logo' src='@/assets/small_axe.png' />
         <div class='beta-div'>β</div>
       </router-link>
     </v-toolbar-title>
@@ -114,6 +114,11 @@
       <TheGridModal :guid='this.$store.state.grids.guid' @updated='closeGridModal' />
     </modal>
 
+    <modal adaptive class='update-grid-modal' height='auto' name='change-password' scrollable>
+      <!-- <ThePasswordChange :guid='currentUserGuid' @updated='closeChangePasswordModal' /> -->
+      <ax-change-password :guid='currentUserGuid' @close='closeChangePasswordModal'></ax-change-password>
+    </modal>
+
     <v-spacer></v-spacer>
     <transition enter-active-class='animated fadeIn faster' name='fade'></transition>
     <div></div>
@@ -128,6 +133,9 @@
         </v-avatar>
       </template>
       <v-list>
+        <v-list-item @click='openChangePasswordModal()'>
+          <v-list-item-title>{{$t("users.change-password")}}</v-list-item-title>
+        </v-list-item>
         <v-list-item @click='doLogOut()'>
           <v-list-item-title>{{$t("home.logout")}}</v-list-item-title>
         </v-list-item>
@@ -139,12 +147,14 @@
 <script>
 import TheNewForm from '@/components/AdminHome/TheNewForm.vue';
 import TheGridModal from '@/components/ConstructorGrids/TheGridModal.vue';
+import ThePasswordChange from '@/components/UsersManager/ThePasswordChange.vue';
 
 export default {
   name: 'admin-toolbar',
   components: {
     TheNewForm,
-    TheGridModal
+    TheGridModal,
+    ThePasswordChange
   },
   data: () => ({
     userMenuOn: false
@@ -211,6 +221,12 @@ export default {
         return this.$store.state.users.currentUser.shortName;
       }
       return null;
+    },
+    currentUserGuid() {
+      if (this.$store.state.users.currentUser) {
+        return this.$store.state.users.currentUser.guid;
+      }
+      return null;
     }
   },
   methods: {
@@ -240,6 +256,12 @@ export default {
     },
     closeFormModal() {
       this.$modal.hide('update-form');
+    },
+    openChangePasswordModal() {
+      this.$modal.show('change-password');
+    },
+    closeChangePasswordModal() {
+      this.$modal.hide('change-password');
     }
   }
 };

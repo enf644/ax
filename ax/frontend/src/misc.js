@@ -64,7 +64,12 @@ export function getVersion() {
   return '0.0.1';
 }
 
-
+export function openInTab(url) {
+  Object.assign(document.createElement('a'), {
+    target: '_blank',
+    href: url
+  }).click();
+}
 
 // export function injectScript(scriptSource) {
 //   let self = this;

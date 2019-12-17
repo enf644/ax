@@ -9,12 +9,14 @@ import zipfile
 import shutil
 from pathlib import Path
 from datetime import datetime
+import asyncio
 import graphene
 # import graphene_sqlalchemy
 import pytz
 import yaml
 from loguru import logger
 # from dotmap import DotMap
+import aiohttp
 
 this = sys.modules[__name__]
 root_path = None
@@ -205,3 +207,14 @@ async def get_tom_label(form):
 async def get_ax_host():
     """ Returns ax instance url with method and port. From app.yaml """
     return os.environ.get('AX_URL')
+
+
+async def fetch(url):
+    """ fetchs web-page by url """
+    try:
+        timeout = aiohttp.ClientTimeout(total=20)
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=timeout) as response:
+                return await response.text()
+    except (asyncio.TimeoutError, ConnectionRefusedError):
+        return None

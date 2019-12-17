@@ -5,9 +5,9 @@ import uuid
 import ast
 import graphene
 from sqlalchemy import or_
-import ujson as json
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from passlib.hash import pbkdf2_sha256
+import ujson as json
 # from loguru import logger
 
 from backend.misc import convert_column_to_string
@@ -18,6 +18,7 @@ import backend.dialects as ax_dialects
 # import backend.pubsub as ax_pubsub
 from backend.schemas.types import User
 from backend.auth import ax_admin_only
+import backend.misc as ax_misc
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
 
@@ -56,6 +57,7 @@ class CreateUser(graphene.Mutation):
             new_user.short_name = args.get('short_name')
             new_user.info = args.get('info')
             new_user.password = pbkdf2_sha256.hash(args.get('password'))
+            new_user.password_must_change = True
             new_user.is_blocked = args.get('is_blocked')
             db_session.add(new_user)
             db_session.flush()
@@ -96,11 +98,44 @@ class UpdateUser(graphene.Mutation):
                 ax_user.info = args.get('info')
             if args.get('password'):
                 ax_user.password = pbkdf2_sha256.hash(args.get('password'))
+                ax_user.password_must_change = True
 
             ax_user.is_blocked = args.get('is_blocked')
 
             db_session.flush()
             return UpdateUser(user=ax_user, ok=True)
+
+
+class ChangeUserPassword(graphene.Mutation):
+    """ Update AxUser """
+    class Arguments:  # pylint: disable=missing-docstring
+        guid = graphene.String()
+        password = graphene.String()
+
+    user = graphene.Field(User)
+    ok = graphene.Boolean()
+
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
+        # avatar_tmp = args.get('avatar_tmp')
+        guid = args.get('guid')
+
+        err = 'Error in gql mutation - users_schema -> ChangeUserPassword.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
+            ax_user = db_session.query(AxUser).filter(
+                AxUser.guid == uuid.UUID(guid)
+            ).first()
+
+            current_user = info.context['user']
+            user_guid = current_user.get(
+                'user_id', None) if current_user else None
+            if not ax_user or ax_user.guid != ax_misc.guid_or_none(user_guid):
+                return None
+
+            ax_user.password = pbkdf2_sha256.hash(args.get('password'))
+            ax_user.password_must_change = False
+            db_session.flush()
+
+            return ChangeUserPassword(user=ax_user, ok=True)
 
 
 class DeleteUser(graphene.Mutation):
@@ -317,6 +352,7 @@ class LogoutUser(graphene.Mutation):
 
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         """ Delete refresh token from cache """
+        del args
         current_user = info.context['user']
         user_guid = current_user.get('user_id', None) if current_user else None
         if user_guid:
@@ -337,7 +373,7 @@ class UsersQuery(graphene.ObjectType):
         User,
         search_string=graphene.Argument(type=graphene.String, required=False),
         update_time=graphene.Argument(type=graphene.String, required=False)
-    )    
+    )
     all_groups = graphene.List(
         User,
         update_time=graphene.Argument(type=graphene.String, required=False)
@@ -623,16 +659,19 @@ class UsersQuery(graphene.ObjectType):
         del update_time
         err = 'Error in GQL query - find_user.'
         with ax_model.try_catch(info.context['session'], err, no_commit=True):
-            if not info.context['user']:
+            current_user = info.context['user']
+            if not current_user:
                 return None
 
-            user_guid = info.context['user']['user_id']
+            user_guid = current_user['user_id']
             query = User.get_query(info)
             ax_user = query.filter(
                 AxUser.guid == uuid.UUID(user_guid)
             ).filter(
                 AxUser.is_blocked.is_(False)
             ).first()
+
+            ax_user.is_active_admin = current_user.get('is_admin', False)
             return ax_user
 
 
@@ -645,6 +684,7 @@ class UsersMutations(graphene.ObjectType):
     create_user = CreateUser.Field()
     update_user = UpdateUser.Field()
     delete_user = DeleteUser.Field()
+    change_user_password = ChangeUserPassword.Field()
     create_group = CreateGroup.Field()
     update_group = UpdateGroup.Field()
     add_user_to_group = AddUserToGroup.Field()

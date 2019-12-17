@@ -20,7 +20,8 @@ const getDefaultState = () => ({
   refreshToken: null,
   drawerEnabled: true,
   toggleDrawer: false,
-  currentUser: null
+  currentUser: null,
+  passwordMustChange: false
 });
 
 const getChildren = (guid, state) => {
@@ -70,6 +71,9 @@ const mutations = {
   },
   setCurrentUser(state, user) {
     state.currentUser = user;
+  },
+  setPasswordMustChange(state, mustChange) {
+    state.passwordMustChange = mustChange;
   }
 };
 
@@ -104,10 +108,12 @@ const actions = {
           html
         },
         currentAxUser (updateTime: $updateTime) {
-          guid,
-          email,
-          shortName,
-          name          
+          guid
+          email
+          shortName
+          passwordMustChange
+          name
+          isActiveAdmin
         },        
       }
     `;
@@ -131,10 +137,9 @@ const actions = {
           children: getChildren(rootPage.guid, context.state)
         };
         store.commit('updateTreeStore', [rootNode]);
-
         store.commit('setCurrentPage', data.data.pageData);
-
         store.commit('setCurrentUser', data.data.currentAxUser);
+        store.commit('setPasswordMustChange', data.data.currentAxUser.passwordMustChange);
       })
       .catch(error => {
         console.log(`Error in loadAllPages gql => ${error}`);

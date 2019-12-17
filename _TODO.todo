@@ -738,7 +738,7 @@ AX 0.2:
         ✔ On market install - check if database already have table before install @done(19-11-11 11:01)
         ✔ Data brawser link @done(19-11-11 11:14)
         ✔ 1tom gql schema error - 1to1 and 1tom in same form @done(19-11-11 12:19)
-    ☐ FIELDS round 2
+    ✔ FIELDS round 2 @done(19-12-11 18:22)
         ✔ Radio @done(19-11-11 13:16)
         ✔ Tags input - AxTags @done(19-11-12 11:11)
         ✔ 2D radio survey - AxRadioSurvey @done(19-11-12 15:35)
@@ -790,21 +790,24 @@ AX 0.2:
         ✔ workflow - drag role to self-action @done(19-11-27 22:11)
         ✔ current_user['email'] can be None must return 403 @done(19-11-28 08:54)
     ☐ FEATURES
-        ☐ Admin home widgets
-            ☐ Stack-overflow questions
-            ☐ Featured apps
-            ☐ Global message - patreon donation
-            ☐ Sponsors
-        ☐ Role and user based server-filter
-        ☐ Users menu
-        ☐ Web-component copy-paste options
-        ☐ GQL copy-paste options
-        ☐ Default name field. 1tomLabel = {name}
-        ☐ User registration -> always throw email (Ax does not work without smtp??)
-            ☐ Users can modify their info
-            ☐ First enter - must reset password
+        ✔ Admin home widgets @done(19-11-29 14:04)
+            ✔ Widgets @done(19-11-29 14:04)
+                ✔ Stack-overflow questions @done(19-11-29 09:02)
+                ✔ Featured apps @done(19-11-29 14:04)
+                ✔ Global message - patreon donation @done(19-11-29 09:02)
+                ✔ Blog posts @done(19-11-29 09:03)
+        ✔ Users first enter - must change password @done(19-12-11 19:06)
+        ✔ Sign-in in pages @done(19-12-16 11:51)
+            ✔ Admin logout - takes to admin/signin @done(19-12-16 11:51)
+            ✔ Users - icons, cant delete admin group @done(19-12-16 12:14)
+        ☐ Features
+            ☐ 1toMReference - change to individual reference tables ???
+            ☐ 1toM - items can be created inline    
         ☐ Marketplace
-            ☐ Some text and links
+            ☐ Record all kissflow apps on video
+            ☐ Copy 5 kissflow apps
+            ☐ Publish 5 apps to gitgub
+            ☐ List apps
     ☐ LICENSE GENERATION
     ☐ TUTORIAL
         ☐ Each page and field have help modal with gifs
@@ -819,12 +822,18 @@ AX 0.2:
             https://stackoverflow.com/a/49526932/784789
             https://github.com/mgedmin/profilehooks        
         ☐ Two sample apps
+        ☐ Security - https://lgtm.com/dashboard
     ☐ Publish to pypi, clean old versions
     =======================================================================:
     ☐ LANDING
         ☐ Github readme with docs
+            ☐ Tags like in https://github.com/mapstruct/mapstruct
+            https://github.com/dwyl/repo-badges
+            https://github.com/badges/shields
         ☐ Ax pages site - beutiful landing with gifs
-        ☐ Landing metrics        
+        ☐ Landing metrics
+    ☐ SEND TO FRIENDS
+        ☐ Record installation, tutorial, reactions
     ☐ START REACHING OUT
         ☐ Indie hackers post - intro and ask how to maximise user reach
         ☐ Friends - vs, facebook
@@ -840,11 +849,12 @@ AX 0.2:
         ☐ Yandex.Kassa registration
         ☐ Yandex.Kassa field
         ☐ User registration app for marketplace
-        ☐ Patreon
+        ☐ Patreon, https://liberapay.com/
     ☐ MARKETPLACE APPS
         ☐ Copy Less workflow
     ☐ CYPRESS TESTS FOR MAIN FUNCTIONS
     ☐ ESTABLISH CI
+        https://help.github.com/en/actions/automating-your-workflow-with-github-actions
         ☐ Each commit runs tests - installs from pip, runs cypress tests
         ☐ Start versionning
         ☐ Publishes to google code 
@@ -970,11 +980,14 @@ FROGS TODOS:
     ✔ Long names for form tabs - limit is too small! @done(19-10-18 12:17)
     ✔ Del key when editing field names - tryes to delete whole field @done(19-10-18 17:39)
     ☐ IMPORTANT 
+        ☐ Redirect http to https -> https://community.sanicframework.org/t/redirect-http-to-https/419/4
+        ☐ Role and user based server-filter
         ☐ Database is locked in sqlite `[IMPORTANT]`
         ☐ Only 1 worker is working - test with 4 workers `[IMPORTANT]`
             ☐ Pubsub probably wont work, move to redis?
             ☐ GQL schema reset will not work - edit throw pubsub?
             ☐ Cache and record labels probavly wont work - move to redis?
+        ☐ Warning that on app create the disc files are not saved in app (why?)
     ☐ MODERATE
         ☐ Redirect all http to https
         ☐ Python locale - change hard-coded english words. Pages, Roles names.
@@ -1031,6 +1044,11 @@ FEATURES:
         ☐ Allow one level of sub-tabs for AxForm - https://vuetifyjs.com/en/components/lists#expansion-lists
         ☐ Groups inside groups
     ☐ MODERATE
+        ☐ Imidiate actions
+        ☐ User registration -> always throw email (Ax does not work without smtp??)
+        ☐ Users can modify their info
+        ☐ Web-component copy-paste options
+        ☐ GQL copy-paste options
         ☐ Move to letter user avatars like AxMessages
         ☐ Create user image avatars
         ☐ Create reference records (default reference field). Form have 1tomTable field. You must be abble to create reference form without leaving root form. (option)
@@ -1064,6 +1082,8 @@ FEATURES:
         ☐ Plugin system, custom fields system
             ☐ Подключается поле через lazy-loading - unpkg.com
         ☐ Fields
+            ☐ Url
+            ☐ Icon
             ☐ Surveyjs - all fields
             ☐ https://awesome-vue.js.org/components-and-libraries/ui-components.html
             ☐ QR code generator + QR code reader for pages - https://awesome-vue.js.org/components-and-libraries/ui-components.html#qr-code

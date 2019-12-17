@@ -1,55 +1,6 @@
 
 
 
-Github structure:
-    Readme.md
-    ax_app.yaml
-    AxForms
-        Marathon
-            Marathon.yaml
-            action_do_something.py
-            action_do_enother.py
-            grid_default.py
-            Marathon.sql
-        Runners
-            Runners.yaml
-    AxPages
-        page1.html
-        page2.html
-        page3.html
-
-
-AxForm
-sql data
-AxMetric[]
-    if there is AxNum field, get guid from options
-AxField[]
-AxGrid[]
-AxRoles[]
-AxStates[]
-AxColumn[]
-AxAction[]
-AxAction2Role[]
-AxState2Role[]
-AxRoleFieldPermission[]
-Ax1tomReference[]
-AxPage[]
-    install dialog prompts for root page code-name
-    Prompt for readme page code-name
-    Created page roots parent is always installed apps
-
-
-
-Prompt version, code_name
-Check ax version.
-Check if this app already installed
-
-
-
-
-
-
-
 ---------------------------
 
 Pro version:
@@ -140,6 +91,10 @@ Each week
     Support - everyday
     Direct sales - everyday    
 
+
+
+Media automation
+    https://github.com/Medium/medium-api-docs#33-posts
 
 ========= Lead sources  ==========================================================================================
 

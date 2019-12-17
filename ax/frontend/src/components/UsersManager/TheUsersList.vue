@@ -5,16 +5,18 @@
         <i class='far fa-user'></i>
         &nbsp; {{$t("users.all-users-header")}}
       </h1>
-      <v-btn @click='gotoBlockedUsers' small>
-        <i class='fas fa-user-slash'></i>
-        &nbsp; {{$t("users.blocked-users-btn")}}
-      </v-btn>
+      <div>
+        <v-btn @click='openNewUserModal' class='mb-3' data-cy='create-form-btn' primary small>
+          <i class='fas fa-user-plus'></i>
+          &nbsp; {{$t("users.create-user-btn")}}
+        </v-btn>
+        <v-btn @click='gotoBlockedUsers' class='blocked-btn' small text>
+          <i class='fas fa-user-slash'></i>
+          &nbsp; {{$t("users.blocked-users-btn")}}
+        </v-btn>
+      </div>
     </div>
     <div class='ag-theme-material grid-class' ref='grid'></div>
-    <v-btn @click='openNewUserModal' class='mb-3' data-cy='create-form-btn' small>
-      <i class='fas fa-users-plus'></i>
-      &nbsp; {{$t("users.create-user-btn")}}
-    </v-btn>
 
     <!--  transition='animated flipInX faster' -->
     <modal adaptive class='mb-3' height='auto' name='user-modal' scrollable>
@@ -137,11 +139,15 @@ export default {
 }
 .grid-class {
   width: 100%;
-  height: calc(100% - 50px);
+  height: calc(100% - 15px);
 }
 .header-div {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+.blocked-btn {
+  margin-bottom: 12px;
+  margin-left: 20px;
 }
 </style>

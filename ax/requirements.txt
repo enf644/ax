@@ -1,4 +1,4 @@
-sanic==19.6.3
+sanic==19.9.0
 Sanic-GraphQl==1.1.0
 Sanic-Cors==0.9.9.post1
 sanic_compress==0.1.1

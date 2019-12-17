@@ -158,6 +158,8 @@ export default {
         });
     },
     gotoForm(e, data) {
+      if (!data || !data.node) return false;
+
       if (data.node.type === 'folder') {
         this.openFolderModal(data.node.id);
       } else {

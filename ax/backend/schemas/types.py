@@ -5,8 +5,8 @@ Example - AxForm have row_guid param wich is not Column. To use this param
 in GQL query we must discribe row_guid again in Form type.
 
 """
-import graphene
 from sqlalchemy import JSON
+import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
@@ -92,6 +92,7 @@ class User(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
         model = AxUser
         interfaces = (relay.Node, )
         exclude_fields = ('avatar', 'password')
+    is_active_admin = graphene.Boolean()
 
 
 class Role(SQLAlchemyObjectType):  # pylint: disable=missing-docstring

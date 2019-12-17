@@ -85,7 +85,7 @@ export default new Router({
       ]
     },
     {
-      path: '/signin',
+      path: '/admin/signin',
       name: 'admin-signin',
       component: AdminSignin
     },
