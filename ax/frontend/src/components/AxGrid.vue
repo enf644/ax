@@ -41,31 +41,32 @@
 
       <div :class='gridClass' ref='grid'></div>
 
-      <div class='actions' v-show='actionsEnabled'>
-        <v-btn
-          :key='action.guid'
-          @click='doAction(action)'
-          class='action-btn'
-          small
-          v-for='action in this.actions'
-        >
-          <i :class='getActionIconClass(action)'></i>
-          &nbsp;
-          {{ action.name }}
-        </v-btn>
-      </div>
-
-      <div class='actions' v-if='this.isTomMode'>
-        <v-btn @click='emitSelectedItems' small>
-          <i class='fas fa-check-double'></i>
-          &nbsp; {{locale("grids.select-relation")}}
-        </v-btn>
-      </div>
-      <div class='actions' v-if='this.isTomInlineMode'>
-        <v-btn @click='emitSelectDialog' small>
-          <i class='fas fa-check-double'></i>
-          &nbsp; {{locale("grids.open-select-dialog")}}
-        </v-btn>
+      <div class='actions'>
+        <div v-show='actionsEnabled'>
+          <v-btn
+            :key='action.guid'
+            @click='doAction(action)'
+            class='action-btn'
+            small
+            v-for='action in this.actions'
+          >
+            <i :class='getActionIconClass(action)'></i>
+            &nbsp;
+            {{ action.name }}
+          </v-btn>
+        </div>
+        <div v-if='this.isTomMode'>
+          <v-btn @click='emitSelectedItems' small>
+            <i class='fas fa-check-double'></i>
+            &nbsp; {{locale("grids.select-relation")}}
+          </v-btn>
+        </div>
+        <div v-if='this.isTomInlineMode'>
+          <v-btn @click='emitSelectDialog' small>
+            <i class='fas fa-check-double'></i>
+            &nbsp; {{locale("grids.open-select-dialog")}}
+          </v-btn>
+        </div>
       </div>
     </v-sheet>
     <modal :name='`sub-form-${this.modalGuid}`' adaptive height='auto' scrollable width='70%'>
@@ -113,6 +114,7 @@ export default {
     tom_mode: null,
     to1_mode: null,
     tom_inline_mode: null,
+    tom_children_mode: null,
     preselect: null,
     title: null,
     guids: null,
@@ -297,7 +299,8 @@ export default {
       if (!this.options) return false;
       if (this.to1_mode !== undefined) return false;
       if (this.tom_mode !== undefined) return false;
-      if (this.tom_inline_mode !== undefined) return false;
+      if (this.tom_children_mode !== undefined) return false;
+      // if (this.tom_inline_mode !== undefined) return false;
       return this.options.enableActions;
     },
     titleEnabled() {
@@ -345,7 +348,11 @@ export default {
       return this.name;
     },
     guidsString() {
-      if (this.tom_inline_mode === undefined) return null;
+      if (
+        this.tom_inline_mode === undefined &&
+        this.tom_children_mode === undefined
+      )
+        return null;
       const retObj = {
         items: this.guids
       };
@@ -388,16 +395,16 @@ export default {
       return i18n.t(key);
     },
     updateAndClose(guid) {
-      if (!this.options.enableSubscription) {
-        this.loadData();
-        setTimeout(() => {
-          this.highliteRow(guid);
-        }, 100);
-      }
+      this.updateGrid(guid);
       this.closeModal();
     },
     updateGrid(guid) {
-      if (!this.options.enableSubscription) {
+      if (
+        this.tom_inline_mode !== undefined ||
+        this.tom_children_mode !== undefined
+      ) {
+        this.$emit('added', guid);
+      } else if (!this.options.enableSubscription) {
         this.loadData();
         setTimeout(() => {
           this.highliteRow(guid);
@@ -558,7 +565,7 @@ export default {
       // If tom_inline_mode we use quicksearch with impossible query.
       // So only guids rows  will be returned
       let impossibleGuid = null;
-      if (this.isTomInlineMode) {
+      if (this.isTomInlineMode || this.tom_children_mode !== undefined) {
         impossibleGuid = 'de24a16e-3b4d-4abf-guid-imposible000';
       }
 
@@ -587,15 +594,16 @@ export default {
       // if quicksearch or guids is not null - the grids python code will not be executed!
       // if quicksearch - then it is tom_inline.
       // if guids - then it is Ax1omTable
+      const vars = {
+        updateTime: Date.now(),
+        quicksearch: impossibleGuid,
+        guids: this.guidsString,
+        arguments: this.rawArguments
+      };
       apolloClient
         .query({
           query: dataQuery,
-          variables: {
-            updateTime: Date.now(),
-            quicksearch: impossibleGuid,
-            guids: this.guidsString,
-            arguments: this.rawArguments
-          }
+          variables: vars
         })
         .then(data => {
           this.gqlException = false;
@@ -819,6 +827,8 @@ export default {
 .actions {
   margin: 15px 25px 0px 25px;
   height: 64px;
+  display: flex;
+  flex-direction: row;
 }
 .close {
   position: absolute;

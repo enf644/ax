@@ -9,16 +9,18 @@ from sqlalchemy.orm import joinedload
 import stripe
 import ujson as json
 
-from backend.model import AxMessage, AxMessageThread
+from backend.auth import ax_admin_only
+from backend.model import AxMessage, AxMessageThread, AxForm, AxField
 import backend.model as ax_model
 import backend.misc as ax_misc
 import backend.auth as ax_auth
 import backend.pubsub as ax_pubsub
+
 # import backend.emails as ax_emails
 # import backend.cache as ax_cache
-# import backend.dialects as ax_dialects
+import backend.dialects as ax_dialects
 
-from backend.schemas.types import Message
+from backend.schemas.types import Message, Field, RowInfo
 # from backend.auth import ax_admin_only
 
 
@@ -145,12 +147,25 @@ class FieldsQuery(graphene.ObjectType):
         thread_guid=graphene.Argument(type=graphene.String),
         update_time=graphene.Argument(type=graphene.String, required=False)
     )
+    to1_fields = graphene.List(
+        Field,
+        child_form_guid=graphene.Argument(type=graphene.String),
+        field_guid=graphene.Argument(type=graphene.String),
+        update_time=graphene.Argument(type=graphene.String, required=False)
+    )
+
+    to1_references = graphene.List(
+        RowInfo,
+        row_guid=graphene.Argument(type=graphene.String),
+        field_guid=graphene.Argument(type=graphene.String),
+        update_time=graphene.Argument(type=graphene.String, required=False)
+    )
 
     async def resolve_thread_messages(
             self, info, thread_guid, update_time=None):
         """Get all AxMessages for specific thread. """
         del update_time
-        err = 'Error in GQL query - all_users.'
+        err = 'Error in GQL query - resolve_thread_messages.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
             current_user = info.context['user']
 
@@ -180,6 +195,68 @@ class FieldsQuery(graphene.ObjectType):
             # get messages
             messages = thread.messages
             return messages
+
+    @ax_admin_only
+    async def resolve_to1_fields(
+            self, info, child_form_guid, field_guid, update_time=None):
+        """Get all AxMessages for specific thread. """
+        del update_time
+        err = 'Error in GQL query - resolve_to1_fields.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
+
+            ret_fields = []
+            child_form = db_session.query(AxForm).filter(
+                AxForm.guid == uuid.UUID(str(child_form_guid))
+            ).first()
+
+            current_field = db_session.query(AxField).filter(
+                AxField.guid == uuid.UUID(str(field_guid))
+            ).first()
+            parent_form_db_name = str(current_field.form.db_name)
+
+            for field in child_form.fields:
+                if field.is_to1_field:
+                    options = field.options
+                    if options and options['form'] == parent_form_db_name:
+                        db_session.expunge(field)
+                        ret_fields.append(field)
+
+            return ret_fields
+
+    async def resolve_to1_references(
+            self, info, field_guid, row_guid, update_time=None):
+        """ Used in Ax1to1Children. Selects all 1to1 references to parent row
+        """
+        del update_time
+        err = 'Error in GQL query - resolve_to1_fields.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
+
+            # Check if user have access to field
+
+            ret_guids = []
+            parent_field = db_session.query(AxField).filter(
+                AxField.guid == uuid.UUID(str(field_guid))
+            ).first()
+
+            if parent_field.options and parent_field.options['field']:
+                child_form_db_name = parent_field.options['form']
+
+                child_field_guid = parent_field.options['field']
+                child_field = db_session.query(AxField).filter(
+                    AxField.guid == uuid.UUID(str(child_field_guid))
+                ).first()
+
+            result = await ax_dialects.dialect.select_to1_children(
+                db_session=db_session,
+                child_form_db_name=child_form_db_name,
+                child_field_db_name=child_field.db_name,
+                parent_row_guid=row_guid)
+
+            if result:
+                for row in result:
+                    ret_guids.append(RowInfo(guid=row['guid']))
+
+            return ret_guids
 
 
 class FieldsMutations(graphene.ObjectType):

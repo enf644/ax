@@ -800,14 +800,20 @@ AX 0.2:
         ✔ Sign-in in pages @done(19-12-16 11:51)
             ✔ Admin logout - takes to admin/signin @done(19-12-16 11:51)
             ✔ Users - icons, cant delete admin group @done(19-12-16 12:14)
-        ☐ Features
-            ☐ 1toMReference - change to individual reference tables ???
-            ☐ 1toM - items can be created inline    
+        ✔ Features @done(19-12-18 11:13)
+            ✔ 1toTable - items can be created inline @done(19-12-17 11:41)
+                ✔ On save -> add guid to value + reload grid @done(19-12-17 11:03)
+            ✔ Ax1to1Children @done(19-12-18 11:13)
+                ✔ Field with grid @done(19-12-18 11:08)
+                ✔ Settings - form, grid, field (must be 1to1 to current form) @done(19-12-18 11:08)
+                ✔ Field, Form, Grid rename -> must change options @done(19-12-18 11:13)
         ☐ Marketplace
             ☐ Record all kissflow apps on video
             ☐ Copy 5 kissflow apps
             ☐ Publish 5 apps to gitgub
             ☐ List apps
+        ☐ Frogs
+            ☐ 1tomTable - cant select grid after just created. Need reload.
     ☐ LICENSE GENERATION
     ☐ TUTORIAL
         ☐ Each page and field have help modal with gifs
@@ -988,7 +994,13 @@ FROGS TODOS:
             ☐ GQL schema reset will not work - edit throw pubsub?
             ☐ Cache and record labels probavly wont work - move to redis?
         ☐ Warning that on app create the disc files are not saved in app (why?)
+        ☐ 1toMReference - change to individual reference tables ???
+        ☐ 1tomTable - Warn when try to close form without save
+        ☐ Reference fields - when adding to1 field to grid we get error [Field "mar" of type "MarathonDefault" must have a sub selection] because of dynamic schema. AxGrid gql query must be changed, columns must be changed.
     ☐ MODERATE
+        ☐ Installing marketplace apps -> console says that None field is created. Must filter tabs.
+        ☐ migration.py - take field  type info from py code, not from db
+        ☐ Enter submit not working in AxSignin
         ☐ Redirect all http to https
         ☐ Python locale - change hard-coded english words. Pages, Roles names.
         ☐ if field removed - remove all files from /uploads/from_files

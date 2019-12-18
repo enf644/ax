@@ -233,16 +233,19 @@ class PorstgreDialect(object):
 
                 guids_string = ''
                 if guids_array:
+                    checked_guids = []
                     for check_guid in guids_array:
                         try:
                             uuid.UUID(check_guid)
+                            checked_guids.append(check_guid)
                         except Exception:
-                            logger.exception(
-                                f"Error in guids argument. Cant parse json")
-                            raise
+                            pass
+                            # logger.exception(
+                            #     f"Error in guids argument. Cant parse json")
+                            # raise
 
                     guids_string = ", ".join(
-                        "'" + item + "'" for item in guids_array)
+                        "'" + item + "'" for item in checked_guids)
                     guids_sql = f"OR guid IN ({guids_string})"
                     if not quicksearch_sql:
                         guids_sql = f"AND guid IN ({guids_string})"
@@ -270,6 +273,8 @@ class PorstgreDialect(object):
             return clean_result
             # names = [row[0] for row in result]
         except Exception:
+            if not sql:
+                sql = 'NONE'
             logger.exception(
                 f"Error executing SQL - select_all - {sql}")
             raise
@@ -651,6 +656,30 @@ class PorstgreDialect(object):
             raise
 
 
+    async def select_to1_children(
+            self,
+            db_session,
+            child_form_db_name,
+            child_field_db_name,
+            parent_row_guid):
+        """ Used in Ax1to1Children. Selects all 1to1 references to parent row
+            """
+        try:
+            sql = f"""
+                SELECT guid FROM 
+                {child_form_db_name}
+                WHERE {child_field_db_name} == :parent_row_guid         
+            """
+            query_params = {
+                "parent_row_guid": parent_row_guid
+            }
+            result = db_session.execute(sql, query_params).fetchall()
+            return result
+        except Exception:
+            logger.exception('Error executing SQL - select_to1_children')
+            raise
+
+
 
 class SqliteDialect(PorstgreDialect):
     """SQL query for Sqlite database"""
@@ -727,7 +756,7 @@ class SqliteDialect(PorstgreDialect):
         if "DECIMAL" in type_name:
             ret_param = str(value).replace(",", ".") if value else None
         elif "GUID" in type_name:
-            ret_param = str(value)            
+            ret_param = str(value)
         elif "JSON" in type_name:
             if not value:
                 return None

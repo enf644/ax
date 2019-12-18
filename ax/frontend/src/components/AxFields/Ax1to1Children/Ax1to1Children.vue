@@ -6,18 +6,16 @@
       v-if='options.inline_grid'
     >
       <AxGrid
-        :filtered='currentValue'
         :form='options.form'
         :grid='options.inline_grid'
-        :guids='currentValue'
+        :guids='childGuids'
         :title='name'
         :tom_disabled='isReadonly'
         :update_time='updateTime'
-        @added='addGuidToValue'
-        @openSelectDialog='openGridModal()'
-        @tomRemove='clearValue'
+        @added='getChildGuids'
         cy-data='tomTableGrid'
-        tom_inline_mode
+        tom_children_mode
+        v-if='childrenLoaded'
       ></AxGrid>
 
       <span class='hint' v-show='this.options.hint'>{{this.options.hint}} &nbsp;</span>
@@ -40,24 +38,6 @@
         <AxForm :db_name='options.form' :guid='activeItemGuid' no_margin></AxForm>
       </v-card>
     </modal>
-
-    <modal :name='`tom-grid-${this.modalGuid}`' adaptive height='auto' scrollable width='70%'>
-      <v-card>
-        <v-btn :ripple='false' @click='closeModal' class='close' color='black' icon text>
-          <i class='fas fa-times close-ico'></i>
-        </v-btn>
-        <div :style='{height: this.options.height + "px"}'>
-          <AxGrid
-            :form='options.form'
-            :grid='options.grid'
-            :preselect='currentValue'
-            @selected='onGridSelected'
-            cy-data='to1Grid'
-            tom_mode
-          ></AxGrid>
-        </div>
-      </v-card>
-    </modal>
   </div>
 </template>
 
@@ -66,9 +46,11 @@ import i18n from '@/locale';
 import uuid4 from 'uuid4';
 import AxForm from '@/components/AxForm.vue';
 import AxGrid from '@/components/AxGrid.vue';
+import apolloClient from '@/apollo';
+import gql from 'graphql-tag';
 
 export default {
-  name: 'Ax1tom',
+  name: 'Ax1to1Children',
   props: {
     name: null,
     dbName: null,
@@ -76,10 +58,13 @@ export default {
     options: null,
     value: null,
     isRequired: null,
-    isReadonly: null
+    isReadonly: null,
+    formGuid: null,
+    rowGuid: null,
+    fieldGuid: null
   },
   data: () => ({
-    currentValue: null,
+    currentValue: [],
     errors: [],
     loading: false,
     search: null,
@@ -88,7 +73,9 @@ export default {
     formName: null,
     modalGuid: null,
     activeItemGuid: null,
-    updateTime: null
+    updateTime: null,
+    childGuids: [],
+    childrenLoaded: false
   }),
   components: { AxForm, AxGrid },
   computed: {
@@ -116,27 +103,12 @@ export default {
       return null;
     }
   },
-  watch: {
-    currentValue(newValue) {
-      if (newValue !== this.value) {
-        this.$emit('update:value', newValue);
-      }
-    },
-    search(newValue) {
-      if (newValue && newValue !== this.select) this.doQuicksearch();
-    },
-    value(newValue) {
-      this.currentValue = newValue;
-      this.updateTime = Date.now();
-    }
-  },
+  watch: {},
   created() {
-    if (this.value) {
-      if (Array.isArray(this.value)) this.currentValue = this.value;
-      else this.currentValue = JSON.parse(this.value);
-    }
-    this.updateTime = Date.now();
     this.modalGuid = uuid4();
+  },
+  mounted() {
+    this.getChildGuids();
   },
   methods: {
     locale(key) {
@@ -151,13 +123,8 @@ export default {
         this.$modal.show(`tom-form-${this.modalGuid}`);
       }
     },
-
-    openGridModal() {
-      this.$modal.show(`tom-grid-${this.modalGuid}`);
-    },
     closeModal() {
       this.$modal.hide(`tom-form-${this.modalGuid}`);
-      this.$modal.hide(`tom-grid-${this.modalGuid}`);
     },
     clearValue(guidToRemove) {
       this.currentValue = [
@@ -172,30 +139,53 @@ export default {
     },
     requiredIsValid() {
       if (this.isRequired) {
-        if (!this.currentValue || this.currentValue.length === 0) {
-          let msg = i18n.t('common.field-required');
-          if (this.options.required_text) msg = this.options.required_text;
-          this.errors.push(msg);
-          return false;
-        }
-        this.errors = [];
         return true;
       }
       return true;
     },
-    onGridSelected(items) {
-      this.currentValue = items;
-      this.updateTime = Date.now();
-      this.closeModal();
-    },
-    addGuidToValue(guid) {
-      if (this.currentValue == null) this.currentValue = [guid];
-      else {
-        this.currentValue.indexOf(guid) === -1
-          ? this.currentValue.push(newItem)
-          : null;
+    getChildGuids() {
+      if (!this.rowGuid) {
+        this.childrenLoaded = true;
+        return false;
       }
-      this.updateTime = Date.now();
+
+      const CHILD_GUIDS = gql`
+        query($fieldGuid: String!, $rowGuid: String!, $updateTime: String!) {
+          to1References(
+            fieldGuid: $fieldGuid
+            rowGuid: $rowGuid
+            updateTime: $updateTime
+          ) {
+            guid
+          }
+        }
+      `;
+
+      const vars = {
+        fieldGuid: this.fieldGuid,
+        rowGuid: this.rowGuid,
+        updateTime: Date.now()
+      };
+      apolloClient
+        .query({
+          query: CHILD_GUIDS,
+          variables: vars
+        })
+        .then(data => {
+          const to1References = data.data.to1References;
+          this.childGuids = [];
+          if (to1References && to1References.length > 0) {
+            to1References.forEach(element => {
+              this.childGuids.push(element.guid);
+            });
+          }
+          this.childrenLoaded = true;
+          this.updateTime = Date.now();
+        })
+        .catch(error => {
+          this.$log.error(`Error in getChildGuids gql => ${error}`);
+          this.$dialog.message.error(`${error}`);
+        });
     }
   }
 };

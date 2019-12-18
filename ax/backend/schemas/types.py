@@ -54,6 +54,13 @@ class ConsoleMessage(graphene.ObjectType):
     text = graphene.String()
 
 
+class RowInfo(graphene.ObjectType):
+    """ Used in Ax1to1Children. """
+    guid = graphene.String()
+    state = graphene.String()
+    tom_label = graphene.String()
+
+
 class ActionNotifyMessage(graphene.ObjectType):
     """ - """
     form_guid = graphene.String()

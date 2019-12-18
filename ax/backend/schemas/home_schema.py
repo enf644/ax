@@ -23,7 +23,7 @@ convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
 
 
 async def tom_sync_form(db_session, old_form_db_name, new_form_db_name):
-    """ Relation fields such as Ax1to1, Ax1tom and Ax1tomTable are using
+    """ Relation fields such as Ax1to1, Ax1tom, Ax1tomTable, Ax1to1Children are using
     options_json to store db_name of related form. If form db_name is changed,
     the Json's in every relation field must be updated.
     For each relation field - check if options contain old form name and update.
@@ -33,7 +33,8 @@ async def tom_sync_form(db_session, old_form_db_name, new_form_db_name):
         new_form_db_name (str): New db_name of form
     """
     relation_fields = db_session.query(AxField).filter(
-        AxField.field_type_tag.in_(('Ax1to1', 'Ax1tom', 'Ax1tomTable'))
+        AxField.field_type_tag.in_(
+            ('Ax1to1', 'Ax1tom', 'Ax1tomTable', 'Ax1to1Children'))
     ).all()
     for field in relation_fields:
         if 'form' in field.options.keys() and 'grid' in field.options.keys():

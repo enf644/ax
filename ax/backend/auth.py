@@ -389,12 +389,11 @@ async def retrieve_user(request, payload, *args, **kwargs):
                     AxUser.guid == ax_misc.guid_or_none(user_id)
                 ).first()
 
-                if user is None:
-                    raise exceptions.AuthenticationFailed("User not found.")
-
-                await check_if_admin(user_guid=user_id, db_session=db_session)
-                await write_perm_cache(db_session=db_session, user_guid=user_id)
-                await write_info_cache(user)
+                if user is not None:
+                    # raise exceptions.AuthenticationFailed("User not found.")
+                    await check_if_admin(user_guid=user_id, db_session=db_session)
+                    await write_perm_cache(db_session=db_session, user_guid=user_id)
+                    await write_info_cache(user)
 
         email = await ax_cache.cache.get(f'user_email_{user_id}')
         short_name = await ax_cache.cache.get(f'user_short_name_{user_id}')

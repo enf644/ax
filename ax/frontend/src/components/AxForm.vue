@@ -561,7 +561,7 @@ export default {
         })
         .catch(error => {
           this.$log.error(
-            `Error in AxForm GQL query - apollo client => ${error}`
+            `Error in AxForm GQL query loadData - apollo client => ${error}`
           );
         });
     },

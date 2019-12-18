@@ -317,6 +317,9 @@ const mutations = {
 };
 
 const getters = {
+  formsWithoutFolders(state) {
+    return state.forms.filter(item => !item.isFolder)
+  },
   jsTreeData(state) {
     const jsTreeData = [];
 

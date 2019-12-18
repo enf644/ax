@@ -361,7 +361,8 @@ class AxField(Base):
     # component. It is passed to UI
     # Stores JSON that is used only in python actions. AxAction code or fields
     # before/after methods
-    private_options_json = Column(Text(convert_unicode=True))
+    private_options_json = Column(JSON())
+    # TODO - delete this line!! - Column(Text(convert_unicode=True))
     field_type_tag = Column(String(64), ForeignKey('_ax_field_types.tag'))
     field_type = relationship("AxFieldType")
     # True if current field is form tab
@@ -402,21 +403,21 @@ class AxField(Base):
     @property
     def is_relation_field(self):
         """Check is field is of realtion type """
-        if self.field_type.tag in ['Ax1to1', 'Ax1tom', 'Ax1tomTable']:
+        if self.field_type and self.field_type.tag in ['Ax1to1', 'Ax1tom', 'Ax1tomTable']:
             return True
         return False
 
     @property
     def is_to1_field(self):
         """Check is field is of realtion type """
-        if self.field_type.tag == 'Ax1to1':
+        if self.field_type and self.field_type.tag == 'Ax1to1':
             return True
         return False
 
     @property
     def is_tom_field(self):
         """Check is field is of realtion type """
-        if self.field_type.tag in ['Ax1tom', 'Ax1tomTable']:
+        if self.field_type and self.field_type.tag in ['Ax1tom', 'Ax1tomTable']:
             return True
         return False
 

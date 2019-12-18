@@ -893,7 +893,6 @@ class ActionQuery(graphene.ObjectType):
                     form=ax_form,
                     current_state=current_state,
                     current_user=current_user)
-
             return ax_actions
 
 

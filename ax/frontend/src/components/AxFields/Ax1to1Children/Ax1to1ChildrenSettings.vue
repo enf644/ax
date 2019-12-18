@@ -3,7 +3,7 @@
     <br />
     <v-autocomplete
       :items='axForms'
-      :label='locale("types.Ax1to1.settings-form-select")'
+      :label='locale("types.Ax1to1Children.settings-form-select")'
       :rules='formRules'
       @change='setDefaultGrid()'
       chips
@@ -46,6 +46,28 @@
     </v-autocomplete>
     <br />
     <v-autocomplete
+      :hint='locale("types.Ax1to1Children.settings-field-hint")'
+      :items='axFields'
+      :label='locale("types.Ax1to1Children.settings-field-select")'
+      :rules='fieldRules'
+      chips
+      hide-selected
+      item-text='name'
+      item-value='guid'
+      persistent-hint
+      v-model='changedOptions.field'
+    >
+      <template v-slot:selection='{ item, selected }'>
+        <v-chip @click:close='clearGrid()' close>
+          <v-avatar class='grey' left>
+            <i :class='`ax-chip-icon fas fa-columns`'></i>
+          </v-avatar>
+          {{item.name}}
+        </v-chip>
+      </template>
+    </v-autocomplete>
+    <br />
+    <v-autocomplete
       :hint='locale("types.Ax1to1.settings-grid-hint")'
       :items='axGrids'
       :label='locale("types.Ax1to1.settings-grid-select")'
@@ -77,6 +99,8 @@
 <script>
 import AxFieldSettings from '@/components/AxFieldSettings.vue';
 import i18n from '@/locale.js';
+import apolloClient from '@/apollo';
+import gql from 'graphql-tag';
 
 export default {
   name: 'Ax1tomSettings',
@@ -87,13 +111,16 @@ export default {
   },
   data: () => ({
     changedOptions: {},
+    changedPrivateOptions: {},
     errors: [],
+    axFields: [],
     formRules: [v => !!v || i18n.t('common.field-required')],
-    gridRules: [v => !!v || i18n.t('common.field-required')]
+    gridRules: [v => !!v || i18n.t('common.field-required')],
+    fieldRules: [v => !!v || i18n.t('common.field-required')]
   }),
   computed: {
     axForms() {
-      return this.$store.getters['home/formsWithoutFolders'];
+      return this.$store.state.home.forms;
     },
     axGrids() {
       const selectedForm = this.$store.state.home.forms.find(
@@ -114,6 +141,15 @@ export default {
     if (!this.changedOptions.enableFormModal) {
       this.changedOptions.enableFormModal = true;
     }
+
+    if (this.changedOptions.form) {
+      const selectedForm = this.$store.state.home.forms.find(
+        form => form.dbName === this.changedOptions.form
+      );
+      if (selectedForm) {
+        this.getFields(selectedForm);
+      }
+    }
   },
   mounted() {},
   methods: {
@@ -123,6 +159,8 @@ export default {
     clearForm() {
       this.changedOptions.form = null;
       this.changedOptions.grid = null;
+      this.changedOptions.field = null;
+      this.axFields = [];
     },
     clearInlineGrid() {
       this.changedOptions.inline_grid = null;
@@ -135,7 +173,7 @@ export default {
         form => form.dbName === this.changedOptions.form
       );
       if (selectedForm) {
-        // console.log(selectedForm);
+        this.getFields(selectedForm);
         const defaultGrid = selectedForm.grids.edges.find(
           edge => edge.node.isDefaultView
         );
@@ -144,6 +182,44 @@ export default {
           this.changedOptions.inline_grid = defaultGrid.node.dbName;
         }
       }
+    },
+    getFields(selectedForm) {
+      const TO1_FIELDS = gql`
+        query(
+          $childFormGuid: String!
+          $fieldGuid: String!
+          $updateTime: String
+        ) {
+          to1Fields(
+            childFormGuid: $childFormGuid
+            fieldGuid: $fieldGuid
+            updateTime: $updateTime
+          ) {
+            guid
+            name
+            dbName
+          }
+        }
+      `;
+      const vars = {
+        childFormGuid: selectedForm.guid,
+        fieldGuid: this.guid,
+        updateTime: Date.now()
+      };
+      apolloClient
+        .query({
+          query: TO1_FIELDS,
+          variables: vars
+        })
+        .then(data => {
+          this.axFields = data.data.to1Fields;
+          if (this.axFields && this.axFields.length > 0)
+            this.changedOptions.field = this.axFields[0].guid;
+        })
+        .catch(error => {
+          this.$log.error(`Error in getFields gql => ${error}`);
+          this.$dialog.message.error(error);
+        });
     }
   }
 };

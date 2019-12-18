@@ -344,29 +344,35 @@ def create_field_types() -> None:
                 position=1,
                 value_type="GUID",
                 is_inline_editable=False,
-                is_columnn_avalible=True,
+                is_columnn_avalible=False,
                 icon="fas fa-link"))
             db_session.add(AxFieldType(
                 tag="Ax1tom",
                 parent="group-relationship",
-                default_name="types.ax-1tom-default",
                 default_db_name="toMany",
                 position=2,
                 value_type="JSON",
                 is_backend_available=True,
-                is_columnn_avalible=True,
+                is_columnn_avalible=False,
                 is_inline_editable=False,
                 icon="fas fa-link"))
             db_session.add(AxFieldType(
                 tag="Ax1tomTable",
                 parent="group-relationship",
-                default_name="types.ax-1tom-table-default",
                 default_db_name="toManyTable",
                 position=3,
                 value_type="JSON",
                 is_backend_available=True,
-                is_columnn_avalible=True,
-                is_inline_editable=True,
+                is_columnn_avalible=False,
+                is_inline_editable=False,
+                icon="fas fa-link"))
+            db_session.add(AxFieldType(
+                tag="Ax1to1Children",
+                parent="group-relationship",
+                default_db_name="toOneChildren",
+                position=4,
+                is_virtual=True,
+                virtual_source='guid',
                 icon="fas fa-link"))
 
             #Date and Time

@@ -76,7 +76,7 @@ export default {
   }),
   computed: {
     axForms() {
-      return this.$store.state.home.forms;
+      return this.$store.getters['home/formsWithoutFolders'];
     },
     axGrids() {
       const selectedForm = this.$store.state.home.forms.find(

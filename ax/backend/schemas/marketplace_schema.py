@@ -5,7 +5,6 @@ import sys
 import zipfile
 import shutil
 import ast
-import copy
 import uuid
 import asyncio
 from packaging import version
@@ -374,7 +373,7 @@ class CreateMarketplaceApplication(graphene.Mutation):
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "marketplace_schema -> CreateMarketplaceApplication"
         code_name = args.get('db_name')
-        version = args.get('version')
+        app_version = args.get('version')
         root_page_db_name = args.get('root_page')
         unique_guid = str(uuid.uuid4())
         include_data = args.get('include_data')
@@ -387,7 +386,8 @@ class CreateMarketplaceApplication(graphene.Mutation):
 
             # Get AxForms and folders to dump
             root_folder = db_session.query(AxForm).filter(
-                AxForm.guid == ax_misc.guid_or_none(str(args.get('folder_guid')))
+                AxForm.guid == ax_misc.guid_or_none(
+                    str(args.get('folder_guid')))
             ).first()
             if not root_folder:
                 raise Exception('Cant find app root folder')
@@ -417,7 +417,7 @@ class CreateMarketplaceApplication(graphene.Mutation):
             with open(app_yaml_path, 'w', encoding="utf-8") as yaml_file:
                 app_info = {
                     "Application name": args.get('name'),
-                    "Application version": version,
+                    "Application version": app_version,
                     "Code name": code_name,
                     "Root folder": args.get('folder_guid'),
                     "Forms": await get_forms_db_names(app_forms),
@@ -436,7 +436,7 @@ class CreateMarketplaceApplication(graphene.Mutation):
 
             # AxPage[]
 
-            version_str = str(version).replace(',', '-')
+            version_str = str(app_version).replace(',', '-')
             app_file_name = f'ax-{code_name}-{version_str}.zip'
             output_file_path = archive_directory / app_file_name
 
@@ -504,7 +504,7 @@ async def create_folder(db_session, folder):
             new_folder.position = int(folder['position'] or 0)
             new_folder.parent = ax_misc.guid_or_none(folder['parent'])
             db_session.add(new_folder)
-        
+
 
 async def create_form(db_session, form):
     """ Create or update AxForm """
@@ -522,8 +522,6 @@ async def create_form(db_session, form):
             existing_form.icon = form['icon']
         else:
             form_is_new = True
-            db_name = form['db_name']
-
             new_form = AxForm()
             new_form.guid = ax_misc.guid_or_none(form['guid'])
             new_form.name = form['name']
@@ -645,7 +643,7 @@ async def create_grid(db_session, form_directory, ax_form, grid):
         new_grid = None
 
         grid_py_path = form_directory / f'grid_{grid["db_name"]}.py'
-        if os.path.exists(grid_py_path):        
+        if os.path.exists(grid_py_path):
             with open(grid_py_path, 'r', encoding="utf-8") as grid_file:
                 code = grid_file.read()
 
@@ -793,8 +791,10 @@ async def create_action(db_session, form_directory, ax_form, action):
         new_action.name = action['name']
         new_action.db_name = action['db_name']
         new_action.form_guid = ax_form.guid
-        new_action.from_state_guid = ax_misc.guid_or_none(action['from_state_guid'])
-        new_action.to_state_guid = ax_misc.guid_or_none(action['to_state_guid'])
+        new_action.from_state_guid = ax_misc.guid_or_none(
+            action['from_state_guid'])
+        new_action.to_state_guid = ax_misc.guid_or_none(
+            action['to_state_guid'])
         new_action.code = code
         new_action.confirm_text = action['confirm_text']
         new_action.close_modal = action['close_modal']
@@ -855,7 +855,8 @@ def clean_yaml_value(row, field):
                 value = ast.literal_eval(value)
             except:
                 value_str = str(value)
-                logger.error(f'clean_yaml_value -> could not decode json {value_str}')
+                logger.error(
+                    f'clean_yaml_value -> could not decode json {value_str}')
                 value = None
     return value
 
@@ -929,7 +930,7 @@ async def create_form_objects(db_session, form_name, package_directory):
                 await create_metric(db_session=db_session, metric=metric)
 
             # AxGrid[], AxColumn[]
-            await terminal_log(f'AxGrids:\n')            
+            await terminal_log(f'AxGrids:\n')
             for grid in form_yaml["AxGrids"]:
                 await create_grid(
                     db_session=db_session,
@@ -939,7 +940,7 @@ async def create_form_objects(db_session, form_name, package_directory):
                 await terminal_log(f'    {grid["db_name"]} ✔\n')
 
             # AxRole[]
-            await terminal_log(f'AxRoles:\n')   
+            await terminal_log(f'AxRoles:\n')
             for role in form_yaml['AxRoles']:
                 await create_role(
                     db_session=db_session,
@@ -948,7 +949,7 @@ async def create_form_objects(db_session, form_name, package_directory):
                 await terminal_log(f'    {role["name"]} ✔\n')
 
             # AxStates[]
-            await terminal_log(f'AxStates:\n')               
+            await terminal_log(f'AxStates:\n')
             for state in form_yaml['AxStates']:
                 await create_state(
                     db_session=db_session,
@@ -957,7 +958,7 @@ async def create_form_objects(db_session, form_name, package_directory):
                 await terminal_log(f'    {state["name"]} ✔\n')
 
             # AxActions[] - deletes, creates new
-            await terminal_log(f'AxActions:\n') 
+            await terminal_log(f'AxActions:\n')
             await drop_actions(db_session=db_session, ax_form=ax_form)
             for action in form_yaml['AxActions']:
                 await create_action(
@@ -997,6 +998,8 @@ async def create_form_objects(db_session, form_name, package_directory):
 
 
 async def check_existing_form(db_session, package_directory, form_db_name):
+    """ Checks if AxForm with such db_name already exists. Aborts installation
+        if found """
     form_directory = package_directory / form_db_name
     yaml_path = form_directory / f'{form_db_name}.yaml'
     form_guid = None
@@ -1010,7 +1013,7 @@ async def check_existing_form(db_session, package_directory, form_db_name):
 
     if existing_form.guid != ax_misc.guid_or_none(form_guid):
         err = (f'Can not create AxForm [{form_db_name}]. Form with same '
-                f'db_name already exists.\nInstallation is aborted ☠️')
+               f'db_name already exists.\nInstallation is aborted ☠️')
         logger.exception(err)
         await terminal_log(f'\n\n\n{err}')
         raise Exception(err)
@@ -1031,7 +1034,7 @@ async def check_package(db_session, app_yaml, package_directory):
         await terminal_log(f'\n\n\n{msg}')
         raise Exception(msg)
 
-    # Check if table names of application is already present in database 
+    # Check if table names of application is already present in database
     ax_forms = db_session.query(AxForm).with_entities(AxForm.db_name).all()
     existing_db_names = [form.db_name for form in ax_forms]
     for form_db_name in app_yaml['Forms']:
@@ -1043,7 +1046,7 @@ async def check_package(db_session, app_yaml, package_directory):
                 form_db_name=form_db_name)
         else:
             # Check if table exists
-            if ax_model.engine.dialect.has_table(ax_model.engine,form_db_name):
+            if ax_model.engine.dialect.has_table(ax_model.engine, form_db_name):
                 err = (f'Database already contains table [{form_db_name}],'
                        f'but it is not registered as AxForm'
                        f'.\nInstallation is aborted ☠️')
@@ -1065,7 +1068,7 @@ class InstallFromPackage(graphene.Mutation):
     @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
-                
+
         err = 'Error in gql mutation - InstallFromPackage.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
             del info
@@ -1081,7 +1084,9 @@ class InstallFromPackage(graphene.Mutation):
             with zipfile.ZipFile(temp_path, "r") as zip_ref:
                 zip_ref.extractall(archive_dir)
 
-            with open(archive_dir / 'ax_app.yaml', 'r', encoding="utf-8") as app_yaml_file:
+            with open(
+                    archive_dir / 'ax_app.yaml',
+                    'r', encoding="utf-8") as app_yaml_file:
                 app_yaml = yaml.load(app_yaml_file)
 
                 # Check if package can be installed

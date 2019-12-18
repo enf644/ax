@@ -415,6 +415,13 @@
             "settings-inline-grid-hint": "Displayed inline form fields (server filter ignored)",
             "settings-inline-height": "Height of inline grid"
         },
+        "Ax1to1Children": {
+            "name": "Child 1:1 records",
+            "default": "Childrens",
+            "settings-form-select": "Select form [Must contain 1to1 field referencing current form]",
+            "settings-field-select": "1to1 field",
+            "settings-field-hint": "Must be reference to current form"
+        },
         "AxDate": {
             "name": "Date",
             "defaultNow-label": "Set default value to today"
