@@ -18,14 +18,14 @@
           :rules='rules.kebab'
           v-model='dbName'
         ></v-text-field>
-        <br />
+        <!-- <br />
         <v-text-field
           :hint='locale("marketplace.version-input-hint")'
           :label='locale("marketplace.version-input")'
           :rules='rules.required'
           ref='versionInput'
           v-model='version'
-        ></v-text-field>
+        ></v-text-field>-->
         <br />
         <v-text-field
           :hint='locale("marketplace.root-page-input-hint")'
@@ -34,7 +34,13 @@
           v-model='rootPage'
         ></v-text-field>
       </v-form>
-      <v-switch :label='locale("marketplace.include-data-input")' v-model='includeData'></v-switch>
+      <v-switch
+        :hint='locale("marketplace.include-data-hint")'
+        :label='locale("marketplace.include-data-input")'
+        persistent-hint
+        v-model='includeData'
+      ></v-switch>
+
       <div class='actions'>
         <v-btn @click='createApp()' small>
           <i class='fas fas fa-store'></i>
@@ -111,10 +117,10 @@ export default {
       formulaMode: false
     };
 
-    this.numericObject = new AutoNumeric(
-      this.$refs.versionInput.$refs.input,
-      autoNumberOptions
-    );
+    // this.numericObject = new AutoNumeric(
+    //   this.$refs.versionInput.$refs.input,
+    //   autoNumberOptions
+    // );
   },
   methods: {
     locale(key) {
@@ -201,6 +207,7 @@ export default {
 .actions {
   justify-content: space-between;
   display: flex;
+  margin-top: 20px;
 }
 .app-spinner {
   font-size: 40px;

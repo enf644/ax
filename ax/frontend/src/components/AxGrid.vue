@@ -10,16 +10,18 @@
       <i class='fas fa-redo-alt'></i>
     </v-btn>
 
-    <v-alert
-      :value='this.gqlException'
-      type='error'
-    >{{locale("grids.error-in-query")}} {{this.form}} {{this.grid}}</v-alert>
+    <v-alert :value='this.gqlException' type='error'>
+      {{locale("grids.error-in-query")}} {{this.form}} {{this.grid}}
+      <br />
+      <br />
+      {{errorText}}
+    </v-alert>
 
     <v-alert :value='this.gridNotFound' type='error'>{{locale("grids.error-grid-not-found")}}</v-alert>
 
     <v-sheet
       :class='sheetClass'
-      elevation='5'
+      :elevation='elevation'
       light
       ref='sheet'
       v-show='this.gqlException == false'
@@ -28,6 +30,7 @@
         <div @click='openGridBlank()' class='grid-title' v-show='titleEnabled'>
           <i :class='`fas fa-${this.formIcon}`'></i>
           &nbsp; {{gridTitle}}
+          <span class='hint' v-show='hint'>{{hint}} &nbsp;</span>
         </div>
         <div class='quick-search' v-show='quickSearchEnabled'>
           <v-text-field
@@ -61,10 +64,10 @@
             &nbsp; {{locale("grids.select-relation")}}
           </v-btn>
         </div>
-        <div v-if='this.isTomInlineMode'>
+        <div v-if='this.addRelationEnabled'>
           <v-btn @click='emitSelectDialog' small>
             <i class='fas fa-check-double'></i>
-            &nbsp; {{locale("grids.open-select-dialog")}}
+            &nbsp; {{addRelationButtonLabel}}
           </v-btn>
         </div>
       </div>
@@ -125,10 +128,16 @@ export default {
       type: Boolean,
       default: false
     },
+    enable_add_relation: {
+      type: Boolean,
+      default: true
+    },
+    tom_add_btn_label: null,
     constructor_mode: {
       type: Boolean,
       default: false
-    }
+    },
+    hint: null
   },
   data() {
     return {
@@ -151,7 +160,8 @@ export default {
       actions: null,
       gqlException: false,
       gridNotFound: false,
-      reloadIsActive: false
+      reloadIsActive: false,
+      errorText: null
     };
   },
   asyncComputed: {
@@ -283,6 +293,10 @@ export default {
     //   if (this.height) retStyle += ` height: ${this.height}`;
     //   return retStyle;
     // },
+    elevation() {
+      if (this.options && this.options.elevation) return this.options.elevation;
+      return 0;
+    },
     sheetClass() {
       if (this.options && this.options.enableFlatMode) return 'sheet-flat';
       return 'sheet';
@@ -295,11 +309,25 @@ export default {
       if (!this.options) return false;
       return this.options.enableQuickSearch;
     },
+    addRelationEnabled() {
+      if (
+        this.isTomInlineMode &&
+        (this.enable_add_relation == true ||
+          this.enable_add_relation == undefined)
+      )
+        return true;
+      return false;
+    },
+    addRelationButtonLabel() {
+      if (this.tom_add_btn_label) return this.tom_add_btn_label;
+      return this.locale('grids.open-select-dialog');
+    },
     actionsEnabled() {
       if (!this.options) return false;
       if (this.to1_mode !== undefined) return false;
       if (this.tom_mode !== undefined) return false;
       if (this.tom_children_mode !== undefined) return false;
+      if (this.tom_disabled == true) return false;
       // if (this.tom_inline_mode !== undefined) return false;
       return this.options.enableActions;
     },
@@ -381,9 +409,13 @@ export default {
   },
   methods: {
     reloadGrid() {
-      if (this.gridObj && this.reloadIsActive == false) {
+      if (this.reloadIsActive == false) {
         this.reloadIsActive = true;
-        if (this.gridObj.gridOptions && this.gridObj.gridOptions.api) {
+        if (
+          this.gridObj &&
+          this.gridObj.gridOptions &&
+          this.gridObj.gridOptions.api
+        ) {
           // if (this.gridInitialized) {
           this.gridObj.gridOptions.api.destroy();
           this.gridInitialized = false;
@@ -562,6 +594,7 @@ export default {
         });
     },
     loadData() {
+      this.errorText = null;
       // If tom_inline_mode we use quicksearch with impossible query.
       // So only guids rows  will be returned
       let impossibleGuid = null;
@@ -636,7 +669,9 @@ export default {
           this.reloadIsActive = false;
         })
         .catch(error => {
+          this.reloadIsActive = false;
           this.gqlException = true;
+          this.errorText = error;
           logger.error(`Error in AxGrid => loadData apollo client => ${error}`);
         });
     },
@@ -826,7 +861,8 @@ export default {
 }
 .actions {
   margin: 15px 25px 0px 25px;
-  height: 64px;
+  /* height: 64px; */
+  min-height: 49px;
   display: flex;
   flex-direction: row;
 }
@@ -858,5 +894,11 @@ export default {
 }
 .action-btn {
   margin-right: 10px;
+}
+.hint {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 12px;
+  margin-top: '5px' !important;
+  margin-left: 15px;
 }
 </style>

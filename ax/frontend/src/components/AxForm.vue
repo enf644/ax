@@ -784,12 +784,15 @@ export default {
 
         if (res) {
           if (actionResult.closeModal) {
-            this.$emit('close', actionResult.retGuid);
+            const theEmit = this.$emit('close', actionResult.retGuid);
             // incase this form inserted as web-conponent
             // the close will fail and we need to reload form
-            setTimeout(() => {
-              this.loadData(this.db_name, this.currentRowGuid);
-            }, 100);
+            // TODO check if this works with web-compontn
+            if (!theEmit) {
+              setTimeout(() => {
+                this.loadData(this.db_name, this.currentRowGuid);
+              }, 100);
+            }
           } else {
             setTimeout(() => {
               this.loadData(this.db_name, this.currentRowGuid);

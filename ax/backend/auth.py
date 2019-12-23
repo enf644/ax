@@ -9,12 +9,15 @@ from passlib.hash import pbkdf2_sha256
 from sanic_jwt import exceptions, initialize, Configuration
 from sanic_jwt.decorators import _do_protection
 
-from backend.model import AxUser, AxGroup2Users, AxRole2Users, \
+from backend.model import AxUser, AxGroup2Users, AxRole, AxRole2Users, \
     AxRoleFieldPermission, AxForm, AxAction2Role, AxField
 import backend.cache as ax_cache
 import backend.model as ax_model
 import backend.misc as ax_misc
 import backend.dialects as ax_dialects
+import backend.exec as ax_exec
+
+import backend.fields.AxAuthor as AxFieldAxAuthor  # pylint: disable=unused-import
 
 this = sys.modules[__name__]
 users = None
@@ -32,6 +35,30 @@ async def get_state_guid(ax_form, state_name):
             state_guid = str(state.guid)
 
     return state_guid
+
+
+async def check_if_action_avalible(
+        action,
+        current_user,
+        dynamic_role_guids=None):
+    """ Checks action workflow perms and dynamic roles perms"""
+    user_is_admin = current_user.get(
+        'is_admin', False) if current_user else False
+    user_guid = current_user.get('user_id', None) if current_user else None
+
+    action_guid = str(action.guid)
+    avalible = await check_action_perm(
+        user_guid=user_guid, action_guid=action_guid)
+
+    if dynamic_role_guids:
+        for role_guid in dynamic_role_guids:
+            if not avalible:
+                avalible = await check_action_perm(
+                    user_guid=role_guid, action_guid=action_guid)
+
+    if avalible or user_is_admin:
+        return True
+    return False
 
 
 async def check_action_perm(user_guid, action_guid):
@@ -121,7 +148,38 @@ async def get_grid_allowed_fields_dict(ax_form, user_guid):
     return allowed_fields_dict
 
 
-async def set_form_visibility(ax_form, state_guid, current_user):
+async def get_dynamic_roles_guids(ax_form, current_user):
+    """ Get list of role guids of all dynamic roles of form.
+        For each dynamic role - check if form values and user fits role """
+    role_guids = []
+    for role in ax_form.roles:
+        if role.is_dynamic:
+            # check if user and form fits dynamic role.
+            form_fits_role = await check_fits_dynamic_role(
+                role=role,
+                ax_form=ax_form,
+                current_user=current_user)
+            if form_fits_role is True:
+                role_guids.append(str(role.guid))
+    return role_guids
+
+async def check_fits_dynamic_role(role, ax_form, current_user):
+    """ Runs check_dynamic_role() of field_type py file """
+    if role.is_dynamic:
+        fits = await ax_exec.execute_field_code(
+            code=role.code,
+            form=ax_form,
+            current_user=current_user)
+        if 'result' in fits and fits['result'] is True:
+            return True
+    return False
+
+
+async def set_form_visibility(
+        ax_form,
+        state_guid,
+        current_user,
+        dynamic_role_guids=None):
     """ Sets permission field visibility. Deletes value if field is hidden """
     user_guid = current_user.get("user_id", None) if current_user else None
     user_id_admin = current_user.get(
@@ -131,14 +189,15 @@ async def set_form_visibility(ax_form, state_guid, current_user):
         user_guid=user_guid,
         state_guid=state_guid)
 
+    # Apply worklfow perms
     for field in ax_form.no_tab_fields:
         if field in ax_form.db_fields or field.field_type.is_virtual:
+            field_guid_str = str(field.guid)
             field.is_hidden = True
             if user_id_admin:
                 field.is_readonly = False
                 field.is_hidden = False
             else:
-                field_guid_str = str(field.guid)
                 if field_guid_str in allowed_fields:
                     if allowed_fields[field_guid_str] == 1:
                         field.is_readonly = True
@@ -147,15 +206,38 @@ async def set_form_visibility(ax_form, state_guid, current_user):
                         field.is_readonly = False
                         field.is_hidden = False
 
-                # If field is hidden -> Epty the value and forbid
-                # inser and update
-                if field.is_hidden is True:
-                    field.value = None
-                    field.needs_sql_update = False
+    # Apply dynamic role perms (rewrite previos perms)
+    if dynamic_role_guids:
+        for role_guid in dynamic_role_guids:
+            allowed_role_fields = await get_allowed_fields_dict(
+                ax_form=ax_form,
+                user_guid=role_guid,
+                state_guid=state_guid)
 
-                # Forbid update if readonly
-                if field.is_readonly is True:
-                    field.needs_sql_update = False
+            for field in ax_form.no_tab_fields:
+                if field in ax_form.db_fields or field.field_type.is_virtual:
+                    field_guid_str = str(field.guid)
+                    if field_guid_str in allowed_role_fields:
+                        if allowed_role_fields[field_guid_str] == 1:
+                            field.is_readonly = True
+                            field.is_hidden = False
+                        if allowed_role_fields[field_guid_str] == 2:
+                            field.is_readonly = False
+                            field.is_hidden = False
+                            field.needs_sql_update = True
+
+
+    for field in ax_form.fields:
+        # If field is hidden -> Epty the value and forbid
+        # inser and update
+        if field.is_hidden is True:
+            field.value = None
+            field.needs_sql_update = False
+
+        # Forbid update if readonly
+        if field.is_readonly is True:
+            field.needs_sql_update = False
+
     return ax_form
 
 
@@ -185,10 +267,10 @@ async def write_perm_cache(db_session, user_guid):
     """ On each user token refresh we write to cache permissions for
         each field/state combination """
     perm_cache_pairs = []
-    debug_list = []
+    # debug_list = []
     user_and_groups = []
 
-    # Add everyone group
+    # Add 'everyone' group
     everyone_group = db_session.query(AxUser).filter(
         AxUser.is_everyone.is_(True)
     ).first()
@@ -199,6 +281,7 @@ async def write_perm_cache(db_session, user_guid):
         user_and_groups.append(uuid.UUID(user_guid))
 
         # Add all-users group
+        # TODO get this from cache!
         all_users_group = db_session.query(AxUser).filter(
             AxUser.is_all_users.is_(True)
         ).first()
@@ -284,14 +367,104 @@ async def write_perm_cache(db_session, user_guid):
                     value = 2
 
                 perm_cache_pairs.append([key, value])
-                debug_list.append(
-                    (f"{ax_form.db_name} -> "
-                     f"{ax_state.name} -> {ax_field.db_name} -> {value}")
-                )
+                # debug_list.append(
+                #     (f"{ax_form.db_name} -> "
+                #      f"{ax_state.name} -> {ax_field.db_name} -> {value}")
+                # )
 
-    expire_seconds = 60 * 20  # 20 mins
+    expire_seconds = 60 * 20  # 20 mins #TODO check this timeout
     if user_guid is None:
         expire_seconds = 0  # disable ttl for Everyone group
+    await ax_cache.cache.multi_set(perm_cache_pairs, ttl=expire_seconds)
+
+
+async def write_dynamic_roles_cache(db_session):
+    """ Write cache for each field/state combination
+        perm_{dynamic_role_guid}_{field_guid}_{state_guid}
+        Write cache needed on start and after each perm edit, if role is dynamic
+        """
+    perm_cache_pairs = []
+    debug_list = []
+
+    # Get all dynamic roles
+    roles_guids = []
+    dynamic_roles = db_session.query(AxRole).filter(
+        AxRole.is_dynamic.is_(True)
+    ).all()
+    for role in dynamic_roles:
+        roles_guids.append(role.guid)
+
+    # Get AxRoleFieldPermission for those roles
+    forms_guids = []
+    perms = db_session.query(AxRoleFieldPermission).filter(
+        AxRoleFieldPermission.role_guid.in_(roles_guids)
+    ).all()
+    for perm in perms:
+        if perm.form_guid not in forms_guids:
+            forms_guids.append(perm.form_guid)
+
+    # Get AxAction2Role for those roles
+    action_role_result = db_session.query(AxAction2Role).filter(
+        AxAction2Role.role_guid.in_(roles_guids)
+    ).all()
+    actions_guids = []
+    for a2r in action_role_result:
+        if a2r.action_guid not in actions_guids:
+            actions_guids.append(a2r.action_guid)
+            action_guid = str(a2r.action_guid)
+            role_guid = str(a2r.role_guid)
+            action_key = f"action_perm_{role_guid}_{action_guid}"
+            perm_cache_pairs.append([action_key, True])
+
+    # Get all forms with perms
+    all_forms = db_session.query(AxForm).filter(
+        AxForm.guid.in_(forms_guids)
+    ).all()
+
+    # For each form
+    for ax_form in all_forms:
+        # For each field
+        for ax_field in ax_form.no_tab_fields:
+            # For each state
+            for ax_state in ax_form.perm_states:
+                read = False
+                edit = False
+                # For each dynamic role
+                for dyn_role in dynamic_roles:
+                    role_perms = [p for p in perms if (
+                        p.role_guid == dyn_role.guid
+                        and p.state_guid == ax_state.guid)]
+
+                    for perm in role_perms:
+                        # if perm is set to whole form
+                        # if perm is set to tab
+                        # if perm is set to field
+                        if (perm.field_guid is None
+                                or perm.field_guid == ax_field.parent
+                                or perm.field_guid == ax_field.guid):
+
+                            if perm.read is True:
+                                read = True
+                            if perm.edit is True:
+                                edit = True
+
+                    # Cache perm_<role_guid>_<field_guid>_<state_guid> = 0/1/2
+                    role_guid = str(dyn_role.guid)
+                    field_guid = str(ax_field.guid)
+                    state_guid = str(ax_state.guid)
+                    key = f"perm_{role_guid}_{field_guid}_{state_guid}"
+                    value = 0
+                    if read is True:
+                        value = 1
+                    if edit is True:
+                        value = 2
+
+                    perm_cache_pairs.append([key, value])
+                    debug_list.append(
+                        (f"{dyn_role.name} -> {ax_form.db_name} -> "
+                         f"{ax_state.name} -> {ax_field.db_name} -> {value}"))
+
+    expire_seconds = 0  # does not depricate
     await ax_cache.cache.multi_set(perm_cache_pairs, ttl=expire_seconds)
 
 
@@ -391,8 +564,10 @@ async def retrieve_user(request, payload, *args, **kwargs):
 
                 if user is not None:
                     # raise exceptions.AuthenticationFailed("User not found.")
-                    await check_if_admin(user_guid=user_id, db_session=db_session)
-                    await write_perm_cache(db_session=db_session, user_guid=user_id)
+                    await check_if_admin(
+                        user_guid=user_id, db_session=db_session)
+                    await write_perm_cache(
+                        db_session=db_session, user_guid=user_id)
                     await write_info_cache(user)
 
         email = await ax_cache.cache.get(f'user_email_{user_id}')
@@ -456,7 +631,11 @@ def init_auth(sanic_app, secret="This is big secret, set me in app.yaml"):
                login_redirect_url='/signin',
                secret=secret)
 
-    # Write cache form Everyone group
     with ax_model.scoped_session("init_auth - ERROR") as db_session:
+        # Write cache form Everyone group
         asyncio.get_event_loop().run_until_complete(write_perm_cache(
             db_session=db_session, user_guid=None))
+
+        # Write cache for dynamic roles
+        asyncio.get_event_loop().run_until_complete(write_dynamic_roles_cache(
+            db_session=db_session))

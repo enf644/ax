@@ -6,7 +6,7 @@
     <div class='ax-admin-drawer-second' splitpanes-min='20' splitpanes-size='20'>
       <TheConstructorGridsDrawerSecond></TheConstructorGridsDrawerSecond>
     </div>
-    <div class='ax-admin-content-pane' splitpanes-min='30' splitpanes-size='60'>
+    <div class='ax-admin-content-pane white-bg-grid' splitpanes-min='30' splitpanes-size='60'>
       <TheConstructorGridsContent></TheConstructorGridsContent>
     </div>
   </splitpanes>
@@ -31,4 +31,7 @@ export default {
 </script>
 
 <style scoped>
+.white-bg-grid {
+  background: white;
+}
 </style>

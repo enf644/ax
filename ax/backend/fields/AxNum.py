@@ -11,7 +11,7 @@ async def before_insert(db_session, field, before_form, tobe_form, action,
 
     Returns:
         Object: Returns updated value of current field"""
-    del before_form, action, current_user
+    del before_form, action
 
     if not field.private_options_json or field.private_options_json == '{}':
         return None
@@ -44,7 +44,11 @@ async def before_insert(db_session, field, before_form, tobe_form, action,
     }
 
     ax = await ax_exec.execute_field_code(
-        code=code, form=tobe_form, arguments=arguments)
+        code=code,
+        form=tobe_form,
+        arguments=arguments,
+        current_user=current_user,
+        db_session=db_session)
 
     field.needs_sql_update = True
     field.value = ax.value

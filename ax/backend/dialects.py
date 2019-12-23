@@ -315,20 +315,25 @@ class PorstgreDialect(object):
                 f'"guid", "axState" {db_fields_sql}, {tom_name} as "axLabel"')
             final_sql = sql.replace('<ax_fields>', fields_sql)
             final_sql = final_sql.replace('<ax_table>', ax_form.db_name)
+            final_sql = final_sql.replace('<tom_label>', tom_name)
+
 
             result = db_session.execute(final_sql, arguments).fetchall()
             # Some values must be converted before returning to GQL
             # Example - we need to do json.dumps before returning JSON field
             clean_result = []
             for row in result:
-                clean_row = {
-                    "guid": row["guid"],
-                    "axState": row["axState"],
-                    "axLabel": row['axLabel']
-                }
+                clean_row = {}
+                for must_field in ['guid', 'axState', 'axLabel']:
+                    if must_field in row:
+                        clean_row[must_field] = row[must_field]
+                    else:
+                        clean_row[must_field] = None
+
                 for field in ax_form.db_fields:
-                    clean_row[field.db_name] = await self.get_value(
-                        field.field_type.value_type, row[field.db_name])
+                    if field.db_name in row:
+                        clean_row[field.db_name] = await self.get_value(
+                            field.field_type.value_type, row[field.db_name])
                 clean_result.append(clean_row)
 
             return clean_result

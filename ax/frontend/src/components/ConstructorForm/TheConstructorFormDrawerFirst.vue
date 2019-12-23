@@ -91,4 +91,7 @@ export default {
 </script>
 
 <style scoped>
+.field-group {
+  color: red;
+}
 </style>

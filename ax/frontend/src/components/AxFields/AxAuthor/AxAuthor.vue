@@ -1,17 +1,12 @@
 <template>
   <div class='nobr'>
     <v-autocomplete
-      :disabled='isReadonly'
-      :error-messages='errors'
-      :hide-no-data='hideNoData'
-      :hint='this.options.hint'
       :items='axUsers'
       :label='name'
       :loading='loading'
-      :search-input.sync='search'
-      @change='isValid'
       chips
       dense
+      disabled
       hide-selected
       item-text='shortName'
       item-value='email'
@@ -20,12 +15,7 @@
       v-model='currentValue'
     >
       <template v-slot:selection='{ item, selected }'>
-        <v-chip
-          @click:close='clearValue(item)'
-          @click.stop='openFormModal(item)'
-          class='chip'
-          close
-        >
+        <v-chip @click.stop='openFormModal(item)' class='chip' close>
           <v-avatar class='grey mr-2' left>
             <i :class='`ax-chip-icon fas fa-user`'></i>
           </v-avatar>
@@ -49,7 +39,7 @@ import apolloClient from '@/apollo.js';
 import uuid4 from 'uuid4';
 
 export default {
-  name: 'AxUsers',
+  name: 'AxAuthor',
   props: {
     name: null,
     dbName: null,
@@ -74,24 +64,18 @@ export default {
     }
   },
   watch: {
-    currentValue(newValue) {
-      if (newValue !== this.value) {
-        this.$emit('update:value', newValue);
-      }
-    },
-    search(newValue) {
-      if (newValue && newValue !== this.select) this.doQuicksearch();
-    },
     value(newValue) {
-      if (newValue != this.currentValue) {
-        this.currentValue = newValue;
-        if (this.currentValue) this.loadData();
+      if (newValue == null) this.currentValue = null;
+      else if (newValue && !this.currentValue.includes(newValue)) {
+        this.currentValue = [];
+        this.currentValue.push(newValue);
+        this.loadData();
       }
     }
   },
   created() {
     if (this.value) {
-      this.currentValue = this.value;
+      this.currentValue = [this.value];
       this.loadData();
     }
   },
@@ -99,33 +83,7 @@ export default {
     locale(key) {
       return i18n.t(key);
     },
-    clearValue(axItem) {
-      this.currentValue = [
-        ...this.currentValue.filter(email => email !== axItem.email)
-      ];
-    },
     isValid() {
-      this.search = null;
-      if (this.requiredIsValid()) return true;
-      return false;
-    },
-    requiredIsValid() {
-      if (this.isRequired) {
-        if (!this.currentValue || this.currentValue.length === 0) {
-          let msg = i18n.t('common.field-required');
-          if (this.options.required_text) msg = this.options.required_text;
-          this.errors.push(msg);
-          return false;
-        }
-        this.errors = [];
-        return true;
-      }
-      return true;
-    },
-    doQuicksearch() {
-      const searchQuery = this.search;
-      if (searchQuery.length < 2) return false;
-      this.loadData();
       return true;
     },
     loadData() {
@@ -156,20 +114,9 @@ export default {
         })
         .then(data => {
           this.axUsers = data.data.onlyUsers;
-          // We re-create values incase some of items were deleted or permission was denied.
-          const checkedValues = [];
-          this.axUsers.forEach(element => {
-            if (
-              this.currentValue &&
-              this.currentValue.includes(element.email)
-            ) {
-              checkedValues.push(element.email);
-            }
-          });
-          this.currentValue = [...checkedValues];
         })
         .catch(error => {
-          this.$log.error(`Error in AxUsers -> loadData gql => ${error}`);
+          this.$log.error(`Error in AxAuthor -> loadData gql => ${error}`);
           this.$dialog.message.error(`${error}`);
         });
 

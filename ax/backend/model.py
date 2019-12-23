@@ -3,6 +3,7 @@ Contains class structure of Ax storage.
 """
 
 import os
+import re
 import sys
 from pathlib import Path
 from datetime import datetime
@@ -519,6 +520,15 @@ class AxRole(Base):
     form = relationship("AxForm")
     users = relationship("AxUser", secondary='_ax_role2user')
     icon = Column(String(255)) # font-awesome key
+    # field_tag = Column(String(255))
+    is_dynamic = Column(Boolean, unique=False, default=False)
+    code = Column(Text(convert_unicode=True)) # code to build SQL query
+
+    @property
+    def db_name(self):
+        """ Removes every character but letters and numbers from name """
+        return re.sub(r'[\W_]+', '', self.name)
+
 
 class AxState2Role(Base):
     """Stores Roles that are assigned for state of workflow"""

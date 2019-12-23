@@ -1,7 +1,7 @@
 """ This is part of GraphQL schema (Mutaions, Queryes, Subscriptions).
 Contains GQL schema for form actions - DoAction, subscribtion, avalible actions
 """
-import os
+# import os
 import sys
 import uuid
 import copy
@@ -14,6 +14,10 @@ import graphene
 import aiopubsub
 from dotmap import DotMap
 from loguru import logger
+
+# Fields specific:
+import stripe
+
 import ujson as json
 
 from backend.model import AxForm, AxAction
@@ -25,10 +29,6 @@ import backend.scheduler as ax_scheduler
 import backend.emails as ax_emails
 import backend.exec as ax_exec
 import backend.auth as ax_auth
-
-# Fields specific:
-import stripe
-
 import backend.cache as ax_cache
 from backend.schemas.types import Action, Form, ConsoleMessage, \
     ActionNotifyMessage
@@ -42,6 +42,7 @@ import backend.fields.AxNum as AxFieldAxNum  # pylint: disable=unused-import
 import backend.fields.AxComments as AxFieldAxComments  # pylint: disable=unused-import
 import backend.fields.AxApproval as AxFieldAxApproval  # pylint: disable=unused-import
 import backend.fields.AxPaymentStripe as AxFieldAxPaymentStripe  # pylint: disable=unused-import
+import backend.fields.AxAuthor as AxFieldAxAuthor  # pylint: disable=unused-import
 
 this = sys.modules[__name__]
 action_loop = None
@@ -129,7 +130,11 @@ class ActionExecuter:
         )
 
 
-async def get_actions(form, current_state=None, current_user=None):
+async def get_actions(
+        form,
+        current_state=None,
+        current_user=None,
+        dynamic_role_guids=None):
     """ Get actions for current state
 
     Args:
@@ -160,17 +165,15 @@ async def get_actions(form, current_state=None, current_user=None):
         if current_state and action.from_state_guid == all_state_guid:
             ret_actions.append(action)
 
+
     # Filter action based on permission cache
     perm_actions = []
     for action in ret_actions:
-        user_guid = current_user.get('user_id', None) if current_user else None
-        action_guid = str(action.guid)
-        avalible = await ax_auth.check_action_perm(
-            user_guid=user_guid, action_guid=action_guid)
-
-        user_is_admin = current_user.get(
-            'is_admin', False) if current_user else False
-        if avalible or user_is_admin:
+        action_is_avalible = await ax_auth.check_if_action_avalible(
+            action=action,
+            current_user=current_user,
+            dynamic_role_guids=dynamic_role_guids)
+        if action_is_avalible:
             perm_actions.append(action)
 
     return perm_actions
@@ -363,21 +366,22 @@ async def run_field_backend(db_session, field, action, before_form, tobe_form,
         object: Returns new field value
     """
     tag = field.field_type.tag
-    field_py_file_path = f"backend/fields/{tag}.py"
+    # field_py_file_path = f"backend/fields/{tag}.py"
     function_name = f"{when}_{query_type}"
 
-    if os.path.exists(ax_misc.path(field_py_file_path)):
-        field_py = globals()[f'AxField{tag}']
-        if field_py and hasattr(field_py, function_name):
-            method_to_call = getattr(field_py, function_name)
-            new_value = await method_to_call(
-                db_session=db_session,
-                field=field,
-                before_form=before_form,
-                tobe_form=tobe_form,
-                action=action,
-                current_user=current_user)
-            return new_value
+    # if os.path.exists(ax_misc.path(field_py_file_path)):
+    # field_py = globals()[f'AxField{tag}']
+    field_py = globals().get(f'AxField{tag}', None)
+    if field_py and hasattr(field_py, function_name):
+        method_to_call = getattr(field_py, function_name)
+        new_value = await method_to_call(
+            db_session=db_session,
+            field=field,
+            before_form=before_form,
+            tobe_form=tobe_form,
+            action=action,
+            current_user=current_user)
+        return new_value
     return field.value
 
 
@@ -496,23 +500,6 @@ async def execute_action(
             elif ax_action.to_state.is_deleted:
                 query_type = 'delete'
 
-            # 2. Check if user can perform current action
-            user_guid = current_user.get(
-                'user_id', None) if current_user else None
-            user_is_admin = current_user.get(
-                'is_admin', False) if current_user else False
-            if not user_is_admin:
-                action_is_avalible = await ax_auth.check_action_perm(
-                    user_guid=user_guid,
-                    action_guid=ax_action.guid)
-                if not action_is_avalible:
-                    email = current_user.get('email', None)
-                    msg = (
-                        f'Error in DoAction. Action [{ax_action.name}]',
-                        f'not allowed for user [{email}]'
-                    )
-                    logger.error(msg)
-                    raise Exception(msg)
 
             # 3. Get before_form - fill it with values from database row
             before_form, tobe_form = await get_before_form(
@@ -531,6 +518,24 @@ async def execute_action(
                         tobe_form.fields[idx].needs_sql_update = True
                     if field.field_type.is_updated_always:
                         tobe_form.fields[idx].needs_sql_update = True
+
+            # 2. Check if user can perform current action
+            dynamic_role_guids = await ax_auth.get_dynamic_roles_guids(
+                ax_form=tobe_form,
+                current_user=current_user)
+
+            action_is_avalible = await ax_auth.check_if_action_avalible(
+                action=ax_action,
+                current_user=current_user,
+                dynamic_role_guids=dynamic_role_guids)
+            if not action_is_avalible:
+                email = current_user.get('email', None)
+                msg = (
+                    f'Error in DoAction. Action [{ax_action.name}]',
+                    f'not allowed for user [{email}]'
+                )
+                logger.error(msg)
+                raise Exception(msg)
 
             # 5. Run before backend code for each field.
             for idx, field in enumerate(tobe_form.fields):
@@ -584,7 +589,8 @@ async def execute_action(
             ax_form = await ax_auth.set_form_visibility(
                 ax_form=ax_form,
                 state_guid=ax_action.from_state.guid,
-                current_user=current_user)
+                current_user=current_user,
+                dynamic_role_guids=dynamic_role_guids)
 
             # 8. Make update or insert or delete query #COMMIT HERE
             return_guid = tobe_form.row_guid

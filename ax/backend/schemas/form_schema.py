@@ -3,7 +3,7 @@ Defines manipulation with form AxForm.
 All mutations are used in form constructor - create/update/delete for Tab, Field
 Query form_data is used in AxForm.vue as main form query.
 """
-import os
+# import os
 import uuid
 import graphene
 # from loguru import logger
@@ -13,34 +13,34 @@ import ujson as json
 from backend.model import AxForm, AxField, AxFieldType, \
     AxRoleFieldPermission, AxColumn
 import backend.model as ax_model
-import backend.misc as ax_misc
+# import backend.misc as ax_misc
 import backend.dialects as ax_dialects
 # import backend.cache as ax_cache
 import backend.auth as ax_auth
 from backend.auth import ax_admin_only
 
-from backend.schemas.types import Form, Field, PositionInput, \
-    RoleFieldPermission
+from backend.schemas.types import Form, Field, PositionInput, Role
 import backend.schemas.action_schema as action_schema
 import backend.fields.AxHtml as AxFieldAxHtml  # pylint: disable=unused-import
+import backend.fields.AxAuthor as AxFieldAxAuthor  # pylint: disable=unused-import
 
 
 async def exec_display_backend(db_session, field, form, current_user):
     """ Executes one fields backend code before_display() """
     tag = field.field_type.tag
-    field_py_file_path = f"backend/fields/{tag}.py"
+    # field_py_file_path = f"backend/fields/{tag}.py"
     function_name = "before_display"
 
-    if os.path.exists(ax_misc.path(field_py_file_path)):
-        field_py = globals()[f'AxField{tag}']
-        if field_py and hasattr(field_py, function_name):
-            method_to_call = getattr(field_py, function_name)
-            new_value = await method_to_call(
-                db_session=db_session,
-                field=field,
-                form=form,
-                current_user=current_user)
-            return new_value
+    # if os.path.exists(ax_misc.path(field_py_file_path)):
+    field_py = globals().get(f'AxField{tag}', None)
+    if field_py and hasattr(field_py, function_name):
+        method_to_call = getattr(field_py, function_name)
+        new_value = await method_to_call(
+            db_session=db_session,
+            field=field,
+            form=form,
+            current_user=current_user)
+        return new_value
     return field.value
 
 
@@ -202,13 +202,15 @@ class CreateField(graphene.Mutation):
 
     ok = graphene.Boolean()
     field = graphene.Field(Field)
-    permissions = graphene.List(RoleFieldPermission)
+    roles = graphene.List(Role)
 
     @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         import backend.schema as ax_schema
         err = 'Error in gql mutation - form_schema -> CreateTab'
         with ax_model.try_catch(info.context['session'], err) as db_session:
+            current_user = info.context['user']
+
             form_guid = args.get('form_guid')
             name = args.get('name')
             tag = args.get('tag')
@@ -234,12 +236,15 @@ class CreateField(graphene.Mutation):
                 error_flag = False
                 if cur_num > 1:
                     cur_name = name + " " + str(cur_num)
+                    cur_db_name = ax_field_type.default_db_name + str(cur_num)
                 else:
                     cur_name = name
-                cur_db_name = ax_field_type.default_db_name + str(cur_num)
+                    cur_db_name = ax_field_type.default_db_name
+
                 for field in ax_form.fields:
                     if field.name == cur_name or field.db_name == cur_db_name:
                         error_flag = True
+
                 if error_flag is True:
                     cur_num = cur_num + 1
                 else:
@@ -280,12 +285,26 @@ class CreateField(graphene.Mutation):
                         field.position = pos.position
                         field.parent = current_parent
 
-            permissions = []
+            # Run after_create if needed
+            if ax_field.field_type.is_backend_available:
+                tag = ax_field.field_type_tag
+                field_py = globals().get(f'AxField{tag}', None)
+                if field_py and hasattr(field_py, "after_field_create"):
+                    method_to_call = getattr(field_py, "after_field_create")
+                    await method_to_call(
+                        db_session=db_session,
+                        field=ax_field,
+                        before_form=ax_form,
+                        tobe_form=ax_form,
+                        action=None,
+                        current_user=current_user)
+
             db_session.commit()
             ax_schema.init_schema(db_session)  # re-create GQL schema
+            roles = ax_form.roles
 
             ok = True
-            return CreateField(field=ax_field, permissions=permissions, ok=ok)
+            return CreateField(field=ax_field, roles=roles, ok=ok)
 
 
 class UpdateField(graphene.Mutation):
@@ -394,6 +413,7 @@ class DeleteField(graphene.Mutation):
         guid = graphene.String()
 
     ok = graphene.Boolean()
+    roles = graphene.List(Role)
     deleted = graphene.String()
 
     @ax_admin_only
@@ -401,6 +421,7 @@ class DeleteField(graphene.Mutation):
         import backend.schema as ax_schema
         err = 'Error in gql mutation - form_schema -> DeleteField.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
+            current_user = info.context['user']
             guid = args.get('guid')
 
             ax_field = db_session.query(AxField).filter(
@@ -419,10 +440,26 @@ class DeleteField(graphene.Mutation):
                     column=ax_field.db_name
                 )
 
+            # if backend avalible
+            if ax_field.field_type.is_backend_available:
+                tag = ax_field.field_type_tag
+                field_py = globals().get(f'AxField{tag}', None)
+                if field_py and hasattr(field_py, "before_field_delete"):
+                    method_to_call = getattr(field_py, "before_field_delete")
+                    await method_to_call(
+                        db_session=db_session,
+                        field=ax_field,
+                        before_form=ax_field.form,
+                        tobe_form=ax_field.form,
+                        action=None,
+                        current_user=current_user)
+
+            roles = ax_field.form.roles
             db_session.delete(ax_field)
             ax_schema.init_schema(db_session)  # re-create GQL schema
+
             ok = True
-            return DeleteField(deleted=guid, ok=ok)
+            return DeleteField(deleted=guid, roles=roles, ok=ok)
 
 
 class ChangeFieldsPositions(graphene.Mutation):
@@ -515,7 +552,6 @@ class FormQuery(graphene.ObjectType):
         err = 'Error in gql query - form_schema -> resolve_form_data'
         with ax_model.try_catch(
                 info.context['session'], err, no_commit=True) as db_session:
-            db_session = info.context['session']
             del update_time  # used to disable gql caching
 
             query = Form.get_query(info=info)
@@ -540,16 +576,24 @@ class FormQuery(graphene.ObjectType):
                 ax_form=ax_form,
                 state_name=ax_form.current_state_name)
 
-            ax_form = await ax_auth.set_form_visibility(
+            # Check if form have dynamic role
+            dynamic_role_guids = await ax_auth.get_dynamic_roles_guids(
                 ax_form=ax_form,
-                state_guid=state_guid,
                 current_user=current_user)
 
             ax_form.avalible_actions = await action_schema.get_actions(
                 form=ax_form,
                 current_state=ax_form.current_state_name,
-                current_user=current_user
+                current_user=current_user,
+                dynamic_role_guids=dynamic_role_guids
             )
+
+            ax_form = await ax_auth.set_form_visibility(
+                ax_form=ax_form,
+                state_guid=state_guid,
+                current_user=current_user,
+                dynamic_role_guids=dynamic_role_guids)
+
             return ax_form
 
 

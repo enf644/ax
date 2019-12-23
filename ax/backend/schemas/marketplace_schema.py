@@ -2,6 +2,7 @@
 
 import os
 import sys
+import re
 import zipfile
 import shutil
 import ast
@@ -212,11 +213,12 @@ async def dump_form(db_session, package_directory, form, include_data):
                         AxMetric.key == key
                     ).first()
 
-                    yaml_dict["AxMetrics"].append({
-                        "guid": str(ax_metric.guid),
-                        "key": ax_metric.key,
-                        "value": ax_metric.value
-                    })
+                    if ax_metric:
+                        yaml_dict["AxMetrics"].append({
+                            "guid": str(ax_metric.guid),
+                            "key": ax_metric.key,
+                            "value": ax_metric.value
+                        })
 
             # AxGrid[], AxColumns[]
             yaml_dict["AxGrids"] = []
@@ -253,8 +255,13 @@ async def dump_form(db_session, package_directory, form, include_data):
                 yaml_dict["AxRoles"].append({
                     "guid": str(role.guid),
                     "name": role.name,
-                    "icon": role.icon
+                    "icon": role.icon,
+                    "is_dynamic": role.is_dynamic
                 })
+                if role.code:
+                    role_py_path = form_path / f'role_{role.db_name}.py'
+                    with open(role_py_path, 'w', encoding="utf-8") as role_file:
+                        role_file.write(role.code)
 
             # AxStates[]
             yaml_dict["AxStates"] = []
@@ -436,8 +443,9 @@ class CreateMarketplaceApplication(graphene.Mutation):
 
             # AxPage[]
 
-            version_str = str(app_version).replace(',', '-')
-            app_file_name = f'ax-{code_name}-{version_str}.zip'
+            # version_str = str(app_version).replace(',', '-')
+            # app_file_name = f'{code_name}-{version_str}.zip'
+            app_file_name = f'{code_name}.zip'
             output_file_path = archive_directory / app_file_name
 
             await ax_misc.zip_folder(
@@ -675,7 +683,7 @@ async def create_grid(db_session, form_directory, ax_form, grid):
     return existing_grid or new_grid
 
 
-async def create_role(db_session, ax_form, role):
+async def create_role(db_session, ax_form, role, form_path):
     """ Create or update AxRole """
     err = "marketplace_schema -> create_role"
     with ax_model.try_catch(db_session, err) as db_session:
@@ -683,6 +691,13 @@ async def create_role(db_session, ax_form, role):
             AxRole.guid == ax_misc.guid_or_none(role['guid'])
         ).first()
         new_role = None
+
+        code = None
+        role_db_name = re.sub(r'[\W_]+', '', role['name'])
+        role_py_path = form_path / f'role_{role_db_name}.py'
+        if os.path.exists(role_py_path):
+            with open(role_py_path, 'r', encoding="utf-8") as role_file:
+                code = role_file.read()
 
         if existing_role:
             existing_role.name = role['name']
@@ -693,6 +708,8 @@ async def create_role(db_session, ax_form, role):
             new_role.name = role['name']
             new_role.form_guid = ax_form.guid
             new_role.icon = role['icon']
+            new_role.is_dynamic = role['is_dynamic']
+            new_role.code = code
             db_session.add(new_role)
 
 
@@ -945,7 +962,8 @@ async def create_form_objects(db_session, form_name, package_directory):
                 await create_role(
                     db_session=db_session,
                     ax_form=ax_form,
-                    role=role)
+                    role=role,
+                    form_path=form_directory)
                 await terminal_log(f'    {role["name"]} ✔\n')
 
             # AxStates[]

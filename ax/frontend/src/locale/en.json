@@ -265,12 +265,15 @@
         },
         "role": {
             "roles-list-header": "Workflow roles",
+            "dynamic-roles-list-header": "Condition roles",
             "role-settings-header": "Role settings",
             "create-role-btn": "Create role",
+            "create-dynamic-role-btn": "Create conditional role",
             "update-role-btn": "Update role settings",
             "delete-role-btn": "Delete role",
             "add-role-toast": "Role created",
             "add-role-prompt": "Please input name of role",
+            "role-name-exists-toast": "Role with name [{name}] exists. Please choose enother name.",
             "update-role-toast": "Role updated",
             "delete-role-toast": "Role deleted",
             "role-delete-confirm": "Do you realy want to delete role [{name}]?",
@@ -413,7 +416,10 @@
             "default": "Dictionary",
             "settings-inline-grid-select": "Select inline grid *",
             "settings-inline-grid-hint": "Displayed inline form fields (server filter ignored)",
-            "settings-inline-height": "Height of inline grid"
+            "settings-inline-height": "Height of inline grid",
+            "settings-enable-add-relation": "Allow to add already created items",
+            "settings-add-relation-text": "[Add already created item] button label",
+            "settings-add-relation-default": "Add existing"
         },
         "Ax1to1Children": {
             "name": "Child 1:1 records",
@@ -514,6 +520,14 @@
             "intent-not-set": "Stripe Intent not set. Check field documentation",
             "stripe-not-avalible": "Payment is not avalible. Stripe API not found. Please check internet connection and reload page.",
             "required-default": "Payment is required"
+        },
+        "AxSingleUser": {
+            "name": "Single user"
+        },
+        "AxAuthor": {
+            "name": "Author",
+            "create-role-btn": "Create author role",
+            "role-description": "This role is created by adding [Author] field. Author is a user that created record."
         }
     },
     "marketplace": {
@@ -528,7 +542,8 @@
         "kebab-db-name-error": "Must be kebab-case-only",
         "root-page-input": "Application root page",
         "root-page-input-hint": "Enter code name of Ax page you want to be saved with application. All subpages will be saved too.",
-        "include-data-input": "Save form data? Otherwise only application structure will be saved.",
+        "include-data-input": "Save form data?",
+        "include-data-hint": "Otherwise only application structure will be saved",
         "upload-app-btn": "Upload app package",
         "terminal-header": "Application terminal",
         "download-package-header": "Application package created",

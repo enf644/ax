@@ -9,7 +9,6 @@ async def before_display(db_session, field, form, current_user):
 
     Returns:
         Object: Returns updated value of current field"""
-    del current_user, db_session
 
     if not field.private_options_json or field.private_options_json == '{}':
         return None
@@ -17,7 +16,11 @@ async def before_display(db_session, field, form, current_user):
     try:
         options = json.loads(field.private_options_json)
         code = options['code']
-        ax = await ax_exec.execute_field_code(code=code, form=form)
+        ax = await ax_exec.execute_field_code(
+            code=code,
+            form=form,
+            current_user=current_user,
+            db_session=db_session)
         field.value = ax.value
         return field.value
     except Exception as exc:

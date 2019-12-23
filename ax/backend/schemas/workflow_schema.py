@@ -10,6 +10,8 @@ import backend.model as ax_model
 from backend.schemas.types import State, Action, \
     State2Role, Action2Role, RoleFieldPermission, Role
 from backend.auth import ax_admin_only
+import backend.misc as ax_misc
+import backend.auth as ax_auth
 
 
 class CreateState(graphene.Mutation):
@@ -91,6 +93,7 @@ class UpdateState(graphene.Mutation):
             ).first()
             if args.get('name'):
                 ax_state.name = args.get('name')
+                await ax_auth.write_dynamic_roles_cache(db_session)
             if args.get('x'):
                 ax_state.x = args.get('x')
             if args.get('y'):
@@ -213,11 +216,19 @@ class DeleteAction(graphene.Mutation):
             return DeleteAction(deleted=guid, ok=True)
 
 
+def get_default_dynamic_role_code():
+    """ Returns default code for dynamic role. """
+    code = f"""ax.result = False
+if(ax.row.some_field == ax.user_email):
+    ax.result = True"""
+    return code
+
 class CreateRole(graphene.Mutation):
     """Creates AxRole"""
     class Arguments:  # pylint: disable=missing-docstring
         form_guid = graphene.String()
         name = graphene.String()
+        is_dynamic = graphene.Boolean()
 
     ok = graphene.Boolean()
     role = graphene.Field(Role)
@@ -229,6 +240,10 @@ class CreateRole(graphene.Mutation):
             ax_role = AxRole()
             ax_role.name = args.get('name')
             ax_role.form_guid = args.get('form_guid')
+            ax_role.is_dynamic = args.get('is_dynamic')
+            if ax_role.is_dynamic:
+                ax_role.icon = 'fas fa-user-cog'
+                ax_role.code = get_default_dynamic_role_code()
             db_session.add(ax_role)
             return CreateRole(role=ax_role, ok=True)
 
@@ -239,6 +254,7 @@ class UpdateRole(graphene.Mutation):
         guid = graphene.String()
         name = graphene.String(required=False, default_value=None)
         icon = graphene.String(required=False, default_value=None)
+        code = graphene.String(required=False, default_value=None)
 
     ok = graphene.Boolean()
     role = graphene.Field(Role)
@@ -254,6 +270,9 @@ class UpdateRole(graphene.Mutation):
                 ax_role.name = args.get('name')
             if args.get('icon'):
                 ax_role.icon = args.get('icon')
+            if args.get('code'):
+                ax_role.code = args.get('code')
+
             return UpdateRole(role=ax_role, ok=True)
 
 
@@ -551,6 +570,28 @@ class SetStatePermission(graphene.Mutation):
             ).all()
 
             return SetStatePermission(permissions=return_permissions, ok=True)
+
+
+class WorkflowQuery(graphene.ObjectType):
+    """Workflow query"""
+    ax_role = graphene.Field(
+        Role,
+        guid=graphene.Argument(type=graphene.String, required=True),
+        update_time=graphene.Argument(type=graphene.String, required=False)
+    )
+
+    @ax_admin_only
+    async def resolve_ax_role(self, info, guid, update_time=None):
+        """Get AxRole with code"""
+        del update_time
+        err = 'Error in GQL query - resolve_ax_role.'
+        with ax_model.try_catch(info.context['session'], err, no_commit=True):
+            query = Role.get_query(info)  # SQLAlchemy query
+            role_guid = ax_misc.guid_or_none(guid)
+            ret_role = query.filter(
+                AxRole.guid == role_guid
+            ).first()
+            return ret_role
 
 
 class WorkflowMutations(graphene.ObjectType):

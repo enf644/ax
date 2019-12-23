@@ -31,6 +31,7 @@
             item-text='shortName'
             item-value='guid'
             no-filter
+            v-if='isDynamic != true'
             v-model='currentUserValue'
           >
             <template v-slot:selection='{ item, selected }'>
@@ -58,7 +59,23 @@
       </v-row>
     </v-container>
 
-    <div class='ag-theme-material grid-class' ref='grid'></div>
+    <div class='ag-theme-material grid-class' ref='grid' v-if='isDynamic != true'></div>
+
+    <div id='monacoDock' v-if='isDynamic'>
+      <div id='monacoWrapper'>
+        <monaco-editor
+          :options='monacoOptions'
+          @editorDidMount='initMonaco'
+          class='monaco-editor'
+          cy-data='code-editor'
+          language='python'
+          ref='editor'
+          theme='vs-dark'
+          v-model='code'
+        ></monaco-editor>
+      </div>
+      <br />
+    </div>
 
     <div class='actions'>
       <v-btn @click='updateRole' data-cy='update-role-btn' small>
@@ -80,26 +97,36 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import gql from 'graphql-tag';
 import apolloClient from '@/apollo';
+import MonacoEditor from 'vue-monaco';
+import * as monaco from 'monaco-editor';
 
 export default {
   name: 'TheRoleModal',
   props: {
     guid: null
   },
+  components: { MonacoEditor },
   data() {
     return {
       name: '',
       valid: false,
       nameRules: [
         v => !!v || this.$t('workflow.role.role-name-required'),
-        v => v.length <= 255 || this.$t('common.lenght-error', { num: 255 })
+        v => v.length <= 255 || this.$t('common.lenght-error', { num: 255 }),
+        v =>
+          this.checkRoleNameExists(v) == false ||
+          this.$t('workflow.role.role-name-exists-toast', { name: this.name })
       ],
       gridObj: null,
       rowData: [],
       gridInitialized: false,
       currentUserValue: null,
       foundUsers: [],
-      search: null
+      search: null,
+      isDynamic: null,
+      code: '',
+      monacoOptions: null,
+      fullScreenMode: false
     };
   },
   computed: {
@@ -109,6 +136,9 @@ export default {
     },
     roleGuid() {
       return this.guid;
+    },
+    allRoleNames() {
+      return this.$store.getters['workflow/rolesWithColor'];
     }
   },
   watch: {
@@ -124,10 +154,12 @@ export default {
   },
   created() {},
   mounted() {
-    this.$refs.nameField.focus();
-    this.name = this.$store.state.workflow.roles.find(
+    const role = this.$store.state.workflow.roles.find(
       role => role.guid === this.guid
-    ).name;
+    );
+    this.name = role.name;
+    this.isDynamic = role.isDynamic;
+    this.$refs.nameField.focus();
     this.loadData();
   },
   methods: {
@@ -136,7 +168,8 @@ export default {
         const data = {
           guid: this.guid,
           name: this.name,
-          icon: null
+          icon: null,
+          code: this.code
         };
         this.$store.dispatch('workflow/updateRole', data).then(() => {
           const msg = this.$t('workflow.role.update-role-toast');
@@ -181,6 +214,13 @@ export default {
             email
             shortName
           }
+          axRole(guid: $roleGuid, updateTime: $updateTime) {
+            guid
+            name
+            isDynamic
+            icon
+            code
+          }
         }
       `;
 
@@ -194,15 +234,22 @@ export default {
         })
         .then(data => {
           this.rowData = data.data.roleUsers;
+          const retRole = data.data.axRole;
 
-          if (!this.gridInitialized) this.initAgGrid(this.rowData);
-          else {
-            if (this.rowData == null) {
-              this.gridObj.gridOptions.api.showNoRowsOverlay();
+          if (retRole.isDynamic) {
+            // For dynamic roles - show code input
+            this.code = retRole.code;
+          } else {
+            // For normal roles - show user input
+            if (!this.gridInitialized) this.initAgGrid(this.rowData);
+            else {
+              if (this.rowData == null) {
+                this.gridObj.gridOptions.api.showNoRowsOverlay();
+              }
+              const filterModel = this.gridObj.gridOptions.api.getFilterModel();
+              this.gridObj.gridOptions.api.setRowData(this.rowData);
+              this.gridObj.gridOptions.api.setFilterModel(filterModel);
             }
-            const filterModel = this.gridObj.gridOptions.api.getFilterModel();
-            this.gridObj.gridOptions.api.setRowData(this.rowData);
-            this.gridObj.gridOptions.api.setFilterModel(filterModel);
           }
         })
         .catch(error => {
@@ -363,6 +410,18 @@ export default {
           this.$dialog.message.error(`${error}`);
         });
     },
+    checkRoleNameExists(name) {
+      let ret_val = false;
+      this.allRoleNames.forEach(role => {
+        if (role.name == name && role.guid != this.guid) ret_val = true;
+      });
+      return ret_val;
+    },
+    initMonaco(editor) {
+      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
+        this.updateRole();
+      });
+    },
     clearValue(user) {
       this.search = null;
       this.foundUsers = [];
@@ -402,5 +461,17 @@ export default {
 }
 .right-input {
   margin-top: -10px;
+}
+.field-tag-desc {
+  padding: 30px 0px;
+}
+.field-tag-desc span {
+  margin-left: 10px;
+}
+.monaco-editor {
+  width: 100%;
+  height: 200px;
+  margin-bottom: 20px;
+  padding-top: 20px;
 }
 </style>

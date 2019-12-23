@@ -18,7 +18,7 @@ from backend.schemas.users_schema import UsersQuery
 from backend.schemas.users_schema import UsersMutations, UsersSubscription
 from backend.schemas.home_schema import HomeQuery, HomeMutations
 from backend.schemas.form_schema import FormQuery, FormMutations
-from backend.schemas.workflow_schema import WorkflowMutations
+from backend.schemas.workflow_schema import WorkflowMutations, WorkflowQuery
 from backend.schemas.action_schema import ActionQuery, ActionMutations, \
     ActionSubscription
 from backend.schemas.grids_schema import GridsQuery, GridsMutations
@@ -79,7 +79,7 @@ gql_types = [
 type_classes = {}
 
 
-class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery,
+class Query(HomeQuery, FormQuery, UsersQuery, GridsQuery, WorkflowQuery,
             ActionQuery, PagesQuery, MarketplaceQuery, FieldsQuery,
             graphene.ObjectType):
     """Combines all schemas queryes"""

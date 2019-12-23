@@ -1,10 +1,11 @@
-
-import os
+""" Executes python code. Used in some field types, in dynamic roles """
+# import os
 import sys
-from loguru import logger
+# from loguru import logger
 from dotmap import DotMap
 
 import backend.dialects as ax_dialects
+import backend.misc as ax_misc
 
 this = sys.modules[__name__]
 
@@ -24,13 +25,17 @@ async def aexec(code, localz, **kwargs):
     return result
 
 
-async def execute_field_code(code, form, arguments=None):
+async def execute_field_code(code, form, arguments=None, current_user=None):
     """ Used to execute AxField backend code. see /backend/fields for info """
     localz = dict()
+    host = await ax_misc.get_ax_host()
     ax = DotMap()  # javascript style dicts item['guid'] == item.guid
     ax.row.guid = form.row_guid
     ax.form = form
+    ax.host = host
     ax.sql = ax_dialects.dialect.custom_query
+    ax.user_email = current_user.get("email", None)
+    ax.user_guid = current_user.get("user_id", None)
     for field in form.db_fields:
         ax.row[field.db_name] = field.value
     if arguments:

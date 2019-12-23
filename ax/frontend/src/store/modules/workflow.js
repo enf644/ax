@@ -29,7 +29,8 @@ const CREATE_STATE = gql`
           edges {
             node {
               guid,
-              name
+              name,
+              isDynamic
             }
           }
         },
@@ -46,7 +47,8 @@ const CREATE_STATE = gql`
           edges {
             node {
               guid,
-              name
+              name,
+              isDynamic
             }
           }
         },
@@ -187,12 +189,13 @@ const GET_ACTION_DATA = gql`
 `;
 
 const CREATE_ROLE = gql`
-  mutation ($formGuid: String!, $name: String!) {
-    createRole(formGuid: $formGuid, name: $name) {
+  mutation ($formGuid: String!, $name: String!, $isDynamic: Boolean) {
+    createRole(formGuid: $formGuid, name: $name, isDynamic: $isDynamic) {
       role {
         guid,
         name,
-        icon
+        icon,
+        isDynamic
       },
       ok    
     }
@@ -201,12 +204,13 @@ const CREATE_ROLE = gql`
 
 
 const UPDATE_ROLE = gql`
-  mutation ($guid: String!, $name: String, $icon: String) {
-    updateRole(guid: $guid, name: $name, icon: $icon) {
+  mutation ($guid: String!, $name: String, $icon: String, $code: String) {
+    updateRole(guid: $guid, name: $name, icon: $icon, code: $code) {
       role {
         guid,
         name,
-        icon
+        icon,
+        isDynamic
       },
       ok    
     }
@@ -348,6 +352,9 @@ const mutations = {
   },
   deleteAction(state, guid) {
     state.actions = [...state.actions.filter(element => element.guid !== guid)];
+  },
+  setRoles(state, roles) {
+    state.roles = [...roles]
   },
   addRole(state, role) {
     state.roles.push(role);
@@ -641,7 +648,8 @@ const actions = {
       mutation: CREATE_ROLE,
       variables: {
         formGuid: context.state.formGuid,
-        name: payload.name
+        name: payload.name,
+        isDynamic: payload.isDynamic
       }
     })
       .then(data => {
@@ -661,7 +669,8 @@ const actions = {
       variables: {
         guid: payload.guid,
         name: payload.name,
-        icon: payload.icon
+        icon: payload.icon,
+        code: payload.code
       }
     })
       .then(data => {

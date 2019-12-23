@@ -6,44 +6,50 @@
         <i class='fas fa-times close-ico'></i>
       </v-btn>
       <br />
-      <v-layout align-left row wrap>
-        <v-flex xs5>
-          <v-switch
-            :label='locale("form.is-required")'
-            cy-data='is-required-input'
-            v-if='showRequired'
-            v-model='isRequired'
-            v-show='isNotVirtual'
-          ></v-switch>
-        </v-flex>
-        <v-flex offset-xs2 xs5>
-          <v-switch
-            :disabled='isWholeRowIsDisabled'
-            :label='locale("form.is-whole-row")'
-            cy-data='whole-row'
-            v-if='showWholeRow'
-            v-model='isWholeRow'
-          ></v-switch>
-        </v-flex>
-        <v-flex xs12>
-          <v-text-field
-            :label='locale("form.required-text-label")'
-            cy-data='required'
-            v-if='showRequiredText'
-            v-model='reuiredText'
-            v-show='isNotVirtual'
-          ></v-text-field>
-        </v-flex>
-        <v-flex xs12>
-          <v-text-field
-            :label='locale("form.hint-setting-label")'
-            cy-data='hint'
-            v-if='showHint'
-            v-model='hint'
-            v-show='isNotVirtual'
-          ></v-text-field>
-        </v-flex>
-      </v-layout>
+
+      <v-container>
+        <v-row>
+          <v-col class='mr-3'>
+            <v-switch
+              :label='locale("form.is-required")'
+              cy-data='is-required-input'
+              v-if='showRequired'
+              v-model='isRequired'
+              v-show='isNotVirtual'
+            ></v-switch>
+          </v-col>
+          <v-col class='ml-3'>
+            <v-switch
+              :disabled='isWholeRowIsDisabled'
+              :label='locale("form.is-whole-row")'
+              cy-data='whole-row'
+              v-if='showWholeRow'
+              v-model='isWholeRow'
+            ></v-switch>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col class='mr-3'>
+            <v-text-field
+              :label='locale("form.required-text-label")'
+              cy-data='required'
+              v-if='showRequiredText'
+              v-model='reuiredText'
+              v-show='isNotVirtual'
+            ></v-text-field>
+          </v-col>
+          <v-col class='ml-3'>
+            <v-text-field
+              :label='locale("form.hint-setting-label")'
+              cy-data='hint'
+              v-if='showHint'
+              v-model='hint'
+              v-show='isNotVirtual'
+            ></v-text-field>
+          </v-col>
+        </v-row>
+      </v-container>
+
       <slot></slot>
       <v-btn
         :ripple='false'

@@ -80,7 +80,8 @@ const GET_FORM_DATA = gql`
           node {
             guid,  
             name,
-            icon
+            icon,
+            isDynamic
           }
         }
       },          
@@ -93,7 +94,8 @@ const GET_FORM_DATA = gql`
               edges {
                 node {
                   guid,
-                  name
+                  name,
+                  isDynamic
                 }
               }
             },
@@ -115,7 +117,8 @@ const GET_FORM_DATA = gql`
               edges {
                 node {
                   guid,
-                  name
+                  name,
+                  isDynamic
                 }
               }
             },
@@ -184,14 +187,11 @@ const CREATE_FIELD = gql`
       field {
         ...FieldFragment
       },
-      permissions {
+      roles {
         guid,
-        formGuid,
-        roleGuid,
-        stateGuid,
-        fieldGuid,
-        read,
-        edit        
+        name,
+        icon,
+        isDynamic
       },
       ok    
     }
@@ -216,6 +216,12 @@ const DELETE_FIELD = gql`
   mutation ($guid: String!) {
     deleteField(guid: $guid) {
       deleted,
+      roles {
+        guid,
+        name,
+        icon,
+        isDynamic
+      },      
       ok    
     }
   }
@@ -381,6 +387,9 @@ const getters = {
           type: 'group',
           data: {
             position: fieldType.position
+          },
+          a_attr: {
+            class: 'jstree-field-group'
           }
         };
         typesTreeData.push(node);
@@ -572,12 +581,13 @@ const actions = {
       }
     })
       .then(data => {
+        console.log(data.data)
         const newField = data.data.createField.field;
         context.commit('addField', newField);
         context.commit('setCreatedFieldGuid', newField.guid);
 
-        const newPermissions = data.data.createField.permissions;
-        context.commit('workflow/setFieldPermissions', newPermissions, { root: true });
+        const roles = data.data.createField.roles;
+        context.commit('workflow/setRoles', roles, { root: true });
       })
       .catch(error => {
         const msg = `Error in createField apollo client => ${error}`
@@ -624,6 +634,9 @@ const actions = {
         const deletedGuid = data.data.deleteField.deleted;
         context.commit('deleteField', deletedGuid);
         context.commit('grids/deleteField', deletedGuid, { root: true });
+
+        const roles = data.data.deleteField.roles;
+        context.commit('workflow/setRoles', roles, { root: true });
       })
       .catch(error => {
         const msg = `Error in deleteField apollo client => ${error}`

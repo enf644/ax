@@ -397,6 +397,7 @@ class UsersQuery(graphene.ObjectType):
         User,
         search_string=graphene.Argument(type=graphene.String, required=False),
         guids=graphene.Argument(type=graphene.String, required=False),
+        emails=graphene.Argument(type=graphene.String, required=False),
         update_time=graphene.Argument(type=graphene.String, required=False)
     )
     only_users = graphene.List(
@@ -541,7 +542,12 @@ class UsersQuery(graphene.ObjectType):
             return ret_list
 
     async def resolve_users_and_groups(
-            self, info, search_string=None, update_time=None, guids=None):
+            self,
+            info,
+            search_string=None,
+            update_time=None,
+            guids=None,
+            emails=None):
         """Get all users and groups in one search"""
         del update_time
         err = 'Error in GQL query - users_and_groups.'
@@ -608,6 +614,19 @@ class UsersQuery(graphene.ObjectType):
                 ).filter(
                     AxUser.is_blocked.is_(False)
                 ).all()
+            elif search_string and emails:
+                real_guids = []
+                email_list = ast.literal_eval(emails)
+
+                users_list = query.filter(
+                    or_(
+                        AxUser.short_name.ilike(f"%{search_string}%"),
+                        AxUser.email.in_(email_list))
+                ).filter(
+                    AxUser.is_group.is_(False)
+                ).filter(
+                    AxUser.is_blocked.is_(False)
+                ).all()                
             elif not search_string and guids:
                 real_guids = []
                 guids_dict = json.loads(guids)

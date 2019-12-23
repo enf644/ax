@@ -127,7 +127,6 @@ export default {
     tryApplyNameChange() {
       setTimeout(() => {
         if (!this.dbNameIsActive) {
-          console.log('save name');
           this.applyNameChange();
         }
       }, 50);

@@ -6,11 +6,14 @@
       v-if='options.inline_grid'
     >
       <AxGrid
+        :enable_add_relation='options.enableAddRelation'
         :filtered='currentValue'
         :form='options.form'
         :grid='options.inline_grid'
         :guids='currentValue'
+        :hint='options.hint'
         :title='name'
+        :tom_add_btn_label='options.addRelationLabel'
         :tom_disabled='isReadonly'
         :update_time='updateTime'
         @added='addGuidToValue'
@@ -19,8 +22,6 @@
         cy-data='tomTableGrid'
         tom_inline_mode
       ></AxGrid>
-
-      <span class='hint' v-show='this.options.hint'>{{this.options.hint}} &nbsp;</span>
 
       <transition enter-active-class='animated shake' leave-active-class='animated fadeOut'>
         <span class='required-error' v-show='errorString'>{{errorString}}</span>

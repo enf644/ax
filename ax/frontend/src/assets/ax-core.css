@@ -188,6 +188,9 @@ a {
     padding-left: 0px !important;
 }
 
+.jstree-field-group {
+    color: #777 !important;
+}
 
 /************ Jstree styles } ***************/
 
@@ -346,6 +349,16 @@ a {
 /* .d3_highlighted_state {} */
 
 /******************* D3 styles }************************/
+
+
+
+
+/* Ag-grid overrides */
+.ag-root-wrapper-body .ag-layout-print {
+    min-height: 170px;
+}
+
+
 
 
 /* mavon-editor used in AxMarkdown */

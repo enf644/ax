@@ -1,98 +1,113 @@
 <template>
   <AxFieldSettings :guid='guid' :options='changedOptions' @closed='$emit("closed")'>
-    <br />
-    <v-autocomplete
-      :items='axForms'
-      :label='locale("types.Ax1to1Children.settings-form-select")'
-      :rules='formRules'
-      @change='setDefaultGrid()'
-      chips
-      dense
-      hide-selected
-      item-text='name'
-      item-value='dbName'
-      v-model='changedOptions.form'
-    >
-      <template v-slot:selection='{ item, selected }'>
-        <v-chip @click:close='clearForm()' close>
-          <v-avatar class='grey' left>
-            <i :class='`ax-chip-icon fas fa-${item.icon}`'></i>
-          </v-avatar>
-          {{item.name}}
-        </v-chip>
-      </template>
-    </v-autocomplete>
-    <br />
-    <v-autocomplete
-      :hint='locale("types.Ax1tomTable.settings-inline-grid-hint")'
-      :items='axGrids'
-      :label='locale("types.Ax1tomTable.settings-inline-grid-select")'
-      :rules='gridRules'
-      chips
-      hide-selected
-      item-text='name'
-      item-value='dbName'
-      persistent-hint
-      v-model='changedOptions.inline_grid'
-    >
-      <template v-slot:selection='{ item, selected }'>
-        <v-chip @click:close='clearInlineGrid()' close>
-          <v-avatar class='grey' left>
-            <i :class='`ax-chip-icon fas fa-columns`'></i>
-          </v-avatar>
-          {{item.name}}
-        </v-chip>
-      </template>
-    </v-autocomplete>
-    <br />
-    <v-autocomplete
-      :hint='locale("types.Ax1to1Children.settings-field-hint")'
-      :items='axFields'
-      :label='locale("types.Ax1to1Children.settings-field-select")'
-      :rules='fieldRules'
-      chips
-      hide-selected
-      item-text='name'
-      item-value='guid'
-      persistent-hint
-      v-model='changedOptions.field'
-    >
-      <template v-slot:selection='{ item, selected }'>
-        <v-chip @click:close='clearGrid()' close>
-          <v-avatar class='grey' left>
-            <i :class='`ax-chip-icon fas fa-columns`'></i>
-          </v-avatar>
-          {{item.name}}
-        </v-chip>
-      </template>
-    </v-autocomplete>
-    <br />
-    <v-autocomplete
-      :hint='locale("types.Ax1to1.settings-grid-hint")'
-      :items='axGrids'
-      :label='locale("types.Ax1to1.settings-grid-select")'
-      :rules='gridRules'
-      chips
-      hide-selected
-      item-text='name'
-      item-value='dbName'
-      persistent-hint
-      v-model='changedOptions.grid'
-    >
-      <template v-slot:selection='{ item, selected }'>
-        <v-chip @click:close='clearGrid()' close>
-          <v-avatar class='grey' left>
-            <i :class='`ax-chip-icon fas fa-columns`'></i>
-          </v-avatar>
-          {{item.name}}
-        </v-chip>
-      </template>
-    </v-autocomplete>
-    <br />
-    {{locale("types.Ax1tomTable.settings-inline-height")}}
-    <v-slider max='1000' min='300' thumb-label v-model='changedOptions.inline_height'></v-slider>
-    {{locale("types.Ax1to1.settings-height")}}
-    <v-slider max='2000' min='300' thumb-label v-model='changedOptions.height'></v-slider>
+    <v-container>
+      <v-row>
+        <v-col class='mr-3'>
+          <v-autocomplete
+            :items='axForms'
+            :label='locale("types.Ax1to1Children.settings-form-select")'
+            :rules='formRules'
+            @change='setDefaultGrid()'
+            chips
+            dense
+            hide-selected
+            item-text='name'
+            item-value='dbName'
+            v-model='changedOptions.form'
+          >
+            <template v-slot:selection='{ item, selected }'>
+              <v-chip @click:close='clearForm()' close>
+                <v-avatar class='grey' left>
+                  <i :class='`ax-chip-icon fas fa-${item.icon}`'></i>
+                </v-avatar>
+                {{item.name}}
+              </v-chip>
+            </template>
+          </v-autocomplete>
+        </v-col>
+        <v-col class='ml-3'>
+          <v-autocomplete
+            :hint='locale("types.Ax1tomTable.settings-inline-grid-hint")'
+            :items='axGrids'
+            :label='locale("types.Ax1tomTable.settings-inline-grid-select")'
+            :rules='gridRules'
+            chips
+            hide-selected
+            item-text='name'
+            item-value='dbName'
+            persistent-hint
+            v-model='changedOptions.inline_grid'
+          >
+            <template v-slot:selection='{ item, selected }'>
+              <v-chip @click:close='clearInlineGrid()' close>
+                <v-avatar class='grey' left>
+                  <i :class='`ax-chip-icon fas fa-columns`'></i>
+                </v-avatar>
+                {{item.name}}
+              </v-chip>
+            </template>
+          </v-autocomplete>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col class='mr-3'>
+          <v-autocomplete
+            :hint='locale("types.Ax1to1Children.settings-field-hint")'
+            :items='axFields'
+            :label='locale("types.Ax1to1Children.settings-field-select")'
+            :rules='fieldRules'
+            chips
+            hide-selected
+            item-text='name'
+            item-value='guid'
+            persistent-hint
+            v-model='changedOptions.field'
+          >
+            <template v-slot:selection='{ item, selected }'>
+              <v-chip @click:close='clearGrid()' close>
+                <v-avatar class='grey' left>
+                  <i :class='`ax-chip-icon fas fa-columns`'></i>
+                </v-avatar>
+                {{item.name}}
+              </v-chip>
+            </template>
+          </v-autocomplete>
+        </v-col>
+        <v-col class='ml-3'>
+          <v-autocomplete
+            :hint='locale("types.Ax1to1.settings-grid-hint")'
+            :items='axGrids'
+            :label='locale("types.Ax1to1.settings-grid-select")'
+            :rules='gridRules'
+            chips
+            hide-selected
+            item-text='name'
+            item-value='dbName'
+            persistent-hint
+            v-model='changedOptions.grid'
+          >
+            <template v-slot:selection='{ item, selected }'>
+              <v-chip @click:close='clearGrid()' close>
+                <v-avatar class='grey' left>
+                  <i :class='`ax-chip-icon fas fa-columns`'></i>
+                </v-avatar>
+                {{item.name}}
+              </v-chip>
+            </template>
+          </v-autocomplete>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col class='mr-3'>
+          {{locale("types.Ax1tomTable.settings-inline-height")}}
+          <v-slider max='1000' min='300' thumb-label v-model='changedOptions.inline_height'></v-slider>
+        </v-col>
+        <v-col class='ml-3'>
+          {{locale("types.Ax1to1.settings-height")}}
+          <v-slider max='2000' min='300' thumb-label v-model='changedOptions.height'></v-slider>
+        </v-col>
+      </v-row>
+    </v-container>
   </AxFieldSettings>
 </template>
 

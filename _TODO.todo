@@ -807,13 +807,31 @@ AX 0.2:
                 ✔ Field with grid @done(19-12-18 11:08)
                 ✔ Settings - form, grid, field (must be 1to1 to current form) @done(19-12-18 11:08)
                 ✔ Field, Form, Grid rename -> must change options @done(19-12-18 11:13)
+        ✔ Dynamic roles @done(19-12-23 10:13)
+            ✔ AxUsers - user email instead of guid @done(19-12-20 12:13)
+            ✔ AxSingleUser @done(19-12-20 12:13)
+            ✔ AxAuthor field type @done(19-12-20 14:05)
+            ✔ Author optional role @done(19-12-21 17:55)
+            ✔ Form permissions @done(19-12-22 14:19)
+                ✔ Write cache @done(19-12-22 14:19)
+                ✔ Check cache @done(19-12-22 14:19)
+            ✔ Role model @done(19-12-22 16:03)
+            ✔ Code input, code save gql @done(19-12-22 16:03)
+            ✔ Refresh dynamic role permissions - on role update @done(19-12-22 19:18)
+            ✔ Marketplace dump - add new role fields @done(19-12-23 10:13)
+            ✔ Marketplace install - add new role fields @done(19-12-23 10:13)
         ☐ Marketplace
             ☐ Record all kissflow apps on video
             ☐ Copy 5 kissflow apps
-            ☐ Publish 5 apps to gitgub
+            ☐ Publish 5 apps to github
             ☐ List apps
+            ☐ Automatic install
         ☐ Frogs
+            ☐ Create user - shortname must be required
             ☐ 1tomTable - cant select grid after just created. Need reload.
+            ☐ 1tomTable - hint must be inside box, near header
+            ☐ If signout happens on /form window, user is redirected to /admin/signin
+            ☐ Check action perm if action is runned from gql, not form
     ☐ LICENSE GENERATION
     ☐ TUTORIAL
         ☐ Each page and field have help modal with gifs
@@ -986,6 +1004,7 @@ FROGS TODOS:
     ✔ Long names for form tabs - limit is too small! @done(19-10-18 12:17)
     ✔ Del key when editing field names - tryes to delete whole field @done(19-10-18 17:39)
     ☐ IMPORTANT 
+        ☐ When grid is created - it is published right away. Must give permissions to grids?
         ☐ Redirect http to https -> https://community.sanicframework.org/t/redirect-http-to-https/419/4
         ☐ Role and user based server-filter
         ☐ Database is locked in sqlite `[IMPORTANT]`
@@ -997,6 +1016,7 @@ FROGS TODOS:
         ☐ 1toMReference - change to individual reference tables ???
         ☐ 1tomTable - Warn when try to close form without save
         ☐ Reference fields - when adding to1 field to grid we get error [Field "mar" of type "MarathonDefault" must have a sub selection] because of dynamic schema. AxGrid gql query must be changed, columns must be changed.
+        ☐ Workflow -> permissions -> fields and tabs do not use form position
     ☐ MODERATE
         ☐ Installing marketplace apps -> console says that None field is created. Must filter tabs.
         ☐ migration.py - take field  type info from py code, not from db
@@ -1012,6 +1032,8 @@ FROGS TODOS:
         ☐ Remove lodash
         ☐ You can drag groups in Manage users - it does nothing
         ☐ AxPaymentStripe - Inject script insted of <script> in index.html - https://github.com/matfish2/vue-stripe/blob/master/src/StripeCheckout.vue
+        ☐ Form constructor - create two tabs. Switch to second tab. Drag all fields to first tab -> you end up in empty tab without meens to switch to first tab.
+        ☐ Form constructor - make required field. Then make it show error. Then remove "required" from field. Error stays with no meens of clearing.
     ☐ SOMEDAY
         ☐ Discover minimum window size for ax admin. Output warning if window is less then minimum
         ☐ Webpack - additional minification
@@ -1056,7 +1078,9 @@ FEATURES:
         ☐ Allow one level of sub-tabs for AxForm - https://vuetifyjs.com/en/components/lists#expansion-lists
         ☐ Groups inside groups
     ☐ MODERATE
-        ☐ Imidiate actions
+        ☐ Workflow constructor -> copy permissions from other state
+        ☐ Grid column - javascript calculated
+        ☐ Imidiate actions - form is not opened, action is performed right-away
         ☐ User registration -> always throw email (Ax does not work without smtp??)
         ☐ Users can modify their info
         ☐ Web-component copy-paste options
@@ -1084,6 +1108,7 @@ FEATURES:
         ☐ Marketplace -> Application catalog
         ☐ Marketplace -> Install from git repository (pages use gitcdn)
     ☐ THINK THRU, BIG
+        ☐ Default values for AxForm
         ☐ Billing for Sass services that run ontop of AX
         ☐ Custom additional form in action execution. Create form and set it as action input.
         ☐ Offline work for Pages. AxGrid, AxForm data is cached in localstorage

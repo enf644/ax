@@ -1,5 +1,5 @@
 <template>
-  <div class='container'>
+  <div class='ax-grid-container'>
     <ax-grid
       :constructor_mode='true'
       :form='formDbName'
@@ -70,11 +70,11 @@ export default {
 </script>
 
 <style scoped>
-.container {
+.ax-grid-container {
   /* padding: 20px;*/
-  /* height: 100%; */
-  margin-top: 40px;
-  height: calc(100% - 60px);
+  height: 100%;
+  /* margin-top: 40px; */
+  /* height: calc(100% - 60px); */
   position: relative;
 }
 </style>

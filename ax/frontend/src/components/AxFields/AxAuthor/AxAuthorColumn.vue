@@ -15,7 +15,7 @@ import gql from 'graphql-tag';
 import apolloClient from '@/apollo.js';
 
 export default {
-  name: 'AxUsersColumn',
+  name: 'AxSingleUserColumn',
   props: {
     options_json: null
   },
@@ -24,20 +24,10 @@ export default {
     options: null,
     axUsers: []
   }),
-  computed: {
-    // guidsString() {
-    //   if (!this.value || this.value.length == 0) return null;
-    //   const userList = JSON.parse(this.value);
-    //   const retObj = {
-    //     items: userList
-    //   };
-    //   return JSON.stringify(retObj);
-    // }
-  },
+  computed: {},
   mounted() {
     const columnValue = this.$slots.default[0].elm.innerText;
-    if (columnValue && columnValue !== 'null')
-      this.value = JSON.parse(columnValue);
+    if (columnValue && columnValue !== 'null') this.value = [columnValue];
     this.$slots.default[0].elm.innerText = '';
 
     if (this.options_json) {

@@ -9,7 +9,7 @@
       &nbsp; {{$t("form.add-tab")}}
     </v-btn>
 
-    <modal adaptive height='auto' name='field-settings' scrollable width='600px'>
+    <modal adaptive height='auto' name='field-settings' scrollable width='1000px'>
       <v-card>
         <component
           :guid='settingsGuid'

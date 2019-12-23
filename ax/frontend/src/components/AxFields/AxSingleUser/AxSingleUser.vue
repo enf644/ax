@@ -49,7 +49,7 @@ import apolloClient from '@/apollo.js';
 import uuid4 from 'uuid4';
 
 export default {
-  name: 'AxUsers',
+  name: 'AxSingleUser',
   props: {
     name: null,
     dbName: null,
@@ -75,23 +75,27 @@ export default {
   },
   watch: {
     currentValue(newValue) {
-      if (newValue !== this.value) {
-        this.$emit('update:value', newValue);
+      if ((!newValue || newValue.length == 0) && this.value != null)
+        this.$emit('update:value', null);
+      else if (newValue && newValue.includes(this.value) == false) {
+        this.$emit('update:value', newValue[0]);
       }
     },
     search(newValue) {
       if (newValue && newValue !== this.select) this.doQuicksearch();
     },
     value(newValue) {
-      if (newValue != this.currentValue) {
-        this.currentValue = newValue;
-        if (this.currentValue) this.loadData();
+      if (newValue == null) this.currentValue = null;
+      else if (newValue && !this.currentValue.includes(newValue)) {
+        this.currentValue = [];
+        this.currentValue.push(newValue);
+        this.loadData();
       }
     }
   },
   created() {
     if (this.value) {
-      this.currentValue = this.value;
+      this.currentValue = [this.value];
       this.loadData();
     }
   },
@@ -125,6 +129,7 @@ export default {
     doQuicksearch() {
       const searchQuery = this.search;
       if (searchQuery.length < 2) return false;
+      this.currentValue = null;
       this.loadData();
       return true;
     },
@@ -156,20 +161,9 @@ export default {
         })
         .then(data => {
           this.axUsers = data.data.onlyUsers;
-          // We re-create values incase some of items were deleted or permission was denied.
-          const checkedValues = [];
-          this.axUsers.forEach(element => {
-            if (
-              this.currentValue &&
-              this.currentValue.includes(element.email)
-            ) {
-              checkedValues.push(element.email);
-            }
-          });
-          this.currentValue = [...checkedValues];
         })
         .catch(error => {
-          this.$log.error(`Error in AxUsers -> loadData gql => ${error}`);
+          this.$log.error(`Error in AxSingleUser -> loadData gql => ${error}`);
           this.$dialog.message.error(`${error}`);
         });
 

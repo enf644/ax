@@ -319,7 +319,7 @@ def create_field_types() -> None:
                 value_type="BOOL",
                 is_inline_editable=True,
                 is_columnn_avalible=True,
-                icon="fas fa-toggle-on"))
+                icon="far fa-check-square"))
             db_session.add(AxFieldType(
                 tag="AxSwitch",
                 parent="group-boolean",
@@ -466,16 +466,32 @@ def create_field_types() -> None:
                 tag='group-users',
                 is_group=True,
                 position=13,
-                icon="fas fa-user"))
+                icon="fas fa-users"))
             db_session.add(AxFieldType(
                 tag="AxUsers",
                 parent="group-users",
                 position=1,
                 default_db_name="users",
-                is_backend_available=True,
                 is_columnn_avalible=True,
                 value_type="JSON",
+                icon="fas fa-user-friends"))
+            db_session.add(AxFieldType(
+                tag="AxSingleUser",
+                parent="group-users",
+                position=2,
+                default_db_name="user",
+                is_columnn_avalible=True,
+                value_type="VARCHAR(255)",
                 icon="fas fa-user"))
+            db_session.add(AxFieldType(
+                tag="AxAuthor",
+                parent="group-users",
+                position=3,
+                default_db_name="author",
+                is_columnn_avalible=True,
+                is_backend_available=True,
+                value_type="VARCHAR(255)",
+                icon="fas fa-user-tag"))
 
             # Communication
             db_session.add(AxFieldType(
