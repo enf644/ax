@@ -15,7 +15,8 @@ const getDefaultState = () => {
     redirectFromUrl: null,
     currentUser: null,
     showErrorMsg: null,
-    showToastMsg: null
+    showToastMsg: null,
+    marketActiveRepo: null
   }
 }
 
@@ -313,6 +314,9 @@ const mutations = {
   },
   setShowToastMsg(state, msg) {
     state.showToastMsg = msg;
+  },
+  setMarketActiveRepo(state, repo) {
+    state.marketActiveRepo = repo;
   }
 };
 

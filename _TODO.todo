@@ -820,24 +820,34 @@ AX 0.2:
             ✔ Refresh dynamic role permissions - on role update @done(19-12-22 19:18)
             ✔ Marketplace dump - add new role fields @done(19-12-23 10:13)
             ✔ Marketplace install - add new role fields @done(19-12-23 10:13)
-        ☐ Marketplace
-            ☐ Record all kissflow apps on video
-            ☐ Copy 5 kissflow apps
-            ☐ Publish 5 apps to github
-            ☐ List apps
-            ☐ Automatic install
+        ✔ Marketplace @done(19-12-29 19:14)
+            ✔ Install from github by repo name @done(19-12-24 09:52)
+            ✔ Save rootpage as repo readme @done(19-12-24 13:54)
+            ✔ Record all kissflow apps @done(19-12-29 13:50)
+            ✔ Copy 5 kissflow apps and publush to github @done(19-12-29 17:21)
+            ✔ List apps @done(19-12-29 19:14)
         ☐ Frogs
+            ☐ Two grids emerge in grid constructor!!
             ☐ Create user - shortname must be required
             ☐ 1tomTable - cant select grid after just created. Need reload.
             ☐ 1tomTable - hint must be inside box, near header
             ☐ If signout happens on /form window, user is redirected to /admin/signin
             ☐ Check action perm if action is runned from gql, not form
+            ☐ Role sort must be alfabetical! Colors must stay the same.
+            ☐ Page designer - position is not working, page shuffle after update
+            ☐ AxSwitch - if required error, no red color
+            ☐ AxCheckboxes
+            ☐ AxDate - must save value even if readonly or hidden (if default now)
+            ☐ AxSwitch - default value
+            ☐ Grid constructor - if query modified - data is not reloaded
     ☐ LICENSE GENERATION
     ☐ TUTORIAL
         ☐ Each page and field have help modal with gifs
     ☐ METRICS
         ☐ Ax metrics
-    ☐ INSTALATION - ??
+    ☐ INSTALATION
+        ☐ Windows instruction, video
+        ☐ Linux instruction, video
     ☐ PERFORMANCE TEST
         ☐ Redis integration
         ☐ 4 workers, cache problem, schema reload
@@ -845,7 +855,6 @@ AX 0.2:
         ☐ Profile execution
             https://stackoverflow.com/a/49526932/784789
             https://github.com/mgedmin/profilehooks        
-        ☐ Two sample apps
         ☐ Security - https://lgtm.com/dashboard
     ☐ Publish to pypi, clean old versions
     =======================================================================:
@@ -858,6 +867,7 @@ AX 0.2:
         ☐ Landing metrics
     ☐ SEND TO FRIENDS
         ☐ Record installation, tutorial, reactions
+        ☐ Create install script for app engine, aws or yandex cloud
     ☐ START REACHING OUT
         ☐ Indie hackers post - intro and ask how to maximise user reach
         ☐ Friends - vs, facebook
@@ -984,8 +994,6 @@ Additional versions:
     
 =============================================================================================
 
-
-
 FROGS TODOS:
     ✔ Discover why ripple effects are not working in chrome @done(19-02-13 07:24)
     ✔ Minification not working with vue-custom-element. https://github.com/karol-f/vue-custom-element/issues/159 @done(19-03-01 19:34)
@@ -1004,6 +1012,8 @@ FROGS TODOS:
     ✔ Long names for form tabs - limit is too small! @done(19-10-18 12:17)
     ✔ Del key when editing field names - tryes to delete whole field @done(19-10-18 17:39)
     ☐ IMPORTANT 
+        ☐ Dialect - custom sql - forbid modification of ax tables!!
+        ☐ If marketplace app installed with error -> rollback and delete all created instances
         ☐ When grid is created - it is published right away. Must give permissions to grids?
         ☐ Redirect http to https -> https://community.sanicframework.org/t/redirect-http-to-https/419/4
         ☐ Role and user based server-filter
@@ -1017,6 +1027,9 @@ FROGS TODOS:
         ☐ 1tomTable - Warn when try to close form without save
         ☐ Reference fields - when adding to1 field to grid we get error [Field "mar" of type "MarathonDefault" must have a sub selection] because of dynamic schema. AxGrid gql query must be changed, columns must be changed.
         ☐ Workflow -> permissions -> fields and tabs do not use form position
+        ☐ When role is deleted - we must delete all its perms!
+        ☐ Workflow constructor -> if role is added to action -> if role is dynamic - rewrite cache
+        ☐ If form dragged - the data explorer loses grid data. On first load - if explorer os opened, the data is not loaded
     ☐ MODERATE
         ☐ Installing marketplace apps -> console says that None field is created. Must filter tabs.
         ☐ migration.py - take field  type info from py code, not from db

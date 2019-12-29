@@ -1,6 +1,21 @@
 <template>
   <div>
-    <v-btn id='btnId' small>
+    <h3>{{locale("marketplace.manual-header")}}</h3>
+    <v-form @submit.prevent='doRepoInstall' ref='form' v-model='valid'>
+      <v-text-field
+        :hint='locale("marketplace.repo-name-hint")'
+        :label='locale("marketplace.repo-name")'
+        :rules='[rules.repoName, rules.required]'
+        v-model='repoName'
+        validate-on-blur
+      />
+      <v-btn @click='doRepoInstall' class='market-btn' small>
+        <i class='fab fa-github'></i>
+        &nbsp;
+        {{locale("marketplace.github-app-btn")}}
+      </v-btn>
+    </v-form>
+    <v-btn class='market-btn' id='btnId' small>
       <i class='fas fa-puzzle-piece'></i>
       &nbsp;
       {{locale("marketplace.upload-app-btn")}}
@@ -40,12 +55,38 @@ import {
 export default {
   name: 'TheMarketplaceHomeDrawer',
   components: { AxTerminal },
-  data: () => ({
-    currentValue: null,
-    errors: [],
-    uppy: null,
-    modalGuid: null
-  }),
+  data() {
+    return {
+      currentValue: null,
+      errors: [],
+      uppy: null,
+      modalGuid: null,
+      repoName: null,
+      valid: false,
+      rules: {
+        required: value => !!value || this.$t('common.field-required'),
+        repoName: value => {
+          const pattern = /^([\w-]*)?\/([\w-]*)$/;
+          return (
+            pattern.test(value) || this.$t('marketplace.incorect-repo-name')
+          );
+        }
+      }
+    };
+  },
+  computed: {
+    activeRepo() {
+      return this.$store.state.home.marketActiveRepo;
+    }
+  },
+  watch: {
+    activeRepo(newValue) {
+      if (newValue) {
+        this.repoName = newValue;
+        this.$store.commit('home/setMarketActiveRepo', null);
+      }
+    }
+  },
   created() {
     this.modalGuid = uuid4();
   },
@@ -100,8 +141,6 @@ export default {
       });
     },
     installFromPackage(fileGuid) {
-      console.log(`guid = ${fileGuid}`);
-
       const FROM_PACKAGE = gql`
         mutation($fileGuid: String!, $modalGuid: String!) {
           installFromPackage(fileGuid: $fileGuid, modalGuid: $modalGuid) {
@@ -137,11 +176,52 @@ export default {
           );
         });
     },
+    installFromRepo() {
+      this.openTerminalModal();
+
+      const FROM_REPO = gql`
+        mutation($repoName: String!, $modalGuid: String!) {
+          installFromRepo(repoName: $repoName, modalGuid: $modalGuid) {
+            msg
+            ok
+          }
+        }
+      `;
+
+      apolloClient
+        .mutate({
+          mutation: FROM_REPO,
+          variables: {
+            repoName: this.repoName,
+            modalGuid: this.modalGuid
+          }
+        })
+        .then(data => {
+          const msg = data.data.installFromRpo.msg;
+          console.log(msg);
+          this.$store.commit(
+            'home/setShowToastMsg',
+            this.$t('marketplace.app-installed-toast')
+          );
+
+          this.$store.dispatch('home/getAllForms', {
+            updateTime: Date.now()
+          });
+        })
+        .catch(error => {
+          this.$log.error(`Error in installFromRepo apollo client => ${error}`);
+        });
+    },
     openTerminalModal() {
       this.$modal.show(`terminal-${this.modalGuid}`);
     },
     closeTerminalModal() {
       this.$modal.hide(`terminal-${this.modalGuid}`);
+    },
+    doRepoInstall() {
+      if (this.$refs.form.validate()) {
+        this.installFromRepo();
+      }
     }
   }
 };
@@ -163,5 +243,8 @@ export default {
   vertical-align: middle;
   padding-left: 25px;
   margin-top: 25px;
+}
+.market-btn {
+  margin-top: 15px;
 }
 </style>

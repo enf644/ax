@@ -25,7 +25,7 @@
 
       <template v-slot:append>
         <v-btn disabled icon>
-          <i class='fas fa-users'></i>
+          <i class='fas fa-user-tag'></i>
         </v-btn>
       </template>
     </v-autocomplete>
@@ -66,7 +66,10 @@ export default {
   watch: {
     value(newValue) {
       if (newValue == null) this.currentValue = null;
-      else if (newValue && !this.currentValue.includes(newValue)) {
+      else if (
+        newValue &&
+        (!this.currentValue || !this.currentValue.includes(newValue))
+      ) {
         this.currentValue = [];
         this.currentValue.push(newValue);
         this.loadData();

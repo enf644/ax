@@ -19,8 +19,7 @@ async def before_display(db_session, field, form, current_user):
         ax = await ax_exec.execute_field_code(
             code=code,
             form=form,
-            current_user=current_user,
-            db_session=db_session)
+            current_user=current_user)
         field.value = ax.value
         return field.value
     except Exception as exc:

@@ -166,6 +166,7 @@ def create_field_types() -> None:
                 position=2,
                 is_readonly=True,
                 is_backend_available=True,
+                is_updated_always=True,
                 icon="fas fa-sort-numeric-up"))
 
             # Process controll
@@ -256,8 +257,6 @@ def create_field_types() -> None:
                 default_db_name="text",
                 position=1,
                 value_type="TEXT",
-                is_inline_editable=True,
-                is_columnn_avalible=True,
                 icon="fas fa-align-left"))
             db_session.add(AxFieldType(
                 tag="AxMarkdown",
@@ -265,7 +264,6 @@ def create_field_types() -> None:
                 default_db_name="markdown",
                 position=2,
                 value_type="TEXT",
-                is_columnn_avalible=True,
                 is_always_whole_row=True,
                 icon="fas fa-align-left"))
 
@@ -491,6 +489,7 @@ def create_field_types() -> None:
                 is_columnn_avalible=True,
                 is_backend_available=True,
                 value_type="VARCHAR(255)",
+                is_updated_always=True,
                 icon="fas fa-user-tag"))
 
             # Communication
@@ -506,6 +505,7 @@ def create_field_types() -> None:
                 default_db_name="comments",
                 value_type="GUID",
                 is_backend_available=True,
+                is_updated_always=True,
                 icon="fas fa-comments"))
             db_session.add(AxFieldType(
                 tag="AxApproval",

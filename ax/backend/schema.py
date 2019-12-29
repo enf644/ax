@@ -108,12 +108,17 @@ class Subscription(UsersSubscription, ActionSubscription, FieldsSubscription,
     """Combines all schemas subscription"""
 
 
-def exec_grid_code(form, grid, arguments=None):
+def exec_grid_code(form, grid, arguments=None, current_user=None):
     """ Execute python code to get SQL query for specific grid """
     localz = dict()
     ax = DotMap()  # javascript style dicts item['guid'] == item.guid
     ax.row.guid = form.row_guid
     ax.arguments = arguments
+    ax.user_email = None
+    ax.user_guid = None
+    if current_user:
+        ax.user_email = current_user.get("email", None)
+        ax.user_guid = current_user.get("user_id", None)
     ax.form = form
     ax.grid = grid
     ax.sql = ax_dialects.dialect.custom_query
@@ -154,6 +159,7 @@ def make_query_resolver(db_name, type_class):
         del update_time, self
         err = f"Schema -> Resolver for {db_name}"
         with ax_model.try_catch(info.context['session'], err) as db_session:
+            current_user = info.context['user']
             # Find AxForm with name that db_name is started with
             ax_form = None
             found_forms = db_session.query(AxForm).filter(
@@ -205,7 +211,8 @@ def make_query_resolver(db_name, type_class):
                     sql = exec_grid_code(
                         form=ax_form,
                         grid=grid_to_use,
-                        arguments=arguments_dict)
+                        arguments=arguments_dict,
+                        current_user=current_user)
                 else:
                     sql = ax_dialects.default_grid_query
 
@@ -277,7 +284,8 @@ def make_to1_resolver(ax_field_guid, to1_field_db_name, related_form_db_name,
                     for key, value in results[0].items():
                         kwargs[key] = value
 
-                return type_classes[class_name](**kwargs)
+                if class_name in type_classes:
+                    return type_classes[class_name](**kwargs)
             return None
 
     resolver.__name__ = f'resolve_{to1_field_db_name}'
@@ -318,8 +326,9 @@ def make_tom_resolver(ax_field_guid, to1_field_db_name, related_form_db_name,
                         kwargs = {}
                         for key, value in row.items():
                             kwargs[key] = value
-                        row_class = type_classes[class_name](**kwargs)
-                        ret_result.append(row_class)
+                        if class_name in type_classes:
+                            row_class = type_classes[class_name](**kwargs)
+                            ret_result.append(row_class)
 
             return ret_result
 

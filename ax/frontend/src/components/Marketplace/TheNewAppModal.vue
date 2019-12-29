@@ -35,6 +35,11 @@
         ></v-text-field>
       </v-form>
       <v-switch
+        :label='locale("marketplace.create-readme-input")'
+        persistent-hint
+        v-model='createReadme'
+      ></v-switch>
+      <v-switch
         :hint='locale("marketplace.include-data-hint")'
         :label='locale("marketplace.include-data-input")'
         persistent-hint
@@ -100,7 +105,8 @@ export default {
       },
       numericObject: null,
       appUrl: null,
-      showLoading: false
+      showLoading: false,
+      createReadme: false
     };
   },
   computed: {},
@@ -147,6 +153,7 @@ export default {
             $dbName: String!
             $rootPage: String
             $includeData: Boolean
+            $createReadme: Boolean
           ) {
             createMarketplaceApplication(
               folderGuid: $folderGuid
@@ -155,6 +162,7 @@ export default {
               dbName: $dbName
               rootPage: $rootPage
               includeData: $includeData
+              createReadme: $createReadme
             ) {
               downloadUrl
               ok
@@ -168,7 +176,8 @@ export default {
           version: this.version,
           dbName: this.dbName,
           rootPage: this.rootPage,
-          includeData: this.includeData
+          includeData: this.includeData,
+          createReadme: this.createReadme
         };
 
         apolloClient

@@ -1,8 +1,6 @@
 <template>
-  <v-app id='ax-form-viewer'>
-    <div class='form-wrapper'>
-      <AxForm :db_name='formDbName' :guid='rowNumGuid' :row='rowNumGuid'></AxForm>
-    </div>
+  <v-app class='form-wrapper' id='ax-form-viewer'>
+    <AxForm :db_name='formDbName' :guid='rowNumGuid' :row='rowNumGuid'></AxForm>
   </v-app>
 </template>
 

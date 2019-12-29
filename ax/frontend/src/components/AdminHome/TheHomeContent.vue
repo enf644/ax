@@ -19,8 +19,6 @@
         <div :key='item.repo' @click='openRepo(item)' class='app-box' v-for='item in featuredItems'>
           <div class='icon-box'>
             <i :class='item.icon'></i>
-            <i :class='item.icon1'></i>
-            <i :class='item.icon2'></i>
           </div>
           <div class='app-text'>
             <div>{{item.name}}</div>
@@ -197,10 +195,11 @@ export default {
   height: 70px;
   color: white;
   text-align: center;
-  padding-top: 24px;
+  padding-top: 20px;
   border-radius: 2px;
 }
 .icon-box i {
+  font-size: 30px;
   margin: 2px;
 }
 

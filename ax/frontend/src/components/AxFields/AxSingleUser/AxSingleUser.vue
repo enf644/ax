@@ -35,7 +35,7 @@
 
       <template v-slot:append>
         <v-btn disabled icon>
-          <i class='fas fa-users'></i>
+          <i class='fas fa-user'></i>
         </v-btn>
       </template>
     </v-autocomplete>

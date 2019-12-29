@@ -258,7 +258,7 @@ export default {
 
           firstRun = false;
         });
-        if (this.tom_inline_mode !== undefined) {
+        if (this.tom_inline_mode !== undefined && this.tom_disabled != true) {
           const tomRenderer = params => {
             const eDiv = document.createElement('div');
             eDiv.innerHTML = "<i class='fas fa-trash-alt tom-remove'></i>";

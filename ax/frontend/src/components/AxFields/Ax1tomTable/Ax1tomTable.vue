@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class='tom-wrapper'>
     <div
       :class='getErrorClass'
       :style='{height: this.options.inline_height + "px"}'
@@ -193,7 +193,7 @@ export default {
       if (this.currentValue == null) this.currentValue = [guid];
       else {
         this.currentValue.indexOf(guid) === -1
-          ? this.currentValue.push(newItem)
+          ? this.currentValue.push(guid)
           : null;
       }
       this.updateTime = Date.now();
@@ -233,5 +233,8 @@ export default {
 }
 .div-error {
   border: 1px solid #b71c1c;
+}
+.tom-wrapper {
+  width: 100%;
 }
 </style>

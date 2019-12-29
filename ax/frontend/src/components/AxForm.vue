@@ -530,7 +530,7 @@ export default {
           if (this.guid && !currentFormData.rowGuid) this.guidNotFound = true;
 
           const fields = currentFormData.fields.edges.map(edge => edge.node);
-          this.tabs = [];
+          let all_tabs = [];
           this.fields = [];
           fields.forEach(field => {
             const thisField = field;
@@ -543,13 +543,26 @@ export default {
             }
 
             if (field.isRequired) thisField.name = `${field.name} *`;
-            if (field.isTab) this.tabs.push(thisField);
+            if (field.isTab) all_tabs.push(thisField);
             else if (!field.isHidden) {
               this.fields.push(thisField);
             }
           });
           if (this.opened_tab) this.activeTab = this.opened_tab;
-          else if (this.tabs.length > 0) this.activeTab = this.tabs[0].guid;
+          else if (all_tabs.length > 0) this.activeTab = all_tabs[0].guid;
+
+          // if tab have no fields - it must be deleted
+          let activeTabGuids = [];
+          let clear_tabs = [];
+          this.fields.forEach(element => {
+            activeTabGuids.push(element.parent);
+          });
+
+          all_tabs.forEach(tab => {
+            if (activeTabGuids.includes(tab.guid)) clear_tabs.push(tab);
+          });
+          this.tabs = clear_tabs;
+
           this.updateValue();
           this.subscribeToActions();
           this.subscribeToConsole();

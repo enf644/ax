@@ -9,7 +9,7 @@
         <div v-if='noMessages'>
           <i class='far fa-comment-alt'></i>
           &nbsp;&nbsp;
-          {{$t("types.AxComments.no-messages")}}
+          {{locale("types.AxComments.no-messages")}}
         </div>
         <div :key='message.guid' v-for='message in messages'>
           <div class='message-wrapper' v-if='isSelfMessage(message) == false'>
@@ -289,7 +289,9 @@ export default {
     },
     scrollBox() {
       setTimeout(() => {
-        this.$refs.scrollBox.scrollTop = this.$refs.scrollBox.scrollHeight;
+        if (this.$refs.scrollBox) {
+          this.$refs.scrollBox.scrollTop = this.$refs.scrollBox.scrollHeight;
+        }
       }, 200);
     }
   }

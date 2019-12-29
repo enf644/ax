@@ -548,6 +548,12 @@
         "terminal-header": "Application terminal",
         "download-package-header": "Application package created",
         "download-package-btn": "Download package",
-        "app-installed-toast": "Application installed"
+        "app-installed-toast": "Application installed",
+        "manual-header": "Manual install:",
+        "github-app-btn": "Install from Github repo",
+        "repo-name": "Github repo name",
+        "repo-name-hint": "Example: enf644/pitch-purchase-request",
+        "incorect-repo-name": "Incorect repo name",
+        "create-readme-input": "Create Readme.md from root page"
     }
 }

@@ -16,7 +16,7 @@ this = sys.modules[__name__]
 dialect_name = None
 dialect = None
 
-default_grid_query = f'SELECT <ax_fields> FROM "<ax_table>";'
+default_grid_query = f'SELECT <ax_fields>\nFROM "<ax_table>";'
 
 class PorstgreDialect(object):
     """SQL query for Postgre SQL database"""
@@ -454,7 +454,7 @@ class PorstgreDialect(object):
 
             value_strings = []
             for field in form.fields:
-                if field.needs_sql_update:
+                if field.needs_sql_update or field.force_sql_update:
                     fields_db_names.append(f'"{field.db_name}"')
                     value_str = await self.get_value_sql(
                         type_name=field.field_type.value_type,
@@ -502,8 +502,8 @@ class PorstgreDialect(object):
                 "ax_state": to_state_name,
                 "row_guid": row_guid
             }
-            for field in form.fields:
-                if field.needs_sql_update:
+            for field in form.db_fields:
+                if field.needs_sql_update or field.force_sql_update:
                     current_valu_str = await self.get_value_sql(
                         type_name=field.field_type.value_type,
                         db_name=field.db_name

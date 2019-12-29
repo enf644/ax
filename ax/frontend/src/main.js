@@ -97,7 +97,7 @@ const vuetify = new Vuetify({
 });
 
 
-const gridPromise = () => import(/* webpackChunkName: "ax-grid" */ './components/AxGrid.vue').then(m => {
+const gridPromise = () => import(/* webpackChunkName: "ax-grid" */ './components/AxGridComponent.vue').then(m => {
   return {
     ...m.default,
     vuetify
@@ -109,7 +109,7 @@ Vue.customElement('ax-grid', gridPromise,
   }
 );
 
-const formPromise = () => import(/* webpackChunkName: "ax-form" */ './components/AxForm.vue').then(m => {
+const formPromise = () => import(/* webpackChunkName: "ax-form" */ './components/AxFormComponent.vue').then(m => {
   return {
     ...m.default,
     vuetify

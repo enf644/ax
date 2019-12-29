@@ -8,6 +8,7 @@ import shutil
 import ast
 import uuid
 import asyncio
+import urllib.request
 from packaging import version
 from loguru import logger
 import graphene
@@ -363,6 +364,13 @@ async def dump_form(db_session, package_directory, form, include_data):
                         yaml.dump(clean_result, data_file)
 
 
+async def do_create_readme(root_page, package_directory):
+    """ Create Readme.md from root_page code """
+    readme_path = package_directory / f'README.md'
+    with open(readme_path, 'w', encoding="utf-8") as readme_file:
+        readme_file.write(root_page.code)
+
+
 class CreateMarketplaceApplication(graphene.Mutation):
     """ Creates archive with marketpalce application"""
     class Arguments:  # pylint: disable=missing-docstring
@@ -372,6 +380,7 @@ class CreateMarketplaceApplication(graphene.Mutation):
         db_name = graphene.String()
         root_page = graphene.String(required=False)
         include_data = graphene.Boolean()
+        create_readme = graphene.Boolean()
 
     ok = graphene.Boolean()
     download_url = graphene.String()
@@ -380,15 +389,16 @@ class CreateMarketplaceApplication(graphene.Mutation):
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
         err = "marketplace_schema -> CreateMarketplaceApplication"
         code_name = args.get('db_name')
-        app_version = args.get('version')
         root_page_db_name = args.get('root_page')
         unique_guid = str(uuid.uuid4())
         include_data = args.get('include_data')
+        create_readme = args.get('create_readme')
 
         with ax_model.try_catch(info.context['session'], err) as db_session:
             # Create tmp folder for new package
             archive_directory = ax_misc.tmp_root_dir / unique_guid
-            package_directory = archive_directory / 'archive_me'
+            package_directory = archive_directory / 'archive_me' / code_name
+            dir_to_zip = archive_directory / 'archive_me'
             os.makedirs(package_directory)
 
             # Get AxForms and folders to dump
@@ -399,9 +409,11 @@ class CreateMarketplaceApplication(graphene.Mutation):
             if not root_folder:
                 raise Exception('Cant find app root folder')
 
+            # AxPage[]
             # Get AxPage if db_name is provided
             pages_data = []
             root_page = None
+            root_page_guid = None
             if root_page_db_name:
                 root_page = db_session.query(AxPage).filter(
                     AxPage.db_name == root_page_db_name
@@ -410,6 +422,13 @@ class CreateMarketplaceApplication(graphene.Mutation):
                 if not root_page:
                     raise Exception('Cant find app root page')
 
+                # Сreate readme.md
+                if create_readme:
+                    await do_create_readme(
+                        root_page=root_page,
+                        package_directory=package_directory)
+
+                root_page_guid = str(root_page.guid)
                 pages_data = await dump_pages(
                     db_session=db_session,
                     package_directory=package_directory,
@@ -423,12 +442,11 @@ class CreateMarketplaceApplication(graphene.Mutation):
             app_yaml_path = package_directory / 'ax_app.yaml'
             with open(app_yaml_path, 'w', encoding="utf-8") as yaml_file:
                 app_info = {
-                    "Application name": args.get('name'),
-                    "Application version": app_version,
                     "Code name": code_name,
                     "Root folder": args.get('folder_guid'),
                     "Forms": await get_forms_db_names(app_forms),
                     "Folders": await get_folders_dump(app_folders),
+                    "Root page": root_page_guid,
                     "Pages": pages_data,
                     "Ax version": os.environ.get('AX_VERSION')
                 }
@@ -441,8 +459,6 @@ class CreateMarketplaceApplication(graphene.Mutation):
                     form=form,
                     include_data=include_data)
 
-            # AxPage[]
-
             # version_str = str(app_version).replace(',', '-')
             # app_file_name = f'{code_name}-{version_str}.zip'
             app_file_name = f'{code_name}.zip'
@@ -450,15 +466,17 @@ class CreateMarketplaceApplication(graphene.Mutation):
 
             await ax_misc.zip_folder(
                 output_filename=output_file_path,
-                source_dir=package_directory)
+                source_dir=dir_to_zip)
 
-            shutil.rmtree(package_directory)
+            shutil.rmtree(dir_to_zip)
 
             url = f'/api/file/null/null/null/{unique_guid}/{app_file_name}'
             return CreateMarketplaceApplication(download_url=url, ok=True)
 
 
-async def create_page(db_session, page, package_directory):
+
+async def create_page(
+        db_session, page, package_directory, ax_root_guid, app_root_guid):
     """ Create AxPage from application package data """
     err = "marketplace_schema -> create_page"
     with ax_model.try_catch(db_session, err) as db_session:
@@ -482,12 +500,16 @@ async def create_page(db_session, page, package_directory):
             existing_page.parent = ax_misc.guid_or_none(page['parent'])
             existing_page.code = code
         else:
+            cur_parent = page['parent']
+            if page['guid'] == app_root_guid:
+                cur_parent = ax_root_guid
+
             new_page = AxPage()
             new_page.guid = ax_misc.guid_or_none(page['guid'])
             new_page.name = page['name']
             new_page.db_name = page['db_name']
             new_page.position = int(page['position'] or 0)
-            new_page.parent = ax_misc.guid_or_none(page['parent'])
+            new_page.parent = ax_misc.guid_or_none(cur_parent)
             new_page.code = code
             db_session.add(new_page)
 
@@ -701,14 +723,14 @@ async def create_role(db_session, ax_form, role, form_path):
 
         if existing_role:
             existing_role.name = role['name']
-            existing_role.icon = role['icon']
+            existing_role.icon = role.get('icon', None)
         else:
             new_role = AxRole()
             new_role.guid = ax_misc.guid_or_none(role['guid'])
             new_role.name = role['name']
             new_role.form_guid = ax_form.guid
-            new_role.icon = role['icon']
-            new_role.is_dynamic = role['is_dynamic']
+            new_role.icon = role.get('icon', None)
+            new_role.is_dynamic = role.get('is_dynamic', False)
             new_role.code = code
             db_session.add(new_role)
 
@@ -1073,6 +1095,83 @@ async def check_package(db_session, app_yaml, package_directory):
                 raise Exception(err)
 
 
+async def install_from_dir(db_session, app_dir):
+    """ Installs app from yaml files in /tmp folder """
+    import backend.schema as ax_schema
+    with open(app_dir / 'ax_app.yaml', 'r', encoding="utf-8") as app_yaml_file:
+        app_yaml = yaml.load(app_yaml_file)
+
+        # Check if package can be installed
+        await check_package(
+            db_session=db_session,
+            app_yaml=app_yaml,
+            package_directory=app_dir)
+
+        # Create pages
+        await terminal_log('Creating pages:\n')
+        ax_root_page = db_session.query(AxPage).filter(
+            AxPage.parent.is_(None)
+        ).first()
+        ax_root_guid = None
+        if ax_root_page:
+            ax_root_guid = str(ax_root_page.guid)
+
+        app_root_guid = app_yaml.get('Root page', None)
+        for page in app_yaml.get('Pages', None):
+            await create_page(
+                db_session=db_session,
+                page=page,
+                package_directory=app_dir,
+                ax_root_guid=ax_root_guid,
+                app_root_guid=app_root_guid)
+            await terminal_log(f'    {page["name"]} ✔\n')
+
+        # Create folders
+        await terminal_log('Creating folders:\n')
+        for folder in app_yaml['Folders']:
+            await create_folder(db_session=db_session, folder=folder)
+            await terminal_log(f'    {folder["name"]} ✔\n')
+
+        # For each form - create form
+        for form_name in app_yaml['Forms']:
+            await create_form_objects(
+                db_session=db_session,
+                form_name=form_name,
+                package_directory=app_dir)
+
+        ax_schema.init_schema(db_session)
+        await terminal_log('------------------\n Application is installed!')
+
+
+
+async def install_from_repo(db_session, repo_name):
+    """ Installs marketplace application from github repo """
+    tmp_dir = ax_misc.tmp_root_dir / str(uuid.uuid4())
+    os.makedirs(tmp_dir)
+    tmp_zip = tmp_dir / "installed_app.zip"
+    archive_dir = tmp_dir / "package_archive"
+
+    # Read archive data to ram
+    await terminal_log(f'Downloading master from repo [{repo_name}]!\n\n')
+    url = f'https://github.com/{repo_name}/archive/master.zip'
+    filedata = urllib.request.urlopen(url)
+    data_to_write = filedata.read()
+
+    # Write archvive data to tmp file
+    with open(tmp_zip, 'wb') as file:
+        file.write(data_to_write)
+
+    # Unzip tmp file
+    await terminal_log(f'Download success\n\n')
+    with zipfile.ZipFile(tmp_zip, "r") as zip_ref:
+        zip_ref.extractall(archive_dir)
+
+    app_code_name = os.listdir(archive_dir)[0]
+    app_dir = archive_dir / app_code_name
+    await install_from_dir(db_session=db_session, app_dir=app_dir)
+
+
+
 class InstallFromPackage(graphene.Mutation):
     """ Installs marketplace application from zip archive uploaded
         to tmp folder """
@@ -1085,14 +1184,10 @@ class InstallFromPackage(graphene.Mutation):
 
     @ax_admin_only
     async def mutate(self, info, **args):  # pylint: disable=missing-docstring
-        import backend.schema as ax_schema
-
         err = 'Error in gql mutation - InstallFromPackage.'
         with ax_model.try_catch(info.context['session'], err) as db_session:
             del info
             this.current_modal_guid = args.get('modal_guid')
-            msg = ''
-
             file_guid = args.get('file_guid')
             tmp_dir = ax_misc.tmp_root_dir / file_guid
             file_name = os.listdir(tmp_dir)[0]
@@ -1102,44 +1197,32 @@ class InstallFromPackage(graphene.Mutation):
             with zipfile.ZipFile(temp_path, "r") as zip_ref:
                 zip_ref.extractall(archive_dir)
 
-            with open(
-                    archive_dir / 'ax_app.yaml',
-                    'r', encoding="utf-8") as app_yaml_file:
-                app_yaml = yaml.load(app_yaml_file)
+            app_code_name = os.listdir(archive_dir)[0]
+            app_dir = archive_dir / app_code_name
+            await install_from_dir(db_session=db_session, app_dir=app_dir)
+            return InstallFromPackage(msg='InstallFromPackage - OK', ok=True)
 
-                # Check if package can be installed
-                await check_package(
-                    db_session=db_session,
-                    app_yaml=app_yaml,
-                    package_directory=archive_dir)
 
-                # Create pages
-                await terminal_log('Creating pages:\n')
-                for page in app_yaml['Pages']:
-                    await create_page(
-                        db_session=db_session,
-                        page=page,
-                        package_directory=archive_dir)
-                    await terminal_log(f'    {page["name"]} ✔\n')
+class InstallFromRepo(graphene.Mutation):
+    """ Installs marketplace application from github repo """
+    class Arguments:  # pylint: disable=missing-docstring
+        repo_name = graphene.String()
+        modal_guid = graphene.String()
 
-                # Create folders
-                await terminal_log('Creating folders:\n')
-                for folder in app_yaml['Folders']:
-                    await create_folder(db_session=db_session, folder=folder)
-                    await terminal_log(f'    {folder["name"]} ✔\n')
+    ok = graphene.Boolean()
+    msg = graphene.String()
 
-                # For each form - create form
-                for form_name in app_yaml['Forms']:
-                    await create_form_objects(
-                        db_session=db_session,
-                        form_name=form_name,
-                        package_directory=archive_dir)
+    @ax_admin_only
+    async def mutate(self, info, **args):  # pylint: disable=missing-docstring
 
-                ax_schema.init_schema(db_session)
-                await terminal_log(
-                    '------------------\n Application is installed!')
+        err = 'Error in gql mutation - InstallFromRepo.'
+        with ax_model.try_catch(info.context['session'], err) as db_session:
+            del info
+            this.current_modal_guid = args.get('modal_guid')
+            repo_name = args.get('repo_name')
+            await install_from_repo(db_session=db_session, repo_name=repo_name)
+            return InstallFromRepo(msg='InstallFromRepo - OK', ok=True)
 
-            return InstallFromPackage(msg=msg, ok=True)
 
 
 class MarketplaceQuery(graphene.ObjectType):
@@ -1150,3 +1233,4 @@ class MarketplaceMutations(graphene.ObjectType):
     """Contains all AxUser mutations"""
     create_marketplace_application = CreateMarketplaceApplication.Field()
     install_from_package = InstallFromPackage.Field()
+    install_from_repo = InstallFromRepo.Field()

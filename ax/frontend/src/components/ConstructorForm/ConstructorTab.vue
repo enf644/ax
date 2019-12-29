@@ -2,9 +2,9 @@
   <span class='wrap'>
     <i class='far fa-bookmark'></i>
     <input
+      :id='guid'
       @change='applyChange'
       @click='focusName'
-      id='nameInput'
       ref='nameInput'
       type='text'
       v-model='currentName'

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class='fld-wrapper'>
     <span class='label'>{{name}}</span>
     <div v-if='!this.rowGuid'>
       <b>{{locale("types.AxComments.new-row-warning")}}</b>
@@ -57,5 +57,8 @@ export default {
   font-size: 13px;
   color: #000;
   opacity: 0.54;
+}
+.fld-wrapper {
+  width: 100%;
 }
 </style>

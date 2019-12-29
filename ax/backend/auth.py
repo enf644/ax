@@ -115,7 +115,7 @@ async def check_field_perm(db_session, current_user, field_guid, row_guid):
         row_guid=row_guid)
 
     state_name = result[0]['axState']
-    state_guid = get_state_guid(ax_form=ax_field.form, state_name=state_name)
+    state_guid = await get_state_guid(ax_form=ax_field.form, state_name=state_name)
     key = f"perm_{user_guid}_{ax_field.guid}_{state_guid}"
     perm = await ax_cache.cache.get(key)
     return perm
@@ -227,16 +227,17 @@ async def set_form_visibility(
                             field.needs_sql_update = True
 
 
-    for field in ax_form.fields:
-        # If field is hidden -> Epty the value and forbid
-        # inser and update
-        if field.is_hidden is True:
-            field.value = None
-            field.needs_sql_update = False
+    for field in ax_form.db_fields:
+        if not field.field_type.is_updated_always:
+            # If field is hidden -> Epty the value and forbid
+            # inser and update
+            if field.is_hidden is True:
+                field.value = None
+                field.needs_sql_update = False
 
-        # Forbid update if readonly
-        if field.is_readonly is True:
-            field.needs_sql_update = False
+            # Forbid update if readonly
+            if field.is_readonly is True:
+                field.needs_sql_update = False
 
     return ax_form
 

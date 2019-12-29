@@ -22,7 +22,7 @@ def get_default_grid_code():
     """ Returns default code for grid.
         Used in createTable (grids_schema)
         and createForm (home_schema)  """
-    code = f"""ax.query = \"\"\"
+    code = f"""ax.query = f\"\"\"
     {ax_dialects.default_grid_query}
 \"\"\""""
     return code

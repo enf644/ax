@@ -581,8 +581,10 @@ async def execute_action(
                 new_item = code_result['item']
                 for field in tobe_form.db_fields:
                     if field.db_name in new_item.keys():
-                        field.value = new_item[field.db_name]
-                        field.needs_sql_update = True
+                        if field.value != new_item[field.db_name]:
+                            field.value = new_item[field.db_name]
+                            field.needs_sql_update = True
+                            field.force_sql_update = True
 
             # 7. Check fields permissions. If not permited - set needs_update
             # to False

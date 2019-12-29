@@ -61,6 +61,7 @@ BASIC APP CHECKLIST
 
 
 
+
 AX Pages
     Pages are marketplace app just as any other
         Can be multiple fronts - pages/shop/intranet

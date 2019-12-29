@@ -47,8 +47,7 @@ async def before_insert(db_session, field, before_form, tobe_form, action,
         code=code,
         form=tobe_form,
         arguments=arguments,
-        current_user=current_user,
-        db_session=db_session)
+        current_user=current_user)
 
     field.needs_sql_update = True
     field.value = ax.value

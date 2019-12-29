@@ -349,6 +349,13 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
             feed = await ax_misc.fetch('https://raw.githubusercontent.com/enf644/ax-info/master/featured_apps.json')   # pylint: disable=line-too-long
             return response.text(feed)
 
+        @sanic_app.route('/api/marketplace_all')
+        async def marketplace_apps(request):  # pylint: disable=unused-variable
+            """ Fetches all apps json """
+            del request
+            feed = await ax_misc.fetch('https://raw.githubusercontent.com/enf644/ax-info/master/apps.json')   # pylint: disable=line-too-long
+            return response.text(feed)
+
         @sanic_app.route('/api/test')
         async def test(request):  # pylint: disable=unused-variable
             """Test function"""
