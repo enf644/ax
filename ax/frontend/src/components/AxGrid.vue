@@ -416,9 +416,10 @@ export default {
           this.gridObj.gridOptions &&
           this.gridObj.gridOptions.api
         ) {
-          // if (this.gridInitialized) {
-          this.gridObj.gridOptions.api.destroy();
-          this.gridInitialized = false;
+          if (this.gridInitialized) {
+            this.gridObj.gridOptions.api.destroy();
+            this.gridInitialized = false;
+          }
         }
         this.loadOptions(this.form, this.grid);
       }
@@ -655,8 +656,17 @@ export default {
             });
           }
 
-          if (!this.gridInitialized) this.initAgGrid();
-          else {
+          if (!this.gridInitialized) {
+            if (
+              this.gridObj &&
+              this.gridObj.gridOptions &&
+              this.gridObj.gridOptions.api
+            ) {
+              this.gridObj.gridOptions.api.destroy();
+              this.gridInitialized = false;
+            }
+            this.initAgGrid();
+          } else {
             const filterModel = this.gridObj.gridOptions.api.getFilterModel();
             this.gridObj.gridOptions.api.setRowData(this.rowData);
             this.gridObj.gridOptions.api.setFilterModel(filterModel);

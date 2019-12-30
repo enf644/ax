@@ -231,7 +231,7 @@ export default {
   },
   methods: {
     doLogOut() {
-      this.$store.dispatch('auth/logOut');
+      this.$store.dispatch('auth/logOut', true);
     },
     gotoGrid(dbName) {
       const url = `/admin/${this.currentFormDbName}/grids/${dbName}`;
@@ -371,7 +371,7 @@ export default {
 }
 
 .update-form-modal {
-  z-index: 200;
+  z-index: 200 !important;
 }
 
 @media only screen and (max-width: 1200px) {

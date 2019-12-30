@@ -33,7 +33,6 @@ if root_path not in sys.path:
 # from backend.daemon import daemon
 # import daemonocle
 
-
 # pylint: disable=wrong-import-position
 import backend.logger as ax_logger
 import backend.misc as ax_misc

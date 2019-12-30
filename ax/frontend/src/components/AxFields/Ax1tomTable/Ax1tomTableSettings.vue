@@ -136,6 +136,9 @@ export default {
     }
   },
   created() {
+    this.$store.dispatch('home/getAllForms', {
+      updateTime: Date.now()
+    });
     this.changedOptions = this.options;
     if (!this.changedOptions.isWholeRow) this.changedOptions.isWholeRow = true;
     if (!this.changedOptions.height) this.changedOptions.height = 400;

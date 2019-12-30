@@ -31,7 +31,7 @@
             ></v-text-field>
           </v-col>
         </v-row>
-        <v-row>
+        <!-- <v-row>
           <v-col>
             <v-text-field
               :hint='$t("users.modal-name-hint")'
@@ -40,9 +40,9 @@
               v-model='userName'
             ></v-text-field>
           </v-col>
-        </v-row>
+        </v-row>-->
+        <v-row class='pass-warning'>{{$t("users.change-password-admin-warning")}}</v-row>
         <v-row>
-          {{$t("users.change-password-admin-warning")}}
           <v-col>
             <v-text-field
               :hint='$t("users.modal-password-hint")'
@@ -410,5 +410,10 @@ export default {
 .actions {
   justify-content: space-between;
   display: flex;
+}
+.pass-warning {
+  width: 80%;
+  margin: auto;
+  text-align: center;
 }
 </style>

@@ -363,9 +363,12 @@ a {
 
 /* mavon-editor used in AxMarkdown */
 .v-note-wrapper {
-    z-index: 105 !important;
+    z-index: 99 !important;
 }
 
+.v-note-wrapper.fullscreen {
+    margin-top: 40px !important;
+}
 
 .ax-form-app .application--wrap {
     min-height: 300px;

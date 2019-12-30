@@ -826,20 +826,20 @@ AX 0.2:
             ✔ Record all kissflow apps @done(19-12-29 13:50)
             ✔ Copy 5 kissflow apps and publush to github @done(19-12-29 17:21)
             ✔ List apps @done(19-12-29 19:14)
-        ☐ Frogs
-            ☐ Two grids emerge in grid constructor!!
-            ☐ Create user - shortname must be required
-            ☐ 1tomTable - cant select grid after just created. Need reload.
-            ☐ 1tomTable - hint must be inside box, near header
-            ☐ If signout happens on /form window, user is redirected to /admin/signin
-            ☐ Check action perm if action is runned from gql, not form
-            ☐ Role sort must be alfabetical! Colors must stay the same.
-            ☐ Page designer - position is not working, page shuffle after update
-            ☐ AxSwitch - if required error, no red color
-            ☐ AxCheckboxes
-            ☐ AxDate - must save value even if readonly or hidden (if default now)
-            ☐ AxSwitch - default value
-            ☐ Grid constructor - if query modified - data is not reloaded
+    ✔ Frogs round 4 @done(19-12-30 19:45)
+        ✔ Two grids emerge in grid constructor!! @done(19-12-30 11:59)
+        ✔ Create user - shortname must be required @done(19-12-30 12:16)
+        ✔ 1tomTable - hint must be inside box, near header @done(19-12-30 12:17)
+        ✔ AxMarkdown z-index problem @done(19-12-30 12:30)
+        ✔ 1tomTable - If form was created in enother window - cant choose it from select. @done(19-12-30 12:37)
+        ✔ If signout happens on /form window, user is redirected to /admin/signin @done(19-12-30 14:13)
+        ✔ Check action perm if action is runned from gql, not form @done(19-12-30 14:15)
+        ✔ Role sort must be alfabetical! Colors must stay the same. @done(19-12-30 14:20)
+        ✔ Page designer - position is not working, page shuffle after update @done(19-12-30 15:01)
+        ✔ AxSwitch - if required error, no red color @done(19-12-30 15:07)
+        ✔ AxFieldTypes must be taken from directories, not database. @done(19-12-30 18:55)
+        ✔ AxCheckboxes @done(19-12-30 18:55)
+        ✔ AxDate - must save value even if readonly or hidden (if default now) @done(19-12-30 19:28)
     ☐ LICENSE GENERATION
     ☐ TUTORIAL
         ☐ Each page and field have help modal with gifs
@@ -1103,7 +1103,6 @@ FEATURES:
         ☐ Create reference records (default reference field). Form have 1tomTable field. You must be abble to create reference form without leaving root form. (option)
         ☐ Create separate 1tom database table for each 1tom reference.
         ☐ Every modal must be moved a litle bit
-        ☐ AxFieldTypes must be taken from directories, not database. If tag is not found - AxText is used
         ☐ Add clould logger for python and vue
         ☐ Detect unsuported browsers and print error
         ☐ Custom error pages

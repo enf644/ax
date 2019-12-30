@@ -1,5 +1,5 @@
 <template>
-  <v-switch :disabled='isReadonly' :label='name' v-model='currentValue'></v-switch>
+  <v-switch :disabled='isReadonly' :error-messages='errors' :label='name' v-model='currentValue'></v-switch>
 </template>
 
 <script>

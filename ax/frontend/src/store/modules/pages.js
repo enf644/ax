@@ -31,7 +31,7 @@ const mutations = {
   },
   updatePageInList(state, updatedPage) {
     let page = Object.assign({}, updatedPage);
-    page.code = null
+    page.code = null;
 
     state.pages = [
       ...state.pages.filter(element => element.guid !== page.guid),
@@ -100,7 +100,7 @@ const actions = {
         const msg = `Error in loadPageData gql => ${error}`;
         context.commit('home/setShowErrorMsg', msg, { root: true });
       });
-  },
+  }
 };
 
 const state = getDefaultState();

@@ -21,8 +21,6 @@ export default {
   }),
   created() {
     this.changedOptions = this.options;
-    if (!this.changedOptions.mask)
-      this.changedOptions.mask = '+1 (###) ###-##-##';
   },
   methods: {
     locale(key) {

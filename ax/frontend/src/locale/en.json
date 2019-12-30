@@ -92,7 +92,7 @@
         "modal-email-hint": "Will be used for password recovery and billing",
         "modal-name": "Full name",
         "modal-name-hint": "First and last name of user",
-        "modal-short-name": "Short user name",
+        "modal-short-name": "Short user name *",
         "modal-short-name-hint": "Used for displaying user chips",
         "modal-password": "Password",
         "modal-password-hint": "Minimum 6 characters. Must contain large letter and digit.",
@@ -439,6 +439,9 @@
             "clearable-setting": "Choise can be cleared",
             "placeholder-setting": "Placeholder text",
             "placeholder-hint": "This text will be displayed if nothing was selected"
+        },
+        "AxCheckboxList": {
+            "name": "Checkbox list"
         },
         "AxRadio": {
             "name": "Radio",

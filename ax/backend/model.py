@@ -375,7 +375,7 @@ class AxField(Base):
     is_hidden = False
     is_readonly = False
     needs_sql_update = False  # Flag that current field must be updated in DB
-    force_sql_update = False # Flag that current field must be updated in DB. 
+    force_sql_update = False # Flag that current field must be updated in DB
                              # Works even if field is hidden or read_only
 
     @property

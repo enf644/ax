@@ -21,9 +21,10 @@ const LOGOUT = gql`
 const getters = {};
 
 const actions = {
-  logOut(context) {
+  logOut(context, toAdmin) {
     const host = getAxHostProtocol();
-    window.location.href = `${host}/api/signout?to_admin=1`;
+    if (toAdmin) window.location.href = `${host}/api/signout?to_admin=1`;
+    else window.location.href = `${host}/api/signout`;
   },
   goToPages(context) {
     const host = getAxHostProtocol();

@@ -159,6 +159,7 @@ export default {
                 dbName
                 code
                 parent
+                position
               }
               ok
             }
