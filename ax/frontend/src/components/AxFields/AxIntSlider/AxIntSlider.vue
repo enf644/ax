@@ -8,6 +8,7 @@
       :min='currentMin'
       :step='currentStep'
       :thumb-size='25'
+      @blur='emitValue'
       cy-data='input'
       height='55'
       thumb-label='always'
@@ -49,17 +50,24 @@ export default {
     }
   },
   watch: {
-    currentValue(newValue) {
-      this.$emit('update:value', newValue);
-    },
+    // currentValue(newValue) {
+    //   this.$emit('update:value', newValue);
+    // },
     value(newValue) {
       this.currentValue = newValue;
     }
   },
   created() {
     this.currentValue = this.value;
+    if (!this.currentValue) {
+      this.currentValue = this.currentMin;
+      this.emitValue();
+    }
   },
   methods: {
+    emitValue() {
+      this.$emit('update:value', this.currentValue);
+    },
     isValid() {
       if (this.requiredIsValid()) return true;
       return false;

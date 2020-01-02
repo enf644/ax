@@ -840,14 +840,25 @@ AX 0.2:
         ✔ AxFieldTypes must be taken from directories, not database. @done(19-12-30 18:55)
         ✔ AxCheckboxes @done(19-12-30 18:55)
         ✔ AxDate - must save value even if readonly or hidden (if default now) @done(19-12-30 19:28)
-    ☐ LICENSE GENERATION
-    ☐ TUTORIAL
-        ☐ Each page and field have help modal with gifs
+    ✔ LICENSE GENERATION @done(20-01-02 20:13)
+        ✔ Generate license api. Code in private repo. @done(20-01-02 15:29)
+            ✔ Input - number of users, client axNUm @done(20-01-02 11:31)
+            ✔ Output - big string @done(20-01-02 15:29)
+        ✔ Check license in Ax from app.yaml @done(20-01-02 20:13)
+            ✔ Back @done(20-01-02 20:13)
+                ✔ Check license - if present and active -> Write to ram - max num of users, expire date. @done(20-01-02 17:01)
+                ✔ Aexec only if license is avalible and is not expired @done(20-01-02 17:31)
+                    ✔ AxAction, Dynamic grid, Dynamic roles @done(20-01-02 17:31)
+                ✔ Check active users @done(20-01-02 17:45)
+                ✔ GQL to return license info @done(20-01-02 20:13)
+            ✔ Front @done(20-01-02 20:13)
     ☐ METRICS
         ☐ Ax metrics
-    ☐ INSTALATION
-        ☐ Windows instruction, video
-        ☐ Linux instruction, video
+    ☐ TUTORIAL
+        ☐ Each page and field have help modal with gifs
+        https://ourcodeworld.com/articles/read/328/top-10-best-tour-website-guide-javascript-and-jquery-plugins
+        https://tourjs.github.io/tour/
+        https://shepherdjs.dev/
     ☐ PERFORMANCE TEST
         ☐ Redis integration
         ☐ 4 workers, cache problem, schema reload
@@ -857,9 +868,12 @@ AX 0.2:
             https://github.com/mgedmin/profilehooks        
         ☐ Security - https://lgtm.com/dashboard
     ☐ Publish to pypi, clean old versions
+    ☐ INSTALATION
     =======================================================================:
     ☐ LANDING
         ☐ Github readme with docs
+            ☐ Windows instruction, video
+            ☐ Linux instruction, video
             ☐ Tags like in https://github.com/mapstruct/mapstruct
             https://github.com/dwyl/repo-badges
             https://github.com/badges/shields

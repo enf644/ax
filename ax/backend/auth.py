@@ -1,8 +1,10 @@
 """ Auth module based on sanic-jwt """
 
+import os
 import sys
 import uuid
 import functools
+import datetime
 import asyncio
 from loguru import logger
 from passlib.hash import pbkdf2_sha256
@@ -16,12 +18,11 @@ import backend.model as ax_model
 import backend.misc as ax_misc
 import backend.dialects as ax_dialects
 import backend.exec as ax_exec
+import backend.auth as ax_auth
 
 import backend.fields.AxAuthor as AxFieldAxAuthor  # pylint: disable=unused-import
 
 this = sys.modules[__name__]
-users = None
-
 
 async def get_state_guid(ax_form, state_name):
     """ Returns guid of state by name.
@@ -115,7 +116,8 @@ async def check_field_perm(db_session, current_user, field_guid, row_guid):
         row_guid=row_guid)
 
     state_name = result[0]['axState']
-    state_guid = await get_state_guid(ax_form=ax_field.form, state_name=state_name)
+    state_guid = await get_state_guid(
+        ax_form=ax_field.form, state_name=state_name)
     key = f"perm_{user_guid}_{ax_field.guid}_{state_guid}"
     perm = await ax_cache.cache.get(key)
     return perm
@@ -165,7 +167,7 @@ async def get_dynamic_roles_guids(ax_form, current_user):
 
 async def check_fits_dynamic_role(role, ax_form, current_user):
     """ Runs check_dynamic_role() of field_type py file """
-    if role.is_dynamic:
+    if role.is_dynamic and ax_auth.lise_is_active():
         fits = await ax_exec.execute_field_code(
             code=role.code,
             form=ax_form,
@@ -614,8 +616,92 @@ class AxConfiguration(Configuration):
     url_prefix = '/api/auth'
 
 
+client_guid = None
+user_num = None
+expire_date = None
+
+def apply_lise(db_session):
+    """
+        Copyright (C) 2020 Mikhail Marenov - All Rights Reserved
+        You MAY NOT CHANGE source code of Ax workflow without writen permission
+        author. If you change source code in order to activate PRO features -
+        YOU MAY BE SUBJECT TO HEAVY CIVIL PENALTIES. THESE INCLUDE MONETARY
+        DAMAGES, COURT COSTS, AND ATTORNEYS FEES INCURRED
+        Please read LICENSE.md for more information.
+    """
+    import rsa
+    import base64
+
+    license_text = os.environ.get('AX_LICENSE', None)
+
+    if license_text:
+        public_key_str = (
+            f'-----BEGIN RSA PUBLIC KEY-----\nMEgCQQCKDk8gSjXCh9R8VFKUMFhLxqx/'
+            f'mkWDIUd9uMrHsbYs89t5GnMCoNkmL9nj\nazDQ2nyRxnVaYgJ2hFM49EomRFGVAg'
+            f'MBAAE=\n-----END RSA PUBLIC KEY-----\n')
+        public_key = rsa.PublicKey.load_pkcs1(public_key_str, 'PEM')
+        data, signature = license_text.split('##')
+        cl_guid, expire_str, users_number = data.split('#')
+        expire = datetime.datetime.fromtimestamp(int(expire_str))
+        sign = base64.b64decode(signature)
+
+        time_delta = expire - datetime.datetime.utcnow()
+        if time_delta.days <= 0:
+            err = "License is expired!"
+            logger.exception(err)
+            raise Exception(err)
+
+        try:
+            rsa.verify(data.encode('utf-8'), sign, public_key)
+        except rsa.VerificationError:
+            logger.exception("License is not verified!")
+            raise
+        else:
+            logger.info(f'License applied for {users_number} users.')
+            this.client_guid = cl_guid
+            this.user_num = int(users_number)
+            this.expire = expire
+
+            number_of_users = db_session.query(AxUser).filter(
+                AxUser.is_group.is_(False)
+            ).count()
+            if number_of_users > this.user_num:
+                err = f"Maximum number of users exceeded! Max={this.user_num}"
+                logger.exception(err)
+                raise Exception(err)
+
+
+
+def lise_is_active():
+    """
+        Copyright (C) 2020 Mikhail Marenov - All Rights Reserved
+        You MAY NOT CHANGE source code of Ax workflow without writen permission
+        author. If you change source code in order to activate PRO features -
+        YOU MAY BE SUBJECT TO HEAVY CIVIL PENALTIES. THESE INCLUDE MONETARY
+        DAMAGES, COURT COSTS, AND ATTORNEYS FEES INCURRED
+        Please read LICENSE.md for more information.
+    """
+    if this.client_guid:
+        time_delta = this.expire - datetime.datetime.utcnow()
+        if time_delta.days <= 0:
+            err = "License is expired!"
+            logger.exception(err)
+            raise Exception(err)
+        return True
+    return False
+
+
 def init_auth(sanic_app, secret="This is big secret, set me in app.yaml"):
-    """ Initiate sanic-jwt module """
+    """
+    Initiate sanic-jwt module
+
+    Copyright (C) 2020 Mikhail Marenov - All Rights Reserved
+    You MAY NOT CHANGE source code of Ax workflow without writen permission
+    author. If you change source code in order to activate PRO features -
+    YOU MAY BE SUBJECT TO HEAVY CIVIL PENALTIES. THESE INCLUDE MONETARY
+    DAMAGES, COURT COSTS, AND ATTORNEYS FEES INCURRED
+    Please read LICENSE.md for more information.
+    """
 
     delta = 60  # seconds
     initialize(sanic_app,
@@ -632,7 +718,10 @@ def init_auth(sanic_app, secret="This is big secret, set me in app.yaml"):
                login_redirect_url='/signin',
                secret=secret)
 
+
     with ax_model.scoped_session("init_auth - ERROR") as db_session:
+        apply_lise(db_session)
+
         # Write cache form Everyone group
         asyncio.get_event_loop().run_until_complete(write_perm_cache(
             db_session=db_session, user_guid=None))

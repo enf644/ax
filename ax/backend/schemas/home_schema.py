@@ -16,14 +16,16 @@ import backend.model as ax_model
 # import backend.cache as ax_cache
 import backend.dialects as ax_dialects
 import backend.misc as ax_misc
-from backend.schemas.types import Form, PositionInput
+import backend.auth as ax_auth
+from backend.schemas.types import Form, PositionInput, LicenseInfo
 from backend.auth import ax_admin_only
 
 convert_sqlalchemy_type.register(GUID)(convert_column_to_string)
 
 
 async def tom_sync_form(db_session, old_form_db_name, new_form_db_name):
-    """ Relation fields such as Ax1to1, Ax1tom, Ax1tomTable, Ax1to1Children are using
+    """ Relation fields such as Ax1to1, Ax1tom, Ax1tomTable,
+    Ax1to1Children are using
     options_json to store db_name of related form. If form db_name is changed,
     the Json's in every relation field must be updated.
     For each relation field - check if options contain old form name and update.
@@ -549,11 +551,15 @@ class ChangeFormsPositions(graphene.Mutation):
 class HomeQuery(graphene.ObjectType):
     """AxForm queryes"""
     all_forms = graphene.List(
-        Form, update_time=graphene.Argument(
-            type=graphene.String, required=False)
+        Form,
+        update_time=graphene.Argument(type=graphene.String, required=False)
     )
     sql_status = graphene.String()
     ping = graphene.String()
+    ax_license_info = graphene.Field(
+        LicenseInfo,
+        update_time=graphene.Argument(type=graphene.String, required=False)
+    )
 
     @ax_admin_only
     async def resolve_all_forms(self, info, update_time):
@@ -575,6 +581,15 @@ class HomeQuery(graphene.ObjectType):
         """ - """
         del info
         return "Pong"
+
+    async def resolve_ax_license_info(self, info, update_time):
+        """ Returns license info to be used in frontend """
+        del update_time
+        info = LicenseInfo(
+            client_guid=ax_auth.client_guid,
+            max_users=ax_auth.user_num
+        )
+        return info
 
 
 class HomeMutations(graphene.ObjectType):

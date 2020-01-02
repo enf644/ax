@@ -16,7 +16,9 @@ const getDefaultState = () => {
     currentUser: null,
     showErrorMsg: null,
     showToastMsg: null,
-    marketActiveRepo: null
+    marketActiveRepo: null,
+    clientGuid: null,
+    maxUsers: null
   }
 }
 
@@ -55,6 +57,10 @@ const GET_ALL_FORMS = gql`
         dbName,
         parent,
         position
+      },
+      axLicenseInfo (updateTime: $updateTime) {
+        clientGuid,
+        maxUsers
       }
     }
 `;
@@ -317,6 +323,12 @@ const mutations = {
   },
   setMarketActiveRepo(state, repo) {
     state.marketActiveRepo = repo;
+  },
+  setClientGuid(state, guid) {
+    state.clientGuid = guid;
+  },
+  setMaxUsers(state, max) {
+    state.maxUsers = max;
   }
 };
 
@@ -426,7 +438,10 @@ const actions = {
       }
     })
       .then(data => {
+        console.log(data.data);
         commit('setForms', data.data.allForms);
+        commit('setClientGuid', data.data.axLicenseInfo.clientGuid);
+        commit('setMaxUsers', data.data.axLicenseInfo.maxUsers);
         commit('users/setCurrentUser', data.data.currentAxUser, { root: true });
         commit('pages/setPages', data.data.allPages, { root: true });
 

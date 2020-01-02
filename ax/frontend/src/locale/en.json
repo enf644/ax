@@ -261,7 +261,9 @@
             "action-error": "{error_class} at line {line_number} of [{action_name}] action: {detail}",
             "action-db-name": "Action code name",
             "action-db-hint": "Used in python code to reference current action",
-            "db-name-error": "Use camelCase. Only latin letters."
+            "db-name-error": "Use camelCase. Only latin letters.",
+            "pro-promo": "Actions python code execution is disabled. Please upgrade to PRO version in order to use full power of Ax workflow.",
+            "pro-promo-example": "Example: Send emails, run other form actions, modify form data, perform action only under condition, schedule form action, call external api."
         },
         "role": {
             "roles-list-header": "Workflow roles",

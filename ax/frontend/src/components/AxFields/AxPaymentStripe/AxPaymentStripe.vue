@@ -98,14 +98,24 @@ export default {
       return cur.toUpperCase();
     },
     buttonText() {
-      if (this.options.buttonText) return this.options.buttonText;
+      if (this.options.buttonText) {
+        let btnLabel = this.options.buttonText
+          .replace('{amount}', this.amount)
+          .replace('{currency}', this.currency);
+        return btnLabel;
+      }
       return this.locale('types.AxPaymentStripe.button-default', {
         amount: this.amount,
         currency: this.currency
       });
     },
     successMessage() {
-      if (this.options.successMessage) return this.options.successMessage;
+      if (this.options.successMessage) {
+        let label = this.options.successMessage
+          .replace('{amount}', this.amount)
+          .replace('{currency}', this.currency);
+        return label;
+      }
       return this.locale('types.AxPaymentStripe.success-message-default', {
         amount: this.amount,
         currency: this.currency

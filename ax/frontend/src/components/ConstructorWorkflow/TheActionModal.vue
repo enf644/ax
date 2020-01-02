@@ -44,7 +44,7 @@
 
       <br />
       <h3>{{$t("workflow.action.code-header")}}:</h3>
-      <div id='monacoDock'>
+      <div id='monacoDock' v-if='proEnabled'>
         <div :class='monacoWrapperClass' id='monacoWrapper'>
           <monaco-editor
             :options='monacoOptions'
@@ -58,6 +58,8 @@
           ></monaco-editor>
         </div>
       </div>
+      <div class='pro-promo' v-if='proEnabled == false'>{{$t("workflow.action.pro-promo")}}</div>
+      <div v-if='proEnabled == false'>{{$t("workflow.action.pro-promo-example")}}</div>
 
       <br />
 
@@ -119,8 +121,9 @@ export default {
       dbName: '',
       dbNameRules: [
         v => v.length <= 127 || this.$t('common.lenght-error', { num: 127 }),
-        v => /^([a-z0-9]+)*([A-Z][a-z0-9]*)*$/.test(v)
-          || this.$t('workflow.action.db-name-error')
+        v =>
+          /^([a-z0-9]+)*([A-Z][a-z0-9]*)*$/.test(v) ||
+          this.$t('workflow.action.db-name-error')
       ],
       fullScreenMode: false
     };
@@ -129,6 +132,10 @@ export default {
     monacoWrapperClass() {
       if (this.fullScreenMode) return 'monacoWrapperFullScreen';
       return 'monacoWrapper';
+    },
+    proEnabled() {
+      if (this.$store.state.home.clientGuid) return true;
+      return false;
     },
     currentAction() {
       return this.$store.state.workflow.actions.find(
@@ -340,5 +347,8 @@ export default {
   left: 0px;
   z-index: 200;
   overflow: hidden;
+}
+.pro-promo {
+  font-weight: bolder;
 }
 </style>

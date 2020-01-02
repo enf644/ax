@@ -1,3 +1,13 @@
+	
+
+LICENSING
+    https://build-system.fman.io/generating-license-keys
+    https://en.wikipedia.org/wiki/Source-available_software
+    https://stackoverflow.com/questions/6307372/simple-license-protection-for-python-app
+    SERVICES
+        https://netlicensing.io/pricing/
+
+
 
 CODE STYLE
 	https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
@@ -6,7 +16,6 @@ CODE STYLE
     https://github.com/airbnb/javascript#types
     https://rscss.io/
     https://github.com/google/styleguide/blob/gh-pages/pyguide.md
-	
 
 
 AUTH
@@ -301,6 +310,7 @@ Legal
 	https://developers.google.com/appmaker/tutorials/work-with-data/
 	KissFlow
 	http://www.servicenow.com/  - https://demonowprod.service-now.com/$demonow.do#/home/ITSM
+    https://www.process.st/
 
 
 Startups:

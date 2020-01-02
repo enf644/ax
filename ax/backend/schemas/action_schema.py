@@ -555,7 +555,7 @@ async def execute_action(
             # 6. Run python action, rewrite tobe_object
             messages = None
             messages_json = None
-            if ax_action.code:
+            if ax_action.code and ax_auth.lise_is_active():
                 code_result = await do_exec(
                     db_session=db_session,
                     action=ax_action,

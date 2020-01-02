@@ -7,11 +7,11 @@
     <v-divider></v-divider>
     <br />
 
-    <v-badge class='drawer-toggle' color='blue-grey' overlap v-model='queryWasModified'>
+    <v-badge class='drawer-toggle' color='error' overlap v-model='showProBadge'>
       <template v-slot:badge>
-        <span class='drawer-toggle-errors'>{{queryWasModified}}</span>
+        <span class='drawer-toggle-errors'>{{showProBadge}}</span>
       </template>
-      <v-btn @click='openQueryModal' small>
+      <v-btn :disabled='proEnabled == false' @click='openQueryModal' small>
         <i class='fas fa-filter'></i>
         &nbsp;
         {{$t("grids.query-modal-btn")}}
@@ -150,11 +150,16 @@ export default {
     options() {
       return this.$store.state.grids.options;
     },
-    queryWasModified() {
+    showProBadge() {
+      if (this.proEnabled == false) return 'pro';
       return false;
     },
     updateTime() {
       return this.$store.state.grids.updateTime;
+    },
+    proEnabled() {
+      if (this.$store.state.home.clientGuid) return true;
+      return false;
     }
   },
   watch: {

@@ -33,6 +33,7 @@ markdown2==2.3.8
 python-dateutil==2.8.0
 # Appengine specific:
 gunicorn==19.9.0
+rsa==4.0
 
 # Fields specific
 stripe==2.40.0

@@ -161,3 +161,8 @@ class Message(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
     class Meta:  # pylint: disable=missing-docstring
         model = AxMessage
         interfaces = (relay.Node, )
+
+
+class LicenseInfo(graphene.ObjectType):  # pylint: disable=missing-docstring
+    client_guid = graphene.String()
+    max_users = graphene.String()

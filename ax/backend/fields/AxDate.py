@@ -1,4 +1,12 @@
-"""AxNum field type functions - before, after / insert, update, delete"""
+"""
+AxNum field type functions - before, after / insert, update, delete
+
+How to use in code:
+    from datetime import datetime, timedelta
+    expire = datetime.utcnow() + timedelta(days=366)
+    ax.row.expire = expire.timestamp()
+
+"""
 import ujson as json
 
 

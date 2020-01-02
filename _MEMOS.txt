@@ -6,7 +6,15 @@
 Pro version:
     +++ Python actions
     +++ Custom query
-    +++ Custom grid columns
+    +++ Dynamic roles
+    Custom grid columns
+    - Fields
+        - Payment fields
+        - html
+        - Numeration
+        - 1tom table
+        - 1to1 children
+        - Approval path
     - AgGrid enterprice
         - Groupping, Agg functions
         - Export to excel
@@ -20,31 +28,72 @@ Pro version:
     - Schedulled action jobs
     - Action on multiple rows
     - Sub-tabs in AxForm
-    - Fields
-        - Payment fields
-        - html
-        - Numeration
-        - 1tom table
-        - Approval
     - Action execution throw 
     - Unread records pages menu counter
 
 ---------------------------
 
 
+LICENSING
+    PUBLIC KEY contain
+        client id
+        How many users
+        expire date
+    Buying
+        ** New license
+            Email + Number of users -> pub key -> place in app.yaml
+        Upgrade license - changes the user number
+        Renew lincese - change number of users and expire date
+    Must be
+        Only yearly sub!
+        Must work online AND offline
+        Must not destribute key in public forum
+        User can have any number of installations - 
+    First version - 
+        User 
+    If offline - key must be placed in yaml
+    When user buys - the key must be placed in yaml
+    On each info request - request if license must be changed (was billed and issued new )
+
+
+METRICS
+    Collected on startup.
+
+    Data:
+        Number of users
+        Admin emails
+        Number of forms
+        Database size
+        Computer fingerprint
+        Client id if license
+        ip address
+        Wich pro features are used?
+            AxAction code
+            AxGrid code
+            DynamicRole
+            AxFields
+            - Payment fields
+            - html
+            - Numeration
+            - 1tom table
+            - 1to1 children
+            - Approval path
+
+
+---------------------------
+
 THINK ABOUT
-    Подумать над шрифтом Segoi UI
-    ☐ https://swagger.io/
-    ☐ Стухание сессии - блокировка экрана, предложение продолжить
-    ☐ Oath - Авторизация
-        ☐ https://developer.okta.com/pricing/
-    ☐ Active directory - python
-    ☐ Make app to autoupgrade DB with alembic according to latest upgrade script
-    dev_appserver.py
-    Ax - rapid automation tool
+    AX - rapid automation tool
 
 
-AX - rapid automation tool
+
+HIRE DIRECTIONS
+    Performance and security - 250 000 x 1
+    Features - 250 000 x 1
+    Customer support and documentation - 100 000 x 2
+    CI and QA - 200 000 x 1
+    Marketing and CEO - 200 000 x 1
+
 
 
 BASIC APP CHECKLIST

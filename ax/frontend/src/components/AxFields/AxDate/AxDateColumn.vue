@@ -12,7 +12,6 @@ export default {
   }),
   mounted() {
     const value = this.$slots.default[0].elm.innerText;
-    console.log(value);
     if (value && value != 'null') {
       this.$slots.default[0].elm.innerText = this.timestampToStr(value);
     } else {
