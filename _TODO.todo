@@ -789,7 +789,7 @@ AX 0.2:
         ✔ Uppy camera in files - modal size @done(19-11-27 21:44)
         ✔ workflow - drag role to self-action @done(19-11-27 22:11)
         ✔ current_user['email'] can be None must return 403 @done(19-11-28 08:54)
-    ☐ FEATURES
+    ✔ FEATURES @done(20-01-02 20:21)
         ✔ Admin home widgets @done(19-11-29 14:04)
             ✔ Widgets @done(19-11-29 14:04)
                 ✔ Stack-overflow questions @done(19-11-29 09:02)
@@ -852,13 +852,20 @@ AX 0.2:
                 ✔ Check active users @done(20-01-02 17:45)
                 ✔ GQL to return license info @done(20-01-02 20:13)
             ✔ Front @done(20-01-02 20:13)
-    ☐ METRICS
-        ☐ Ax metrics
+    ✔ METRICS @done(20-01-05 14:13)
+        ✔ Collect metrics @done(20-01-05 14:13)
+        ✔ Api action that updates or creates new statistics record @done(20-01-05 14:13)
+        ✔ Send only once per ax restart @done(20-01-05 14:13)
     ☐ TUTORIAL
         ☐ Each page and field have help modal with gifs
         https://ourcodeworld.com/articles/read/328/top-10-best-tour-website-guide-javascript-and-jquery-plugins
         https://tourjs.github.io/tour/
         https://shepherdjs.dev/
+    ☐ Check postgre
+    ☐ Frogs
+        ☐ All Users - warning on max users, disable create button
+        ☐ Marketplace - pro required text for all apps
+        ☐ Create apps that do not require pro
     ☐ PERFORMANCE TEST
         ☐ Redis integration
         ☐ 4 workers, cache problem, schema reload

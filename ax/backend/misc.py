@@ -218,3 +218,15 @@ async def fetch(url):
                 return await response.text()
     except (asyncio.TimeoutError, ConnectionRefusedError):
         return None
+
+
+async def post_json(url, data, timeout=20):
+    """ Make post request with json data """
+    try:
+        timeout = aiohttp.ClientTimeout(total=timeout)
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                    url, json=data, timeout=timeout) as response:
+                return await response.text()
+    except (asyncio.TimeoutError, ConnectionRefusedError):
+        return None

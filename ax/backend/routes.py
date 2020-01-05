@@ -23,7 +23,9 @@ from backend.model import AxForm, AxField
 import backend.schemas.form_schema as form_schema
 import backend.dialects as ax_dialects
 import backend.auth as ax_auth
+import backend.migration as ax_migration
 from backend.auth import ax_protected
+
 
 
 this = sys.modules[__name__]
@@ -360,7 +362,31 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
         async def test(request):  # pylint: disable=unused-variable
             """Test function"""
             del request
-            ret_str = ax_model.engine.pool.status()
+
+            ret_str = await ax_migration.send_stats()
+
+            # data = {
+            #     "host": "hostHost",
+            #     "usersNum": 10
+            # }
+            # value_str = json.dumps(data).replace('"', '\\"')
+            # query_str = (
+            #     "    mutation{"
+            #     "        doAction("
+            #     "            formDbName: \"AxUsageStats\""
+            #     "            actionDbName: \"newStats\""
+            #     f"            values: \"{value_str}\""
+            #     "        ) {"
+            #     "            ok"
+            #     "        }"
+            #     "    }"
+            # )
+
+            # json_data = {'query': query_str}
+            # ret_str = await ax_misc.post_json(
+            #     'http://127.0.0.1:8080/api/graphql', json_data)
+
+            # ret_str = ax_model.engine.pool.status()
             # this.test_schema = 'IT WORKS'
             # ax_pubsub.publisher.publish(
             #     aiopubsub.Key('dummy_test'), this.test_schema)

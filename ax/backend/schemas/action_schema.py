@@ -530,7 +530,9 @@ async def execute_action(
                 current_user=current_user,
                 dynamic_role_guids=dynamic_role_guids)
             if not action_is_avalible:
-                email = current_user.get('email', None)
+                email = 'Anon'
+                if current_user:
+                    email = current_user.get('email', None)
                 msg = (
                     f'Error in DoAction. Action [{ax_action.name}]',
                     f'not allowed for user [{email}]'

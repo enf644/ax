@@ -11,20 +11,25 @@ Checks that current Database schema fits SqlAlchemy schema. If it is not,
 """
 import os
 import sys
+import uuid
+import asyncio
 from loguru import logger
 import yaml
 from passlib.hash import pbkdf2_sha256
+import ujson as json
 from alembic.config import Config
 from alembic.migration import MigrationContext
 from alembic.autogenerate import compare_metadata
 from alembic import command
 import backend.model as ax_model
 import backend.misc as ax_misc
+import backend.auth as ax_auth
 from backend.model import AxAlembicVersion, AxFieldType, AxUser, AxGroup2Users,\
-    AxPage, AxPage2Users
+    AxPage, AxPage2Users, AxForm, AxAction, AxGrid, AxRole, AxField
 
 this = sys.modules[__name__]
 alembic_cfg = None
+stats = None
 
 
 def init_alembic_config() -> None:
@@ -136,414 +141,7 @@ def create_default_users():
         all_group.is_group = True
         all_group.is_all_users = True
         db_session.add(all_group)
-
         db_session.commit()
-
-
-# def create_field_types() -> None:
-#     """Fill AxFieldType with field types"""
-#     try:
-#         with ax_model.scoped_session() as db_session:
-#             # Identification
-#             db_session.add(AxFieldType(
-#                 tag='group-id',
-#                 is_group=True,
-#                 position=1,
-#                 icon="fas fa-key"))
-#             db_session.add(AxFieldType(
-#                 tag="AxGuid",
-#                 parent="group-id",
-#                 default_db_name="rowGuid",
-#                 position=1,
-#                 is_virtual=True,
-#                 virtual_source='guid',
-#                 comparator="",
-#                 icon="fas fa-key"))
-#             db_session.add(AxFieldType(
-#                 tag='AxNum',
-#                 parent="group-id",
-#                 default_db_name="axNum",
-#                 value_type="VARCHAR(255)",
-#                 position=2,
-#                 is_readonly=True,
-#                 is_backend_available=True,
-#                 is_updated_always=True,
-#                 icon="fas fa-sort-numeric-up"))
-
-#             # Process controll
-#             db_session.add(AxFieldType(
-#                 tag='group-process',
-#                 is_group=True,
-#                 position=2,
-#                 icon="fas fa-code-branch"))
-#             db_session.add(AxFieldType(
-#                 tag="AxState",
-#                 parent="group-process",
-#                 default_db_name="rowState",
-#                 position=1,
-#                 is_virtual=True,
-#                 virtual_source='axState',
-#                 icon="fas fa-code-branch"))
-#             db_session.add(AxFieldType(
-#                 tag="AxChangelog",
-#                 parent="group-process",
-#                 position=4,
-#                 default_db_name="changelog",
-#                 is_columnn_avalible=True,
-#                 value_type="JSON",
-#                 is_backend_available=True,
-#                 is_readonly=True,
-#                 is_updated_always=True,
-#                 is_always_whole_row=True,
-#                 icon="fas fa-code-branch"))
-
-#             # String
-#             db_session.add(AxFieldType(
-#                 tag='group-string',
-#                 is_group=True,
-#                 position=3,
-#                 icon="fas fa-font"))
-#             db_session.add(AxFieldType(
-#                 tag="AxString",
-#                 parent="group-string",
-#                 default_db_name="string",
-#                 position=1,
-#                 value_type="VARCHAR(255)",
-#                 is_inline_editable=True,
-#                 icon="fas fa-font"))
-#             db_session.add(AxFieldType(
-#                 tag="AxEmail",
-#                 parent="group-string",
-#                 default_db_name="email",
-#                 position=2,
-#                 value_type="VARCHAR(255)",
-#                 is_inline_editable=True,
-#                 icon="fas fa-font"))
-#             db_session.add(AxFieldType(
-#                 tag="AxTelephone",
-#                 parent="group-string",
-#                 default_db_name="telephone",
-#                 position=3,
-#                 value_type="VARCHAR(255)",
-#                 is_columnn_avalible=True,
-#                 is_inline_editable=True,
-#                 icon="fas fa-font"))
-
-#             # Decoration
-#             db_session.add(AxFieldType(
-#                 tag='group-decoration',
-#                 is_group=True,
-#                 position=4,
-#                 icon="fas fa-code"))
-#             db_session.add(AxFieldType(
-#                 tag="AxHtml",
-#                 parent="group-decoration",
-#                 default_db_name="html",
-#                 position=1,
-#                 is_virtual=True,
-#                 virtual_source='guid',
-#                 is_display_backend_avalible=True,
-#                 icon="fas fa-code"))
-
-#             # Text
-#             db_session.add(AxFieldType(
-#                 tag='group-text',
-#                 name="types.text",
-#                 is_group=True,
-#                 position=5,
-#                 icon="fas fa-align-left"))
-#             db_session.add(AxFieldType(
-#                 tag="AxText",
-#                 parent="group-text",
-#                 default_db_name="text",
-#                 position=1,
-#                 value_type="TEXT",
-#                 icon="fas fa-align-left"))
-#             db_session.add(AxFieldType(
-#                 tag="AxMarkdown",
-#                 parent="group-text",
-#                 default_db_name="markdown",
-#                 position=2,
-#                 value_type="TEXT",
-#                 is_always_whole_row=True,
-#                 icon="fas fa-align-left"))
-
-#             # Number
-#             db_session.add(AxFieldType(
-#                 tag='group-number',
-#                 is_group=True,
-#                 position=6,
-#                 icon="fas fa-hashtag"))
-#             db_session.add(AxFieldType(
-#                 tag="AxInteger",
-#                 parent="group-number",
-#                 default_db_name="integer",
-#                 position=1,
-#                 value_type="INT",
-#                 comparator="number",
-#                 is_inline_editable=True,
-#                 is_columnn_avalible=True,
-#                 icon="fas fa-hashtag"))
-#             db_session.add(AxFieldType(
-#                 tag="AxDecimal",
-#                 parent="group-number",
-#                 default_db_name="decimal",
-#                 position=2,
-#                 value_type="DECIMAL(65,2)",
-#                 comparator="number",
-#                 is_columnn_avalible=True,
-#                 is_inline_editable=True,
-#                 icon="fas fa-hashtag"))
-#             db_session.add(AxFieldType(
-#                 tag="AxIntSlider",
-#                 parent="group-number",
-#                 default_db_name="intSlider",
-#                 position=1,
-#                 value_type="INT",
-#                 comparator="number",
-#                 is_inline_editable=True,
-#                 icon="fas fa-hashtag"))
-
-#             # Boolean
-#             db_session.add(AxFieldType(
-#                 tag='group-boolean',
-#                 is_group=True,
-#                 position=7,
-#                 icon="fas fa-toggle-on"))
-#             db_session.add(AxFieldType(
-#                 tag="AxCheckbox",
-#                 parent="group-boolean",
-#                 default_db_name="checkbox",
-#                 position=1,
-#                 value_type="BOOL",
-#                 is_inline_editable=True,
-#                 is_columnn_avalible=True,
-#                 icon="far fa-check-square"))
-#             db_session.add(AxFieldType(
-#                 tag="AxSwitch",
-#                 parent="group-boolean",
-#                 default_db_name="switch",
-#                 position=1,
-#                 value_type="BOOL",
-#                 is_inline_editable=True,
-#                 is_columnn_avalible=True,
-#                 icon="fas fa-toggle-on"))
-
-#             # Relationship
-#             db_session.add(AxFieldType(
-#                 tag='group-relationship',
-#                 is_group=True,
-#                 position=8,
-#                 icon="fas fa-link"))
-#             db_session.add(AxFieldType(
-#                 tag="Ax1to1",
-#                 parent="group-relationship",
-#                 default_name="types.ax-1to1-default",
-#                 default_db_name="toOne",
-#                 position=1,
-#                 value_type="GUID",
-#                 is_inline_editable=False,
-#                 is_columnn_avalible=False,
-#                 icon="fas fa-link"))
-#             db_session.add(AxFieldType(
-#                 tag="Ax1tom",
-#                 parent="group-relationship",
-#                 default_db_name="toMany",
-#                 position=2,
-#                 value_type="JSON",
-#                 is_backend_available=True,
-#                 is_columnn_avalible=False,
-#                 is_inline_editable=False,
-#                 icon="fas fa-link"))
-#             db_session.add(AxFieldType(
-#                 tag="Ax1tomTable",
-#                 parent="group-relationship",
-#                 default_db_name="toManyTable",
-#                 position=3,
-#                 value_type="JSON",
-#                 is_backend_available=True,
-#                 is_columnn_avalible=False,
-#                 is_inline_editable=False,
-#                 icon="fas fa-link"))
-#             db_session.add(AxFieldType(
-#                 tag="Ax1to1Children",
-#                 parent="group-relationship",
-#                 default_db_name="toOneChildren",
-#                 position=4,
-#                 is_virtual=True,
-#                 virtual_source='guid',
-#                 icon="fas fa-link"))
-
-#             #Date and Time
-#             db_session.add(AxFieldType(
-#                 tag='group-date',
-#                 is_group=True,
-#                 position=9,
-#                 icon="fas fa-calendar"))
-#             db_session.add(AxFieldType(
-#                 tag="AxDate",
-#                 parent="group-date",
-#                 default_db_name="date",
-#                 position=1,
-#                 value_type="TIMESTAMP",
-#                 comparator="date",
-#                 is_inline_editable=True,
-#                 is_columnn_avalible=True,
-#                 icon="fas fa-calendar"))
-
-#             # List
-#             db_session.add(AxFieldType(
-#                 tag='group-list',
-#                 is_group=True,
-#                 position=10,
-#                 icon="fas fa-list"))
-#             db_session.add(AxFieldType(
-#                 tag="AxChoise",
-#                 parent="group-list",
-#                 default_db_name="choise",
-#                 position=1,
-#                 value_type="VARCHAR(255)",
-#                 is_inline_editable=True,
-#                 icon="fas fa-list"))
-#             db_session.add(AxFieldType(
-#                 tag="AxRadio",
-#                 parent="group-list",
-#                 default_db_name="radio",
-#                 position=1,
-#                 value_type="VARCHAR(255)",
-#                 is_inline_editable=True,
-#                 icon="fas fa-list"))
-#             db_session.add(AxFieldType(
-#                 tag="AxTags",
-#                 parent="group-list",
-#                 default_db_name="tags",
-#                 position=1,
-#                 value_type="JSON",
-#                 is_inline_editable=True,
-#                 icon="fas fa-list"))
-#             db_session.add(AxFieldType(
-#                 tag="AxRadioSurvey",
-#                 parent="group-list",
-#                 default_db_name="survey",
-#                 position=1,
-#                 value_type="JSON",
-#                 is_inline_editable=False,
-#                 icon="fas fa-poll"))
-
-#             # Images
-#             db_session.add(AxFieldType(
-#                 tag='group-images',
-#                 is_group=True,
-#                 position=11,
-#                 icon="fas fa-image"))
-#             db_session.add(AxFieldType(
-#                 tag="AxImageCropDb",
-#                 parent="group-images",
-#                 position=4,
-#                 default_db_name="cropImage",
-#                 is_backend_available=True,
-#                 value_type="BLOB",
-#                 icon="fas fa-image"))
-
-#             # Files
-#             db_session.add(AxFieldType(
-#                 tag='group-files',
-#                 is_group=True,
-#                 position=12,
-#                 icon="fas fa-file"))
-#             db_session.add(AxFieldType(
-#                 tag="AxFiles",
-#                 parent="group-files",
-#                 position=1,
-#                 default_db_name="files",
-#                 value_type="JSON",
-#                 is_backend_available=True,
-#                 icon="fas fa-file"))
-
-#             # Users
-#             db_session.add(AxFieldType(
-#                 tag='group-users',
-#                 is_group=True,
-#                 position=13,
-#                 icon="fas fa-users"))
-#             db_session.add(AxFieldType(
-#                 tag="AxUsers",
-#                 parent="group-users",
-#                 position=1,
-#                 default_db_name="users",
-#                 is_columnn_avalible=True,
-#                 value_type="JSON",
-#                 icon="fas fa-user-friends"))
-#             db_session.add(AxFieldType(
-#                 tag="AxSingleUser",
-#                 parent="group-users",
-#                 position=2,
-#                 default_db_name="user",
-#                 is_columnn_avalible=True,
-#                 value_type="VARCHAR(255)",
-#                 icon="fas fa-user"))
-#             db_session.add(AxFieldType(
-#                 tag="AxAuthor",
-#                 parent="group-users",
-#                 position=3,
-#                 default_db_name="author",
-#                 is_columnn_avalible=True,
-#                 is_backend_available=True,
-#                 value_type="VARCHAR(255)",
-#                 is_updated_always=True,
-#                 icon="fas fa-user-tag"))
-
-#             # Communication
-#             db_session.add(AxFieldType(
-#                 tag='group-communication',
-#                 is_group=True,
-#                 position=14,
-#                 icon="fas fa-comments"))
-#             db_session.add(AxFieldType(
-#                 tag="AxComments",
-#                 parent="group-communication",
-#                 position=4,
-#                 default_db_name="comments",
-#                 value_type="GUID",
-#                 is_backend_available=True,
-#                 is_updated_always=True,
-#                 icon="fas fa-comments"))
-#             db_session.add(AxFieldType(
-#                 tag="AxApproval",
-#                 parent="group-communication",
-#                 position=4,
-#                 default_db_name="approval",
-#                 value_type="JSON",
-#                 is_backend_available=True,
-#                 icon="fas fa-hands-helping"))
-
-#             # Payment
-#             db_session.add(AxFieldType(
-#                 tag='group-payment',
-#                 is_group=True,
-#                 position=14,
-#                 icon="fas fa-money-bill-alt"))
-#             db_session.add(AxFieldType(
-#                 tag="AxPaymentStripe",
-#                 parent="group-payment",
-#                 position=4,
-#                 default_db_name="stripe",
-#                 value_type="JSON",
-#                 is_backend_available=True,
-#                 icon="fab fa-stripe-s"))
-#             db_session.add(AxFieldType(
-#                 tag="AxPaymentYandex",
-#                 parent="group-payment",
-#                 position=4,
-#                 default_db_name="kassa",
-#                 value_type="JSON",
-#                 is_backend_available=True,
-#                 icon="fab fa-yandex"))
-
-#             db_session.commit()
-#     except Exception:
-#         logger.exception('Failed creating default AxFieldTypes')
-#         raise
 
 
 def create_field_type(db_session, item):
@@ -576,47 +174,152 @@ def update_field_type(field_types, item):
     """ Update AxFieldType from yaml data if needed """
     for ax_field in field_types:
         if ax_field.tag == item['tag']:
-
+            # TODO do this from list in loop!
             if 'name' in item and ax_field.name != item['name']:
                 ax_field.name = item['name']
             if 'position' in item and ax_field.position != item['position']:
                 ax_field.position = item['position'],
-            if 'default_name' in item and ax_field.default_name != item['default_name']:
+            if ('default_name' in item
+                    and ax_field.default_name != item['default_name']):
                 ax_field.name = item['default_name']
-            if 'default_db_name' in item and ax_field.default_db_name != item['default_db_name']:
+            if ('default_db_name' in item
+                    and ax_field.default_db_name != item['default_db_name']):
                 ax_field.default_db_name = item['default_db_name']
-            if 'value_type' in item and ax_field.value_type != item['value_type']:
+            if ('value_type' in item
+                    and ax_field.value_type != item['value_type']):
                 ax_field.value_type = item['value_type']
             if 'parent' in item and ax_field.parent != item['parent']:
                 ax_field.parent = item['parent']
             if 'icon' in item and ax_field.icon != item['icon']:
                 ax_field.icon = item['icon']
-            if 'comparator' in item and ax_field.comparator != item['comparator']:
+            if ('comparator' in item
+                    and ax_field.comparator != item['comparator']):
                 ax_field.comparator = item['comparator']
-            if 'virtual_source' in item and ax_field.virtual_source != item['virtual_source']:
+            if ('virtual_source' in item and
+                    ax_field.virtual_source != item['virtual_source']):
                 ax_field.virtual_source = item['virtual_source']
-            if 'is_virtual' in item and ax_field.is_virtual != item['is_virtual']:
+            if ('is_virtual' in item and
+                    ax_field.is_virtual != item['is_virtual']):
                 ax_field.is_virtual = item['is_virtual']
-            if 'is_readonly' in item and ax_field.is_readonly != item['is_readonly']:
+            if ('is_readonly' in item and
+                    ax_field.is_readonly != item['is_readonly']):
                 ax_field.is_readonly = item['is_readonly']
-            if 'is_inline_editable' in item and ax_field.is_inline_editable != item['is_inline_editable']:
+            if ('is_inline_editable' in item
+                    and ax_field.is_inline_editable
+                    != item['is_inline_editable']):
                 ax_field.is_inline_editable = item['is_inline_editable']
-            if 'is_backend_available' in item and ax_field.is_backend_available != item['is_backend_available']:
+            if ('is_backend_available' in item
+                    and ax_field.is_backend_available
+                    != item['is_backend_available']):
                 ax_field.is_backend_available = item['is_backend_available']
-            if 'is_display_backend_avalible' in item and ax_field.is_display_backend_avalible != item['is_display_backend_avalible']:
-                ax_field.is_display_backend_avalible = item['is_display_backend_avalible']
-            if 'is_columnn_avalible' in item and ax_field.is_columnn_avalible != item['is_columnn_avalible']:
+            if ('is_display_backend_avalible' in item
+                    and ax_field.is_display_backend_avalible
+                    != item['is_display_backend_avalible']):
+                the_item = item['is_display_backend_avalible']
+                ax_field.is_display_backend_avalible = the_item
+            if ('is_columnn_avalible' in item and
+                    ax_field.is_columnn_avalible
+                    != item['is_columnn_avalible']):
                 ax_field.is_columnn_avalible = item['is_columnn_avalible']
-            if 'is_updated_always' in item and ax_field.is_updated_always != item['is_updated_always']:
+            if ('is_updated_always' in item and
+                    ax_field.is_updated_always != item['is_updated_always']):
                 ax_field.is_updated_always = item['is_updated_always']
             if 'is_group' in item and ax_field.is_group != item['is_group']:
                 ax_field.is_group = item['is_group']
-            if 'is_always_whole_row' in item and ax_field.is_always_whole_row != item['is_always_whole_row']:
+            if ('is_always_whole_row' in item and
+                    ax_field.is_always_whole_row
+                    != item['is_always_whole_row']):
                 ax_field.is_always_whole_row = item['is_always_whole_row']
 
 
+def collect_ax_stats():
+    """ Collect Ax usage statistics """
+    with ax_model.scoped_session() as db_session:
+        values = {}
+        values['host'] = os.environ.get('AX_HOST', None)
+        values['url'] = os.environ.get('AX_URL', None)
+        values['dialect'] = os.environ.get('AX_DB_DIALECT', None)
+        values['cache'] = os.environ.get('AX_CACHE_MODE', None)
+        values['workersNum'] = os.environ.get('AX_SANIC_WORKERS', None)
+        values['fingerprint'] = uuid.getnode()
+        values['clientGuid'] = ax_auth.client_guid
+        values['axVersion'] = os.environ.get('AX_VERSION', None)
+        values['usersNum'] = db_session.query(AxUser).filter(
+            AxUser.is_group.is_(False)).count()
+        values['formsNum'] = db_session.query(AxForm).filter(
+            AxForm.is_folder.is_(False)).count()
+        # dbSize - #TODO how to do it?
+        # sslUsed
+        if os.environ.get('SSL_CERT_ABSOLUTE_PATH', None):
+            values['sslUsed'] = True
+
+        # actionCodeUsed
+        if db_session.query(AxAction).filter(AxAction.code.isnot(None)).first():
+            values['actionCodeUsed'] = True
+
+        # gridCodeUsed
+        if db_session.query(AxGrid).filter(AxGrid.code.isnot(None)).first():
+            values['gridCodeUsed'] = True
+
+        # roleCodeUsed
+        if db_session.query(AxRole).filter(AxRole.code.isnot(None)).first():
+            values['roleCodeUsed'] = True
+
+        # adminEmails
+        admin_emails = []
+        admin_group = db_session.query(AxUser).filter(
+            AxUser.is_admin.is_(True)
+        ).filter(
+            AxUser.is_group.is_(True)
+        ).first()
+        if admin_group:
+            for usr in admin_group.users:
+                if usr.email != 'default@ax-workflow.com':
+                    admin_emails.append(usr.email)
+
+        values['adminEmails'] = ", ".join(admin_emails)
+
+        # fieldUsage
+        # ax_fields = db_session.query(AxField.field_type_tag).filter(
+        #     AxField.is_tab.is_(False)
+        # ).all()
+        # field_dict = {}
+        # for fld in ax_fields:
+        #     if fld.field_type_tag not in field_dict:
+        #         field_dict[fld.field_type_tag] = 1
+        #     else:
+        #         field_dict[fld.field_type_tag] += 1
+        # values['fieldUsage'] = field_dict
+        this.stats = values
+
+
+async def send_stats():
+    """ Sends usage statistics to Ax sidekick server """
+    # data = {
+    #     "host": "hostHost",
+    #     "usersNum": 10
+    # }
+    value_str = json.dumps(this.stats).replace('"', '\\"')
+    query_str = (
+        "    mutation{"
+        "        doAction("
+        "            formDbName: \"AxUsageStats\""
+        "            actionDbName: \"newStats\""
+        f"            values: \"{value_str}\""
+        "        ) {"
+        "            ok"
+        "        }"
+        "    }"
+    )
+    json_data = {'query': query_str}
+    ret_str = await ax_misc.post_json(
+        'http://127.0.0.1:8080/api/graphql', json_data, 5)
+    return ret_str
+
+
 def sync_field_types():
-    """ Read field_types.yaml and check if any fields need to be created or modified """
+    """ Read field_types.yaml and check if any fields need to be
+        created or modified """
     field_types_yaml = ax_misc.path('field_types.yaml')
 
     with ax_model.scoped_session() as db_session:
@@ -635,7 +338,8 @@ def sync_field_types():
                 if isinstance(item, dict) and 'tag' in item:
                     tag = item['tag']
                     if tag in existing_tags:
-                        update_field_type(field_types=ax_field_types, item=item)
+                        update_field_type(
+                            field_types=ax_field_types, item=item)
                     else:
                         create_field_type(db_session=db_session, item=item)
 
@@ -679,5 +383,11 @@ def init_migration():
         create_default_pages()
     else:
         sync_field_types()
+        collect_ax_stats()
+        try:
+            asyncio.get_event_loop().run_until_complete(send_stats())
+        except Exception:
+            pass
+
         # if database_fits_metadata() is False:
         #     upgrade_database()

@@ -60,24 +60,17 @@ METRICS
     Collected on startup.
 
     Data:
+        host
+        Computer fingerprint - uuid.getnode()
+        Client id
         Number of users
-        Admin emails
         Number of forms
         Database size
-        Computer fingerprint
-        Client id if license
-        ip address
-        Wich pro features are used?
-            AxAction code
-            AxGrid code
-            DynamicRole
-            AxFields
-            - Payment fields
-            - html
-            - Numeration
-            - 1tom table
-            - 1to1 children
-            - Approval path
+        AxAction code
+        AxGrid code
+        DynamicRole
+        Admin emails
+        AxFields
 
 
 ---------------------------
