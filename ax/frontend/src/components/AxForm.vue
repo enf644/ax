@@ -74,7 +74,7 @@
                   <i class='fas fa-bars'></i>
                 </v-btn>
               </v-badge>
-              <span @click='openFormBlank()' class='form-header'>
+              <span @click='openFormBlank()' class='form-header' data-cy='ax-form-header'>
                 <i :class='iconClass'></i>
                 &nbsp; {{name}} &nbsp;
               </span>

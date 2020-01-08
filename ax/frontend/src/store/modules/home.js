@@ -17,6 +17,7 @@ const getDefaultState = () => {
     showErrorMsg: null,
     showToastMsg: null,
     marketActiveRepo: null,
+    marketSearchString: null,
     clientGuid: null,
     maxUsers: null
   }
@@ -324,6 +325,9 @@ const mutations = {
   setMarketActiveRepo(state, repo) {
     state.marketActiveRepo = repo;
   },
+  setMarketSearchString(state, str) {
+    state.marketSearchString = str;
+  },
   setClientGuid(state, guid) {
     state.clientGuid = guid;
   },
@@ -398,7 +402,7 @@ const getters = {
           data: {
             position: form.position,
             form: form.dbName,
-            grid: 'Default'
+            grid: null
           }
         };
         treeData.push(node);

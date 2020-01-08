@@ -10,20 +10,18 @@
       <div data-cy='forms-tree' ref='tree'></div>
     </div>
     <br />
-    <v-btn @click='openFormModal' class='mb-3 home-btn' data-cy='create-form-btn' small>
+    <v-btn @click='openFormModal' class='home-btn' data-cy='create-form-btn' small>
       <i class='fas fa-plus'></i>
       &nbsp; {{$t("home.create-form-btn")}}
+    </v-btn>
+    <v-btn @click='openFolderModal()' class='ml-2 home-btn' data-cy='create-folder-btn' small>
+      <i class='far fa-folder'></i>
     </v-btn>
 
     <!--  transition='animated flipInX faster' -->
     <modal adaptive class='mb-3' height='auto' name='new-form' scrollable>
       <TheNewForm @created='closeFormModal' />
     </modal>
-    <br />
-    <v-btn @click='openFolderModal()' class='home-btn' data-cy='create-folder-btn' small>
-      <i class='far fa-folder'></i>
-      &nbsp; {{$t("home.create-folder-btn")}}
-    </v-btn>
 
     <modal adaptive height='auto' name='new-folder'>
       <TheNewFolder
@@ -40,24 +38,24 @@
     <br />
     <br />
     <h3 class='manage-label'>{{$t("home.settings")}}:</h3>
-    <v-btn class='mb-3 home-btn' small to='/admin/explorer'>
-      <i class='fas fa-database'></i>
-      &nbsp; {{$t("home.explorer-btn")}}
-    </v-btn>
-    <br />
-    <v-btn class='mb-3 home-btn' small to='/admin/users'>
+    <v-btn class='mb-3 home-btn' data-cy='manage-users-btn' small to='/admin/users'>
       <i class='far fa-user'></i>
       &nbsp; {{$t("home.users-btn")}}
     </v-btn>
     <br />
-    <v-btn class='mb-3 home-btn' small to='/admin/marketplace'>
+    <v-btn class='mb-3 home-btn' data-cy='marketplace-btn' small to='/admin/marketplace'>
       <i class='fas fa-store'></i>
       &nbsp; {{$t("home.marketplace-btn")}}
     </v-btn>
     <br />
-    <v-btn class='mb-3 home-btn' small to='/admin/pages'>
+    <v-btn class='mb-3 home-btn' data-cy='pages-designer-btn' small to='/admin/pages'>
       <i class='fas fa-desktop'></i>
       &nbsp; {{$t("home.pages-designer-btn")}}
+    </v-btn>
+    <br />
+    <v-btn class='mb-3 home-btn' data-cy='data-explorer-btn' small to='/admin/explorer'>
+      <i class='fas fa-database'></i>
+      &nbsp; {{$t("home.explorer-btn")}}
     </v-btn>
   </div>
 </template>

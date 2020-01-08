@@ -37,7 +37,7 @@
             "update-header": "Updating form",
             "form-name": "Form name",
             "form-database-name": "Database table name",
-            "form-database-name-hint": "Must be PascalCase. Used as database table name and Graphql fields",
+            "form-database-name-hint": "Must be PascalCase. Used as database table name and as GraphQL query name",
             "create-btn": "Create new form",
             "update-btn": "Update form",
             "name-required": "Form name is required",
@@ -178,7 +178,9 @@
         "action-ok-toast": "Action [{action}] performed",
         "reload-success": "Form reloaded",
         "terminal-header": "Action terminal",
-        "row-locked": "Current row is locked. Action is running. Please, try later."
+        "row-locked": "Current row is locked. Action is running. Please, try later.",
+        "copy-url": "Copy form url",
+        "copy-tag": "Copy form code"
     },
     "grids": {
         "add-column-toast": "Column added",
@@ -559,6 +561,91 @@
         "repo-name": "Github repo name",
         "repo-name-hint": "Example: enf644/pitch-purchase-request",
         "incorect-repo-name": "Incorect repo name",
-        "create-readme-input": "Create Readme.md from root page"
+        "create-readme-input": "Create Readme.md from root page",
+        "search-label": "Search apps"
+    },
+    "tour": {
+        "nextLabel": "Next",
+        "prevLabel": "Previous",
+        "skipLabel": "Skip",
+        "doneLabel": "Done",
+        "admin-home": {
+            "step1": "Welcome to Ax workflow tour. <br><br>Ax allows you to create workflow applications. <br><br> Ax application is a collection of forms that can be published to Ax Marketplace or can be installed from the marketplace. <br><br> Each form has a workflow and multiple grids to display data.<br><br>Currently, you are on the Home page. Lets walkthrough available actions on the current page.",
+            "step2": "Click the Create button to create a new form.",
+            "step3": "Click this button to create a form folder. Folders are meant to organize your forms in a tree-like structure. Try dragging the created forms on folders or other forms. Additionally, folders are used for creating Ax workflow applications. Group all forms of your application inside one folder in order to create the Application package. For more information, please read the documentation on creating workflow applications.",
+            "step4": "\"Manage users\" page allows creating new users and groups. If this is your first use of Ax, please create administrator user and delete the default one (default@ax-workflow.com).",
+            "step5": "\"Marketplace\" page allows installing workflow applications from packages, GitHub repository or from Ax listing. If you are about to create a workflow application - we recommend searching in the marketplace first. As someone might already have published the app you need.",
+            "step6": "\"Page designer\" is used to create a page structure for end-users.<ul><li>There are several ways to access workflow app for your users:<li>Ax pages - a custom page structure with permissions. Ax grids and forms can be placed inside the page.</li><li>Ax forms and grids are accessed by direct URLs.</li><li>GraphQL query.</li><li>Ax forms and grids are placed inside external web-sites as html5 web-component.</li></ul><br><br>For more information, please read the documentation on publishing forms and grids.",
+            "step7": "\"Data explorer\" page allows administrators to get quick access to the data of all Ax forms."
+        },
+        "admin-form": {
+            "step1": "Form creation consists of three steps:<ul><li>Form fields construction - Drag and drop fields to the form to match the needs of your application.</li><li>Grids construction - Drag and drop form fields to the table in order to represent created data of form. The form can have multiple grids for different uses. For example one for admins and other for users.</li><li>Workflow construction - Create form states and actions that move the form record from one state to another. Set form permissions for each state of the workflow.</li></ul>",
+            "step2": "We start by adding fields to our new form.<br><br>Click on the field type to add it to the form. You can drag and drop a field type to the \"form fields\" tree in order to place a new field in a specific place.<br><br>Click the life-ring icons near every field type to know more about Ax field types.",
+            "step3": "New fields are added to \"form-fields\" tree. Every node consists of four elements: <ul><li>Field type icon - Represents field type</li><li>Field name - Label that is shown on form</li><li>Database name - The name that is used as a database column and as GraphQL field. Do not change if you don't know what it is.</li><li>Settings button - Opens modal with field options. Options are specific for every field type but almost every type has \"required\" and \"field takes whole row\" options.</li></ul> <br><br>In order to delete a field, you must select it by clicking on the Field type icon and pressing the Delete button on the keyboard.",
+            "step4": "Ax form is responsive. Drag drawer dividers to see how your form behaves for mobile.",
+            "step5": "Click \"Add tab\" button to create a form tab. Form tabs are used to organize form fields. Tab is visible only if it contains fields and if the user has permissions for those fields.",
+            "step6": "\"Form options\" button opens up a modal window which allows for :<ul><li>Change name of form</li><li>Change database-name of form (Used as database table name and GraphQL query name)</li><li>Change 1toM label - used if the current form is referenced in another form as 1to1 or 1toM field.</li><li>Change form icon</li><li>Delete form</li></ul>",
+            "step7": "\"Copy Url\" saves the current form URL to your clipboard. Send this URL to end-users to allow them to create new form records. (Don't forget to set permissions).",
+            "step8": "If you want a link to a specific record, you can click the form header in order to open the form in another tab. (Not working inside constructor. Create record in order to try it out)",
+            "step9": "\"Copy html tag\" saves the web-component tag to be used in Ax Pages or in external web-sites.<br><br><b>&lt;ax-form db_name='someFormDbName'/&gt;</b>"
+        },
+        "admin-grids": {
+            "step1": "On this page you can create and configure form grids.  Grids are a way to display records created by users. The form can have multiple grids for every need.",
+            "step2": "\"Available fields\" tree contains fields of the current form. Click on the field to add it to the grid. You can drag and drop a field to the \"grid columns\" tree in order to place a field in a specific place.",
+            "step3": "\"Grid columns\" tree contains current grid columns. Drag and drop columns to reorder them. In order to delete a column, you must select it by clicking on it and pressing the Delete button on the keyboard.",
+            "step4": "\"Grid settings\" button opens up a modal window which allows for: <ul><li>Change name of grid</li><li>Change database-name of the grid(Used as GraphQL query name)</li><li>Set the current grid as default. The default grid is used if grid name is not specified in GraphQL query or &lt;ax-grid/&gt; web-component.</li></ul>",
+            "step5": "Click on the current grid name to show a dropdown list of all available grids. Click \"Create new grid\" to create a new grid.",
+            "step6": "You can configure the grid preview - change grid columns width, grid filters, sorting. Clicking on the \"Save grid model\" button will save these settings for the current grid.",
+            "step7": "<b>[Pro feature]</b> <br><br> \"Query constructor\" allows you to modify SQL query used for the current grid. You can use this feature to filter records on server-side. For example - query only records where author is the current user.",
+            "step8": "Enables quick search input on top of the grid. Searches text in all columns of currently shown records.",
+            "step9": "Shows title on top of the grid",
+            "step10": "Flat mode is used to disable grid scroll ability. All records are displayed right away with no scroll. Do not use this for large data sets.",
+            "step11": "Enabling action subscription reloads the grid on every performed action by any user. Enabling this option for high load forms may cause performance issues. Please read the documentation for more information.",
+            "step12": "Enable/disable column resizing",
+            "step13": "Enable/disable grid filtering",
+            "step14": "Enable/disable grid sorting",
+            "step15": "Enable/disable Form modal window on row click. Sometimes you need to show only grid data.",
+            "step16": "Show/hide available Start actions at bottom of the grid. Start actions are performed to create new records. See the workflow constructor page tour for more info.",
+            "step17": "Sets row height of grid rows. If some of the columns are images you might want to increase the height of rows.",
+            "step18": "Set the number of pinned columns. Useful when you have many columns."
+        },
+        "admin-workflow": {
+            "step1": "Every form record in Ax has a \"State\" attribute. Form states are shown as rounded rectangles.<br><br>Users move a record from one state to another by performing \"Actions\". Actions are shown as arrows from one state to another.<br><br>By default, the workflow has only one state \"Created\" and three actions - \"Create record\", \"Update\" and \"Delete\"",
+            "step2": "There are three technical states:<ul><li><b>Start</b> - Actions from the Start state are creating new form records. The Start state means that the record does not yet exist. Start actions are available in grids. You can modify field permissions for Start state.</li><li><b>Deleted</b> - Actions to the Deleted state are deleting records from the database.</li><li><b>All</b> - Actions from the All state are available on all states.</li></ul>",
+            "step3": "Create a new State by double-clicking on an empty spot in workflow constructor. <br><br>Drag states to change there location.<br><br>Hold mouse over State and press \"Del\" on the keyboard to delete it.<br><br>Click on the State to change field permissions, rename it or to delete it.",
+            "step4": "To create new action you need to click on a state, hold the mouse button for 0,5 sec, then drag to another state to create an Action. <br><br>While creating new action you can drag it to the same state to create \"Self-action\" (like the default \"Update\" action). Self actions do not change state, but form values are updated.<br><br>Hold and drag the name of created action to make the line curved. Useful for visually organizing actions in the workflow.<br><br>Click on the action name to open settings.<br><br>Hold mouse over action name and press the \"Del\" button on the keyboard to delete it.",
+            "step5": "Available action settings are:<ul><li><b>Action name</b> - Label of button that displayed to users</li><li><b>Action code name</b> - Ax allows you to call form Actions from enother form actions using python code. In order to do so, you must specify a code-name. Additionally, actions can be called as GraphQL mutations. The name of the mutation is the same as code-name.</li><li><b>Roles that can perform the action</b> - A list of workflow roles that can perform this action.</li><li><b>Actions python code</b> - <Pro feature> Custom python code to be executed when action is performed. More info on the next hint.</li><li><b>Confirmation text</b> - If this field is not empty the user will be prompted the confirmation when he clicks the action button. Default \"Delete\" action has confirmation text.</li><li><b>Close modal on action</b> - If enabled the form will be closed after an action is performed. (Only works if the form was opened from the grid)</li></ul>",
+            "step6": "<b>[Pro feature]</b> <br><br>Ax allows executing of custom python code on the run while performing workflow actions. Form and user data is available inside the python code. Here are some examples of how code can be used:<ul><li>Send emails with form data</li><li>Check form values and abort actions if certain conditions are not met</li><li>Calculate field values</li><li>Perform actions on other records or even other forms</li><li>Generate documents - pdf, word, excel</li><li>Scrap information from external web-sites</li><li>Execute custom SQL query on data</li><li>Call external APIs </li></ul><br><br>Press ctrl+enter inside code editor to make it full-screen.<br><br>Press ctrl+s inside code editor to save current action.",
+            "step7": "Click this button to create a new workflow role. <br><br>Roles are used in workflow to define a group of users that can perform certain actions and have access to records on certain states.",
+            "step8": "Drag the rounded rectangle of role to the action to allow this role users to perform this action<br><br>Drag the rounded rectangle of role to the state to allow this role users to view or modify form records having this State.<br><br>Hold a mouse on the rounded rectangle of role to highlight available states and actions for this role.<br><br>Click on a role to open setting modal window.",
+            "step9": "Available role settings:<ul><li><b>Role name</b> - Used only inside workflow constructor</li><li><b>Role users</b> - The list of users or user groups that are associated with the current role. </li></ul><br><br>Two technical user groups can be added to the role:<ul><li><b>Everyone</b> - Anon, not signed-in users. Use this group if you want anyone to use your workflow</li><li><b>All Users</b> - All signed in Ax users</li></ul><br><br>You can delete the current role by clicking \"Delete button\"",
+            "step10": "After you added role to the State you can open the State modal window and set role field permissions.<br><br>Permissions can be different for every role and every field.",
+            "step11": "<b>[Pro feature]</b><br><br> \"Create a conditional role\" button creates a specific role that defined not by a list of users but by the execution of custom python code.<br><br>For example - \"The author\" condition role can check if the current user is the same as the user in \"author\" field of the record.<br><br>Note: conditional roles are only applied to form. Grids ignore conditional roles. Please use workflow roles to restrict grid columns access."
+        },
+        "admin-pages": {
+            "step1": "Ax Pages is a stand-alone web-application for end-users of Ax workflow apps. Basically it is a collection of HTML pages with tree-like navigation. Ax Pages comforts progressive web application requirements, so it can be installed as an application on android and ios phones.<br><br>The Page designer page of admin allows creating HTML pages structure for Ax pages.",
+            "step2": "Pages tree structure displays all pages. <br><br>Click the page name to set it active. When the page is active, you can modify it.<br><br>By default, the only \"Index\" page is created. ",
+            "step3": "Press the \"Plus\" button on the active page to add a sub-page.",
+            "step4": "Press the \"Cog\" button to open the page settings.<br><br>Available settings:<ul><li><b>Page name</b> - Displayed in the Ax Pages menu.</li><li><b>Page code name</b> - Used as URL for the page. If not set the GUID is used.</li><li><b>Page permissions</b> - List of users or user groups that can view the current page. By default, only administrators can view it.</li></ul><br><br>You can delete the current page.",
+            "step5": "When the page is active its code is displayed in the middle section and the preview is displayed in the right section of the designer.<br><br>You can use Markdown or HTML as a page code.<br><br>Press Ctrl+S to save code and refresh the preview.<br><br>Insert &lt;ax-grid form='SomeFormDbName' grid='SomeGridDbName' /&gt; tag in page to display a workflow grid. SomeFormDbName and SomeGridDbName are database names of form and grid. You can skip the grid attribute if you want a default grid.<br><br>Insert &lt;ax-form db_name='SomeFormDbName' row_guid='someGuid' /&gt; tag in page to display form of certain record. Skip row_guid attribute if you want to create new records. You can use AxNum field values as a row_guid. Check the AxNum field type hint for more info.",
+            "step6": "Drag the section divider to see how the page will be displayed on mobiles."
+        },
+        "users-manager": {
+            "step1": "\"Manage users\" page allows you to create and modify Ax users and groups.  <br><br>The Ax user is defined only by email and a short name. <br><br>If you need more data about users (full name, department, etc), please create Ax Form for that and link it to the user.",
+            "step2": "Displays a list of all active users. <br><br>Click on the user row to open the setting modal window.",
+            "step3": "Displays a list of all blocked users. Blocked users can not log in to Ax. The blocked users are not charged in <pro> version.",
+            "step4": "Click to create new Ax user",
+            "step5": "Create a user group.",
+            "step6": "The list of user groups. By default, only the administrator user group is created. Click on the group name to see the list of its users. <br><br>You can only add users or delete them from the group. If you want to modify Ax user - use \"All users\" page"
+        },
+        "admin-marketplace": {
+            "step1": "This is the Ax workflow application marketplace. This page allows you to install workflow applications. <br><br>Applications can be installed either from GitHub repo or by uploading a package file.<br><br>The marketplace has a curated list of workflow applications that you can search and install.",
+            "step2": "Search marketplace apps by name, description or tags.",
+            "step3": "Click on the application repo link to know more about workflow application. Read the description of forms and workflows. Check Github starts and issues. Check source code.",
+            "step4": "Click on the application row to copy its repo name to manual install input.",
+            "step5": "Click the \"Install from GitHub repo\" button to install the application.",
+            "step6": "Click the \"Upload app package\" button to install the application form a package file located on your computer.",
+            "step7": "<b>WARNING</b><br><br>Ax applications can potentially have harmful python code. <br><br>Please install applications only from trusted sources. <br><br>Please check the source code of applications before installing them. <br><br>Please make backups before installing apps on production instances."
+        }
     }
 }

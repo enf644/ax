@@ -59,7 +59,7 @@
             :form='options.form'
             :grid='options.grid'
             @selected='onGridSelected'
-            cy-data='to1Grid'
+            data-cy='to1Grid'
             to1_mode
           ></AxGrid>
         </div>

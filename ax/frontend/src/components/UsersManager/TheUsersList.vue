@@ -6,11 +6,11 @@
         &nbsp; {{$t("users.all-users-header")}}
       </h1>
       <div>
-        <v-btn @click='openNewUserModal' class='mb-3' data-cy='create-form-btn' primary small>
+        <v-btn @click='openNewUserModal' class='mb-3' data-cy='create-user-btn' primary small>
           <i class='fas fa-user-plus'></i>
           &nbsp; {{$t("users.create-user-btn")}}
         </v-btn>
-        <v-btn @click='gotoBlockedUsers' class='blocked-btn' small text>
+        <v-btn @click='gotoBlockedUsers' class='blocked-btn' data-cy='blocked-users-btn' small text>
           <i class='fas fa-user-slash'></i>
           &nbsp; {{$t("users.blocked-users-btn")}}
         </v-btn>

@@ -80,7 +80,7 @@
         <v-col class='mr-3'>
           <v-switch
             :label='this.locale("types.Ax1tomTable.settings-enable-add-relation")'
-            cy-data='settings-enableModal'
+            data-cy='settings-enableModal'
             v-model='changedOptions.enableAddRelation'
           ></v-switch>
         </v-col>

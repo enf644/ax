@@ -31,7 +31,7 @@
                   @click='deleteRoleFromState(role)'
                   class='breadcrumbs-action'
                   color='black'
-                  cy-data='delete-role'
+                  data-cy='delete-role'
                   icon
                   text
                 >
@@ -94,8 +94,9 @@ export default {
       nameRules: [
         v => !!v || this.$t('workflow.state.state-name-required'),
         v => v.length <= 255 || this.$t('common.lenght-error', { num: 255 }),
-        v => (v && this.nameIsAvalible)
-          || this.$t('workflow.state.name-not-avalible')
+        v =>
+          (v && this.nameIsAvalible) ||
+          this.$t('workflow.state.name-not-avalible')
       ]
     };
   },

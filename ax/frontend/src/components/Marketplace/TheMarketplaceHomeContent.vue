@@ -19,8 +19,16 @@ export default {
   data: () => ({
     apps: null
   }),
-  computed: {},
-  watch: {},
+  computed: {
+    searchString() {
+      return this.$store.state.home.marketSearchString;
+    }
+  },
+  watch: {
+    searchString(newValue) {
+      this.gridObj.gridOptions.api.setQuickFilter(newValue);
+    }
+  },
   mounted() {
     this.host = getAxHostProtocol();
     this.getApps();
@@ -50,11 +58,16 @@ export default {
         {
           headerName: 'Repo',
           field: 'repo',
-          width: 300,
+          width: 250,
           cellRenderer: params => {
             const url = `https://github.com/${params.value}`;
             return `<a href='${url}' target='_blank'>${params.value}</a>`;
           }
+        },
+        {
+          headerName: 'Tags',
+          field: 'tags',
+          width: 300
         }
       ];
 

@@ -1,5 +1,14 @@
 <template>
   <div>
+    <v-text-field
+      :label='locale("marketplace.search-label")'
+      @input='setMarketSearchString()'
+      data-cy='market-search-input'
+      outlined
+      prepend-inner-icon='fas fa-search'
+      v-model='marketSearchString'
+    ></v-text-field>
+
     <h3>{{locale("marketplace.manual-header")}}</h3>
     <v-form @submit.prevent='doRepoInstall' ref='form' v-model='valid'>
       <v-text-field
@@ -9,13 +18,13 @@
         v-model='repoName'
         validate-on-blur
       />
-      <v-btn @click='doRepoInstall' class='market-btn' small>
+      <v-btn @click='doRepoInstall' class='market-btn' data-cy='market-install-btn' small>
         <i class='fab fa-github'></i>
         &nbsp;
         {{locale("marketplace.github-app-btn")}}
       </v-btn>
     </v-form>
-    <v-btn class='market-btn' id='btnId' small>
+    <v-btn class='market-btn' data-cy='market-upload-btn' id='btnId' small>
       <i class='fas fa-puzzle-piece'></i>
       &nbsp;
       {{locale("marketplace.upload-app-btn")}}
@@ -71,7 +80,8 @@ export default {
             pattern.test(value) || this.$t('marketplace.incorect-repo-name')
           );
         }
-      }
+      },
+      marketSearchString: null
     };
   },
   computed: {
@@ -222,6 +232,9 @@ export default {
       if (this.$refs.form.validate()) {
         this.installFromRepo();
       }
+    },
+    setMarketSearchString() {
+      this.$store.commit('home/setMarketSearchString', this.marketSearchString);
     }
   }
 };

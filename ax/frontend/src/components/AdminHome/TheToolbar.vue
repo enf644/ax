@@ -21,16 +21,6 @@
       </v-btn>
       <v-btn
         :disabled='isNotConstructorPath'
-        :to='"/admin/" + this.$route.params.db_name + "/workflow"'
-        class='constructor-button'
-        small
-        text
-      >
-        <i class='fas fa-project-diagram'></i>
-        &nbsp; {{$t("home.toolbar.workflow-btn")}}
-      </v-btn>
-      <v-btn
-        :disabled='isNotConstructorPath'
         :to='"/admin/" + this.$route.params.db_name + "/grids/" + defaultGridDbName'
         class='constructor-button'
         small
@@ -39,11 +29,21 @@
         <i class='fas fa-columns'></i>
         &nbsp; {{$t("home.toolbar.grids-btn")}}
       </v-btn>
+      <v-btn
+        :disabled='isNotConstructorPath'
+        :to='"/admin/" + this.$route.params.db_name + "/workflow"'
+        class='constructor-button'
+        small
+        text
+      >
+        <i class='fas fa-project-diagram'></i>
+        &nbsp; {{$t("home.toolbar.workflow-btn")}}
+      </v-btn>
     </div>
 
     <div
       class='current-form-breadcrumb'
-      cy-data='current-form-breadcrumb'
+      data-cy='current-form-breadcrumb'
       id='grids-toolbar'
       v-show='currentFormDbName'
     >
@@ -54,7 +54,7 @@
         @click='openFormModal'
         class='breadcrumbs-action'
         color='black'
-        cy-data='update-form-btn'
+        data-cy='update-form-btn'
         icon
         text
       >
@@ -72,7 +72,7 @@
           @click='openGridModal'
           class='breadcrumbs-action'
           color='black'
-          cy-data
+          data-cy='grid-options-btn'
           icon
           text
           v-show='isGridsRoute'
@@ -80,7 +80,7 @@
           <i class='fas fa-cog breadcrumbs-action-i'></i>
         </v-btn>
 
-        <div class='grid-select' v-on='on' v-show='isGridsRoute'>
+        <div class='grid-select' data-cy='grid-select-btn' v-on='on' v-show='isGridsRoute'>
           {{currentGridName}}
           <span class='very-small'>total: {{totalGrids}}</span>
           <i class='fas fa-caret-down'></i>
@@ -120,6 +120,7 @@
     </modal>
 
     <v-spacer></v-spacer>
+
     <transition enter-active-class='animated fadeIn faster' name='fade'></transition>
     <div></div>
 
@@ -141,6 +142,7 @@
         </v-list-item>
       </v-list>
     </v-menu>
+    <AxTour class='ml-3'></AxTour>
   </v-app-bar>
 </template>
 
@@ -148,13 +150,15 @@
 import TheNewForm from '@/components/AdminHome/TheNewForm.vue';
 import TheGridModal from '@/components/ConstructorGrids/TheGridModal.vue';
 import ThePasswordChange from '@/components/UsersManager/ThePasswordChange.vue';
+import AxTour from '@/components/AxTour.vue';
 
 export default {
   name: 'admin-toolbar',
   components: {
     TheNewForm,
     TheGridModal,
-    ThePasswordChange
+    ThePasswordChange,
+    AxTour
   },
   data: () => ({
     userMenuOn: false
@@ -230,6 +234,10 @@ export default {
     }
   },
   methods: {
+    startTour() {
+      console.log('Start tour');
+      this.$tours['myTour'].start();
+    },
     doLogOut() {
       this.$store.dispatch('auth/logOut', true);
     },

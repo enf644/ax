@@ -1,28 +1,38 @@
 <template>
   <div>
     <h3>{{$t("form.columns-header")}}:</h3>
-    <div data-cy='fields-tree' ref='tree'></div>
+    <div data-cy='columns-tree' ref='tree'></div>
 
     <br />
     <v-divider></v-divider>
     <br />
 
+    <v-btn
+      @click='saveSortFilterModel()'
+      class='save-model-btn'
+      data-cy='save-grid-model-btn'
+      small
+    >
+      <i class='fas fa-sort-amount-down-alt'></i>
+      &nbsp;
+      {{$t("grids.save-filter-order-btn")}}
+    </v-btn>
+
     <v-badge class='drawer-toggle' color='error' overlap v-model='showProBadge'>
       <template v-slot:badge>
         <span class='drawer-toggle-errors'>{{showProBadge}}</span>
       </template>
-      <v-btn :disabled='proEnabled == false' @click='openQueryModal' small>
+      <v-btn
+        :disabled='proEnabled == false'
+        @click='openQueryModal'
+        data-cy='query-modal-btn'
+        small
+      >
         <i class='fas fa-filter'></i>
         &nbsp;
         {{$t("grids.query-modal-btn")}}
       </v-btn>
     </v-badge>
-
-    <v-btn @click='saveSortFilterModel()' class='save-model-btn' small>
-      <i class='fas fa-sort-amount-down-alt'></i>
-      &nbsp;
-      {{$t("grids.save-filter-order-btn")}}
-    </v-btn>
 
     <modal adaptive height='auto' name='query-modal' scrollable width='1000px'>
       <TheQueryModal @close='closeQueryModal' />
@@ -35,7 +45,7 @@
       :label='this.$t("grids.options-quick-search")'
       @change='saveOptions'
       class='options-switcher'
-      cy-data='options-quick-search'
+      data-cy='options-quick-search'
       v-model='changedOptions.enableQuickSearch'
     ></v-switch>
 
@@ -43,7 +53,7 @@
       :label='this.$t("grids.options-title")'
       @change='saveOptions'
       class='options-switcher'
-      cy-data='options-quick-search'
+      data-cy='options-enable-title'
       v-model='changedOptions.enableTitle'
     ></v-switch>
 
@@ -51,7 +61,7 @@
       :label='this.$t("grids.options-flat-mode")'
       @change='saveOptions'
       class='options-switcher'
-      cy-data='options-flat-mode'
+      data-cy='options-flat-mode'
       v-model='changedOptions.enableFlatMode'
     ></v-switch>
 
@@ -59,7 +69,7 @@
       :label='this.$t("grids.options-subscription")'
       @change='saveOptions'
       class='options-switcher'
-      cy-data='options-subscription'
+      data-cy='options-subscription'
       v-model='changedOptions.enableSubscription'
     ></v-switch>
 
@@ -67,7 +77,7 @@
       :label='this.$t("grids.options-columns-resize")'
       @change='saveOptions'
       class='options-switcher'
-      cy-data='options-columns-resize'
+      data-cy='options-columns-resize'
       v-model='changedOptions.enableColumnsResize'
     ></v-switch>
 
@@ -75,7 +85,7 @@
       :label='this.$t("grids.options-filtering")'
       @change='saveOptions'
       class='options-switcher'
-      cy-data='options-filtering'
+      data-cy='options-filtering'
       v-model='changedOptions.enableFiltering'
     ></v-switch>
 
@@ -83,7 +93,7 @@
       :label='this.$t("grids.options-soring")'
       @change='saveOptions'
       class='options-switcher'
-      cy-data='options-soring'
+      data-cy='options-soring'
       v-model='changedOptions.enableSorting'
     ></v-switch>
 
@@ -91,7 +101,7 @@
       :label='this.$t("grids.options-open-form")'
       @change='saveOptions'
       class='options-switcher'
-      cy-data='options-open-form'
+      data-cy='options-open-form'
       v-model='changedOptions.enableOpenForm'
     ></v-switch>
 
@@ -99,11 +109,11 @@
       :label='this.$t("grids.options-actions")'
       @change='saveOptions'
       class='options-switcher'
-      cy-data='options-actions'
+      data-cy='options-actions'
       v-model='changedOptions.enableActions'
     ></v-switch>
 
-    <v-subheader class='pl-0'>{{$t("grids.options-row-height")}}</v-subheader>
+    <v-subheader class='pl-0' data-cy='options-row-height'>{{$t("grids.options-row-height")}}</v-subheader>
     <v-slider
       @change='saveOptions'
       class='options-switcher'
@@ -113,7 +123,7 @@
       v-model='changedOptions.rowHeight'
     ></v-slider>
 
-    <v-subheader class='pl-0'>{{$t("grids.options-pinned")}}</v-subheader>
+    <v-subheader class='pl-0' data-cy='options-pinned'>{{$t("grids.options-pinned")}}</v-subheader>
     <v-slider
       @change='saveOptions'
       class='options-switcher'
@@ -377,6 +387,6 @@ export default {
   font-size: 14px !important;
 }
 .save-model-btn {
-  margin-top: 10px;
+  margin-bottom: 10px;
 }
 </style>

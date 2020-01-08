@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "serve_temp": "vue-cli-service serve --host 0.0.0.0 --port 8081 --public axy-20-enf644.c9users.io:8081",
-        "serve": "vue-cli-service serve --host 127.0.0.1 --port 8081 --public http://127.0.0.1:8081",
+        "serve": "vue-cli-service serve --host 127.0.0.1 --port 8081 --public http://127.0.0.1:8081 --max_old_space_size=8000",
         "build": "vue-cli-service build",
         "lint": "vue-cli-service lint",
         "test:e2e": "vue-cli-service test:e2e",
@@ -36,7 +36,7 @@
         "font-awesome-filetypes": "^2.1.0",
         "graphql": "^14.5.8",
         "graphql-tag": "^2.10.1",
-        "jQuery-QueryBuilder": "^2.5.2",
+        "intro.js": "^2.9.3",
         "jquery": "^3.4.1",
         "jstree": "^3.3.8",
         "lodash": "^4.17.15",

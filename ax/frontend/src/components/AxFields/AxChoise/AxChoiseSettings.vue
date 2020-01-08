@@ -10,7 +10,7 @@
     ></monaco-editor>
     <v-switch
       :label='locale("types.AxChoise.multiple-setting")'
-      cy-data='multiple-input'
+      data-cy='multiple-input'
       v-model='changedOptions.multiple'
     ></v-switch>
     <v-switch

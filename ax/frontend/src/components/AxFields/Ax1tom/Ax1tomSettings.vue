@@ -47,7 +47,7 @@
     <br />
     <v-switch
       :label='this.locale("types.Ax1to1.settings-enable-modal")'
-      cy-data='settings-enableModal'
+      data-cy='settings-enableModal'
       v-model='changedOptions.enableFormModal'
     ></v-switch>
     {{locale("types.Ax1to1.settings-height")}}

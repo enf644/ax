@@ -857,16 +857,48 @@ AX 0.2:
         ✔ Api action that updates or creates new statistics record @done(20-01-05 14:13)
         ✔ Send only once per ax restart @done(20-01-05 14:13)
     ☐ TUTORIAL
-        ☐ Each page and field have help modal with gifs
-        https://ourcodeworld.com/articles/read/328/top-10-best-tour-website-guide-javascript-and-jquery-plugins
-        https://tourjs.github.io/tour/
-        https://shepherdjs.dev/
-    ☐ Check postgre
+        ✔ Choose lib - https://introjs.com/, https://codesandbox.io/s/x2rl0v1054 @done(20-01-06 13:55)
+        ✔ Install and sample @done(20-01-07 14:31)
+            ✔ Component @done(20-01-07 13:52)
+            ✔ Detects page @done(20-01-07 14:31)
+            ✘ Svg is working @cancelled(20-01-07 14:31)
+        ✔ Text @done(20-01-08 08:59)
+            ✔ Home @done(20-01-07 16:26)
+            ✔ Form constructor @done(20-01-07 17:59)
+            ✔ Grids constructor @done(20-01-07 23:06)
+            ✔ Workflow constructor @done(20-01-07 23:26)
+            ✔ Pages designer @done(20-01-08 07:31)
+            ✔ Users Manager @done(20-01-08 08:37)
+            ✔ Marketplace @done(20-01-08 08:59)
+        ✔ Tour @done(20-01-08 15:49)
+            ✔ Home @done(20-01-08 11:36)
+            ✔ Form constructor @done(20-01-08 13:42)
+            ✔ Grids constructor @done(20-01-08 15:49)
+            ✔ Workflow constructor @done(20-01-08 15:49)
+            ✔ Pages designer @done(20-01-08 15:49)
+            ✔ Users Manager @done(20-01-08 15:49)
+            ✔ Marketplace @done(20-01-08 15:49)
     ☐ Frogs
+        ✔ Marketplace @done(20-01-08 08:37)
+            ✔ Quicksearch input @done(20-01-08 08:37)
+            ✔ Tags column @done(20-01-08 08:37)
+        ☐ Pages-designer index page can not be deleted
+        ☐ Users-mnager cant delete admin group
+            ☐ Must be visualy different - change icon
+        ☐ Field-types help
+            ☐ Field-type web-component with help button
+            ☐ Clicking a type will add form to active tab
+            ☐ Help for each field!
+        ✔ Copy form url, web-component @done(20-01-08 13:42)
+        ☐ Copy grid url, web-component
+        ☐ Copy grid graphql query
+        ☐ Grid constructor
+            - column widths are saved on model save click
         ☐ All Users - warning on max users, disable create button
-        ☐ Marketplace - pro required text for all apps
+        ☐ Marketplace - pro required column, warning if installing pro app
         ☐ Create apps that do not require pro
     ☐ PERFORMANCE TEST
+        ☐ Check postgre    
         ☐ Redis integration
         ☐ 4 workers, cache problem, schema reload
         ☐ Give huge load - stress test
@@ -876,7 +908,6 @@ AX 0.2:
         ☐ Security - https://lgtm.com/dashboard
     ☐ Publish to pypi, clean old versions
     ☐ INSTALATION
-    =======================================================================:
     ☐ LANDING
         ☐ Github readme with docs
             ☐ Windows instruction, video
@@ -886,6 +917,7 @@ AX 0.2:
             https://github.com/badges/shields
         ☐ Ax pages site - beutiful landing with gifs
         ☐ Landing metrics
+    =======================================================================:
     ☐ SEND TO FRIENDS
         ☐ Record installation, tutorial, reactions
         ☐ Create install script for app engine, aws or yandex cloud

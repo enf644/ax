@@ -10,7 +10,7 @@
     ></monaco-editor>
     <v-switch
       :label='locale("types.AxRadio.horizontal-setting")'
-      cy-data='multiple-input'
+      data-cy='multiple-input'
       v-model='changedOptions.horizontal'
     ></v-switch>
   </AxFieldSettings>

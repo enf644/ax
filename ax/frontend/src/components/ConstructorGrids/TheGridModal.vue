@@ -26,7 +26,7 @@
 
       <v-switch
         :label='this.$t("grids.is-default-view")'
-        cy-data='is-default-view'
+        data-cy='is-default-view'
         v-model='isDefaultView'
         v-show='!isDefaultViewSaved'
       ></v-switch>
@@ -79,10 +79,12 @@ export default {
       dbNameRules: [
         v => !!v || this.$t('grids.db-name-required'),
         v => v.length <= 127 || this.$t('common.lenght-error', { num: 127 }),
-        v => (v && this.dbNameIsAvalible)
-          || this.$t('home.new-form.db-name-not-avalible'),
-        v => /^((\d)|([A-Z0-9][a-z0-9]+))*([A-Z])?$/.test(v)
-          || this.$t('home.new-form.db-name-valid-letters')
+        v =>
+          (v && this.dbNameIsAvalible) ||
+          this.$t('home.new-form.db-name-not-avalible'),
+        v =>
+          /^((\d)|([A-Z0-9][a-z0-9]+))*([A-Z])?$/.test(v) ||
+          this.$t('home.new-form.db-name-valid-letters')
       ]
     };
   },

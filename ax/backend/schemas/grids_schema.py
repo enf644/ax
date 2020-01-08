@@ -411,10 +411,20 @@ class GridsQuery(graphene.ObjectType):
 
             if ax_form:
                 query = Grid.get_query(info=info)
-                grid = query.filter(AxGrid.form_guid == ax_form.guid).filter(
-                    AxGrid.db_name == grid_db_name).first()
+                if grid_db_name and grid_db_name != 'null':
+                    grid = query.filter(
+                        AxGrid.form_guid == ax_form.guid
+                    ).filter(
+                        AxGrid.db_name == grid_db_name
+                    ).first()
+                else:
+                    grid = query.filter(
+                        AxGrid.form_guid == ax_form.guid
+                    ).filter(
+                        AxGrid.is_default_view.is_(True)
+                    ).first()
 
-                if not grid.code:
+                if not grid or not grid.code:
                     grid.code = get_default_grid_code()
 
             return grid

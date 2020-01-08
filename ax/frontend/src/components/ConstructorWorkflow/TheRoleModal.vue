@@ -67,7 +67,7 @@
           :options='monacoOptions'
           @editorDidMount='initMonaco'
           class='monaco-editor'
-          cy-data='code-editor'
+          data-cy='code-editor'
           language='python'
           ref='editor'
           theme='vs-dark'

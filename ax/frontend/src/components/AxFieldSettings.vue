@@ -12,7 +12,7 @@
           <v-col class='mr-3'>
             <v-switch
               :label='locale("form.is-required")'
-              cy-data='is-required-input'
+              data-cy='is-required-input'
               v-if='showRequired'
               v-model='isRequired'
               v-show='isNotVirtual'
@@ -22,7 +22,7 @@
             <v-switch
               :disabled='isWholeRowIsDisabled'
               :label='locale("form.is-whole-row")'
-              cy-data='whole-row'
+              data-cy='whole-row'
               v-if='showWholeRow'
               v-model='isWholeRow'
             ></v-switch>
@@ -32,7 +32,7 @@
           <v-col class='mr-3'>
             <v-text-field
               :label='locale("form.required-text-label")'
-              cy-data='required'
+              data-cy='required'
               v-if='showRequiredText'
               v-model='reuiredText'
               v-show='isNotVirtual'
@@ -41,7 +41,7 @@
           <v-col class='ml-3'>
             <v-text-field
               :label='locale("form.hint-setting-label")'
-              cy-data='hint'
+              data-cy='hint'
               v-if='showHint'
               v-model='hint'
               v-show='isNotVirtual'

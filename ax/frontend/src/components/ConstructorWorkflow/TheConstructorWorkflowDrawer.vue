@@ -54,7 +54,7 @@
       <v-btn
         :disabled='proEnabled == false'
         @click='createDynamicRole'
-        data-cy='create-role-btn'
+        data-cy='create-dynamic-role-btn'
         small
       >
         <i class='fas fa-plus'></i>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3>{{$t("form.avalible-fields-header")}}:</h3>
-    <div data-cy='fields-tree' ref='tree'></div>
+    <div data-cy='grid-fields-tree' ref='tree'></div>
   </div>
 </template>
 

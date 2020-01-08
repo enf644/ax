@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3>{{$t("users.drawer-users-header")}}:</h3>
-    <v-btn @click='gotoAllUsers' small>
+    <v-btn @click='gotoAllUsers' data-cy='all-users-btn' small>
       <i class='far fa-user'></i>
       &nbsp; {{$t("users.all-users-btn")}}
     </v-btn>

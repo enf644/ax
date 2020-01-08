@@ -34,7 +34,7 @@
         </div>
         <div class='quick-search' v-show='quickSearchEnabled'>
           <v-text-field
-            cy-data='quicksearch'
+            data-cy='quicksearch'
             label='Quick search'
             ref='quickSearch'
             v-model='quickSearch'

@@ -430,3 +430,17 @@ a {
     font-size: 30px;
     margin: 2px;
 }
+
+.ax-hint {
+    padding: 25px;
+}
+
+.wide-ax-hint {
+    padding: 25px !important;
+    min-width: 600px !important;
+}
+
+.wide-ax-hint li {
+    margin-left: 20px;
+    margin-top: 10px;
+}

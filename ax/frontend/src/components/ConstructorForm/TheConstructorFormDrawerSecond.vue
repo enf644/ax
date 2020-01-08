@@ -4,9 +4,21 @@
     <div data-cy='fields-tree' ref='tree'></div>
 
     <br />
-    <v-btn @click='createTab' data-cy='add-tab-btn' small>
+    <v-btn @click='createTab' class='mb-3' data-cy='add-tab-btn' small>
       <i class='far fa-folder'></i>
       &nbsp; {{$t("form.add-tab")}}
+    </v-btn>
+
+    <br />
+    <v-btn @click='copyUrl()' class='mb-3' data-cy='copy-url-btn' small text>
+      <i class='fas fa-link'></i>
+      &nbsp; {{$t("form.copy-url")}}
+    </v-btn>
+
+    <br />
+    <v-btn @click='copyTag()' class='mb-3' data-cy='copy-tag-btn' small text>
+      <i class='fas fa-code'></i>
+      &nbsp; {{$t("form.copy-tag")}}
     </v-btn>
 
     <modal adaptive height='auto' name='field-settings' scrollable width='1000px'>
@@ -27,6 +39,8 @@
 <script>
 import Vue from 'vue';
 import $ from 'jquery';
+import copy from 'copy-to-clipboard';
+import { getAxHost, getAxProtocol } from '@/misc';
 import 'jstree/dist/jstree.js';
 import 'jstree/dist/themes/default/style.css';
 import ConstructorField from '@/components/ConstructorForm/ConstructorField.vue';
@@ -44,6 +58,9 @@ export default {
   computed: {
     fields() {
       return this.$store.state.form.fields;
+    },
+    formDbName() {
+      return this.$store.state.form.dbName;
     },
     settingsFieldGuid() {
       return this.$store.state.form.openSettingsFlag;
@@ -84,6 +101,20 @@ export default {
     }
   },
   methods: {
+    copyUrl() {
+      const url = `${getAxProtocol()}://${getAxHost()}/form/${this.formDbName}`;
+      copy(url);
+      const msg = `Copied to clipboard - ${url}`;
+      this.$store.commit('home/setShowToastMsg', msg);
+    },
+    copyTag() {
+      const tag = `<ax-form db_name="${this.formDbName}" row_guid="" />`;
+      const msg_tag = `&lt;ax-form db_name="${this.formDbName}" row_guid="" /&gt;`;
+
+      copy(tag);
+      const msg = `Copied to clipboard - ${tag}`;
+      this.$store.commit('home/setShowToastMsg', msg_tag);
+    },
     settingLoader(tag) {
       return () => import(`@/components/AxFields/${tag}/${tag}Settings.vue`);
     },

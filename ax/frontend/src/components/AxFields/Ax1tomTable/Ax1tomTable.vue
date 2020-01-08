@@ -19,7 +19,7 @@
         @added='addGuidToValue'
         @openSelectDialog='openGridModal()'
         @tomRemove='clearValue'
-        cy-data='tomTableGrid'
+        data-cy='tomTableGrid'
         tom_inline_mode
       ></AxGrid>
 
@@ -53,7 +53,7 @@
             :grid='options.grid'
             :preselect='currentValue'
             @selected='onGridSelected'
-            cy-data='to1Grid'
+            data-cy='to1Grid'
             tom_mode
           ></AxGrid>
         </div>

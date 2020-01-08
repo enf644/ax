@@ -1,10 +1,10 @@
 <template>
   <span class='wrap'>
     <span @click='loadPageData()' class='name-p'>{{name}}</span>
-    <v-btn class='small-ico' icon v-if='isCurrentPage'>
+    <v-btn class='small-ico' data-cy='page-options-btn' icon v-if='isCurrentPage'>
       <i @click='openPageSettings()' class='small-ico-i fas fa-cog'></i>
     </v-btn>
-    <v-btn class='small-ico' icon v-if='isCurrentPage'>
+    <v-btn class='small-ico' data-cy='create-page-btn' icon v-if='isCurrentPage'>
       <i @click='createPagePrompt()' class='small-ico-i fas fa-plus'></i>
     </v-btn>
   </span>

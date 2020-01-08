@@ -9,7 +9,7 @@
       :step='currentStep'
       :thumb-size='25'
       @blur='emitValue'
-      cy-data='input'
+      data-cy='input'
       height='55'
       thumb-label='always'
       v-model='currentValue'

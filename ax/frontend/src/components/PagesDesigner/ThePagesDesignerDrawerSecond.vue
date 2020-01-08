@@ -5,7 +5,7 @@
       @editorDidMount='initMonaco'
       automaticLayout='true'
       class='editor'
-      cy-data='code-editor'
+      data-cy='code-editor'
       language='html'
       ref='editor'
       theme='vs-dark'

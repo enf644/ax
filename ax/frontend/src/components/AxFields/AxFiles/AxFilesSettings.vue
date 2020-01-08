@@ -28,7 +28,7 @@
       <v-flex offset-xs1 xs5>
         <v-switch
           :label='this.locale("types.AxFiles.settings-enable-webcam-label")'
-          cy-data='settings-enableModal'
+          data-cy='settings-enableModal'
           v-model='changedOptions.enableWebcam'
         ></v-switch>
       </v-flex>
@@ -62,8 +62,8 @@ export default {
   created() {
     this.changedOptions = this.options;
     if (
-      this.changedOptions.enableWebcam == null
-      || this.changedOptions.enableWebcam === undefined
+      this.changedOptions.enableWebcam == null ||
+      this.changedOptions.enableWebcam === undefined
     ) {
       this.changedOptions.enableWebcam = true;
     }

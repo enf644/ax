@@ -80,13 +80,13 @@ describe('Home functions work. CRUD for folder and forms', () => {
     it('Updates form name and dbName', () => {
       cy.wait(100);
       cy.visit(`/admin/${formDbName}/form`);
-      cy.get('[cy-data=current-form-breadcrumb] > button').click();
+      cy.get('[data-cy=current-form-breadcrumb] > button').click();
       cy.get('[data-cy=new-form-name]').type(' #findme');
       cy.get('[data-cy=new-form-db-name]').type('_test');
       cy.get('[data-cy=update-form-btn]').click().then(() => {
         cy.wait(100);
         cy.url().should('include', `${formDbName}_test`);
-        cy.get('[cy-data=current-form-breadcrumb]').should($span => {
+        cy.get('[data-cy=current-form-breadcrumb]').should($span => {
           expect($span).to.contain(`${formName} #findme`);
         });
       });
@@ -94,7 +94,7 @@ describe('Home functions work. CRUD for folder and forms', () => {
 
     it('Deletes form', () => {
       cy.wait(100);
-      cy.get('[cy-data=current-form-breadcrumb] > button').click();
+      cy.get('[data-cy=current-form-breadcrumb] > button').click();
       cy.get('[data-cy=delete-form-btn]').click();
       cy.get('[action-key="true"]').click().then(() => {
         cy.wait(10);

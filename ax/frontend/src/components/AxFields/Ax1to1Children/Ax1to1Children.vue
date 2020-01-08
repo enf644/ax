@@ -13,7 +13,7 @@
         :tom_disabled='isReadonly'
         :update_time='updateTime'
         @added='getChildGuids'
-        cy-data='tomTableGrid'
+        data-cy='tomTableGrid'
         tom_children_mode
         v-if='childrenLoaded'
       ></AxGrid>

@@ -28,7 +28,11 @@ export default {
   watch: {
     forms(newValue) {
       if (newValue) {
-        this.initJstree(this.$store.getters['home/explorerTreeData']);
+        // this.initJstree(this.$store.getters['home/explorerTreeData']);
+
+        const tree = $(this.$refs.tree).jstree(true);
+        tree.settings.core.data = this.$store.getters['home/explorerTreeData'];
+        tree.refresh();
       }
     }
   },
@@ -36,9 +40,14 @@ export default {
   mounted() {
     window.jQuery = $;
     window.$ = $;
+    // if (!this.$store.state.home.isFormsLoaded) {
+    //   this.$store.dispatch('home/getAllForms', {
+    //     updateTime: Date.now()
+    //   });
+    // }
     setTimeout(() => {
       this.initJstree(this.$store.getters['home/explorerTreeData']);
-    }, 100);
+    }, 400);
   },
   methods: {
     gotoGrid(e, data) {

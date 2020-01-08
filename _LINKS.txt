@@ -1,5 +1,13 @@
 	
 
+
+TOUR
+    https://ourcodeworld.com/articles/read/328/top-10-best-tour-website-guide-javascript-and-jquery-plugins
+    https://tourjs.github.io/tour/
+    https://shepherdjs.dev/
+    https://github.com/alex-oleshkevich/vue-introjs
+
+
 LICENSING
     https://build-system.fman.io/generating-license-keys
     https://en.wikipedia.org/wiki/Source-available_software

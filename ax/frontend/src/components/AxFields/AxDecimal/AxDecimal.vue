@@ -5,7 +5,7 @@
     :hint='options.hint'
     :label='name'
     @keyup='isValid'
-    cy-data='input'
+    data-cy='input'
     ref='field'
     v-model='formatedValue'
   ></v-text-field>

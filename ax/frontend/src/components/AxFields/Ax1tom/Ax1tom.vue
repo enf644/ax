@@ -66,7 +66,7 @@
             :grid='options.grid'
             :preselect='currentValue'
             @selected='onGridSelected'
-            cy-data='to1Grid'
+            data-cy='to1Grid'
             tom_mode
           ></AxGrid>
         </div>
