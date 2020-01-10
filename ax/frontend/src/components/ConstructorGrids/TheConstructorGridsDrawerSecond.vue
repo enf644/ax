@@ -131,11 +131,31 @@
       thumb-label
       v-model='changedOptions.pinned'
     ></v-slider>
+    <br />
+    <br />
+    <v-btn @click='copyUrl()' class='mb-3' data-cy='copy-url-btn' small text>
+      <i class='fas fa-link'></i>
+      &nbsp; {{$t("form.copy-url")}}
+    </v-btn>
+
+    <br />
+    <v-btn @click='copyTag()' class='mb-3' data-cy='copy-tag-btn' small text>
+      <i class='fas fa-code'></i>
+      &nbsp; {{$t("form.copy-tag")}}
+    </v-btn>
+
+    <br />
+    <v-btn @click='copyGraphql()' class='mb-3' data-cy='copy-graphql-btn' small text>
+      <i class='fas fa-project-diagram'></i>
+      &nbsp; {{$t("grids.copy-graphql")}}
+    </v-btn>
   </div>
 </template>
 
 <script>
 import $ from 'jquery';
+import copy from 'copy-to-clipboard';
+import { getAxHost, getAxProtocol } from '@/misc';
 import 'jstree/dist/jstree.js';
 import 'jstree/dist/themes/default/style.css';
 import TheQueryModal from '@/components/ConstructorGrids/TheQueryModal.vue';
@@ -154,6 +174,9 @@ export default {
     columns() {
       return this.$store.state.grids.columns;
     },
+    allFields() {
+      return this.$store.state.form.fields;
+    },
     updated() {
       return this.$store.state.grids.updateTime;
     },
@@ -170,6 +193,12 @@ export default {
     proEnabled() {
       if (this.$store.state.home.clientGuid) return true;
       return false;
+    },
+    formDbName() {
+      return this.$store.state.grids.formDbName;
+    },
+    gridDbName() {
+      return this.$store.state.grids.dbName;
     }
   },
   watch: {
@@ -373,6 +402,44 @@ export default {
         positionList.push(nodeInfo);
       });
       return positionList;
+    },
+    copyUrl() {
+      const url = `${getAxProtocol()}://${getAxHost()}/grid/${
+        this.formDbName
+      }/${this.gridDbName}`;
+      copy(url);
+      const msg = `Copied to clipboard - ${url}`;
+      this.$store.commit('home/setShowToastMsg', msg);
+    },
+    copyTag() {
+      const tag = `<ax-grid form="${this.formDbName}" grid="${this.gridDbName}" />`;
+      const msg_tag = `&lt;ax-grid form="${this.formDbName}" grid="${this.gridDbName}" /&gt;`;
+      copy(tag);
+      const msg = `Copied to clipboard - ${tag}`;
+      this.$store.commit('home/setShowToastMsg', msg_tag);
+    },
+    copyGraphql() {
+      const viewName = this.formDbName + this.gridDbName;
+      let qry = '';
+      qry += 'query {';
+      qry += `\n  ${viewName} {`;
+      this.allFields.forEach(field => {
+        const tomFieldTags = ['Ax1to1', 'Ax1tom', 'Ax1tomTable'];
+        if (!field.isTab && !field.fieldType.isVirtual) {
+          if (tomFieldTags.includes(field.fieldType.tag)) {
+            qry += `\n    ${field.dbName} {`;
+            qry += `\n      guid`;
+            qry += `\n    }`;
+          } else {
+            qry += `\n    ${field.dbName}`;
+          }
+        }
+      });
+      qry += '\n  }';
+      qry += '\n}';
+      copy(qry);
+      const msg = `<pre>${qry}</pre>`;
+      this.$store.commit('home/setShowToastMsg', msg);
     }
   }
 };

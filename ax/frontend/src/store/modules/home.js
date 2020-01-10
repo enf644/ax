@@ -442,7 +442,6 @@ const actions = {
       }
     })
       .then(data => {
-        console.log(data.data);
         commit('setForms', data.data.allForms);
         commit('setClientGuid', data.data.axLicenseInfo.clientGuid);
         commit('setMaxUsers', data.data.axLicenseInfo.maxUsers);

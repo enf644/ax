@@ -39,11 +39,16 @@ export default {
       const jsTreeData = [];
 
       this.groups.forEach(group => {
+        console.log(group);
+
+        let icon = 'fas fa-users';
+        if (group.isAdmin) icon = 'fas fa-users-cog';
+
         const parent = group.parent || '#';
         const node = {
           id: group.guid,
           parent,
-          text: `<i class="fas fa-users"></i> &nbsp; ${group.shortName}`,
+          text: `<i class="${icon}"></i> &nbsp; ${group.shortName}`,
           type: 'default',
           data: {
             shortName: group.shortName
@@ -81,6 +86,7 @@ export default {
             guid
             shortName
             parent
+            isAdmin
           }
         }
       `;

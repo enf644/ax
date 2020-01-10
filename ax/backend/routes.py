@@ -27,7 +27,6 @@ import backend.migration as ax_migration
 from backend.auth import ax_protected
 
 
-
 this = sys.modules[__name__]
 
 loop = asyncio.new_event_loop()
@@ -164,9 +163,9 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
 
                 field_guid = str(ax_field.guid)
                 if not user_is_admin:
-                    if (field_guid not in allowed_field_dict or
-                            allowed_field_dict[field_guid] == 0 or
-                            allowed_field_dict[field_guid] is None):
+                    if (field_guid not in allowed_field_dict
+                            or allowed_field_dict[field_guid] == 0
+                            or allowed_field_dict[field_guid] is None):
                         email = current_user.get('email', None)
                         msg = (
                             f'Error in db_file_viewer. ',
@@ -244,9 +243,9 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
                     state_guid=state_guid)
 
                 if not user_is_admin:
-                    if (field_guid not in allowed_field_dict or
-                            allowed_field_dict[field_guid] == 0 or
-                            allowed_field_dict[field_guid] is None):
+                    if (field_guid not in allowed_field_dict
+                            or allowed_field_dict[field_guid] == 0
+                            or allowed_field_dict[field_guid] is None):
                         email = current_user['email']
                         msg = (
                             f'Error in file_viewer. ',
@@ -340,7 +339,10 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
         async def home_welcome(request):  # pylint: disable=unused-variable
             """ Fetches welcome_free.md from ax-info """
             del request
-            feed = await ax_misc.fetch('https://raw.githubusercontent.com/enf644/ax-info/master/welcome_free.md')   # pylint: disable=line-too-long
+            the_url = 'https://raw.githubusercontent.com/enf644/ax-info/master/welcome_free.md'
+            if ax_auth.lise_is_active():
+                the_url = 'https://raw.githubusercontent.com/enf644/ax-info/master/welcome.md'
+            feed = await ax_misc.fetch(the_url)   # pylint: disable=line-too-long
             html = markdown2.markdown(feed)
             return response.text(html)
 

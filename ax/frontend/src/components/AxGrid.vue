@@ -821,6 +821,9 @@ export default {
     },
     getSortModel() {
       return this.gridObj.gridOptions.api.getSortModel();
+    },
+    getColumnState() {
+      return this.gridObj.gridOptions.columnApi.getColumnState();
     }
   }
 };

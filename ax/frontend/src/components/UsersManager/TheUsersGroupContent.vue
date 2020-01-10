@@ -15,7 +15,7 @@
                 <i class='fas fa-pencil-alt'></i>
               </v-btn>
             </div>
-            <div class='ico-btn'>
+            <div class='ico-btn' v-if='groupIsAdmin == false'>
               <v-btn @click='promptDeleteGroup' icon text>
                 <i class='fas fa-trash'></i>
               </v-btn>
@@ -95,6 +95,15 @@ export default {
         if (user) return user.shortName;
       }
       return null;
+    },
+    groupIsAdmin() {
+      if (this.groupGuid) {
+        const user = this.$store.state.users.groups.find(
+          x => x.guid === this.groupGuid
+        );
+        if (user) return user.isAdmin;
+      }
+      return false;
     },
     hideNoData() {
       if (this.search && this.search.length > 2) return false;

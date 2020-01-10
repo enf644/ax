@@ -414,10 +414,27 @@ a {
     margin-right: 5px;
 }
 
-.icon-box {
+.icon-box-pro {
     /* background: #2e7d32; */
     /* background: #2196f3; */
     background: #00897b;
+    width: 70px;
+    height: 70px;
+    color: white;
+    text-align: center;
+    padding-top: 20px;
+    border-radius: 2px;
+}
+
+.icon-box-pro i {
+    font-size: 30px;
+    margin: 2px;
+}
+
+.icon-box {
+    /* background: #2e7d32; */
+    background: #2196f3;
+    /* background: #00897b; */
     width: 70px;
     height: 70px;
     color: white;

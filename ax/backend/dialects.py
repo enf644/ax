@@ -361,6 +361,10 @@ class PorstgreDialect(object):
             List(Dict(column_name: value)): result of SQL query
         """
         try:
+
+            if not row_guid or row_guid == 'None':
+                return None
+
             form_db_name = form.db_name
             num_fields = []
             for field in form.db_fields:

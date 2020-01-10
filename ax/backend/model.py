@@ -456,7 +456,7 @@ class AxColumn(Base):
     field = relationship("AxField")
     grid_guid = Column(GUID(), ForeignKey('_ax_grids.guid'))
     grid = relationship("AxGrid")
-    column_type = Column(String(50))  # Not used. Was used for responsive grid
+    column_type = Column(String(50))  # Not used. Was used for aggregate grid
     aggregation_type = Column(String(50), nullable=True) # Not used yet.
 
 

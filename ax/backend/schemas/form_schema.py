@@ -13,7 +13,7 @@ import ujson as json
 from backend.model import AxForm, AxField, AxFieldType, \
     AxRoleFieldPermission, AxColumn
 import backend.model as ax_model
-# import backend.misc as ax_misc
+import backend.misc as ax_misc
 import backend.dialects as ax_dialects
 # import backend.cache as ax_cache
 import backend.auth as ax_auth
@@ -196,9 +196,10 @@ class CreateField(graphene.Mutation):
         form_guid = graphene.String()
         name = graphene.String()
         tag = graphene.String()
-        positions = graphene.List(PositionInput)
-        position = graphene.Int()
-        parent = graphene.String()
+        positions = graphene.List(
+            PositionInput, required=False, default_value=None)
+        position = graphene.Int(required=False, default_value=None)
+        parent = graphene.String(required=False, default_value=None)
 
     ok = graphene.Boolean()
     field = graphene.Field(Field)
@@ -251,6 +252,19 @@ class CreateField(graphene.Mutation):
                     name_is_checked = True
                     break
 
+            if not positions:
+                positions = []
+            if not parent:
+                for fld in ax_form.fields:
+                    if fld.is_tab and not parent:
+                        parent = fld.guid
+            if not position:
+                flds_num = 0
+                for fld in ax_form.fields:
+                    if str(fld.parent) == str(parent):
+                        flds_num += 1
+                position = flds_num
+
             ax_field = AxField()
             ax_field.name = cur_name
             ax_field.db_name = cur_db_name
@@ -259,7 +273,7 @@ class CreateField(graphene.Mutation):
             ax_field.field_type_tag = ax_field_type.tag
             ax_field.options_json = "{}"
             ax_field.position = position
-            ax_field.parent = uuid.UUID(parent) if parent is not None else None
+            ax_field.parent = ax_misc.guid_or_none(parent)
 
             if ax_field_type.is_always_whole_row:
                 ax_field.is_whole_row = True

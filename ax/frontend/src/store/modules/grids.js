@@ -66,7 +66,7 @@ const GET_GRID_DATA = gql`
 `;
 
 const CREATE_COLUMN = gql`
-  mutation ($gridGuid: String!, $fieldGuid: String!, $columnType: String!, $position: Int!, $positions: [PositionInput] ) {
+  mutation ($gridGuid: String!, $fieldGuid: String!, $columnType: String, $position: Int, $positions: [PositionInput] ) {
     createColumn(gridGuid: $gridGuid, fieldGuid: $fieldGuid, columnType: $columnType, position: $position,  positions: $positions) {
       column {
         ...ColumnFragment
@@ -218,9 +218,11 @@ const mutations = {
   setDeletedFlag(state, isDeleted) {
     state.deletedFlag = isDeleted;
   },
-  setColumnWidth(state, colData) {
+  setColumnWidths(state, colsData) {
     if (!('widths' in state.options)) state.options.widths = {};
-    state.options.widths[colData.column] = colData.width;
+    colsData.forEach(col => {
+      state.options.widths[col.colId] = col.width;
+    });
   },
   setFilterModel(state, colData) {
 
@@ -256,7 +258,7 @@ const getters = {
     state.columns.forEach(column => {
       const node = {
         id: column.guid,
-        parent: column.columnType,
+        parent: 'columns',
         text: `<i class='${column.field.fieldType.icon}'></i>&nbsp;${column.field.name}`,
         type: 'default',
         data: { position: column.position }

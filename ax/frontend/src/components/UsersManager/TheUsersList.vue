@@ -6,7 +6,15 @@
         &nbsp; {{$t("users.all-users-header")}}
       </h1>
       <div>
-        <v-btn @click='openNewUserModal' class='mb-3' data-cy='create-user-btn' primary small>
+        <span class='users-warning' v-if='usersLimitReached'>{{$t("users.max-users-reached")}}</span>
+        <v-btn
+          :disabled='usersLimitReached'
+          @click='openNewUserModal'
+          class='mb-3'
+          data-cy='create-user-btn'
+          primary
+          small
+        >
           <i class='fas fa-user-plus'></i>
           &nbsp; {{$t("users.create-user-btn")}}
         </v-btn>
@@ -41,6 +49,19 @@ export default {
     rowData: [],
     gridInitialized: false
   }),
+  computed: {
+    maxUsers() {
+      return this.$store.state.home.maxUsers;
+    },
+    currentUserNum() {
+      if (!this.rowData) return 0;
+      return this.rowData.length;
+    },
+    usersLimitReached() {
+      if (this.maxUsers <= this.currentUserNum) return true;
+      return false;
+    }
+  },
   components: { TheUserModal },
   mounted() {
     this.loadData();
@@ -149,5 +170,9 @@ export default {
 .blocked-btn {
   margin-bottom: 12px;
   margin-left: 20px;
+}
+.users-warning {
+  margin-right: 20px;
+  color: #f44336;
 }
 </style>

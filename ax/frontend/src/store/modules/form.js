@@ -18,7 +18,8 @@ const getDefaultState = () => {
     dbNameIsFocused: false,
     openSettingsFlag: null,
     createdFieldGuid: null,
-    updateTime: null
+    updateTime: null,
+    currentFormTab: null
   }
 }
 
@@ -182,7 +183,7 @@ const DELETE_TAB = gql`
 `;
 
 const CREATE_FIELD = gql`
-  mutation ($formGuid: String!, $name: String!, $tag: String!, $positions: [PositionInput], $position: Int!, $parent: String! ) {
+  mutation ($formGuid: String!, $name: String!, $tag: String!, $positions: [PositionInput], $position: Int, $parent: String ) {
     createField(formGuid: $formGuid, name: $name, tag: $tag, positions: $positions, position: $position, parent: $parent) {
       field {
         ...FieldFragment
@@ -347,6 +348,9 @@ const mutations = {
   },
   setUpdateTime(state, updateTime) {
     state.updateTime = updateTime;
+  },
+  setCurrentFormTab(state, tabGuid) {
+    state.currentFormTab = tabGuid;
   }
 };
 
@@ -399,7 +403,7 @@ const getters = {
         const node = {
           id: fieldType.tag,
           parent,
-          text: `<i class="${fieldType.icon}"></i> ${name}`,
+          text: `<constructor-field-type name='${name}' icon='${fieldType.icon}' tag='${fieldType.tag}'/>`,
           type: 'default',
           data: {
             position: fieldType.position,

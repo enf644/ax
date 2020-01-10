@@ -30,11 +30,17 @@ export default {
     },
     doSaveSortFilterModel() {
       return this.$store.state.grids.doSaveSortFilterModel;
+    },
+    columns() {
+      return this.$store.state.grids.columns;
     }
   },
   watch: {
     doSaveSortFilterModel(newValue) {
       if (newValue) {
+        const colState = this.$refs.grid.getColumnState();
+        this.$store.commit('grids/setColumnWidths', colState);
+
         this.$store.commit(
           'grids/setFilterModel',
           this.$refs.grid.getFilterModel()
@@ -55,15 +61,15 @@ export default {
   },
   methods: {
     saveGridOptions(data) {
-      if (data.name === 'column-width') {
-        this.$store.commit('grids/setColumnWidth', data);
-        this.$store.dispatch('grids/updateGrid', {}).then(() => {
-          const msg = this.$t('grids.grid-updated');
-          this.$dialog.message.success(
-            `<i class="fas fa-columns"></i> &nbsp ${msg}`
-          );
-        });
-      }
+      // if (data.name === 'column-width') {
+      //   this.$store.commit('grids/setColumnWidth', data);
+      //   this.$store.dispatch('grids/updateGrid', {}).then(() => {
+      //     const msg = this.$t('grids.grid-updated');
+      //     this.$dialog.message.success(
+      //       `<i class="fas fa-columns"></i> &nbsp ${msg}`
+      //     );
+      //   });
+      // }
     }
   }
 };

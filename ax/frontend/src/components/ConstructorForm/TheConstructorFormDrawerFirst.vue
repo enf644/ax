@@ -6,9 +6,11 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import $ from 'jquery';
 import 'jstree/dist/jstree.js';
 import 'jstree/dist/themes/default/style.css';
+import ConstructorFieldType from '@/components/ConstructorForm/ConstructorFieldType.vue';
 
 export default {
   components: {},
@@ -32,6 +34,9 @@ export default {
       }
     }
   },
+  created() {
+    Vue.customElement('constructor-field-type', ConstructorFieldType);
+  },
   mounted() {
     window.jQuery = $;
     window.$ = $;
@@ -45,6 +50,7 @@ export default {
       $(this.$refs.tree)
         .on('ready.jstree', () => this.openFirstNode())
         .on('refresh.jstree', () => this.openFirstNode())
+        .on('select_node.jstree', (e, data) => this.addField(data))
         .jstree({
           core: {
             data: jsTreeData,
@@ -85,6 +91,34 @@ export default {
         const selectNode = $(this.$refs.tree).jstree('get_selected');
         $(this.$refs.tree).jstree('open_node', selectNode, false, true);
       }, 30);
+    },
+    openNode(data) {
+      setTimeout(() => {
+        $(this.$refs.tree).jstree('open_node', data.node, false, true);
+      }, 30);
+    },
+    addField(data) {
+      if (data.node.parent != '#') {
+        const tag = data.node.id;
+        const locale = `types.${tag}.name`;
+        const defaultName = this.$t(locale);
+        const params = {
+          tag,
+          name: defaultName,
+          positions: null,
+          position: null,
+          parent: this.$store.state.form.currentFormTab
+        };
+        console.log(data.node);
+        this.$store.dispatch('form/createField', params).then(() => {
+          const msg = this.$t('form.add-field-toast');
+          this.$dialog.message.success(
+            `<i class="fas fa-${data.node.data.icon}"></i> &nbsp ${msg}`
+          );
+        });
+      } else {
+        this.openNode(data);
+      }
     }
   }
 };

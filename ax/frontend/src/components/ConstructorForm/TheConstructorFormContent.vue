@@ -50,6 +50,7 @@ export default {
     },
     updateTab() {
       this.openedTab = this.$refs.form.activeTab;
+      this.$store.commit('form/setCurrentFormTab', this.openedTab);
     },
     handleResize() {
       this.$refs.form.handleResize();

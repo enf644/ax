@@ -313,7 +313,7 @@ async def send_stats():
     )
     json_data = {'query': query_str}
     ret_str = await ax_misc.post_json(
-        'http://127.0.0.1:8080/api/graphql', json_data, 5)
+        'http://ax-workflow.com/ax_stats', json_data, 5)
     return ret_str
 
 

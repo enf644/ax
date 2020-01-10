@@ -163,7 +163,7 @@ def string_is_guid(string_guid):
 def guid_or_none(string_guid):
     """ returns uuid or None """
     if string_is_guid(string_guid):
-        return uuid.UUID(string_guid)
+        return uuid.UUID(str(string_guid))
     return None
 
 

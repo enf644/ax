@@ -41,10 +41,21 @@ export default {
           field: 'icon',
           width: 100,
           cellRenderer: params => {
+            if (params.data.usesPro)
+              return `<div class='icon-box-pro'><i class='${params.value}'></i></div>`;
             return `<div class='icon-box'><i class='${params.value}'></i></div>`;
           }
         },
-        { headerName: 'Name', field: 'name', width: 250 },
+        {
+          headerName: 'Name',
+          field: 'name',
+          width: 250,
+          cellStyle: {
+            'white-space': 'normal',
+            'line-height': 'normal',
+            'padding-top': '15px'
+          }
+        },
         {
           headerName: 'Description',
           field: 'shortText',
@@ -82,16 +93,17 @@ export default {
       this.gridObj = new Grid(this.$refs.grid, gridOptions);
     },
     getApps() {
-      console.log('getApps');
       axios.get(`${this.host}/api/marketplace_all`).then(response => {
         if (
           response &&
           response.data &&
           response.data.data &&
-          response.data.data.AxApps
+          response.data.data.AxAppsPublished
         ) {
-          this.apps = response.data.data.AxApps;
+          this.apps = response.data.data.AxAppsPublished;
           this.initAgGrid();
+        } else {
+          console.log(response);
         }
       });
     },

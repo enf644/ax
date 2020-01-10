@@ -27,6 +27,9 @@
         "create-new-grid-btn": "Create new grid",
         "logout": "Sign out",
         "no-forms": "No forms created",
+        "featured-apps-label": "Featured apps",
+        "blog-label": "Blog posts",
+        "stack-label": "StackOverflow questions",
         "toolbar": {
             "form-btn": "Form",
             "workflow-btn": "Workflow",
@@ -147,7 +150,8 @@
         "change-password": "Change password",
         "change-password-toast": "Password was changed",
         "change-password-admin-warning": "Enter temporary password. User will need to change password on first sign-in.",
-        "change-password-user-warning": "Welcome to Ax. You signed using temporary password. Please enter new password."
+        "change-password-user-warning": "Welcome to Ax. You signed using temporary password. Please enter new password.",
+        "max-users-reached": "Maximum number of users reached. Please update the license."
     },
     "form": {
         "add-tab": "Add tab",
@@ -221,7 +225,8 @@
         "open-select-dialog": "Add relation",
         "error-in-query": "Error occurred while querying data",
         "error-grid-not-found": "Grid not found. Check db_name of AxForm and AxGrid",
-        "save-filter-order-btn": "Save grid model"
+        "save-filter-order-btn": "Save grid model",
+        "copy-graphql": "Copy GraphQL query"
     },
     "workflow": {
         "state": {
@@ -314,6 +319,7 @@
         "page-deleted-toast": "Delete deleted"
     },
     "types": {
+        "hint-not-avalible": "Hint is not yet available",
         "group-id": "Identification",
         "group-process": "Process controll",
         "group-string": "String",
@@ -607,7 +613,10 @@
             "step15": "Enable/disable Form modal window on row click. Sometimes you need to show only grid data.",
             "step16": "Show/hide available Start actions at bottom of the grid. Start actions are performed to create new records. See the workflow constructor page tour for more info.",
             "step17": "Sets row height of grid rows. If some of the columns are images you might want to increase the height of rows.",
-            "step18": "Set the number of pinned columns. Useful when you have many columns."
+            "step18": "Set the number of pinned columns. Useful when you have many columns.",
+            "step19": "\"Copy Url\" saves the grid URL to your clipboard. Send this URL to end-users. (Don't forget to set permissions).",
+            "step20": "\"Copy html tag\" saves the web-component tag to be used in Ax Pages or in external web-sites.<br><br><b>&lt;ax-grid form='someFormDbName' grid='someGridDbName'/&gt;</b>",
+            "step21": "\"Copy GraphQL query\" saves current grid GraphQL query to the clipboard. Please read documentation for more information."
         },
         "admin-workflow": {
             "step1": "Every form record in Ax has a \"State\" attribute. Form states are shown as rounded rectangles.<br><br>Users move a record from one state to another by performing \"Actions\". Actions are shown as arrows from one state to another.<br><br>By default, the workflow has only one state \"Created\" and three actions - \"Create record\", \"Update\" and \"Delete\"",

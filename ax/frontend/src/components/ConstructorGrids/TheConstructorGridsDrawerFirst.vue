@@ -53,6 +53,7 @@ export default {
       $(this.$refs.tree)
         .on('ready.jstree', () => this.openAllNodes())
         .on('model.jstree', () => this.openAllNodes())
+        .on('select_node.jstree', (e, data) => this.createColumn(e, data))
         .jstree({
           core: {
             data: jsTreeData,
@@ -84,6 +85,30 @@ export default {
         });
 
       this.treeInitialized = true;
+    },
+    openNode(data) {
+      setTimeout(() => {
+        $(this.$refs.tree).jstree('open_node', data.node, false, true);
+      }, 30);
+    },
+    createColumn(e, data) {
+      if (data.node.parent != '#') {
+        this.$store
+          .dispatch('grids/createColumn', {
+            fieldGuid: data.node.id,
+            columnType: null,
+            positions: null,
+            position: null
+          })
+          .then(() => {
+            const msg = this.$t('grids.add-column-toast');
+            this.$dialog.message.success(
+              `<i class="fas fa-columns"></i> &nbsp ${msg}`
+            );
+          });
+      } else {
+        this.openNode(data);
+      }
     }
   }
 };

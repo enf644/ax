@@ -1,6 +1,6 @@
 <template>
   <div class='global-container'>
-    <v-sheet class='sheet-container home-top' elevation='1' light>
+    <!-- <v-sheet class='sheet-container home-top' elevation='1' light>
       <div class='home-top-logo'>
         <img class='logo' src='@/assets/android-chrome-192x192.png' width='120' />
         <br />
@@ -8,12 +8,45 @@
       <div v-html='welcome'></div>
       <br />
       <br />
-    </v-sheet>
+    </v-sheet>-->
+
+    <div class='cols-div'>
+      <v-sheet class='sheet-container home-col-big' elevation='1' light>
+        <div v-html='welcome'></div>
+      </v-sheet>
+      <v-sheet class='sheet-container home-col' elevation='1' light>
+        <div class='cols-div'>
+          <div class='docs-left'>
+            Press life ring icon
+            <i class='far fa-life-ring'></i>
+            on any page to start a tour.
+            <!-- <br />
+            <br />
+            <b>Useful links:</b>
+            <ul>
+              <li>
+                <a href='docs'>Documentation</a>
+              </li>
+              <li>
+                <a href='docs'>Report a bug</a>
+              </li>
+              <li>
+                <a href='docs'>Request a trial license</a>
+              </li>
+            </ul>-->
+          </div>
+          <div>
+            <i class='big-arrow fas fa-arrow-up'></i>
+          </div>
+        </div>
+      </v-sheet>
+    </div>
 
     <div class='cols-div'>
       <v-sheet class='sheet-container home-col' elevation='1' light>
         <h3>
-          <i class='fas fa-store'></i> &nbsp; Featured apps
+          <i class='fas fa-store'></i>
+          &nbsp; {{$t("home.featured-apps-label")}}
         </h3>
         <hr />
         <div :key='item.repo' @click='openRepo(item)' class='app-box' v-for='item in featuredItems'>
@@ -28,7 +61,8 @@
       </v-sheet>
       <v-sheet class='sheet-container home-col' elevation='1' light>
         <h3>
-          <i class='fab fa-medium'></i> &nbsp; Blog posts
+          <i class='fab fa-medium'></i>
+          &nbsp; {{$t("home.blog-label")}}
         </h3>
         <hr />
         <div :key='item.id' class='feed-item' v-for='item in blogItems'>
@@ -38,7 +72,8 @@
       </v-sheet>
       <v-sheet class='sheet-container home-col' elevation='1' light>
         <h3>
-          <i class='fab fa-stack-overflow'></i> &nbsp; StackOverflow questions
+          <i class='fab fa-stack-overflow'></i>
+          &nbsp; {{$t("home.stack-label")}}
         </h3>
         <hr />
         <div class='warning-tag'>
@@ -86,6 +121,9 @@ export default {
     this.getFetured();
   },
   computed: {
+    isPro() {
+      return this.$store.state.home.clientGuid;
+    },
     blogItems() {
       if (this.blog && this.blog.items) return this.blog.items;
       return [];
@@ -138,9 +176,9 @@ export default {
           response &&
           response.data &&
           response.data.data &&
-          response.data.data.AxApps
+          response.data.data.AxAppsPublished
         ) {
-          this.featured = response.data.data.AxApps;
+          this.featured = response.data.data.AxAppsPublished;
         }
       });
     }
@@ -172,6 +210,10 @@ export default {
 
 .home-col {
   width: 33%;
+  height: 100%;
+}
+.home-col-big {
+  width: 66%;
   height: 100%;
 }
 .feed-item {
@@ -219,5 +261,12 @@ export default {
 .app-repo {
   font-size: 13px;
   color: #999;
+}
+.big-arrow {
+  font-size: 40px;
+  margin-left: 20px;
+}
+.docs-left {
+  width: 100%;
 }
 </style>

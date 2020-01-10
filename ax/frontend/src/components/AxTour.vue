@@ -198,6 +198,18 @@ export default {
           {
             element: document.querySelector("[data-cy='options-pinned']"),
             intro: this.locale('tour.admin-grids.step18')
+          },
+          {
+            element: document.querySelector("[data-cy='copy-url-btn']"),
+            intro: this.locale('tour.admin-grids.step19')
+          },
+          {
+            element: document.querySelector("[data-cy='copy-tag-btn']"),
+            intro: this.locale('tour.admin-grids.step20')
+          },
+          {
+            element: document.querySelector("[data-cy='copy-graphql-btn']"),
+            intro: this.locale('tour.admin-grids.step21')
           }
         ];
 

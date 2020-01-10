@@ -76,7 +76,7 @@
         &nbsp; {{$t("pages.update-page-btn")}}
       </v-btn>
 
-      <v-btn @click='deletePage()' color='error' data-cy='delete-page-btn' small text>
+      <v-btn @click='deletePage()' color='error' data-cy='delete-page-btn' small text v-if='parent'>
         <i class='fas fa-trash-alt'></i>
         &nbsp; {{$t("pages.delete-page-btn")}}
       </v-btn>
@@ -100,6 +100,7 @@ export default {
     return {
       name: '',
       dbName: null,
+      parent: null,
       valid: false,
       rules: {
         name: [
@@ -145,6 +146,7 @@ export default {
     this.$refs.nameField.focus();
     this.name = this.$store.state.pages.currentPage.name;
     this.dbName = this.$store.state.pages.currentPage.dbName;
+    this.parent = this.$store.state.pages.currentPage.parent;
     this.loadData();
   },
   methods: {

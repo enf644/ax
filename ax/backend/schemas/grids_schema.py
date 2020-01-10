@@ -70,9 +70,9 @@ class CreateColumn(graphene.Mutation):
     class Arguments:  # pylint: disable=missing-docstring
         grid_guid = graphene.String()
         field_guid = graphene.String()
-        column_type = graphene.String()
-        position = graphene.Int()
-        positions = graphene.List(PositionInput)
+        column_type = graphene.String(required=False, default_value=None)
+        position = graphene.Int(required=False, default_value=None)
+        positions = graphene.List(PositionInput, required=False, default_value=None)
 
     ok = graphene.Boolean()
     column = graphene.Field(Column)
@@ -90,6 +90,11 @@ class CreateColumn(graphene.Mutation):
             ax_grid = db_session.query(AxGrid).filter(
                 AxGrid.guid == uuid.UUID(grid_guid)
             ).first()
+
+            if not positions:
+                positions = []
+            if not position:
+                position = len(ax_grid.columns)
 
             ax_column = AxColumn()
             ax_column.grid_guid = ax_grid.guid
