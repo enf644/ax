@@ -1,5 +1,5 @@
-module.exports = {
-  theme: {},
-  variants: {},
-  plugins: []
-};
+// module.exports = {
+//   theme: {},
+//   variants: {},
+//   plugins: []
+// };

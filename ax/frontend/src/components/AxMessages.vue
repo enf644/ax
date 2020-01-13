@@ -59,7 +59,7 @@
           v-if='!this.isReadonly'
           v-model='input'
         ></v-textarea>
-        <div class='action-btn-div'>
+        <div class='action-btn-div' v-if='!this.isReadonly'>
           <v-btn @click='sendMessage' elevation='1' icon>
             <i class='far fa-paper-plane'></i>
           </v-btn>

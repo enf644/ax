@@ -149,7 +149,11 @@ class PorstgreDialect(object):
         elif "JSON" in type_name:
             ret_param = json.dumps(value) if value else None
         elif "GUID" in type_name:
-            ret_param = str(value)
+            ret_param = str(value) if value else None
+        elif "BOOL" in type_name:
+            if not value or value == 0:
+                return False
+            return True
         else:
             ret_param = value if value else None
         return ret_param
@@ -222,7 +226,7 @@ class PorstgreDialect(object):
             if quicksearch:
                 sql_params['quicksearch'] = quicksearch
                 quicksearch_sql = (
-                    f"AND {tom_name} LIKE ('%' || :quicksearch || '%') "
+                    f"AND CAST({tom_name} AS VARCHAR) LIKE ('%' || :quicksearch || '%') "
                 )
 
             guids_sql = ''
@@ -423,7 +427,7 @@ class PorstgreDialect(object):
         """
         try:
             sql = (f"SELECT \"{field_db_name}\" "
-                   f"FROM {form_db_name} "
+                   f"FROM \"{form_db_name}\" "
                    f"WHERE guid=:row_guid"
                    )
             params = {
@@ -675,9 +679,8 @@ class PorstgreDialect(object):
             """
         try:
             sql = f"""
-                SELECT guid FROM 
-                {child_form_db_name}
-                WHERE {child_field_db_name} == :parent_row_guid         
+                SELECT guid FROM "{child_form_db_name}"
+                WHERE CAST("{child_field_db_name}" AS VARCHAR) = :parent_row_guid
             """
             query_params = {
                 "parent_row_guid": parent_row_guid

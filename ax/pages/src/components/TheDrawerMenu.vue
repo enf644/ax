@@ -1,10 +1,12 @@
 <template>
   <div @click='goHome()' class='drawer-wrapper'>
-    <img class='logo' src='@/assets/small_axe.png' />
-    <tree :data='treeData' :options='treeOptions' @node:selected='onNodeSelected'>
+    <div class='logo-div'>
+      <img class='logo' src='@/assets/small_axe.png' />
+    </div>
+    <tree :data='treeData' :options='treeOptions' @node:selected='onNodeSelected' ref='treeMenuRef'>
       <span class='tree-text' slot-scope='{ node }'>
         <template>
-          <a href='#'>{{ node.text }}</a>
+          <a :href='getUrl(node)' @click.prevent='linkClick()' class='tree-a'>{{ node.text }}</a>
         </template>
       </span>
     </tree>
@@ -41,6 +43,8 @@ export default {
     guid: null,
     treeData: [],
     treeOptions: {
+      parentSelect: true,
+      checkOnSelect: false,
       store: {
         store,
         getter: () => store.getters.tree,
@@ -96,10 +100,32 @@ export default {
     setTimeout(() => {
       this.checkAuth(this.$store.state.accessToken);
       const currentGuid = this.$route.params.page;
-      this.$store.dispatch('loadPageData', { guid: currentGuid });
-    }, 50);
+      this.$store
+        .dispatch('loadPageData', { guid: currentGuid })
+        .then(response => {
+          setTimeout(() => {
+            const theNode = this.$refs.treeMenuRef.find({
+              data: { guid: currentGuid }
+            });
+            if (theNode) {
+              theNode[0].select(true);
+              this.expandNodeAndParents(theNode[0]);
+            }
+          }, 400);
+        });
+    }, 150);
   },
   methods: {
+    linkClick() {
+      return false;
+    },
+    getUrl(node) {
+      return node.data.guid;
+    },
+    expandNodeAndParents(node) {
+      node.expand(true);
+      if (node.parent) this.expandNodeAndParents(node.parent);
+    },
     onNodeSelected(node) {
       this.$router.push({
         path: `/${node.data.guid}`
@@ -135,22 +161,30 @@ export default {
 
 <style scoped>
 .logo {
-  margin: auto;
-  margin-bottom: 15px;
   height: 50px;
-  margin-top: 10px;
   cursor: pointer;
 }
+.logo-div {
+  margin-bottom: 15px;
+  text-align: center;
+}
 .user-div {
-  color: #999;
+  color: rgba(0, 0, 0, 0.87);
   margin: auto;
   padding-top: 40px;
   width: fit-content;
 }
 .user-div a {
+  cursor: pointer;
   text-decoration: underline;
+  color: rgba(0, 0, 0, 0.87);
 }
 .to-admin {
-  color: #7cb342;
+  cursor: pointer;
+  color: #7cb342 !important;
+}
+.tree-a {
+  color: rgba(0, 0, 0, 0.87);
+  text-decoration: none;
 }
 </style>

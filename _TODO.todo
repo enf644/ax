@@ -856,7 +856,7 @@ AX 0.2:
         ✔ Collect metrics @done(20-01-05 14:13)
         ✔ Api action that updates or creates new statistics record @done(20-01-05 14:13)
         ✔ Send only once per ax restart @done(20-01-05 14:13)
-    ☐ TUTORIAL
+    ✔ TUTORIAL @done(20-01-13 10:13)
         ✔ Choose lib - https://introjs.com/, https://codesandbox.io/s/x2rl0v1054 @done(20-01-06 13:55)
         ✔ Install and sample @done(20-01-07 14:31)
             ✔ Component @done(20-01-07 13:52)
@@ -896,12 +896,19 @@ AX 0.2:
         ✔ All Users - warning on max users, disable create button @done(20-01-10 12:35)
         ✔ Marketplace - pro required column, warning if installing pro app @done(20-01-10 13:11)
         ✔ Update home intro @done(20-01-10 15:17)
-    ☐ Publish to pypi, clean old versions
+    ✔ Frogs round 6 @done(20-01-13 12:47)
+        ✔ Make uppy work @done(20-01-11 14:51)
+        ✔ Pages styles - must fit ax @done(20-01-11 17:47)
+        ✔ AxUsers - email modal @done(20-01-11 18:08)
+        ✔ Move back to free 5 user model @done(20-01-13 11:41)
+        ✔ Check postgrecd @done(20-01-13 12:47)
+    ☐ Publish to pypi
+        ☐ Publish
+        ☐ Clean old versions
     ☐ INSTALATION
         ☐ Install on linux machine, record video, write doc
         ☐ Install on windows machine, record video, write doc
     ☐ PERFORMANCE TEST
-        ☐ Check postgre
         ☐ Redis integration
         ☐ 4 workers, cache problem, schema reload
         ☐ Give huge load - stress test

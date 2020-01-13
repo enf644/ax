@@ -1,0 +1,7 @@
+h1 {
+    margin-top: 15px;
+}
+
+.tree-children {
+    transition: 200ms
+}

@@ -287,10 +287,12 @@ class PagesQuery(graphene.ObjectType):
     async def resolve_page_data(self, info, guid=None, update_time=None):
         """Get specific page"""
         del update_time
+        current_user = info.context['user']
         err = 'Error in GQL query - resolve_page_data.'
         with ax_model.try_catch(
                 info.context['session'], err, no_commit=True) as db_session:
-            del db_session
+            user_guid = current_user.get(
+                "user_id", None) if current_user else None
             query = Page.get_query(info)  # SQLAlchemy query
             page = None
             if guid:
@@ -298,8 +300,13 @@ class PagesQuery(graphene.ObjectType):
             else:
                 page = query.filter(AxPage.parent.is_(None)).first()
 
-            page.html = apply_markdown(page.code)
-            return page
+            pages_guids = get_allowed_pages_guids(
+                db_session=db_session, user_guid=user_guid)
+
+            if page.guid in pages_guids:
+                page.html = apply_markdown(page.code)
+                return page
+            return None
 
 
 class PagesMutations(graphene.ObjectType):

@@ -44,7 +44,7 @@
 
       <br />
       <h3>{{$t("workflow.action.code-header")}}:</h3>
-      <div id='monacoDock' v-if='proEnabled'>
+      <div id='monacoDock'>
         <div :class='monacoWrapperClass' id='monacoWrapper'>
           <monaco-editor
             :options='monacoOptions'
@@ -58,8 +58,6 @@
           ></monaco-editor>
         </div>
       </div>
-      <div class='pro-promo' v-if='proEnabled == false'>{{$t("workflow.action.pro-promo")}}</div>
-      <div v-if='proEnabled == false'>{{$t("workflow.action.pro-promo-example")}}</div>
 
       <br />
 
@@ -132,10 +130,6 @@ export default {
     monacoWrapperClass() {
       if (this.fullScreenMode) return 'monacoWrapperFullScreen';
       return 'monacoWrapper';
-    },
-    proEnabled() {
-      if (this.$store.state.home.clientGuid) return true;
-      return false;
     },
     currentAction() {
       return this.$store.state.workflow.actions.find(

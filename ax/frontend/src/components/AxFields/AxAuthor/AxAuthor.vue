@@ -15,7 +15,7 @@
       v-model='currentValue'
     >
       <template v-slot:selection='{ item, selected }'>
-        <v-chip @click.stop='openFormModal(item)' class='chip' close>
+        <v-chip @click.stop='openUserModal(item)' class='chip'>
           <v-avatar class='grey mr-2' left>
             <i :class='`ax-chip-icon fas fa-user`'></i>
           </v-avatar>
@@ -29,6 +29,19 @@
         </v-btn>
       </template>
     </v-autocomplete>
+
+    <modal :name='`ax-user-${this.modalGuid}`' adaptive height='auto' scrollable>
+      <v-card>
+        <v-btn :ripple='false' @click='closeModal' class='close' color='black' icon text>
+          <i class='fas fa-times close-ico'></i>
+        </v-btn>
+        <div class='user-modal-div'>
+          <b>{{currentShortName}}</b>
+          <br />
+          <a :href='currentEmail'>{{currentEmail}}</a>
+        </div>
+      </v-card>
+    </modal>
   </div>
 </template>
 
@@ -54,7 +67,10 @@ export default {
     errors: [],
     loading: false,
     search: null,
-    axUsers: []
+    axUsers: [],
+    modalGuid: null,
+    currentShortName: null,
+    currentEmail: null
   }),
   components: {},
   computed: {
@@ -77,6 +93,7 @@ export default {
     }
   },
   created() {
+    this.modalGuid = uuid4();
     if (this.value) {
       this.currentValue = [this.value];
       this.loadData();
@@ -85,6 +102,16 @@ export default {
   methods: {
     locale(key) {
       return i18n.t(key);
+    },
+    openUserModal(item) {
+      if (item) {
+        this.currentShortName = item.shortName;
+        this.currentEmail = item.email;
+        this.$modal.show(`ax-user-${this.modalGuid}`);
+      }
+    },
+    closeModal() {
+      this.$modal.hide(`ax-user-${this.modalGuid}`);
     },
     isValid() {
       return true;
@@ -147,5 +174,9 @@ export default {
 }
 .close-ico {
   font-size: 20px;
+}
+
+.user-modal-div {
+  padding: 30px;
 }
 </style>

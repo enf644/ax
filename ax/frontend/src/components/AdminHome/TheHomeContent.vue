@@ -121,9 +121,6 @@ export default {
     this.getFetured();
   },
   computed: {
-    isPro() {
-      return this.$store.state.home.clientGuid;
-    },
     blogItems() {
       if (this.blog && this.blog.items) return this.blog.items;
       return [];
@@ -226,7 +223,7 @@ export default {
 
 .warning-tag {
   font-size: 13px;
-  color: #f44336;
+  color: #b71c1c;
 }
 
 .icon-box {
@@ -265,6 +262,7 @@ export default {
 .big-arrow {
   font-size: 40px;
   margin-left: 20px;
+  color: #b71c1c;
 }
 .docs-left {
   width: 100%;

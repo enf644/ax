@@ -3,11 +3,11 @@
     <span class='label'>{{name}}</span>
     <br />
     <v-chip
+      :close='isReadonly == false'
       :key='file.guid'
       @click='openFile(file)'
       @click:close='deleteFile(file.guid)'
       class='mr-2 mb-2'
-      close
       v-for='file in this.currentValue'
     >
       <v-avatar>
@@ -40,9 +40,17 @@ import '@uppy/webcam/dist/style.css';
 import getClassNameForExtension from 'font-awesome-filetypes';
 
 // prettier-ignore
-import {
-  Core, Dashboard, Webcam, Tus
-} from 'uppy';
+
+// import Uppy from '@uppy/core'
+// import Dashboard from '@uppy/dashboard';
+// import Webcam from '@uppy/webcam';
+// import Tus from '@uppy/tus';
+
+// import {
+//   Core, Dashboard, Webcam, Tus
+// } from 'uppy';
+
+import Uppy, { Core, Dashboard, Webcam, Tus } from 'uppy'
 
 const _ = require('lodash');
 

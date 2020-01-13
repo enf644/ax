@@ -8,7 +8,7 @@ from sqlalchemy import or_
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from passlib.hash import pbkdf2_sha256
 import ujson as json
-# from loguru import logger
+from loguru import logger
 
 from backend.misc import convert_column_to_string
 from backend.model import AxUser, GUID, AxGroup2Users, AxRole2Users
@@ -16,6 +16,7 @@ import backend.model as ax_model
 import backend.cache as ax_cache
 import backend.dialects as ax_dialects
 # import backend.pubsub as ax_pubsub
+import backend.auth as ax_auth
 from backend.schemas.types import User
 from backend.auth import ax_admin_only
 import backend.misc as ax_misc
@@ -100,7 +101,19 @@ class UpdateUser(graphene.Mutation):
                 ax_user.password = pbkdf2_sha256.hash(args.get('password'))
                 ax_user.password_must_change = True
 
-            ax_user.is_blocked = args.get('is_blocked')
+            if args.get('is_blocked') is not None:
+                ax_user.is_blocked = args.get('is_blocked')
+
+                number_of_users = db_session.query(AxUser).filter(
+                    AxUser.is_group.is_(False)
+                ).filter(
+                    AxUser.is_blocked.is_(False)
+                ).count()
+                if number_of_users > ax_auth.user_num:
+                    maxi = ax_auth.user_num
+                    err = f"Maximum number of users exceeded! Max={maxi}"
+                    logger.exception(err)
+                    raise Exception(err)
 
             db_session.flush()
             return UpdateUser(user=ax_user, ok=True)

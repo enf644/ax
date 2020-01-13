@@ -39,8 +39,6 @@ export default {
       const jsTreeData = [];
 
       this.groups.forEach(group => {
-        console.log(group);
-
         let icon = 'fas fa-users';
         if (group.isAdmin) icon = 'fas fa-users-cog';
 

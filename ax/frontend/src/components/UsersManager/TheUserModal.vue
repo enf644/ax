@@ -346,7 +346,7 @@ export default {
     async promptDeleteUser(e) {
       e.preventDefault();
       const res = await this.$dialog.confirm({
-        text: this.$t('users.user-delete-confirm', { name: this.name }),
+        text: this.$t('users.user-delete-confirm', { name: this.shortName }),
         actions: {
           false: this.$t('common.confirm-no'),
           true: {

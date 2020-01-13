@@ -207,7 +207,7 @@ def make_query_resolver(db_name, type_class):
                         raise
 
                 sql = None
-                if grid_to_use.code and ax_auth.lise_is_active():
+                if grid_to_use.code:
                     sql = exec_grid_code(
                         form=ax_form,
                         grid=grid_to_use,

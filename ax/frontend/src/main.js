@@ -13,7 +13,7 @@ import VModal from 'vue-js-modal';
 // Admin dependencies
 import VueResize from 'vue-resize'; // detect element resize
 import '@fortawesome/fontawesome-free/css/all.css';
-import 'roboto-fontface/css/roboto/roboto-fontface.css';
+// import 'roboto-fontface/css/roboto/roboto-fontface.css';
 
 import AsyncComputed from 'vue-async-computed';
 
@@ -54,6 +54,9 @@ import store from './store';
 import AxTest from './components/AxTest.vue';
 import Fingerprint2 from 'fingerprintjs2'
 import { uuidWithDashes } from '@/misc';
+
+import Uppy from '@uppy/core'
+
 // import ThePasswordChange from '@/components/UsersManager/ThePasswordChange.vue';
 
 Vue.config.productionTip = false;
@@ -95,7 +98,6 @@ Vue.use(AsyncComputed);
 const vuetify = new Vuetify({
   icons: { iconfont: 'fa' }
 });
-
 
 const gridPromise = () => import(/* webpackChunkName: "ax-grid" */ './components/AxGridComponent.vue').then(m => {
   return {
@@ -172,11 +174,14 @@ const echoFunc = msg => {
   return msg;
 };
 
-AxTest.echo = echoFunc;
-AxTest.translation = { a: 'b' }
-AxTest.propD = 'works works';
+// AxTest.echo = echoFunc;
+// AxTest.translation = { a: 'b' }
+// AxTest.propD = 'works works';
+const uppy = Uppy()
 
 Vue.customElement('ax-test', {
   ...AxTest,
-  vuetify
+  vuetify,
+  uppy,
+  Uppy
 });

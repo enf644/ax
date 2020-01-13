@@ -24,6 +24,11 @@ const getDefaultState = () => ({
   passwordMustChange: false
 });
 
+// const checkSelected = (guid, state) => {
+//   if (guid === state.currentPage.guid) return true;
+//   return false;
+// };
+
 const getChildren = (guid, state) => {
   let children = [];
   state.pages.forEach(page => {
@@ -34,6 +39,10 @@ const getChildren = (guid, state) => {
           guid: page.guid,
           position: page.position
         },
+        state: {
+          // expanded: checkSelected(guid, state),
+          // selected: checkSelected(guid, state)
+        },
         children: getChildren(page.guid, state)
       };
       children.push(newNode);
@@ -42,6 +51,7 @@ const getChildren = (guid, state) => {
   children = children.sort((a, b) => a.data.position - b.data.position);
   return children;
 };
+
 
 const mutations = {
   resetState(state) {
@@ -128,18 +138,21 @@ const actions = {
       .then(data => {
         const pages = data.data.allPages;
         store.commit('setPages', pages);
+        store.commit('setCurrentPage', data.data.pageData);
+        store.commit('setCurrentUser', data.data.currentAxUser);
+        store.commit('setPasswordMustChange', data.data.currentAxUser.passwordMustChange);
 
         const rootPage = pages.find(page => page.parent === null);
         const rootNode = {
           text: rootPage.name,
           data: { guid: rootPage.guid },
-          state: { expanded: true },
+          state: {
+            expanded: true
+          },
           children: getChildren(rootPage.guid, context.state)
         };
+        console.log([rootNode]);
         store.commit('updateTreeStore', [rootNode]);
-        store.commit('setCurrentPage', data.data.pageData);
-        store.commit('setCurrentUser', data.data.currentAxUser);
-        store.commit('setPasswordMustChange', data.data.currentAxUser.passwordMustChange);
       })
       .catch(error => {
         console.log(`Error in loadAllPages gql => ${error}`);
@@ -171,6 +184,7 @@ const actions = {
       .catch(error => {
         console.log(`Error in loadPageData gql => ${error}`);
       });
+    return true;
   }
 };
 

@@ -1,5 +1,5 @@
 <template>
-  <div class='content-wrapper h-full w-full flex flex-row'>
+  <div class='content-wrapper'>
     <div class='menu-wrapper' v-if='drawerEnabled === false'>
       <TheDrawerMenu />
     </div>
@@ -52,13 +52,17 @@ export default {
 </script>
 
 <style scoped>
+.content-wrapper {
+  display: flex;
+  flex-direction: row;
+}
 .current-page {
-  padding: 25px;
+  width: 100%;
 }
 .menu-wrapper {
   min-width: 300px;
-  width: 20%;
-  padding: 25px;
+  width: 30%;
+  padding: 20px;
 }
 .loading-div {
   padding-top: 100px;

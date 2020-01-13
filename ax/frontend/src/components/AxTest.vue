@@ -1,11 +1,16 @@
 <template>
   <div>
-    <v-autocomplete :items='components' label='Components'></v-autocomplete>
-    {{propD}}
+    <div id='drag-drop-area'></div>
   </div>
 </template>
 
 <script>
+import '@uppy/core/dist/style.css';
+// import Core from '@uppy/core';
+// import Tus from '@uppy/tus';
+
+import Uppy, { Core, Dashboard, Webcam, Tus } from 'uppy';
+
 export default {
   props: {
     propD: {
@@ -13,16 +18,29 @@ export default {
       default: 'wtf'
     }
   },
-  mounted() {},
+  mounted() {
+    console.log(uppy);
+    console.log(Uppy);
+  },
   data() {
-    return {};
+    return {
+      theUppy: null
+    };
   },
   mounted() {
-    // console.log(this.$vuetify.lang.t('wtf'));
-    // console.log(this.echo('wtf'));
-    setTimeout(() => {
-      console.log(this.$vuetify);
-    }, 1000);
+    this.theUppy = Core()
+      .use(Dashboard, {
+        inline: true,
+        target: '#drag-drop-area'
+      })
+      .use(Tus, { endpoint: 'https://master.tus.io/files/' });
+
+    this.theUppy.on('complete', result => {
+      console.log(
+        'Upload complete! We’ve uploaded these files:',
+        result.successful
+      );
+    });
   },
   methods: {}
 };

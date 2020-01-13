@@ -47,20 +47,10 @@
       </div>
     </div>
 
-    <v-badge class='add-role-btn' color='error' overlap v-model='showProBadge'>
-      <template v-slot:badge>
-        <span class='drawer-toggle-errors'>{{showProBadge}}</span>
-      </template>
-      <v-btn
-        :disabled='proEnabled == false'
-        @click='createDynamicRole'
-        data-cy='create-dynamic-role-btn'
-        small
-      >
-        <i class='fas fa-plus'></i>
-        &nbsp; {{$t("workflow.role.create-dynamic-role-btn")}}
-      </v-btn>
-    </v-badge>
+    <v-btn @click='createDynamicRole' data-cy='create-dynamic-role-btn' small>
+      <i class='fas fa-plus'></i>
+      &nbsp; {{$t("workflow.role.create-dynamic-role-btn")}}
+    </v-btn>
 
     <modal :height='windowHeight' adaptive name='update-role' width='1000px'>
       <TheRoleModal :guid='this.selectedRoleGuid' @close='closeModal' />
@@ -90,14 +80,6 @@ export default {
     },
     noDynamicRoles() {
       return this.roles.filter(role => role.isDynamic == true).length == 0;
-    },
-    showProBadge() {
-      if (this.proEnabled == false) return 'pro';
-      return false;
-    },
-    proEnabled() {
-      if (this.$store.state.home.clientGuid) return true;
-      return false;
     }
   },
   created() {

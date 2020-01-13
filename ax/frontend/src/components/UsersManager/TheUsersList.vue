@@ -4,6 +4,7 @@
       <h1>
         <i class='far fa-user'></i>
         &nbsp; {{$t("users.all-users-header")}}
+        {{maxUsers}}
       </h1>
       <div>
         <span class='users-warning' v-if='usersLimitReached'>{{$t("users.max-users-reached")}}</span>

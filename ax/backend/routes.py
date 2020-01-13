@@ -72,9 +72,17 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
         sanic_app.static(
             '/pages/static', str(ax_misc.path('dist/pages/static')))
         # TODO WTF this guid? maybe must be part of build?
+
+        pre_cache_file_name = None
+        pages_dist_dir = ax_misc.path('dist/pages')
+        file_list = os.listdir(pages_dist_dir)
+        for name in file_list:
+            if "precache-manifest." in name:
+                pre_cache_file_name = name
+
         sanic_app.static(
-            '/pages/precache-manifest.2623009802489cdbe7ec9ddecce4f4b9.js',
-            str(ax_misc.path('dist/pages/precache-manifest.2623009802489cdbe7ec9ddecce4f4b9.js')))     # pylint: disable=line-too-long
+            f'/pages/{pre_cache_file_name}',
+            str(ax_misc.path(f'dist/pages/{pre_cache_file_name}')))     # pylint: disable=line-too-long
         sanic_app.static(
             '/pages/service-worker.js',
             str(ax_misc.path('dist/pages/service-worker.js')))

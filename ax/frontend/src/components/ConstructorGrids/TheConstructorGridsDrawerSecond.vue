@@ -18,21 +18,11 @@
       {{$t("grids.save-filter-order-btn")}}
     </v-btn>
 
-    <v-badge class='drawer-toggle' color='error' overlap v-model='showProBadge'>
-      <template v-slot:badge>
-        <span class='drawer-toggle-errors'>{{showProBadge}}</span>
-      </template>
-      <v-btn
-        :disabled='proEnabled == false'
-        @click='openQueryModal'
-        data-cy='query-modal-btn'
-        small
-      >
-        <i class='fas fa-filter'></i>
-        &nbsp;
-        {{$t("grids.query-modal-btn")}}
-      </v-btn>
-    </v-badge>
+    <v-btn @click='openQueryModal' data-cy='query-modal-btn' small>
+      <i class='fas fa-filter'></i>
+      &nbsp;
+      {{$t("grids.query-modal-btn")}}
+    </v-btn>
 
     <modal adaptive height='auto' name='query-modal' scrollable width='1000px'>
       <TheQueryModal @close='closeQueryModal' />
@@ -183,16 +173,8 @@ export default {
     options() {
       return this.$store.state.grids.options;
     },
-    showProBadge() {
-      if (this.proEnabled == false) return 'pro';
-      return false;
-    },
     updateTime() {
       return this.$store.state.grids.updateTime;
-    },
-    proEnabled() {
-      if (this.$store.state.home.clientGuid) return true;
-      return false;
     },
     formDbName() {
       return this.$store.state.grids.formDbName;

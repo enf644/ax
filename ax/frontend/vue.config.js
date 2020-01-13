@@ -46,7 +46,15 @@ module.exports = {
           splitChunks: false
         },
         module: {
-          rules: []
+          rules: [
+            {
+              test: /\.jsx?$/,
+              exclude: /node_modules/,
+              use: {
+                loader: 'babel-loader?cacheDirectory=true',
+              }
+            }
+          ]
         },
         plugins: [
           new webpack.optimize.LimitChunkCountPlugin({

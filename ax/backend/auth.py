@@ -167,7 +167,7 @@ async def get_dynamic_roles_guids(ax_form, current_user):
 
 async def check_fits_dynamic_role(role, ax_form, current_user):
     """ Runs check_dynamic_role() of field_type py file """
-    if role.is_dynamic and ax_auth.lise_is_active():
+    if role.is_dynamic:
         fits = await ax_exec.execute_field_code(
             code=role.code,
             form=ax_form,
@@ -651,24 +651,31 @@ def apply_lise(db_session):
             logger.exception(err)
             raise Exception(err)
 
-        try:
-            rsa.verify(data.encode('utf-8'), sign, public_key)
-        except rsa.VerificationError:
-            logger.exception("License is not verified!")
-            raise
-        else:
-            logger.info(f'License applied for {users_number} users.')
-            this.client_guid = cl_guid
-            this.user_num = int(users_number)
-            this.expire = expire
+            try:
+                rsa.verify(data.encode('utf-8'), sign, public_key)
+            except rsa.VerificationError:
+                logger.exception("License is not verified!")
+                raise
 
-            number_of_users = db_session.query(AxUser).filter(
-                AxUser.is_group.is_(False)
-            ).count()
-            if number_of_users > this.user_num:
-                err = f"Maximum number of users exceeded! Max={this.user_num}"
-                logger.exception(err)
-                raise Exception(err)
+        logger.info(f'License applied for {users_number} users.')
+        this.client_guid = cl_guid
+        this.user_num = int(users_number)
+        this.expire = expire
+    else:
+        this.client_guid = None
+        this.user_num = 5
+        this.expire = None
+
+    number_of_users = db_session.query(AxUser).filter(
+        AxUser.is_group.is_(False)
+    ).filter(
+        AxUser.is_blocked.is_(False)
+    ).count()
+    if number_of_users > this.user_num:
+        err = f"Maximum number of users exceeded! Max={this.user_num}"
+        logger.exception(err)
+        raise Exception(err)
+    
 
 
 
