@@ -47,7 +47,7 @@
       </div>
     </div>
 
-    <v-btn @click='createDynamicRole' data-cy='create-dynamic-role-btn' small>
+    <v-btn @click='createDynamicRole' class='add-role-btn' data-cy='create-dynamic-role-btn' small>
       <i class='fas fa-plus'></i>
       &nbsp; {{$t("workflow.role.create-dynamic-role-btn")}}
     </v-btn>

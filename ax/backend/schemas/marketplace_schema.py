@@ -1008,6 +1008,8 @@ async def create_form_objects(db_session, form_name, package_directory):
                     action=action)
                 await terminal_log(f'    {action["name"]} ✔\n')
 
+            db_session.commit()
+
             # AxRoleFieldPermission[] - deletes, creaes new
             for ax_perm in ax_form.permissions:
                 db_session.delete(ax_perm)

@@ -7,8 +7,8 @@ import graphene
 from sqlalchemy import or_
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from passlib.hash import pbkdf2_sha256
-import ujson as json
 from loguru import logger
+import ujson as json
 
 from backend.misc import convert_column_to_string
 from backend.model import AxUser, GUID, AxGroup2Users, AxRole2Users
@@ -639,7 +639,7 @@ class UsersQuery(graphene.ObjectType):
                     AxUser.is_group.is_(False)
                 ).filter(
                     AxUser.is_blocked.is_(False)
-                ).all()                
+                ).all()
             elif not search_string and guids:
                 real_guids = []
                 guids_dict = json.loads(guids)

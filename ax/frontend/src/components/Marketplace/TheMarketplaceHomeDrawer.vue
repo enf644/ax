@@ -207,16 +207,20 @@ export default {
           }
         })
         .then(data => {
-          const msg = data.data.installFromRpo.msg;
-          console.log(msg);
-          this.$store.commit(
-            'home/setShowToastMsg',
-            this.$t('marketplace.app-installed-toast')
-          );
+          if (data.data.installFromRepo && data.data.installFromRepo.msg) {
+            const msg = data.data.installFromRepo.msg;
+            this.$store.commit(
+              'home/setShowToastMsg',
+              this.$t('marketplace.app-installed-toast')
+            );
+          }
 
-          this.$store.dispatch('home/getAllForms', {
-            updateTime: Date.now()
-          });
+          setTimeout(() => {
+            console.log('Reload forms after install');
+            this.$store.dispatch('home/getAllForms', {
+              updateTime: Date.now()
+            });
+          }, 1000);
         })
         .catch(error => {
           this.$log.error(`Error in installFromRepo apollo client => ${error}`);

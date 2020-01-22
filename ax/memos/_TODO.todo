@@ -902,29 +902,15 @@ AX 0.2:
         ✔ AxUsers - email modal @done(20-01-11 18:08)
         ✔ Move back to free 5 user model @done(20-01-13 11:41)
         ✔ Check postgrecd @done(20-01-13 12:47)
-    ☐ Publish to pypi
-        ☐ Publish
-        ☐ Clean old versions
     ☐ INSTALATION
+        ✔ Publish @done(20-01-13 13:24)
         ☐ Install on linux machine, record video, write doc
         ☐ Install on windows machine, record video, write doc
     ☐ PERFORMANCE TEST
         ☐ Redis integration
         ☐ 4 workers, cache problem, schema reload
-        ☐ Give huge load - stress test
-        ☐ Profile execution
-            https://stackoverflow.com/a/49526932/784789
-            https://github.com/mgedmin/profilehooks        
-        ☐ Security - https://lgtm.com/dashboard
-    ☐ LANDING
-        ☐ Github readme with docs
-            ☐ Windows instruction, video
-            ☐ Linux instruction, video
-            ☐ Tags like in https://github.com/mapstruct/mapstruct
-            https://github.com/dwyl/repo-badges
-            https://github.com/badges/shields
-        ☐ Ax pages site - beutiful landing with gifs
-        ☐ Landing metrics
+    ✔ LANDING @done(20-01-22 14:53)
+        ✔ Github readme with docs @done(20-01-22 14:53)
     =======================================================================:
     ☐ SEND TO FRIENDS
         ☐ Record installation, tutorial, reactions
@@ -945,8 +931,11 @@ AX 0.2:
         ☐ Yandex.Kassa field
         ☐ User registration app for marketplace
         ☐ Patreon, https://liberapay.com/
-    ☐ MARKETPLACE APPS
-        ☐ Copy Less workflow
+    ☐ LICENSING
+        ☐ Ax pages site - beutiful landing with gifs
+        ☐ Landing metrics
+        ☐ AxPaymentYandex
+        ☐ Buy process
     ☐ CYPRESS TESTS FOR MAIN FUNCTIONS
     ☐ ESTABLISH CI
         https://help.github.com/en/actions/automating-your-workflow-with-github-actions
@@ -959,31 +948,32 @@ AX 0.2:
 
 
 DOCUMENTATION:
-    ☐ Basic
-        ☐ Installing Ax on local machine
+    ☐ Getting started
+        ☐ Install Ax
             ☐ Windows
             ☐ Ios
-            ☐ Ubuntu
+            ☐ Linus
+        ☐ Run Ax
         ☐ Create form
-        ☐ Create workflow
         ☐ Create grid
+        ☐ Set workflow permissions
+    ☐ Beginner
+        ☐ Features
+        ☐ Using Marketplace
+        ☐ Relation fields - 1to1, 1toM   
+        ☐ Creating Workflow
         ☐ Page designer
-        ☐ Marketplace
-            ☐ Install marketplace app
+        ☐ Manage users
     ☐ Advanced
-        ☐ Installing Ax on server
-            ☐ Ubuntu
-            ☐ CentOs
+        ☐ Features    
+        ☐ Ax Configuration
             ☐ Configure database
             ☐ Configure email
-        ☐ Form
-            ☐ Ralation forms 1to1, 1tom
-            ☐ Html field - using table inside form
-        ☐ Grid
-            ☐ Query builder (pro)
-            ☐ Grid with params
-        ☐ Workflow - 
-            ☐ python code (pro)
+            ☐ SSL
+        ☐ Running Ax in production
+        ☐ Advanced Grid - Query builder
+        ☐ Advanced Workflow - Actions
+            ☐ python code
             ☐ ax.message
             ☐ ax.abort
             ☐ ax.email
@@ -991,11 +981,11 @@ DOCUMENTATION:
             ☐ useful snippets
                 ☐ Creating xls
                 ☐ Grab site
-        ☐ Marketplace
-            ☐ Create marketplace app
-        ☐ Manage users
+        ☐ Advanced Workflow - Dynamic roles                    
+        ☐ Creating marketplace app
     ☐ Hacker
-        ☐ Installing 
+        ☐ Features    
+        ☐ Using Ax on cloud platforms 
             ☐ Cloud platforms
                 ☐ App engine
                 ☐ Aws
@@ -1003,17 +993,17 @@ DOCUMENTATION:
             ☐ Configure cache - redis                        
             ☐ Back-proxy - nginx
             ☐ Running ax on WSGI web-server (gunicorn)
-        ☐ Form
+        ☐ Using web-components
             ☐ <ax-form />
             ☐ <ax-grid />
-        ☐ Grid
+        ☐ Using graphql API
             ☐ Gql query on grids
             ☐ Send grid params
-        ☐ Workflow
+        ☐ Complex workflow features
             ☐ ax.print
             ☐ Chain actions. Call action inside action.
             ☐ Call action throw GQL
-        ☐ Marketplace
+        ☐ Advanced Marketplace applications
             ☐ Create marketplace app with custom front-end and publish it to github
 
 
@@ -1073,7 +1063,18 @@ FROGS TODOS:
     ✔ Long names for form tabs - limit is too small! @done(19-10-18 12:17)
     ✔ Del key when editing field names - tryes to delete whole field @done(19-10-18 17:39)
     ☐ IMPORTANT
-        ☐ Create apps that do not require pro
+        ☐ Marketplace - check for foreign keys before creating app! or installing app!
+        ☐ AxMarkdown
+            ☐ When not in admin - must not have top margin. Modal close button z-index is bigger then full-screen mode.
+            ☐ Z-index of field is greated then choise field
+        ☐ Github Tags like in https://github.com/mapstruct/mapstruct
+            https://github.com/dwyl/repo-badges
+            https://github.com/badges/shields
+        ☐ Give huge load - stress test
+            ☐ Profile execution
+                https://stackoverflow.com/a/49526932/784789
+                https://github.com/mgedmin/profilehooks        
+        ☐ Security - https://lgtm.com/dashboard    
         ☐ Hint for each field type
         ☐ Dialect - custom sql - forbid modification of ax tables!!
         ☐ If marketplace app installed with error -> rollback and delete all created instances

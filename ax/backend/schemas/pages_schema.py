@@ -288,6 +288,8 @@ class PagesQuery(graphene.ObjectType):
         """Get specific page"""
         del update_time
         current_user = info.context['user']
+        user_is_admin = current_user.get(
+            'is_admin', False) if current_user else False
         err = 'Error in GQL query - resolve_page_data.'
         with ax_model.try_catch(
                 info.context['session'], err, no_commit=True) as db_session:
@@ -303,7 +305,7 @@ class PagesQuery(graphene.ObjectType):
             pages_guids = get_allowed_pages_guids(
                 db_session=db_session, user_guid=user_guid)
 
-            if page.guid in pages_guids:
+            if page.guid in pages_guids or user_is_admin:
                 page.html = apply_markdown(page.code)
                 return page
             return None

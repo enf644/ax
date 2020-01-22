@@ -57,7 +57,7 @@ const GET_GRID_DATA = gql`
           }
         }
       },
-      code,
+      codeNotNone,
       optionsJson,
       isDefaultView,
     }
@@ -105,7 +105,7 @@ const CREATE_GRID = gql`
         name,
         dbName,
         formGuid,
-        code,
+        codeNotNone,
         optionsJson,
         isDefaultView,
         columns {
@@ -169,7 +169,7 @@ const mutations = {
       state.dbName = grid.dbName;
       state.formGuid = grid.formGuid;
       state.options = JSON.parse(grid.optionsJson);
-      state.code = grid.code;
+      state.code = grid.codeNotNone;
       state.isDefaultView = grid.isDefaultView;
       state.columns = grid.columns ? grid.columns.edges.map(edge => edge.node) : null;
     } else {

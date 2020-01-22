@@ -4,6 +4,7 @@ sea init_dialects
 """
 import sys
 import sqlite3
+import datetime
 import uuid
 import re
 from loguru import logger
@@ -16,7 +17,8 @@ this = sys.modules[__name__]
 dialect_name = None
 dialect = None
 
-default_grid_query = f'SELECT <ax_fields>\nFROM "<ax_table>";'
+default_grid_query = '''SELECT {ax.db_fields}
+    FROM "{ax.db_table}";'''
 
 class PorstgreDialect(object):
     """SQL query for Postgre SQL database"""
@@ -170,6 +172,21 @@ class PorstgreDialect(object):
         return ret_value
 
 
+
+    async def conver_for_graphql(self, value):
+        """ Convert SQL field value to GraphQL value """
+        ret_value = value
+        if isinstance(value, datetime.datetime):
+            try:
+                ret_value = int(value.timestamp()) if value else None
+            except Exception:
+                try:
+                    ret_value = int(value.timestamp()/1000) if value else None
+                except Exception:
+                    return None
+        return ret_value
+
+
     def custom_query(self, sql, variables=None):
         """ Executes any SQL. Used in action python code.
         This method is SYNC, leave it so
@@ -226,7 +243,7 @@ class PorstgreDialect(object):
             if quicksearch:
                 sql_params['quicksearch'] = quicksearch
                 quicksearch_sql = (
-                    f"AND CAST({tom_name} AS VARCHAR) LIKE ('%' || :quicksearch || '%') "
+                    f"AND CAST({tom_name} AS VARCHAR) ILIKE ('%' || :quicksearch || '%') "
                 )
 
             guids_sql = ''
@@ -303,24 +320,26 @@ class PorstgreDialect(object):
             if not sql:
                 return None
 
-            tom_name = await self.get_tom_sql(
-                form_db_name=ax_form.db_name,
-                form_name=ax_form.name,
-                tom_label=ax_form.tom_label,
-                fields=ax_form.db_fields)
+            final_sql = sql
 
-            db_fields_sql = ", ".join(
-                '"' + field.db_name + '"' for field in ax_form.db_fields)
+            if '{ax.db_fields}' in final_sql:
+                db_fields_sql = ", ".join(
+                    '"' + field.db_name + '"' for field in ax_form.db_fields)
 
-            if db_fields_sql:
-                db_fields_sql = ", " + db_fields_sql
+                if db_fields_sql:
+                    db_fields_sql = ", " + db_fields_sql
 
-            fields_sql = (
-                f'"guid", "axState" {db_fields_sql}, {tom_name} as "axLabel"')
-            final_sql = sql.replace('<ax_fields>', fields_sql)
-            final_sql = final_sql.replace('<ax_table>', ax_form.db_name)
-            final_sql = final_sql.replace('<tom_label>', tom_name)
+                tom_name = await self.get_tom_sql(
+                    form_db_name=ax_form.db_name,
+                    form_name=ax_form.name,
+                    tom_label=ax_form.tom_label,
+                    fields=ax_form.db_fields)
 
+                fields_sql = (
+                    f'"guid", "axState" {db_fields_sql}, {tom_name} as "axLabel"')
+                final_sql = sql.replace('{ax.db_fields}', fields_sql)
+                final_sql = final_sql.replace('{ax.tom_label}', tom_name)
+                final_sql = final_sql.replace('{ax.db_table}', ax_form.db_name)
 
             result = db_session.execute(final_sql, arguments).fetchall()
             # Some values must be converted before returning to GQL
@@ -344,7 +363,7 @@ class PorstgreDialect(object):
             # names = [row[0] for row in result]
         except Exception:
             logger.exception(
-                f"Error executing SQL - select_all - {sql}")
+                f"Error executing SQL - select_custom_query - {sql}")
             raise
 
 
@@ -794,6 +813,99 @@ class SqliteDialect(PorstgreDialect):
             Postgre returns JSON as dict  """
         ret_value = value
         return ret_value
+
+
+    async def select_all(self, db_session, ax_form, quicksearch=None,
+                         guids=None):
+        """ Select * from table
+
+        Args:
+            db_session: SqlAlchemy session
+            ax_form (AxForm): Current AxForm
+            quicksearch (str, optional): Search string from AxGrid.vue
+            guids (str, optional): JSON containing list of guids, that must be
+                selected. Used in 1tom fields. Where you need to display only
+                selected guids.
+
+        Returns:
+            List(Dict): Result of SqlAlchemy query. List of rows
+        """
+        try:
+            sql_params = {}
+
+            tom_name = await self.get_tom_sql(
+                form_db_name=ax_form.db_name,
+                form_name=ax_form.name,
+                tom_label=ax_form.tom_label,
+                fields=ax_form.db_fields)
+
+            fields_sql = ", ".join(
+                '"' + field.db_name + '"' for field in ax_form.db_fields)
+
+            # If no fields -> no , needed
+            if fields_sql:
+                fields_sql = "," + fields_sql
+
+            quicksearch_sql = ''
+            if quicksearch:
+                sql_params['quicksearch'] = quicksearch
+                quicksearch_sql = (
+                    f"AND CAST({tom_name} AS VARCHAR) LIKE ('%' || :quicksearch || '%') "
+                )
+
+            guids_sql = ''
+            if guids:
+                guids_array = json.loads(guids)['items']
+                if isinstance(guids_array, str):
+                    guids_array = json.loads(guids_array)
+
+                guids_string = ''
+                if guids_array:
+                    checked_guids = []
+                    for check_guid in guids_array:
+                        try:
+                            uuid.UUID(check_guid)
+                            checked_guids.append(check_guid)
+                        except Exception:
+                            pass
+                            # logger.exception(
+                            #     f"Error in guids argument. Cant parse json")
+                            # raise
+
+                    guids_string = ", ".join(
+                        "'" + item + "'" for item in checked_guids)
+                    guids_sql = f"OR guid IN ({guids_string})"
+                    if not quicksearch_sql:
+                        guids_sql = f"AND guid IN ({guids_string})"
+            sql = (
+                f'SELECT guid, "axState" {fields_sql}'
+                f', {tom_name} as "axLabel" FROM "{ax_form.db_name}"'
+                f' WHERE (1=1 {quicksearch_sql}) {guids_sql}'
+            )
+
+            result = db_session.execute(sql, sql_params).fetchall()
+            # Some values must be converted before returning to GQL
+            # Example - we need to do json.dumps before returning JSON field
+            clean_result = []
+            for row in result:
+                clean_row = {
+                    "guid": row["guid"],
+                    "axState": row["axState"],
+                    "axLabel": row['axLabel']
+                }
+                for field in ax_form.db_fields:
+                    clean_row[field.db_name] = await self.get_value(
+                        field.field_type.value_type, row[field.db_name])
+                clean_result.append(clean_row)
+
+            return clean_result
+            # names = [row[0] for row in result]
+        except Exception:
+            if not sql:
+                sql = 'NONE'
+            logger.exception(
+                f"Error executing SQL - select_all - {sql}")
+            raise
 
 
 

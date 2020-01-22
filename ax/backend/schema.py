@@ -35,6 +35,7 @@ from backend.model import AxForm
 import backend.model as ax_model
 import backend.dialects as ax_dialects
 import backend.auth as ax_auth
+import backend.exec as ax_exec
 
 
 this = sys.modules[__name__]
@@ -108,10 +109,21 @@ class Subscription(UsersSubscription, ActionSubscription, FieldsSubscription,
     """Combines all schemas subscription"""
 
 
-def exec_grid_code(form, grid, arguments=None, current_user=None):
+async def exec_grid_code(form, grid, arguments=None, current_user=None):
     """ Execute python code to get SQL query for specific grid """
+
+    db_fields_sql = ", ".join(
+        '"' + field.db_name + '"' for field in form.db_fields)
+
+    if db_fields_sql:
+        db_fields_sql = ", " + db_fields_sql
+
+    fields_sql = (f'"guid", "axState" {db_fields_sql}')
+
     localz = dict()
     ax = DotMap()  # javascript style dicts item['guid'] == item.guid
+    ax.db_fields = fields_sql
+    ax.db_table = form.db_name
     ax.row.guid = form.row_guid
     ax.arguments = arguments
     ax.user_email = None
@@ -122,12 +134,14 @@ def exec_grid_code(form, grid, arguments=None, current_user=None):
     ax.form = form
     ax.grid = grid
     ax.sql = ax_dialects.dialect.custom_query
+
     localz['ax'] = ax
 
     try:
-        exec(str(grid.code), globals(), localz)   # pylint: disable=exec-used
-        ret_query = None
+        # exec(str(grid.code), globals(), localz)   # pylint: disable=exec-used
+        await ax_exec.aexec(code=str(grid.code), localz=localz, ax=ax)
         ret_ax = localz['ax']
+        ret_query = None
         if ret_ax and ret_ax.query:
             ret_query = str(ret_ax.query)
         return ret_query
@@ -208,7 +222,7 @@ def make_query_resolver(db_name, type_class):
 
                 sql = None
                 if grid_to_use.code:
-                    sql = exec_grid_code(
+                    sql = await exec_grid_code(
                         form=ax_form,
                         grid=grid_to_use,
                         arguments=arguments_dict,
@@ -240,11 +254,11 @@ def make_query_resolver(db_name, type_class):
                 row_state_name = row["axState"]
                 for key, value in row.items():
                     if current_user and current_user['is_admin']:
-                        kwargs[key] = value
+                        kwargs[key] = await ax_dialects.dialect.conver_for_graphql(value)
                     elif (key in allowed_fields[row_state_name] and
                           allowed_fields[row_state_name][key] and
                           allowed_fields[row_state_name][key] > 0):
-                        kwargs[key] = value
+                        kwargs[key] = await ax_dialects.dialect.conver_for_graphql(value)
                     elif key == 'guid':
                         kwargs[key] = value
                     else:
@@ -282,7 +296,7 @@ def make_to1_resolver(ax_field_guid, to1_field_db_name, related_form_db_name,
 
                 if results:
                     for key, value in results[0].items():
-                        kwargs[key] = value
+                        kwargs[key] = await ax_dialects.dialect.conver_for_graphql(value)
 
                 if class_name in type_classes:
                     return type_classes[class_name](**kwargs)
@@ -325,7 +339,7 @@ def make_tom_resolver(ax_field_guid, to1_field_db_name, related_form_db_name,
                     for row in results:
                         kwargs = {}
                         for key, value in row.items():
-                            kwargs[key] = value
+                            kwargs[key] = await ax_dialects.dialect.conver_for_graphql(value)
                         if class_name in type_classes:
                             row_class = type_classes[class_name](**kwargs)
                             ret_result.append(row_class)
@@ -361,28 +375,29 @@ def create_class_fields(form):
             grid_db_name = field.options['grid']
             class_name = get_class_name(form_db_name, grid_db_name)
 
-            # This is same as -> field_class = lambda: type_classes[class_name]
-            def field_class():
-                return type_classes[class_name]
+            if class_name in type_classes:
+                # This is same as -> field_class = lambda: type_classes[class_name]
+                def field_class():
+                    return type_classes[class_name]
 
-            if field.is_to1_field:
-                resolver = make_to1_resolver(
-                    ax_field_guid=field.guid,
-                    class_name=class_name,
-                    related_form_db_name=form_db_name,
-                    to1_field_db_name=field.db_name)
+                if field.is_to1_field:
+                    resolver = make_to1_resolver(
+                        ax_field_guid=field.guid,
+                        class_name=class_name,
+                        related_form_db_name=form_db_name,
+                        to1_field_db_name=field.db_name)
 
-                class_fields[field.db_name] = graphene.Field(field_class)
-                class_fields[f'resolve_{field.db_name}'] = resolver
-            elif field.is_tom_field:
-                resolver = make_tom_resolver(
-                    ax_field_guid=field.guid,
-                    class_name=class_name,
-                    related_form_db_name=form_db_name,
-                    to1_field_db_name=field.db_name)
+                    class_fields[field.db_name] = graphene.Field(field_class)
+                    class_fields[f'resolve_{field.db_name}'] = resolver
+                elif field.is_tom_field:
+                    resolver = make_tom_resolver(
+                        ax_field_guid=field.guid,
+                        class_name=class_name,
+                        related_form_db_name=form_db_name,
+                        to1_field_db_name=field.db_name)
 
-                class_fields[field.db_name] = graphene.List(field_class)
-                class_fields[f'resolve_{field.db_name}'] = resolver
+                    class_fields[field.db_name] = graphene.List(field_class)
+                    class_fields[f'resolve_{field.db_name}'] = resolver
         else:
             field_type = (
                 type_dictionary[field.field_type.value_type])
@@ -410,30 +425,31 @@ def init_schema(db_session):
 
                 class_fields = create_class_fields(form)
 
-                # Create graphene class and append class dict
-                graph_class = type(
-                    class_name,
-                    (graphene.ObjectType,),
-                    class_fields,
-                    name=class_name,
-                    description=form.name
-                )
-                type_classes[class_name] = graph_class
-
-                # if grid is default view we add enother class with name
-                # Form without Grid name
-                if grid.is_default_view is True:
-                    default_class_name = form.db_name[0].upper(
-                    ) + form.db_name[1:]
-
-                    default_graph_class = type(
-                        default_class_name,
+                if class_fields:
+                    # Create graphene class and append class dict
+                    graph_class = type(
+                        class_name,
                         (graphene.ObjectType,),
                         class_fields,
-                        name=default_class_name,
+                        name=class_name,
                         description=form.name
                     )
-                    type_classes[default_class_name] = default_graph_class
+                    type_classes[class_name] = graph_class
+
+                    # if grid is default view we add enother class with name
+                    # Form without Grid name
+                    if grid.is_default_view is True:
+                        default_class_name = form.db_name[0].upper(
+                        ) + form.db_name[1:]
+
+                        default_graph_class = type(
+                            default_class_name,
+                            (graphene.ObjectType,),
+                            class_fields,
+                            name=default_class_name,
+                            description=form.name
+                        )
+                        type_classes[default_class_name] = default_graph_class
 
         # Dynamicly crate resolvers for each typeClass
         # Iterate throw created classes and create resolver for each

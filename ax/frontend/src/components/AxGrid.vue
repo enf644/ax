@@ -51,6 +51,7 @@
             @click='doAction(action)'
             class='action-btn'
             small
+            text
             v-for='action in this.actions'
           >
             <i :class='getActionIconClass(action)'></i>
@@ -59,13 +60,13 @@
           </v-btn>
         </div>
         <div v-if='this.isTomMode'>
-          <v-btn @click='emitSelectedItems' small>
+          <v-btn @click='emitSelectedItems' small text>
             <i class='fas fa-check-double'></i>
             &nbsp; {{locale("grids.select-relation")}}
           </v-btn>
         </div>
         <div v-if='this.addRelationEnabled'>
-          <v-btn @click='emitSelectDialog' small>
+          <v-btn @click='emitSelectDialog' small text>
             <i class='fas fa-check-double'></i>
             &nbsp; {{addRelationButtonLabel}}
           </v-btn>

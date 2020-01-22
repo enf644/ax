@@ -86,6 +86,7 @@ class Grid(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
     class Meta:  # pylint: disable=missing-docstring
         model = AxGrid
         interfaces = (relay.Node, )
+    code_not_none = graphene.String()
 
 
 class Column(SQLAlchemyObjectType):  # pylint: disable=missing-docstring

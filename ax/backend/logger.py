@@ -21,7 +21,8 @@ def init_logger(logs_filename: str, logs_absolute_path: str, logs_level: str):
                 'sink': sys.stdout,
                 'colorize': True,
                 'format': '⛏️  | {level} | <level>{message}</level>',
-                'backtrace': False
+                'backtrace': False,
+                'level': logs_level
             }
         ],
         "extra": {"user": "someone"}

@@ -102,31 +102,20 @@ http://google.github.io/styleguide/pyguide.html
 
 ws://127.0.0.1:8081/api/subscriptions
 
-<ax-grid settings="" >
-    <ax-field-string-grid-cell settings="" />
-    <ax-field-int-grid-cell />
-    <ax-field-datetime-grid-cell />
-</ax-grid>
 
 
-<ax-form>
-    <ax-field-string />
-    <ax-field-int />
-    <ax-field-datetime />
-</ax-form>
 
+=================== app engine yaml ================
+# # Used in Google app engine configuration
+# runtime: python37
+# env: standard
+# api_version: 1
+# threadsafe: true
+# service: test
+# entrypoint: gunicorn main:app --bind 0.0.0.0:8080 --worker-class sanic.worker.GunicornWorker
 
-ax-grid
-    ax-pop-up
-        ax-form
-            ax-tab
-                ax-field-string
-                
-                
-                
-ax-field-string
-ax-field-string-options
-ax-field-string-cell
-ax-field-string-cell-inline
-ax-field-string-cell-options
-
+# handlers:
+#   - url: /static
+#     static_dir: dist/static/
+#   - url: /.*
+#     script: auto

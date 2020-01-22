@@ -13,7 +13,6 @@ import 'intro.js/minified/introjs.min.css';
 // import 'intro.js/themes/introjs-nassim.css';
 // import 'intro.js/themes/introjs-nazanin.css';
 // import 'intro.js/themes/introjs-modern.css';
-
 // 'a[data-a="1"]'
 
 export default {

@@ -30,8 +30,6 @@ root_path = Path(__file__).parent.resolve()
 if root_path not in sys.path:
     sys.path.insert(0, str(root_path))
 
-# from backend.daemon import daemon
-# import daemonocle
 
 # pylint: disable=wrong-import-position
 import backend.logger as ax_logger
@@ -89,7 +87,7 @@ def init_ax():
     ax_logger.init_logger(
         logs_filename=os.environ.get('AX_LOGS_FILENAME') or None,
         logs_absolute_path=os.environ.get('AX_LOGS_ABSOLUTE_PATH') or None,
-        logs_level=os.environ.get('AX_LOGS_LEVEL') or 'ERROR'
+        logs_level=os.environ.get('AX_LOGS_LEVEL') or 'INFO'
     )
 
     # for item, value in os.environ.items():
@@ -217,11 +215,14 @@ def main():
         port = int(arguments['--port'])
 
     ssl = None
+    protocol = 'http'
     if ssl_cert and ssl_key:
         ssl = {'cert': ssl_cert, 'key': ssl_key}
+        protocol = 'https'
 
     print(ax_logo)
-    logger.info(f'Running Ax on {host}:{port}, {workers} workers running')
+    logger.info(
+        f'Ax is running with {workers} workers.\n Admin is avalible - {protocol}://{host}:{port}/admin/signin\n')
     app.run(
         host=host,
         port=port,

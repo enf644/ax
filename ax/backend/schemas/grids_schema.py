@@ -72,7 +72,8 @@ class CreateColumn(graphene.Mutation):
         field_guid = graphene.String()
         column_type = graphene.String(required=False, default_value=None)
         position = graphene.Int(required=False, default_value=None)
-        positions = graphene.List(PositionInput, required=False, default_value=None)
+        positions = graphene.List(
+            PositionInput, required=False, default_value=None)
 
     ok = graphene.Boolean()
     column = graphene.Field(Column)
@@ -335,8 +336,8 @@ class UpdateGrid(graphene.Mutation):
 
             if is_default_view:
                 all_grids = db_session.query(AxGrid).filter(
-                    AxGrid.form_guid == ax_grid.form_guid and
-                    AxGrid.guid != ax_grid.guid
+                    AxGrid.form_guid == ax_grid.form_guid
+                    and AxGrid.guid != ax_grid.guid
                 ).all()
 
                 for grid in all_grids:
@@ -379,7 +380,7 @@ class UpdateGridCode(graphene.Mutation):
                 AxGrid.guid == uuid.UUID(guid)
             ).first()
 
-            if code == get_default_grid_code():
+            if code is None or code == get_default_grid_code() or code == '':
                 ax_grid.code = None
             else:
                 ax_grid.code = code
@@ -430,8 +431,9 @@ class GridsQuery(graphene.ObjectType):
                     ).first()
 
                 if not grid or not grid.code:
-                    grid.code = get_default_grid_code()
-
+                    grid.code_not_none = get_default_grid_code()
+                else:
+                    grid.code_not_none = grid.code
             return grid
 
     @ax_admin_only

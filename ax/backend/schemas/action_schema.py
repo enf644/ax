@@ -238,8 +238,7 @@ async def do_exec(
     line_number = None
 
     try:
-        ret_ax = await ax_exec.aexec(
-            code=str(action.code), localz=localz, ax=ax)
+        await ax_exec.aexec(code=str(action.code), localz=localz, ax=ax)
         ret_ax = localz['ax']
 
         ret_data = {

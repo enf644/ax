@@ -5,7 +5,7 @@ import uuid
 import graphene
 # from loguru import logger
 from backend.model import AxField, AxAction, AxState, \
-    AxRole, AxRoleFieldPermission, AxState2Role, AxAction2Role
+    AxRole, AxRoleFieldPermission, AxState2Role, AxAction2Role, AxRole2Users
 import backend.model as ax_model
 from backend.schemas.types import State, Action, \
     State2Role, Action2Role, RoleFieldPermission, Role
@@ -182,8 +182,11 @@ class UpdateAction(graphene.Mutation):
                 ax_action.name = args.get('name')
             if args.get('db_name'):
                 ax_action.db_name = args.get('db_name')
-            if args.get('code'):
-                ax_action.code = args.get('code')
+            if args.get('code') is not None:
+                if args.get('code') == '':
+                    ax_action.code = None
+                else:
+                    ax_action.code = args.get('code')
             if args.get('confirm_text'):
                 ax_action.confirm_text = args.get('confirm_text')
             if args.get('close_modal') is not None:
@@ -289,6 +292,23 @@ class DeleteRole(graphene.Mutation):
         err = "workflow_schema -> DeleteRole"
         with ax_model.try_catch(info.context['session'], err) as db_session:
             guid = args.get('guid')
+
+            db_session.query(AxRole2Users).filter(
+                AxRole2Users.role_guid == uuid.UUID(guid)
+            ).delete()
+
+            db_session.query(AxState2Role).filter(
+                AxState2Role.role_guid == uuid.UUID(guid)
+            ).delete()
+
+            db_session.query(AxAction2Role).filter(
+                AxAction2Role.role_guid == uuid.UUID(guid)
+            ).delete()            
+
+            db_session.query(AxRoleFieldPermission).filter(
+                AxRoleFieldPermission.role_guid == uuid.UUID(guid)
+            ).delete()                
+                     
             ax_role = db_session.query(AxRole).filter(
                 AxRole.guid == uuid.UUID(guid)
             ).first()
