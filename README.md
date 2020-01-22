@@ -1,10 +1,12 @@
 
 # Ax
-The Ax is a software for building and running workflow applications.
+**The Ax is a software for building and running workflow applications.**
 
-If you need to automate something, you do it by drag-n-drop using Ax form, grids, workflow constructors.
+If you are still using spreadsheets and email to manage your work, use Ax to automate it!
 
-Or you by installing one of the dozens (actually not yet) existing workflow applications, such as:
+Create workflow app using **form, grids and workflow** constructors.
+
+Or install one of the dozens *[actually not yet]* existing workflow applications from **Ax Marketplace**, such as:
 - RFC request
 - Facility Access Request
 - Estimation queries
@@ -25,7 +27,7 @@ The Ax is **FREE** for teams small teams (5 users). 
 For the bigger teams, the price is **15$** per user per month.
 
 # Documentation
-Ax workflow documentation is separated into four levels of system complexity:
+Ax workflow documentation is separated into four levels of complexity:
 
 <table>
 <tr>
@@ -41,30 +43,30 @@ Ax workflow documentation is separated into four levels of system complexity:
         <li><a href='#run-ax'>Run Ax</a></li>
         <li><a href='#create-form'>Create form</a></li>
         <li><a href='#create-grid'>Create grid</a></li>
-        <li><a href='#set-workflow-permissions'>Set workflow permissions</a></li>
+        <li><a href='#set-workflow-permissions'>Permissions</a></li>
         </ul>
     </td>
     <td>
         <li><a href='#relation-fields'>Relation fields</a></li>
-        <li><a href='#simple-workflow'>Simple Workflow</a></li>
+        <li><a href='#simple-workflow'>Workflow</a></li>
         <li><a href='#page-designer'>Page designer</a></li>
         <li><a href='#manage-users'>Manage users</a></li>
-        <li><a href='#using-marketplace'>Using Marketplace</a></li>
+        <li><a href='#using-marketplace'>Marketplace</a></li>
     </td>
     <td>
-        <li><a href='#advanced-workflow-actions'>Advanced Workflow - Actions</a></li>
-        <li><a href='#advanced-grid-query-constructor'>Advanced Grid - Query constructor</a></li>
-        <li><a href='#advanced-workflow-dynamic-roles'>Advanced Workflow - Dynamic roles</a></li>
+        <li><a href='#advanced-workflow-actions'>Actions</a></li>
+        <li><a href='#advanced-grid-query-constructor'>Query constructor</a></li>
+        <li><a href='#advanced-workflow-dynamic-roles'>Dynamic roles</a></li>
         <li><a href='#ax-configuration'>Ax Configuration</a></li>
         <li><a href='#running-in-production'>Running in production</a></li>
-        <li><a href='#creating-a-marketplace-app'>Creating a marketplace app</a></li>
+        <li><a href='#creating-a-marketplace-app'>App package</a></li>
     </td>
     <td>
-        <li>Using Ax on cloud platforms</li>
-        <li>Using web-components</li>
-        <li>Using graphql API</li>
-        <li>Complex workflow features</li>
-        <li>Advanced Marketplace applications</li>
+        <li>Cloud platforms</li>
+        <li>Web-components</li>
+        <li>Graphql API</li>
+        <li>Complex workflow</li>
+        <li>Advanced apps</li>
     </td>
 </tr>
 </table>
@@ -72,7 +74,9 @@ Ax workflow documentation is separated into four levels of system complexity:
 
 # Getting started
 ## Install Ax
-The Ax is a python application available as a pypi package. Run this simple command to install Ax:
+The Ax is a python application available as a [pypi](https://pypi.org/) package.
+You can install and run Ax in **1 minute**. No configuration is required.
+All you need is to run this simple command to install **Ax**:
 
 ```pip install ax```
 
@@ -80,7 +84,8 @@ The Ax is a python application available as a pypi package. Run this simple comm
 
 ## Run Ax
 
-The Ax can be used as a stand-alone, configuration free software. To start Ax server simply run command:
+
+To start Ax server simply run the command:
 
 ```ax```
 
@@ -113,12 +118,12 @@ The basic usage of Ax consists of these steps:
 ## Create a form
 Click or drag-n-drop field on the left drawer to add it to the form.
 
-<img width='500' src='https://raw.githubusercontent.com/enf644/ax-info/master/Documentation/form_sample_0810.gif'>
+<img width='700' src='https://raw.githubusercontent.com/enf644/ax-info/master/Documentation/form_sample_0810.gif'>
 
 ## Create a grid
 Click or drag-n-drop form field on the left drawer to add it to the grid.
 
-<img width='500' src='https://raw.githubusercontent.com/enf644/ax-info/master/Documentation/grids_sample.gif'>
+<img width='700' src='https://raw.githubusercontent.com/enf644/ax-info/master/Documentation/grids_sample.gif'>
 
 ## Set workflow permissions
 Configuring workflow is optional. If you are building something like a simple survey, you can stick with the default workflow. 
@@ -136,7 +141,7 @@ In order to give your users the ability to use form and grid, you have to:
 
 Note: Two technical user groups are available - All Users and Everyone
 
-<img width='500' src='https://raw.githubusercontent.com/enf644/ax-info/master/Documentation/workflow_roles.gif'>
+<img width='700' src='https://raw.githubusercontent.com/enf644/ax-info/master/Documentation/workflow_roles.gif'>
 
 ## Send links
 Now you can send users a link to form or grid.
@@ -189,7 +194,7 @@ Steps needed for creating a workflow:
 - Assign users to roles
 - Set fields permissions for each state
 
-<img width='400' src='https://raw.githubusercontent.com/enf644/ax-info/master/Documentation/simple_workflow.gif'>
+<img width='700' src='https://raw.githubusercontent.com/enf644/ax-info/master/Documentation/simple_workflow.gif'>
 
 ## Default workflow
 
@@ -216,7 +221,7 @@ There are three technical states:
 - Hold mouse over action name and press the "Del" button on the keyboard to delete it.
 - Click on the action name to open settings.
 
-Available action settings are:
+Available settings are:
 
 - Action name - Label of a button that displayed to users
 - Action code name - Ax allows you to call form Actions from enother form actions using python code. In order to do so, you must specify a code-name. Additionally, actions can be called as GraphQL mutations. The name of the mutation is the same as code-name.
@@ -235,7 +240,7 @@ Ax Pages is a stand-alone web-application for end-users of Ax workflow apps. Bas
 - Insert ```<ax-grid form='SomeFormDbName' grid='SomeGridDbName' />``` tag in page to display a ax grid. SomeFormDbName and SomeGridDbName are database names of form and grid. You can skip the grid attribute if you want a default grid.
 - Insert ```<ax-form db_name='SomeFormDbName' row_guid='someGuid' />``` tag in page to display form of certain record. Skip row_guid attribute if you want to create new records. You can use AxNum field values as a row_guid. Check the AxNum field type hint for more info.
 
-<img width='500' src='https://github.com/enf644/ax-info/blob/master/Documentation/pages-designer.gif?raw=true'>
+<img width='800' src='https://github.com/enf644/ax-info/blob/master/Documentation/pages-designer.gif?raw=true'>
 
 Pages are avalible as root of the host.
 
@@ -249,7 +254,7 @@ Applications can be installed either from GitHub repo or by uploading a package 
 
 Click on the application repo link to know more about workflow application. Read the description of forms and workflows. Check Github starts and issues. Check source code.
 
-<img width='500' src='https://raw.githubusercontent.com/enf644/ax-info/master/Documentation/marketplace_install.gif'>
+<img width='700' src='https://raw.githubusercontent.com/enf644/ax-info/master/Documentation/marketplace_install.gif'>
 
 *Beta Note: Reload page if the app folder does not appear after the install is complete.*
 
@@ -266,7 +271,7 @@ If you need more data about users (full name, department, etc), please create Ax
 
 Ax allows to run a custom python code while performing workflow actions. Form and user data is available inside the python code. 
 
-<img width='500' src='https://raw.githubusercontent.com/enf644/ax-info/master/Documentation/action_code.gif'>
+<img width='700' src='https://raw.githubusercontent.com/enf644/ax-info/master/Documentation/action_code.gif'>
 
 Here are some examples of how code can be used:
 
@@ -300,25 +305,32 @@ Also, you can use these handy methods:
 
 - **ax.email** - sends email (SMTP must be configured)
 
-```await ax.email(
+```python
+await ax.email(
     to='info@ax-workflow.com',
     text='Hello ax',
     html='Hello <b>ax</b>',
-    subject='Sample email')```
+    subject='Sample email')
+```
 
 - **ax.sql** - Execute custom SQL command
 
-```sql = 'UPDATE "Stock" SET "axState"=\'Confirmed\' WHERE "sourceCatalog"=:load_guid'
+```python
+sql = 'UPDATE "Stock" SET "axState"=\'Confirmed\' WHERE "sourceCatalog"=:load_guid'
 params = {"load_guid": ax.row.guid}
-ax.sql(sql, params)```
+ax.sql(sql, params)
+```
 
 - **ax.print** - Async action that opens a terminal window and shows a message to user. Useful for debugging and for long-lasting actions. If your action takes 5 minutes to execute, you can use ax.print to notify the user on progress.
 
-```ax.print(f'\n 📦 {idx}')```
+```python
+ax.print('Hello world')
+```
 
 - **ax.do_action** - Execute another Ax action
 
-```for idx, stock in enumerate(drafts):
+```python
+for idx, stock in enumerate(drafts):
     ax.print(f'\n 📦 {idx}')
     await ax.do_action(
         form_db_name='Stock',
@@ -326,7 +338,8 @@ ax.sql(sql, params)```
         row_guid=stock['guid'],
         modal_guid=ax.modal_guid,
         values=None,
-        arguments={"aiohttp_session": session})```
+        arguments={"aiohttp_session": session})
+```
 
 - **ax.add_action_job** - Add scheduler job (Work in progress)
 
@@ -342,10 +355,12 @@ Ax allows you to construct custom SQL queries for grids. Press the "Query constr
 
 Here is the default value for a grid:
 
-```ax.query = f"""
+```python
+ax.query = f"""
     SELECT {ax.db_fields}
     FROM "{ax.db_table}";
-    """```
+    """
+```
 
 As you can see, it is a python code that is executed before SQL query.
 
@@ -363,11 +378,13 @@ you can use these predefined properties:
 
 If you want a grid that shows only records created by current User, you have to use an  Author field and this grid query:
 
-```ax.query = f"""
+```python
+ax.query = f"""
     SELECT {ax.db_fields}
     FROM "{ax.db_table}"
     WHERE "author"='{ax.user_email}';
-"""```
+"""
+```
 
 ## Advanced Workflow - Dynamic roles
 
@@ -378,9 +395,11 @@ The dynamic role is a custom python code that is executed before displaying the 
 **WARNING:** These roles are working only for form view. Not working for grids.
 
 The default code for dynamic role is:
-```ax.result = False
+```python
+ax.result = False
 if(ax.row.some_field == ax.user_email):
-    ax.result = True```
+    ax.result = True
+```
 
 - **ax.result** - Is a boolean output property that is used to determine if the current user fits dynamic role.
 
@@ -419,12 +438,14 @@ We recommend running ax using [Monit daemon](https://github.com/arnaudsj/monit).
 
 Simple settings for Monit:
 
-```check host ax with address 84.201.174.246
+```bash
+check host ax with address 84.201.174.246
     start program = "/home/wineuser/.local/lib/python3.6/site-packages/ax/ax.sh start"
     stop program = "/home/wineuser/.local/lib/python3.6/site-packages/ax/ax.sh stop"
     if failed port 8080 protocol http
         and request /pages
-    then restart```
+    then restart
+```
 
 ## Creating a marketplace app
 
