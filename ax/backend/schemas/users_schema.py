@@ -1,14 +1,13 @@
 """Defines Users Scheme and all mutations"""
 
-# import asyncio
 import uuid
+import json
 import ast
 import graphene
 from sqlalchemy import or_
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
 from passlib.hash import pbkdf2_sha256
 from loguru import logger
-import ujson as json
 
 from backend.misc import convert_column_to_string
 from backend.model import AxUser, GUID, AxGroup2Users, AxRole2Users
@@ -562,7 +561,7 @@ class UsersQuery(graphene.ObjectType):
             guids=None,
             emails=None):
         """Get all users and groups in one search"""
-        del update_time
+        del update_time, emails
         err = 'Error in GQL query - users_and_groups.'
         with ax_model.try_catch(info.context['session'], err, no_commit=True):
             query = User.get_query(info)

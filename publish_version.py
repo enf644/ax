@@ -58,7 +58,7 @@ def bump_version(is_major: bool = False, is_minor: bool = False):
     """Increment ax version in app.yaml"""
     try:
         this.app_yaml_path = Path(
-            __file__).parent.resolve() / 'ax' / 'app.yaml'
+            __file__).parent.resolve() / 'ax' / 'app.template.yaml'
         if not is_major and not is_minor:
             is_minor = True
 
@@ -193,6 +193,7 @@ if __name__ == "__main__":
     # init_ax()
 
     #  Automatic bump version, save in app.yaml
+    clear_pipy_dist()
     bump_version(is_major=arguments['--major'], is_minor=arguments['--minor'])
 
     # #  Create db migration script
@@ -204,7 +205,6 @@ if __name__ == "__main__":
     #     logger.info('No database changes detected')
 
     save_yaml()
-    clear_pipy_dist()
 
     if arguments['--no-front'] is False:
         npm_run_build()

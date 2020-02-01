@@ -8,6 +8,7 @@ import copy
 import asyncio
 # import sys
 import traceback
+import json
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 import graphene
@@ -17,8 +18,6 @@ from loguru import logger
 
 # Fields specific:
 import stripe
-
-import ujson as json
 
 from backend.model import AxForm, AxAction
 import backend.model as ax_model

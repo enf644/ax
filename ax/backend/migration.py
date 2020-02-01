@@ -13,10 +13,10 @@ import os
 import sys
 import uuid
 import asyncio
+import json
 from loguru import logger
 import yaml
 from passlib.hash import pbkdf2_sha256
-import ujson as json
 from alembic.config import Config
 from alembic.migration import MigrationContext
 from alembic.autogenerate import compare_metadata
@@ -25,7 +25,7 @@ import backend.model as ax_model
 import backend.misc as ax_misc
 import backend.auth as ax_auth
 from backend.model import AxAlembicVersion, AxFieldType, AxUser, AxGroup2Users,\
-    AxPage, AxPage2Users, AxForm, AxAction, AxGrid, AxRole, AxField
+    AxPage, AxPage2Users, AxForm, AxAction, AxGrid, AxRole
 
 this = sys.modules[__name__]
 alembic_cfg = None
@@ -330,7 +330,7 @@ def sync_field_types():
             existing_tags.append(field_type.tag)
 
         if not os.path.isfile(field_types_yaml):
-            raise FileNotFoundError('Configuration failed, app.yaml not found')
+            raise FileNotFoundError('Configuration failed, field_types.yaml not found')
 
         with open(field_types_yaml, 'r') as stream:
             yaml_vars = yaml.safe_load(stream)

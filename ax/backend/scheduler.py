@@ -13,7 +13,6 @@ from apscheduler.executors.asyncio import AsyncIOExecutor
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 # from graphql.execution.executors.asyncio import AsyncioExecutor
 from loguru import logger
-# import ujson as json
 import backend.model as ax_model
 import backend.misc as ax_misc
 
@@ -149,19 +148,6 @@ def init_scheduler():
             event_loop=loop)
         this.scheduler.start()
 
-        # this.scheduler.remove_all_jobs()
-        # dt = datetime.now() + timedelta(seconds=5)
-
-        moscow_dt = ax_misc.date() + timedelta(seconds=5)
-        this.scheduler.add_job(
-            prn_job,
-            'date',
-            run_date=moscow_dt,
-            args=['SCHEDULER WORKS'],
-            id='prn_job',
-            misfire_grace_time=60
-        )
-
         # Job cleaning /uploads/tmp folder. deletes files that are expired
         all_jobs = this.scheduler.get_jobs()
         if "clear_tmp_files" not in [job.name for job in all_jobs]:
@@ -172,6 +158,17 @@ def init_scheduler():
                 coalesce=True,
                 misfire_grace_time=60,
                 id='clear_tmp_files')
+
+        if "prn_job" not in [job.name for job in all_jobs]:
+            now_dt = ax_misc.date() + timedelta(seconds=5)
+            this.scheduler.add_job(
+                prn_job,
+                'date',
+                run_date=now_dt,
+                args=['SCHEDULER WORKS'],
+                id='prn_job',
+                misfire_grace_time=60
+            )
 
     except Exception:
         logger.exception('Error initiating scheduler module. ')

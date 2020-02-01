@@ -1,5 +1,5 @@
 env_variables:
-  AX_VERSION: 0.21.0
+  AX_VERSION: 0.41.0
   AX_DB_REVISION: 9b898740929f
 
   ### Logging settings:
@@ -13,16 +13,17 @@ env_variables:
   #
   ### Sanic server settings:
   # AX_HOST: 0.0.0.0 #  default = 127.0.0.1
-  # AX_PORT: "8085" #  default = 8080
+  # AX_PORT: "8085" #  default = 80
   # AX_SANIC_DEBUG: true #  default=false
   # AX_SANIC_ACCESS_LOG:  #  default=false
-  # AX_SANIC_WORKERS: 1 # default=1 . On Windoes 1 is max!
+  # AX_SANIC_WORKERS: 1 # default=1 . On Windoes 1 is max. BETA Use with caution!!
+  AX_AUTH_SECRET: This is big secret, please change me
   #
   ### Cache settings:
-  # AX_CACHE_MODE: "" # ' default='default'. Set 'redis' for redis
-  # AX_REDIS_ENDPOINT:  #  default='127.0.0.1'
-  # AX_REDIS_PORT:  #  default='6379'
-  # AX_REDIS_TIMEOUT:  #  default='1'
+  # AX_CACHE_MODE: redis # ' default='default'. Set 'redis' for redis (NOT YET WORK)
+  # AX_REDIS_ENDPOINT: 127.0.0.1 #  default='127.0.0.1'
+  # AX_REDIS_PORT: 6379 #  default='6379'
+  # AX_REDIS_TIMEOUT: 1 #  default='1'
   #
   ### Database settings:
   # AX_DB_DIALECT: postgre   # sqlite, postgre, mysql. Default is sqlite

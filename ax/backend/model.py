@@ -9,6 +9,7 @@ from pathlib import Path
 from datetime import datetime
 from contextlib import contextmanager
 import uuid
+import json
 from loguru import logger
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -20,7 +21,6 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 # from sqlalchemy.pool import SingletonThreadPool
 
-import ujson as json
 import backend.misc as ax_misc
 
 this = sys.modules[__name__]
@@ -99,7 +99,7 @@ def init_model(dialect: str, host: str, port: str, login: str, password: str,
                 # TODO take sql timeout from app.yaml
         elif dialect == 'postgre':
             this.db_url = (
-                f'postgresql://{login}:{password}@{host}:{port}/{database}')
+                f'postgresql+pypostgresql://{login}:{password}@{host}:{port}/{database}')
 
             logger.debug('DB url = {url}', url=this.db_url)
             this.engine = create_engine(

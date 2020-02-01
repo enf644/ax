@@ -33,7 +33,8 @@ def get_allowed_pages_guids(db_session, user_guid):
     everyone_group = db_session.query(AxUser).filter(
         AxUser.is_everyone.is_(True)
     ).first()
-    user_and_groups.append(everyone_group.guid)
+    if everyone_group:
+        user_and_groups.append(everyone_group.guid)
 
     if user_guid:
         # Add current user

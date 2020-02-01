@@ -1,5 +1,5 @@
 """AxNum field type functions - before, after / insert, update, delete"""
-import ujson as json
+import json
 import backend.exec as ax_exec
 
 
@@ -9,7 +9,7 @@ async def before_display(db_session, field, form, current_user):
 
     Returns:
         Object: Returns updated value of current field"""
-
+    del db_session
     if not field.private_options_json or field.private_options_json == '{}':
         return None
 

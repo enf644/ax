@@ -4,14 +4,13 @@ import os
 import sys
 import asyncio
 import uuid
-
+import json
 from sanic import response
 from loguru import logger
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from graphql_ws.websockets_lib import WsLibSubscriptionServer
 from sanic_jwt.decorators import inject_user
 import markdown2
-import ujson as json
 
 from backend.graphqlview import GraphQLView
 import backend.cache as ax_cache

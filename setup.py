@@ -12,8 +12,8 @@ readme = (here / "README.md").read_text()
 
 
 def get_version():
-    """Get ax version from app.yaml"""
-    with open(str(here / 'ax' / 'app.yaml')) as yaml_file:
+    """Get ax version from app.template.yaml"""
+    with open(str(here / 'ax' / 'app.template.yaml')) as yaml_file:
         app_yaml = yaml.load(yaml_file)
         return app_yaml['env_variables']['AX_VERSION']
 
@@ -26,8 +26,7 @@ def get_requirements():
         for line in lines:
             if not line.startswith('#') and line.strip() != '':
                 package_name, version = line.split('==')
-                del version
-                requires.append(package_name)
+                requires.append(f'{package_name}<={version}')
     return requires
 
 

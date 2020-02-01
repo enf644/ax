@@ -3,11 +3,11 @@ Create/update/delete of Form, Folder """
 import uuid
 import os
 import shutil
+import json
 from sqlalchemy import MetaData
 import graphene
 from loguru import logger
 from graphene_sqlalchemy.converter import convert_sqlalchemy_type
-import ujson as json
 from backend.misc import convert_column_to_string  # TODO check if needed
 from backend.model import GUID, AxForm, AxField, AxGrid, AxAction, AxState, \
     AxRole2Users, AxRoleFieldPermission, AxState2Role, AxAction2Role, \

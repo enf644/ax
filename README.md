@@ -78,20 +78,31 @@ The Ax is a python application available as a [pypi](https://pypi.org/) package.
 You can install and run Ax in **1 minute**. No configuration is required.
 All you need is to run this simple command to install **Ax**:
 
-```pip install ax```
+```pip3 install ax```
 
-**Python 3.6** and the **PyPI packet manager** are required. They are pre-installed on Linus and macOS machines. If you are using Windows please follow [linkhere](this instruction).
+**Python 3.6** and **PyPI packet manager** are required.
+
+Complete installation guide with videos:
+
+- [Ubuntu](ax/docs/install_ubuntu.md)
+- [CentOs](ax/docs/install_centos.md)
+- [Windows](ax/docs/install_windows.md)
+
 
 ## Run Ax
 
 
-To start Ax server simply run the command:
+To start Ax server on localhost (127.0.0.1:80) simply run the command:
 
 ```ax```
 
+Or specify host and port:
+
+```ax --host=192.168.0.16 --port=8080```
+
 You will see this message:
 
-<img width='500' src='https://raw.githubusercontent.com/enf644/ax-info/master/Documentation/ax_running.PNG'>
+<img width='450' src='https://raw.githubusercontent.com/enf644/ax-info/master/Documentation/ax_running.PNG'>
 
 Follow the URL and Use default administrator credentials to enter the Admin console:
 

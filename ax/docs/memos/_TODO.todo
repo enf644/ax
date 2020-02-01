@@ -905,7 +905,13 @@ AX 0.2:
     ☐ INSTALATION
         ✔ Publish @done(20-01-13 13:24)
         ☐ Install on linux machine, record video, write doc
+            ☐ Ubuntu
+            ☐ CentOs
         ☐ Install on windows machine, record video, write doc
+        ☐ Frogs
+            ☐ How to run with command?
+            ☐ Update packages, find what causes to crash
+            ☐ ax.sh must be constructed with build
     ☐ PERFORMANCE TEST
         ☐ Redis integration
         ☐ 4 workers, cache problem, schema reload
@@ -1063,6 +1069,8 @@ FROGS TODOS:
     ✔ Long names for form tabs - limit is too small! @done(19-10-18 12:17)
     ✔ Del key when editing field names - tryes to delete whole field @done(19-10-18 17:39)
     ☐ IMPORTANT
+        ☐ Redis not working
+        ☐ When two sanic workers - errors when on init scheduller
         ☐ Marketplace - check for foreign keys before creating app! or installing app!
         ☐ AxMarkdown
             ☐ When not in admin - must not have top margin. Modal close button z-index is bigger then full-screen mode.

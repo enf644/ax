@@ -5,10 +5,10 @@ Query form_data is used in AxForm.vue as main form query.
 """
 # import os
 import uuid
+import json
 import graphene
 # from loguru import logger
 # from sqlalchemy.exc import DatabaseError
-import ujson as json
 
 from backend.model import AxForm, AxField, AxFieldType, \
     AxRoleFieldPermission, AxColumn

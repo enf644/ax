@@ -7,12 +7,12 @@
     additional schema is created, named FormName.
 """
 import sys
+import json
 import graphene
 from loguru import logger
 from sqlalchemy import literal
 from graphene_sqlalchemy import SQLAlchemyConnectionField
 from dotmap import DotMap
-import ujson as json
 
 from backend.schemas.users_schema import UsersQuery
 from backend.schemas.users_schema import UsersMutations, UsersSubscription

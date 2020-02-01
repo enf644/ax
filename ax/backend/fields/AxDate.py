@@ -7,7 +7,7 @@ How to use in code:
     ax.row.expire = expire.timestamp()
 
 """
-import ujson as json
+import json
 
 
 async def before_insert(db_session, field, before_form, tobe_form, action,

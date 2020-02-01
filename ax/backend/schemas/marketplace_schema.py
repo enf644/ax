@@ -3,6 +3,7 @@
 import os
 import sys
 import re
+import json
 import zipfile
 import shutil
 import ast
@@ -14,7 +15,6 @@ from loguru import logger
 import graphene
 import aiopubsub
 import ruamel.yaml
-import ujson as json
 
 from backend.model import AxForm, AxMetric, AxField, AxGrid, AxRole, AxState,\
     AxColumn, AxAction, AxAction2Role, AxState2Role, AxRoleFieldPermission,\

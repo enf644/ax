@@ -227,7 +227,7 @@ ext-import-graph=
 int-import-graph=
 
 # Ignored modules
-ignored-modules=sanic_graphql, sanic, graphql, ujson
+ignored-modules=sanic_graphql, sanic, graphql
 
 
 [CLASSES]

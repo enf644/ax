@@ -101,7 +101,7 @@ def init_ax():
         mode=str(os.environ.get('AX_CACHE_MODE') or 'default'),
         redis_endpoint=str(os.environ.get('AX_REDIS_ENDPOINT') or '127.0.0.1'),
         redis_port=int(os.environ.get('AX_REDIS_PORT') or 6379),
-        redis_timeout=int(os.environ.get('AX_REDIS_ENDPOINT') or 1),
+        redis_timeout=int(os.environ.get('AX_REDIS_TIMEOUT') or 1),
     )
     # Initiate pub-sub module. Used for web-socket subscriptions.
     # Notification on workflow action
@@ -201,7 +201,7 @@ def main():
     arguments = docopt(__doc__)
 
     host = os.environ.get('AX_HOST', '127.0.0.1')
-    port = int(os.environ.get('AX_PORT', 8080))
+    port = int(os.environ.get('AX_PORT', 80))
     debug = bool(os.environ.get('AX_SANIC_DEBUG', False))
     access_log = bool(os.environ.get('AX_SANIC_ACCESS_LOG', False))
     workers = int(os.environ.get('AX_SANIC_WORKERS', 1))

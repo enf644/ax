@@ -6,12 +6,12 @@ import sys
 import base64
 import uuid
 import shutil
+import json
 from pathlib import Path
 from sanic import response
 from sanic import Blueprint
 from sanic_jwt.decorators import inject_user
 from loguru import logger
-import ujson as json
 import backend.misc as ax_misc
 from backend.auth import ax_protected
 

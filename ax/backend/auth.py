@@ -18,8 +18,6 @@ import backend.model as ax_model
 import backend.misc as ax_misc
 import backend.dialects as ax_dialects
 import backend.exec as ax_exec
-import backend.auth as ax_auth
-
 import backend.fields.AxAuthor as AxFieldAxAuthor  # pylint: disable=unused-import
 
 this = sys.modules[__name__]
@@ -277,7 +275,8 @@ async def write_perm_cache(db_session, user_guid):
     everyone_group = db_session.query(AxUser).filter(
         AxUser.is_everyone.is_(True)
     ).first()
-    user_and_groups.append(everyone_group.guid)
+    if everyone_group:
+        user_and_groups.append(everyone_group.guid)
 
     if user_guid:
         # Add current user
@@ -651,11 +650,11 @@ def apply_lise(db_session):
             logger.exception(err)
             raise Exception(err)
 
-            try:
-                rsa.verify(data.encode('utf-8'), sign, public_key)
-            except rsa.VerificationError:
-                logger.exception("License is not verified!")
-                raise
+        try:
+            rsa.verify(data.encode('utf-8'), sign, public_key)
+        except rsa.VerificationError:
+            logger.exception("License is not verified!")
+            raise
 
         logger.info(f'License applied for {users_number} users.')
         this.client_guid = cl_guid
@@ -675,8 +674,6 @@ def apply_lise(db_session):
         err = f"Maximum number of users exceeded! Max={this.user_num}"
         logger.exception(err)
         raise Exception(err)
-    
-
 
 
 def lise_is_active():

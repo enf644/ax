@@ -7,8 +7,8 @@ import sqlite3
 import datetime
 import uuid
 import re
+import json
 from loguru import logger
-import ujson as json
 from backend.model import AxForm
 import backend.misc as ax_misc
 import backend.model as ax_model

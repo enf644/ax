@@ -97,7 +97,6 @@ Value json structure:
 """
 import uuid
 import time
-# import ujson as json
 from backend.model import AxMessage, AxMessageThread
 import backend.misc as ax_misc
 # import backend.emails as ax_emails

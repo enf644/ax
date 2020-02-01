@@ -1,6 +1,6 @@
 """Ax1tomTable field type functions - before, after / insert, update, delete"""
 import uuid
-import ujson as json
+import json
 from backend.model import Ax1tomReference
 
 

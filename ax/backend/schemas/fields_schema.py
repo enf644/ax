@@ -1,13 +1,13 @@
 """ GQL queries used in fields. For now only AxMessages, AxApproval"""
 
 import uuid
+import json
 import asyncio
 import aiopubsub
 import graphene
 from loguru import logger
 from sqlalchemy.orm import joinedload
 import stripe
-import ujson as json
 
 from backend.auth import ax_admin_only
 from backend.model import AxMessage, AxMessageThread, AxForm, AxField

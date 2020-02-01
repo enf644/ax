@@ -5,7 +5,8 @@ include requirements.txt
 include ax/__ init __.py
 include ax/alembic.ini
 include ax/main.py
-include ax/app.yaml
+include ax/app.template.yaml
+include ax/field_types.yaml
 
 recursive-include ax/backend *
 recursive-include ax/dist *
@@ -15,6 +16,7 @@ exclude ax/pages *
 exclude ax/backend/__pycache__ *
 exclude ax/backend/logs *
 exclude ax/backend/py_libs *
+exclude ax/app.yaml
 
 global-exclude __pycache__
 global-exclude *.pyc

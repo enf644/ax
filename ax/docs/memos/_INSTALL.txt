@@ -88,6 +88,18 @@ python -m twine upload dist/*
 twine upload dist/*
 
 
+
+LINX:
+ssh gen:
+    https://code.visualstudio.com/remote-tutorials/ssh/create-ssh-key
+remove all pip packages:
+    pip freeze | xargs pip uninstall -y
+    pip3 freeze | xargs pip3 uninstall -y
+
+
+
+
+
 === DOCUMENTATION =========================
 https://axy.gitbook.io/project/
 
@@ -103,7 +115,8 @@ http://google.github.io/styleguide/pyguide.html
 ws://127.0.0.1:8081/api/subscriptions
 
 
-
+lsof -i :8080
+kill -9 139000
 
 =================== app engine yaml ================
 # # Used in Google app engine configuration

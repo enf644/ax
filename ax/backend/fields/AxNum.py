@@ -1,5 +1,5 @@
 """AxNum field type functions - before, after / insert, update, delete"""
-import ujson as json
+import json
 from backend.model import AxMetric
 import backend.exec as ax_exec
 

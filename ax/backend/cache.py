@@ -26,43 +26,40 @@ def init_cache(
         bool: True if succesuful
     """
 
-    if mode.lower == 'redis':
-        redis_config = {
-            'redis': {
-                'cache': "aiocache.RedisCache",
-                'endpoint': redis_endpoint,
-                'port': redis_port,
-                'timeout': redis_timeout,
-                'serializer': {
-                    'class': "aiocache.serializers.PickleSerializer"
-                },
-                'plugins': [
-                    {'class': "aiocache.plugins.HitMissRatioPlugin"},
-                    {'class': "aiocache.plugins.TimingPlugin"}
-                ]
+    aiocache_config = {
+        'default': {
+            'cache': "aiocache.SimpleMemoryCache",
+            'serializer': {
+                'class': "aiocache.serializers.PickleSerializer"
             }
+        },
+        'redis': {
+            'cache': "aiocache.RedisCache",
+            'endpoint': redis_endpoint,
+            'port': redis_port,
+            'timeout': redis_timeout,
+            'serializer': {
+                'class': "aiocache.serializers.PickleSerializer"
+            },
+            'plugins': [
+                {'class': "aiocache.plugins.HitMissRatioPlugin"},
+                {'class': "aiocache.plugins.TimingPlugin"}
+            ]
         }
-        # TODO check if Redis is up and running with given settings
+    }
 
+    caches.set_config(aiocache_config)
+    if mode == 'redis':
         try:
-            caches.set_config(redis_config)
             this.cache = caches.get('redis')
+            logger.info(f'Using redis for cache - [{redis_endpoint}]')
         except Exception:
             logger.exception('Error initiating aiocache with Redis.')
             raise
     else:
-        ram_config = {
-            'default': {
-                'cache': "aiocache.SimpleMemoryCache",
-                'serializer': {
-                    'class': "aiocache.serializers.PickleSerializer"
-                }
-            }
-        }
-
         try:
-            caches.set_config(ram_config)
             this.cache = caches.get('default')
+            logger.info(f'Using RAM for cache')
         except Exception:
             logger.exception(
                 'Error initiating aiocache with SimpleMemoryCache. ')

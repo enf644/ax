@@ -1,4 +1,39 @@
 
+Ubuntu:
+    https://linuxize.com/post/how-to-install-pip-on-ubuntu-18.04/
+    sudo apt update
+    sudo apt install python3-pip
+    pip3 install ax
+    . ~/.profile
+    ax --host:
+CentOs:
+    https://linuxize.com/post/how-to-install-pip-on-centos-7/
+    sudo yum install epel-release
+    sudo yum install python34-setuptools
+    sudo yum install python-pip
+
+
+
+
+Known problems:
+    Multiple workers
+        Not working on Windows
+        Errors on scheduller init
+        Might not update gql schema
+    Redis not working
+
+
+
+
+REDIS:
+    sudo apt install redis-server
+    redis-cli keys *
+
+
+/home/enf644/.local/lib/python3.6/site-packages/ax
+python3 main.py --host=192.168.0.22 --port=8080
+
+https://visualstudio.microsoft.com/ru/visual-cpp-build-tools/
 
 
 ---------------------------

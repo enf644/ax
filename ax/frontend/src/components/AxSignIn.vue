@@ -30,10 +30,10 @@
             <i class='fas fa-sign-in-alt'></i>
             &nbsp;{{locale("users.do-sign-in")}}
           </v-btn>&nbsp;
-          <v-btn @click='adminSignIn()' small>
+          <!-- <v-btn @click='adminSignIn()' small>
             <i class='fas fa-tractor'></i>
             &nbsp;Admin sign in
-          </v-btn>
+          </v-btn>-->
         </div>
         <br />
         <br />
@@ -55,10 +55,8 @@ export default {
   data() {
     return {
       valid: true,
-      // email: 'default@ax-workflow.com',
-      // password: 'deleteme',
-      email: 'enf644@gmail.com',
-      password: 'Qwerty644',
+      email: null,
+      password: null,
       showPass: false,
       rules: {
         required: value => !!value || this.locale('common.field-required'),
