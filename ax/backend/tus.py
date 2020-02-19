@@ -6,7 +6,7 @@ import sys
 import base64
 import uuid
 import shutil
-import json
+import ujson as json
 from pathlib import Path
 from sanic import response
 from sanic import Blueprint
@@ -92,6 +92,7 @@ async def tus_file_upload(request):
     file_size = int(request.headers.get("Upload-Length", "0"))
     max_file_size = int(os.environ.get('AX_UPLOADS_MAX_FILESIZE', 4294967))
     if file_size > max_file_size:
+        msg = f"File too big. Please check maximum upload file settings."
         return response.text(msg, status=413)  # REQUEST_ENTITY_TOO_LARGE
 
     file_guid = str(uuid.uuid4())

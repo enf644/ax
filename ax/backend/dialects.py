@@ -147,7 +147,9 @@ class PorstgreDialect(object):
         """
         ret_param = None
         if "DECIMAL" in type_name:
-            ret_param = str(value).replace(",", ".") if value else None
+            ret_param = float(str(value).replace(",", ".")) if value else None
+        elif "INT" in type_name:
+            ret_param = int(value) if value else None
         elif "JSON" in type_name:
             ret_param = json.dumps(value) if value else None
         elif "GUID" in type_name:

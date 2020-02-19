@@ -902,19 +902,15 @@ AX 0.2:
         ✔ AxUsers - email modal @done(20-01-11 18:08)
         ✔ Move back to free 5 user model @done(20-01-13 11:41)
         ✔ Check postgrecd @done(20-01-13 12:47)
-    ☐ INSTALATION
+    ✔ INSTALATION @done(20-02-02 14:01)
         ✔ Publish @done(20-01-13 13:24)
-        ☐ Install on linux machine, record video, write doc
-            ☐ Ubuntu
-            ☐ CentOs
-        ☐ Install on windows machine, record video, write doc
-        ☐ Frogs
-            ☐ How to run with command?
-            ☐ Update packages, find what causes to crash
-            ☐ ax.sh must be constructed with build
-    ☐ PERFORMANCE TEST
-        ☐ Redis integration
-        ☐ 4 workers, cache problem, schema reload
+        ✔ Install on linux machine, record video, write doc @done(20-02-02 14:00)
+            ✔ Ubuntu @done(20-02-02 14:00)
+            ✔ CentOs @done(20-02-02 14:00)
+        ✔ Install on windows machine, record video, write doc @done(20-02-02 14:00)
+        ✔ Frogs @done(20-02-02 14:01)
+            ✔ Update packages, find what causes to crash @done(20-02-02 14:01)
+            ✘ ax.sh must be constructed with build @cancelled(20-02-02 14:01)
     ✔ LANDING @done(20-01-22 14:53)
         ✔ Github readme with docs @done(20-01-22 14:53)
     =======================================================================:
@@ -951,6 +947,9 @@ AX 0.2:
         ☐ Gae autodeploy
         ☐ Each new version comes with patch
     ☐ START SCALING AND IMPROVING
+    ☐ PERFORMANCE TEST
+        ☐ Redis integration
+        ☐ 4 workers, cache problem, schema reload
 
 
 DOCUMENTATION:

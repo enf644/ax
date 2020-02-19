@@ -132,3 +132,12 @@ kill -9 139000
 #     static_dir: dist/static/
 #   - url: /.*
 #     script: auto
+
+
+
+====== Winepower libs ============
+# Winepower specific:
+pyquery==1.4.0
+lxml==4.4.1
+openpyxl==2.6.3
+aiofiles==0.4.0

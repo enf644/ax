@@ -375,35 +375,40 @@ def create_class_fields(form):
             grid_db_name = field.options['grid']
             class_name = get_class_name(form_db_name, grid_db_name)
 
-            if class_name in type_classes:
-                # This is same as -> field_class = lambda: type_classes[class_name]
-                def field_class():
-                    return type_classes[class_name]
+            # if class_name in type_classes:
+            
+            # This is same as -> field_class = lambda: type_classes[class_name]
+            # def field_class():
+            #     return type_classes[class_name]
+            field_class = lambda: type_classes[class_name]
 
-                if field.is_to1_field:
-                    resolver = make_to1_resolver(
-                        ax_field_guid=field.guid,
-                        class_name=class_name,
-                        related_form_db_name=form_db_name,
-                        to1_field_db_name=field.db_name)
+            if field.is_to1_field:
+                resolver = make_to1_resolver(
+                    ax_field_guid=field.guid,
+                    class_name=class_name,
+                    related_form_db_name=form_db_name,
+                    to1_field_db_name=field.db_name)
 
-                    class_fields[field.db_name] = graphene.Field(field_class)
-                    class_fields[f'resolve_{field.db_name}'] = resolver
-                elif field.is_tom_field:
-                    resolver = make_tom_resolver(
-                        ax_field_guid=field.guid,
-                        class_name=class_name,
-                        related_form_db_name=form_db_name,
-                        to1_field_db_name=field.db_name)
+                class_fields[field.db_name] = graphene.Field(field_class)
+                class_fields[f'resolve_{field.db_name}'] = resolver
+            elif field.is_tom_field:
+                resolver = make_tom_resolver(
+                    ax_field_guid=field.guid,
+                    class_name=class_name,
+                    related_form_db_name=form_db_name,
+                    to1_field_db_name=field.db_name)
 
-                    class_fields[field.db_name] = graphene.List(field_class)
-                    class_fields[f'resolve_{field.db_name}'] = resolver
+                class_fields[field.db_name] = graphene.List(field_class)
+                class_fields[f'resolve_{field.db_name}'] = resolver
         else:
             field_type = (
                 type_dictionary[field.field_type.value_type])
             class_fields[field.db_name] = field_type()
 
     return class_fields
+
+
+
 
 
 def init_schema(db_session):
@@ -450,6 +455,7 @@ def init_schema(db_session):
                             description=form.name
                         )
                         type_classes[default_class_name] = default_graph_class
+
 
         # Dynamicly crate resolvers for each typeClass
         # Iterate throw created classes and create resolver for each

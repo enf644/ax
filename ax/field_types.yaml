@@ -376,11 +376,10 @@
   value_type: JSON
   is_backend_available: True
   icon: fab fa-stripe-s
-
-- tag: AxPaymentYandex
-  parent: group-payment
-  position: 4
-  default_db_name: kassa
-  value_type: JSON
-  is_backend_available: True
-  icon: fab fa-yandex
+# - tag: AxPaymentYandex
+#   parent: group-payment
+#   position: 4
+#   default_db_name: kassa
+#   value_type: JSON
+#   is_backend_available: True
+#   icon: fab fa-yandex

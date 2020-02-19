@@ -11,11 +11,11 @@ module.exports = {
     // https: true,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8080',
+        target: 'http://127.0.0.1:80',
         secure: false
       },
       '/draw_ax': {
-        target: 'http://127.0.0.1:8080/draw_ax',
+        target: 'http://127.0.0.1:80/draw_ax',
         secure: false
       }
     }

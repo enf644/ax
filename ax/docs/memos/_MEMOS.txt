@@ -1,4 +1,17 @@
 
+
+
+Lozung:
+    Makes workflow automation less annoying.
+Short desc:
+    The Ax is a software for building and running workflow applications.
+    If you are still using spreadsheets and email to manage your work, use Ax to automate it!
+    Create form and workflow with drag-n-drop or install one of the dozens existing workflow applications from Ax Marketplace.
+
+
+
+==============================================================================
+
 Ubuntu:
     https://linuxize.com/post/how-to-install-pip-on-ubuntu-18.04/
     sudo apt update

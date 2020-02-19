@@ -1,5 +1,5 @@
 env_variables:
-  AX_VERSION: 0.41.0
+  AX_VERSION: 0.43.0
   AX_DB_REVISION: 9b898740929f
 
   ### Logging settings:
@@ -13,7 +13,7 @@ env_variables:
   #
   ### Sanic server settings:
   # AX_HOST: 0.0.0.0 #  default = 127.0.0.1
-  # AX_PORT: "8085" #  default = 80
+  # AX_PORT: 8085 #  default = 80
   # AX_SANIC_DEBUG: true #  default=false
   # AX_SANIC_ACCESS_LOG:  #  default=false
   # AX_SANIC_WORKERS: 1 # default=1 . On Windoes 1 is max. BETA Use with caution!!
@@ -28,7 +28,7 @@ env_variables:
   ### Database settings:
   # AX_DB_DIALECT: postgre   # sqlite, postgre, mysql. Default is sqlite
   # AX_DB_HOST: 84.201.174.246
-  # AX_DB_PORT: '5432'
+  # AX_DB_PORT: 5432
   # AX_DB_LOGIN: postgres
   # AX_DB_PASSWORD: 123456
   # AX_DB_DATABASE: wine

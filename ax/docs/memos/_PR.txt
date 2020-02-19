@@ -1,0 +1,31 @@
+The Ax is a software for building and running workflow applications.
+If you are still using spreadsheets and email to manage your work, use Ax to automate it!
+
+Create workflow app using form, grids and workflow constructors.
+Or install existing workflow applications from Ax Marketplace, such as:
+- RFC request
+- Facility Access Request
+- Estimation queries
+- Asset Purchase
+- New Hire Request
+- Time Off Request
+- Purchase Request
+- Job Offer
+etc
+
+You can even use Ax applications as an alternative to traditional software:
+- CRM
+- ECM
+- Helpdesk
+- Contact center.
+
+The Ax is FREE for teams small teams (5 users).
+
+
+
+=========================================
+
+
+Before reaching 500 users I offer FREE consulting services.
+
+If you want to automate any workflow - please send me a message describing the task. I am willing to configure a VPS with Ax workflow, build a workflow app you need and teach you how to use it. In return, I simply ask you to become a paying customer.

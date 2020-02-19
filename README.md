@@ -1,12 +1,10 @@
 
-# Ax
-**The Ax is a software for building and running workflow applications.**
-
+# Ax - Makes workflow automation less annoying
+The Ax is software for rapid workflow automation.
 If you are still using spreadsheets and email to manage your work, use Ax to automate it!
 
 Create workflow app using **form, grids and workflow** constructors.
-
-Or install one of the dozens *[actually not yet]* existing workflow applications from **Ax Marketplace**, such as:
+Or install existing workflow applications from **Ax Marketplace**, such as:
 - RFC request
 - Facility Access Request
 - Estimation queries
@@ -21,10 +19,19 @@ You can even use Ax applications as an alternative to traditional software:
 - CRM
 - ECM
 - Helpdesk
-- Contact center.
+- Contact center
 
-The Ax is **FREE** for teams small teams (5 users). 
+Ax is currently in BETA. 
+
+
+The Ax is **FREE** for small teams (5 users). 
 For the bigger teams, the price is **15$** per user per month.
+
+#### Special offer for first customers
+Before reaching 500 users I offer **FREE** consulting services for customers.
+
+If you want to automate any workflow - please [send me a message](mailto:enf644@gmail.com) describing the task. I will configure a VPS with Ax workflow, build a workflow app you need and teach you how to use it.
+
 
 # Documentation
 Ax workflow documentation is separated into four levels of complexity:
@@ -162,9 +169,9 @@ There is **"Copy form URL"** and **"Copy grid URL"** buttons available at the fo
 There are more advanced options for representing workflow applications to end-users. Please read Pages Designer, Using web-components, Using GraphQL API
 
 
-#Beginner
+# Beginner
 
-##Relation fields
+## Relation fields
 
 Ax starts to shine when you are dealing with complex applications with dozens of interconnected forms. The forms can be connected with reference fields. Currently, there are 3 types of reference field types available:
 
