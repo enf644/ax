@@ -47,6 +47,7 @@
 import i18n from '@/locale';
 import axios from 'axios';
 import store from '@/store';
+import Cookies from 'js-cookie'
 import { getAxHostProtocol } from '@/misc';
 
 export default {
@@ -79,7 +80,8 @@ export default {
   },
   watch: {},
   mounted() {
-    if (this.$cookies.get('access_token')) this.authCookiePresent = true;
+    let cook = Cookies.get('access_token')
+    if (cook) this.authCookiePresent = true;
     else this.authCookiePresent = false;
   },
   methods: {
@@ -108,9 +110,9 @@ export default {
               access: response.data.access_token,
               refresh: response.data.refresh_token
             });
-            this.$cookies.set('access_token', response.data.access_token);
-            this.$cookies.set('refresh_token', response.data.refresh_token);
-
+            Cookies.set('access_token', response.data.access_token);
+            Cookies.set('refresh_token', response.data.refresh_token);
+            
             let url = `/pages`;
             // window.location.href = url;
             // this.$router.push({ path: url });

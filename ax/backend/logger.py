@@ -15,18 +15,23 @@ def init_logger(logs_filename: str, logs_absolute_path: str, logs_level: str):
             the /backend/logs folder will be used
         logs_level (str): What log level to use INFO/ERROR/DEBUG. Default ERROR
     """
+    # sys.stdout.reconfigure(encoding='utf-8')
+    # sys.stdout.reconfigure(errors='backslashreplace')
+
     config = {
         "handlers": [
             {
                 'sink': sys.stdout,
                 'colorize': True,
-                'format': '⛏️  | {level} | <level>{message}</level>',
+                'format': 'Ax  | {level} | <level>{message}</level>',
                 'backtrace': False,
                 'level': logs_level
             }
         ],
         "extra": {"user": "someone"}
     }
+
+# ⛏️
 
     try:
         # If log_filename set in app.yaml, then we must write log file

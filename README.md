@@ -3,34 +3,45 @@
 The Ax is software for rapid workflow automation.
 If you are still using spreadsheets and email to manage your work, use Ax to automate it!
 
-Create workflow app using **form, grids and workflow** constructors.
-Or install existing workflow applications from **Ax Marketplace**, such as:
-- RFC request
-- Facility Access Request
-- Estimation queries
-- Asset Purchase
-- New Hire Request
-- Time Off Request
-- Purchase Request
-- Job Offer
-- etc
+**What is Ax**
+- The Ax is a software for building and running workflow applications.
+- It is a python program distributed by PyPi package manager.
+- It is self-hosted and uses super-fast Sanic framework
 
-You can even use Ax applications as an alternative to traditional software: 
-- CRM
-- ECM
-- Helpdesk
-- Contact center
+**How does it work**
+- Create a form with a constructor.
+- Form records have a lifecycle that is defined by a set of states.
+- States are connected with each other with "Actions" forming a Finite State Machine.
+- Users can have different field permissions for each state.
+- When "Action" is performed and record state is changed an arbitrary python code is executed.
+- This can be used to send emails, call APIs, move robots, launch rockets, etc.
 
-Ax is currently in BETA. 
+**Use cases**
+<ul>
+    <li>
+    Workflow automation
+    <ul>
+        <li>Example - Facility Access Request, RFC request, Estimation queries, Asset Purchase, New Hire Request, Time Off Request, Purchase Request, Job Offer, etc</li>
+    </ul>
+    </li>
+    <li>
+    Content management
+    <span class='misc-grey'>[Headless CMS]</span>
+    </li>
+    <li>CRM</li>
+    <li>ECM</li>
+    <li>HelpDesk</li>
+    <li>Expert systems</li>
+    <li>Educational courses</li>
+</ul>
+
+**Ax is currently in BETA**
 
 
-The Ax is **FREE** for small teams (5 users). 
-For the bigger teams, the price is **15$** per user per month.
+#### Special offer for first users
+Ax team offers **FREE** consulting services for users with paid support plan.
 
-#### Special offer for first customers
-Before reaching 500 users I offer **FREE** consulting services for customers.
-
-If you want to automate any workflow - please [send me a message](mailto:enf644@gmail.com) describing the task. I will configure a VPS with Ax workflow, build a workflow app you need and teach you how to use it.
+If you want to automate any workflow - please [contact the team](mailto:enf644@gmail.com) describing the task. We will configure a VPS with Ax workflow, build a workflow app you need and teach you how to use it.
 
 
 # Documentation

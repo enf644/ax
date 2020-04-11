@@ -1,5 +1,5 @@
 env_variables:
-  AX_VERSION: 0.43.0
+  AX_VERSION: 0.47.0
   AX_DB_REVISION: 9b898740929f
 
   ### Logging settings:
@@ -54,8 +54,8 @@ env_variables:
   #
   ### Field types settings:
   # STRIPE_API_VERSION: "2019-11-05"
-  # STRIPE_SECRET_KEY: sk_test_Mqbmdyo8dRyPGdkJq31tvb7y00bk4YHj7V
-  # STRIPE_PUBLISHABLE_KEY: pk_test_ek8JDpu65MSXcSn1sAvHBfH800SJKrcVP6
+  # STRIPE_SECRET_KEY: sk_test_Mqbmdyo644PGdkJq31tvb7y00bk4YHj7V
+  # STRIPE_PUBLISHABLE_KEY: pk_test_ek644pu65MSXcSn1sAvHBfH800SJKrcVP6
   #
   ### Custom pages settings:
   # AX_PAGES_ABSOLUTE_PATH: 'C:\Users\enf64_000\Desktop\WineProject\wine\dist'

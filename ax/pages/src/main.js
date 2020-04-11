@@ -7,7 +7,6 @@ import '@fortawesome/fontawesome-free/css/all.css';
 // import 'roboto-fontface/css/roboto/roboto-fontface.css';
 // import '@/assets/tailwind.css';
 import '@/assets/pages-core.css';
-import VueCookies from 'vue-cookies';
 import i18n from './locale.js';
 import Fingerprint2 from 'fingerprintjs2';
 import { uuidWithDashes } from '@/misc';
@@ -20,9 +19,6 @@ Vue.use(VModal, { dynamic: true, injectModalsContainer: true });
 Vue.component(LiquorTree.name, LiquorTree);
 Vue.use(VueResize);
 Vue.use(DrawerLayout);
-Vue.use(VueCookies);
-VueCookies.config('7d');
-
 Vue.config.productionTip = false;
 
 // Write device guid using fingerprintjs. Used in sanic-jwt to enable

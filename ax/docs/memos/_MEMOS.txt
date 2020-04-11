@@ -10,6 +10,56 @@ Short desc:
 
 
 
+
+
+What is Ax:
+The Ax is a software for building and running workflow applications.
+It is a python programm destributed by PyPi packege manager.
+Ax is self-hosted and uses super-fast Sanic framework.
+
+
+How does it work:
+Create form with a constructor.
+Form records have a lifecycle wich is defined by a set of states.
+States are connected with each other with "Actions" forming a Finite State Machine.
+Users can have different field permissions for each state.
+When "Action" is performed and record state is changed an arbitrary pyhton code is executed.
+This can be used to send emails, call APIs, move robots, launch rockets etc.
+Forms can have 1to1 and 1toM fields to reference each other.
+Forms can be groupped into Application, packed and published to Application Marketplace.
+
+Use cases:
+Workflow automation (Example: RFC request, Facility Access Request, Estimation queries, Asset Purchase, New Hire Request, Time Off Request, Purchase Request, Job Offer)
+Content management (Headless CMS)
+CRM
+ECM
+HelpDesk
+Expert systems
+Educational courses
+
+
+Marketplace
+Forms can be grouped and packaed into workflow applications
+Workflow applications can be published to github and to Ax Marketplace for fast install
+
+
+
+Grids
+Pages
+
+
+
+======================================================
+
+Open-source workflow automation
+No-code business application constructor
+Business process automation tool
+
+
+
+
+
+
 ==============================================================================
 
 Ubuntu:

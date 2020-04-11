@@ -11,7 +11,9 @@ code like so  (stripe1)-
 WARNING! Amount must be multipleed by 100! amount=500 meens 5$
 
 4242424242424242	Succeeds and immediately processes the payment.
-4000002500003155	Requires authentication. Stripe will trigger a modal asking for the customer to authenticate.
+4000002500003155	Requires authentication.
+                    Stripe will trigger a modal asking for
+                    the customer to authenticate.
 4000000000009995	Always fails with a decline code of insufficient_funds.
 
 """
@@ -26,5 +28,5 @@ async def before_insert(db_session, field, before_form, tobe_form, action,
         "pubKey": os.getenv('STRIPE_PUBLISHABLE_KEY'),
         "intent": None
     }
-
+    field.force_sql_update = True
     return field.value

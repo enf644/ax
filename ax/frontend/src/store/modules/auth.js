@@ -2,11 +2,13 @@ import apolloClient from '../../apollo';
 import gql from 'graphql-tag';
 import logger from '../../logger';
 import { getAxHostProtocol } from '@/misc';
+import Cookies from 'js-cookie'
 
 const getDefaultState = () => {
+  // TODO window can be null when web-component used
   return {
-    accessToken: window.$cookies.get('access_token'),
-    refreshToken: window.$cookies.get('refresh_token')
+    accessToken: Cookies.get('access_token'),
+    refreshToken: Cookies.get('refresh_token')
   }
 }
 

@@ -125,7 +125,7 @@
     <br />
     <v-btn @click='copyUrl()' class='mb-3' data-cy='copy-url-btn' small text>
       <i class='fas fa-link'></i>
-      &nbsp; {{$t("form.copy-url")}}
+      &nbsp; {{$t("grids.copy-url")}}
     </v-btn>
 
     <br />

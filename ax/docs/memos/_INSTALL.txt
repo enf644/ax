@@ -58,7 +58,9 @@ Install:
 
 
     npm-check
-    export NODE_OPTIONS=--max_old_space_size=8192
+
+    NODE_OPTIONS=--max_old_space_size=8192 npm run serve
+    NODE_OPTIONS=--max_old_space_size=8192 npm run build
 
 ============= CYPRESS ===============
 npm run test:e2e
@@ -89,6 +91,8 @@ twine upload dist/*
 
 
 
+
+
 LINX:
 ssh gen:
     https://code.visualstudio.com/remote-tutorials/ssh/create-ssh-key
@@ -113,6 +117,8 @@ http://google.github.io/styleguide/pyguide.html
 
 
 ws://127.0.0.1:8081/api/subscriptions
+
+CNAME www  www.ax-workflow.com.website.yandexcloud.net.
 
 
 lsof -i :8080

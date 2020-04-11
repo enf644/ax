@@ -21,7 +21,7 @@ from backend.auth import ax_admin_only
 
 from backend.schemas.types import Form, Field, PositionInput, Role
 import backend.schemas.action_schema as action_schema
-import backend.fields.AxHtml as AxFieldAxHtml  # pylint: disable=unused-import
+import backend.fields.AxHtmlGenerated as AxFieldAxHtmlGenerated  # pylint: disable=unused-import
 import backend.fields.AxAuthor as AxFieldAxAuthor  # pylint: disable=unused-import
 
 

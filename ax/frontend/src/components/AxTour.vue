@@ -344,6 +344,6 @@ export default {
 <style scoped>
 .tour-ico {
   font-size: 22px;
-  color: #999;
+  color: #b71c1c;
 }
 </style>

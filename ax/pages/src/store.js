@@ -8,9 +8,6 @@ import { getAxHostProtocol } from '@/misc';
 
 Vue.use(Vuex);
 
-// window.$cookies.get('access_token');
-// window.$cookies.get('refresh_token');
-
 const getDefaultState = () => ({
   pages: [],
   treeStore: [],

@@ -55,12 +55,17 @@ export default {
       this.$emit('update:value', newValue);
     },
     optionsJson(newValue) {
-      this.options = JSON.parse(newValue);
-      if (this.$refs.thisField.errors.length > 0) {
-        setTimeout(() => {
-          this.$refs.thisField.errors = [];
-          this.$refs.thisField.isValid();
-        }, 10);
+      if (newValue) {
+        this.options = JSON.parse(newValue);
+        if (
+          this.$refs.thisField.errors &&
+          this.$refs.thisField.errors.length > 0
+        ) {
+          setTimeout(() => {
+            this.$refs.thisField.errors = [];
+            this.$refs.thisField.isValid();
+          }, 10);
+        }
       }
     },
     value(newValue) {
@@ -68,9 +73,11 @@ export default {
     }
   },
   created() {
-    this.options = JSON.parse(this.optionsJson);
-    if (!this.options.required_text) {
-      this.options.required_text = i18n.t('common.field-required');
+    if (this.optionsJson) {
+      this.options = JSON.parse(this.optionsJson);
+      if (!this.options.required_text) {
+        this.options.required_text = i18n.t('common.field-required');
+      }
     }
   },
   mounted() {

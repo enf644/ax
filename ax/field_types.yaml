@@ -91,6 +91,14 @@
   position: 1
   is_virtual: True
   virtual_source: guid
+  icon: fas fa-code
+
+- tag: AxHtmlGenerated
+  parent: group-decoration
+  default_db_name: html
+  position: 2
+  is_virtual: True
+  virtual_source: guid
   is_display_backend_avalible: True
   icon: fas fa-code
 
@@ -376,6 +384,7 @@
   value_type: JSON
   is_backend_available: True
   icon: fab fa-stripe-s
+  is_updated_always: True
 # - tag: AxPaymentYandex
 #   parent: group-payment
 #   position: 4

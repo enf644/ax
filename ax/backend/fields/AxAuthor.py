@@ -17,15 +17,17 @@ GRID
 
 
 """
-import backend.model as ax_model
-from backend.model import AxRole
+# import backend.model as ax_model
+# from backend.model import AxRole
 
 
 async def before_insert(db_session, field, before_form, tobe_form, action,
                         current_user):
     """ Create default value of field.  """
     del db_session, before_form, tobe_form, action
-    field.value = current_user["email"]
+    field.value = None
+    if current_user:
+        field.value = current_user["email"]
     return field.value
 
 
@@ -77,6 +79,7 @@ async def before_update(db_session, field, before_form, tobe_form, action,
 async def check_dynamic_role(db_session, ax_form, current_user):
     """ Checks if form values and current user fits current dynamic role
     If Author field == current_user_email -> return True """
+    del db_session
     for field in ax_form.fields:
         if field.field_type_tag == "AxAuthor":
             if field.value == current_user['email']:

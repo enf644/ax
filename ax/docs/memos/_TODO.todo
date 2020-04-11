@@ -913,12 +913,26 @@ AX 0.2:
             ✘ ax.sh must be constructed with build @cancelled(20-02-02 14:01)
     ✔ LANDING @done(20-01-22 14:53)
         ✔ Github readme with docs @done(20-01-22 14:53)
-    =======================================================================:
+
+=======================================================================:
+
+
+☐ Landing
+    ☐ First page
+    ☐ Responsive
+    ☐ Sub pages:
+        ☐ Live demo
+        ☐ Community
+        ☐ Use cases
+        ☐ Product
+
+
+=======================================================================:
     ☐ SEND TO FRIENDS
-        ☐ Record installation, tutorial, reactions
+        ✔ Record installation, tutorial, reactions @done(20-03-23 15:26)
         ☐ Create install script for app engine, aws or yandex cloud
     ☐ START REACHING OUT
-        ☐ Indie hackers post - intro and ask how to maximise user reach
+        ✔ Indie hackers post - intro and ask how to maximise user reach @done(20-03-23 15:27)
         ☐ Friends - vs, facebook
     ☐ SET MEDIA LIFECYCLE
         ☐ Research list of media - register in every media
@@ -1038,6 +1052,7 @@ BEFORE LAUNCH:
         ☐ Gitbook -> https://www.gitbook.com/?t=1                
         ☐ Ax Pages
     ☐ Lincese key generation, desribution and 
+    ☐ Public roadmap - https://portal.productboard.com/strapi/1-public-roadmap/tabs/1-launched
 
 
     
@@ -1050,7 +1065,7 @@ Additional versions:
     
 =============================================================================================
 
-FROGS TODOS:
+FROGS:
     ✔ Discover why ripple effects are not working in chrome @done(19-02-13 07:24)
     ✔ Minification not working with vue-custom-element. https://github.com/karol-f/vue-custom-element/issues/159 @done(19-03-01 19:34)
     ✔ Vuetify - include only components that are used @done(19-03-01 02:00)
@@ -1068,6 +1083,8 @@ FROGS TODOS:
     ✔ Long names for form tabs - limit is too small! @done(19-10-18 12:17)
     ✔ Del key when editing field names - tryes to delete whole field @done(19-10-18 17:39)
     ☐ IMPORTANT
+        ☐ python-postges vs pcycorg https://github.com/aneslozo/fe/commit/c7fa7245604715330bca582eec077005bf1ee2d8
+        ☐ Check ax version on app install!!!!
         ☐ Redis not working
         ☐ When two sanic workers - errors when on init scheduller
         ☐ Marketplace - check for foreign keys before creating app! or installing app!

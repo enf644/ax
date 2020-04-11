@@ -1,5 +1,4 @@
 // Core dependencies
-
 import Vue from 'vue';
 import vueCustomElement from 'vue-custom-element'; // create web component from vue component
 import 'document-register-element'; // polyfill for vue-custom-element
@@ -7,59 +6,43 @@ import 'animate.css/animate.min.css';
 import logger from './logger';
 import '@/assets/ax-core.css';
 import '@/assets/github-markdown.css';
-
 import VModal from 'vue-js-modal';
+
 
 // Admin dependencies
 import VueResize from 'vue-resize'; // detect element resize
 import '@fortawesome/fontawesome-free/css/all.css';
-// import 'roboto-fontface/css/roboto/roboto-fontface.css';
-
+import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import AsyncComputed from 'vue-async-computed';
-
 import 'vue-resize/dist/vue-resize.css';
-import Vuetify, {
-  VTextField,
-  VSnackbar,
-  VDialog,
-  VCard,
-  VToolbar,
-  VIcon,
-  VToolbarTitle,
-  VCardText,
-  VCardTitle,
-  VCardActions,
-  VSpacer,
-  VBtn,
-  VAutocomplete,
-  VSelect
-} from 'vuetify/lib';
+import Vuetify from 'vuetify/lib';
 import en from 'vuetify/lib/locale/en'
 
 
-import VuetifyDialog from 'vuetify-dialog';
+// import VuetifyDialog from 'vuetify-dialog';
+import("vuetify-dialog").then(
+  ({ default: VuetifyDialog }) => {
+    Vue.use(VuetifyDialog, {
+      context: { vuetify },
+      toast: { position: 'bottom-right' }
+    });
+  }
+);
 import 'vuetify-dialog/dist/vuetify-dialog.css';
+
 import App from './App.vue';
 import router from './router';
 import i18n from './locale.js';
-
-import VueCookies from 'vue-cookies'
-
-Vue.use(VueCookies)
-VueCookies.config('7d')
-
 import VueMask from 'v-mask'
-
 import store from './store';
-import AxTest from './components/AxTest.vue';
 import Fingerprint2 from 'fingerprintjs2'
 import { uuidWithDashes } from '@/misc';
-
 import Uppy from '@uppy/core'
+import ThePasswordChange from '@/components/UsersManager/ThePasswordChange.vue';
 
-// import ThePasswordChange from '@/components/UsersManager/ThePasswordChange.vue';
+// import AxTest from './components/AxTest.vue';
 
-Vue.config.productionTip = false;
+// Vue.config.productionTip = false;
 
 Vue.use(VueMask);
 
@@ -69,28 +52,7 @@ Vue.use(VueMask);
 
 Vue.use(VModal, { dynamic: true, injectModalsContainer: true });
 
-Vue.use(Vuetify, {
-  lang: {
-    locales: { en },
-    current: 'en'
-  },
-  components: {
-    VTextField,
-    VSnackbar,
-    VDialog,
-    VCard,
-    VCardTitle,
-    VToolbar,
-    VIcon,
-    VToolbarTitle,
-    VCardText,
-    VCardActions,
-    VSpacer,
-    VBtn,
-    VSelect,
-    VAutocomplete
-  }
-});
+Vue.use(Vuetify);
 Vue.use(vueCustomElement);
 Vue.use(VueResize);
 Vue.use(AsyncComputed);
@@ -136,13 +98,6 @@ const signInPromise = () => import('@/components/AxSignIn.vue').then(m => {
 });
 Vue.customElement('ax-sign-in', signInPromise, { props: [] });
 
-
-
-Vue.use(VuetifyDialog, {
-  context: { vuetify },
-  toast: { position: 'bottom-right' }
-});
-
 Vue.prototype.$log = logger; // Custom logger
 
 // Write device guid using fingerprintjs. Used in sanic-jwt to enable
@@ -166,22 +121,3 @@ new Vue({
   i18n,
   render: h => h(App)
 }).$mount('#ax-app');
-
-
-
-const echoFunc = msg => {
-  console.log(msg)
-  return msg;
-};
-
-// AxTest.echo = echoFunc;
-// AxTest.translation = { a: 'b' }
-// AxTest.propD = 'works works';
-const uppy = Uppy()
-
-Vue.customElement('ax-test', {
-  ...AxTest,
-  vuetify,
-  uppy,
-  Uppy
-});

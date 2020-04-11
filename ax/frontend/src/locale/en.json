@@ -184,7 +184,8 @@
         "terminal-header": "Action terminal",
         "row-locked": "Current row is locked. Action is running. Please, try later.",
         "copy-url": "Copy form url",
-        "copy-tag": "Copy form code"
+        "copy-tag": "Copy form code",
+        "form-must-close": "This form was closed. Check Action settings. Uncheck the 'Close on action' setting if you want the form to reload."
     },
     "grids": {
         "add-column-toast": "Column added",
@@ -226,7 +227,8 @@
         "error-in-query": "Error occurred while querying data",
         "error-grid-not-found": "Grid not found. Check db_name of AxForm and AxGrid",
         "save-filter-order-btn": "Save grid model",
-        "copy-graphql": "Copy GraphQL query"
+        "copy-graphql": "Copy GraphQL query",
+        "copy-url": "Copy grid url"
     },
     "workflow": {
         "state": {
@@ -520,6 +522,10 @@
         "AxHtml": {
             "name": "Custom html",
             "settings-code": "Html"
+        },
+        "AxHtmlGenerated": {
+            "name": "Generated html",
+            "settings-code": "Python"
         },
         "AxPaymentYandex": {
             "name": "Yandex kassa"

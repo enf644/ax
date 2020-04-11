@@ -6,6 +6,7 @@ module.exports = {
   css: {
     extract: false
   },
+  transpileDependencies: ['vuetify'],
   devServer: {
     disableHostCheck: true,
     // https: true,
@@ -14,8 +15,8 @@ module.exports = {
         target: 'http://127.0.0.1:80',
         secure: false
       },
-      '/draw_ax': {
-        target: 'http://127.0.0.1:80/draw_ax',
+      '/api/draw_ax': {
+        target: 'http://127.0.0.1:80/api/draw_ax',
         secure: false
       }
     }

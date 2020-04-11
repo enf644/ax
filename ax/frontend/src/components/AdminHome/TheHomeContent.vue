@@ -9,7 +9,7 @@
       <br />
       <br />
     </v-sheet>-->
-
+    <!-- 
     <div class='cols-div'>
       <v-sheet class='sheet-container home-col-big' elevation='1' light>
         <div v-html='welcome'></div>
@@ -20,27 +20,13 @@
             Press life ring icon
             <i class='far fa-life-ring'></i>
             on any page to start a tour.
-            <!-- <br />
-            <br />
-            <b>Useful links:</b>
-            <ul>
-              <li>
-                <a href='docs'>Documentation</a>
-              </li>
-              <li>
-                <a href='docs'>Report a bug</a>
-              </li>
-              <li>
-                <a href='docs'>Request a trial license</a>
-              </li>
-            </ul>-->
           </div>
           <div>
             <i class='big-arrow fas fa-arrow-up'></i>
           </div>
         </div>
       </v-sheet>
-    </div>
+    </div>-->
 
     <div class='cols-div'>
       <v-sheet class='sheet-container home-col' elevation='1' light>
@@ -117,8 +103,8 @@ export default {
     this.parser = new RSSParser();
     this.getBlogRss();
     this.getStackRss();
-    this.getWelcome();
     this.getFetured();
+    // this.getWelcome();
   },
   computed: {
     blogItems() {

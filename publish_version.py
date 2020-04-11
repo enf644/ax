@@ -54,7 +54,7 @@ def init_ax():
         raise
 
 
-def bump_version(is_major: bool = False, is_minor: bool = False):
+def bump_version(is_major=False, is_minor=False):
     """Increment ax version in app.yaml"""
     try:
         this.app_yaml_path = Path(

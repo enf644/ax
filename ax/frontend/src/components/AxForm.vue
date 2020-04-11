@@ -11,7 +11,7 @@
       v-show='formIsLoaded'
     >
       <!-- <v-layout align-space-between class='form-layout' justify-start> -->
-      <v-container class='form-layout'>
+      <v-container class='form-layout' fluid>
         <v-row class='form-global-row' no-gutters>
           <transition :enter-active-class='drawerAnimationClass'>
             <v-col
@@ -116,6 +116,14 @@
                       {{locale("form.reload-data")}}
                     </v-btn>
                   </v-alert>
+                </transition>
+
+                <transition enter-active-class='animated fadeIn'>
+                  <v-alert
+                    :value='true'
+                    type='warning'
+                    v-show='showMustBeCloseWarning'
+                  >{{locale("form.form-must-close")}}</v-alert>
                 </transition>
 
                 <v-flex xs12>
@@ -281,6 +289,7 @@ export default {
       modalGuid: null,
       insertedGuid: null,
       showSubscribtionWarning: false,
+      showMustBeCloseWarning: false,
       guidNotFound: false,
       terminal: null,
       performingActionGuid: null,
@@ -548,8 +557,6 @@ export default {
               this.fields.push(thisField);
             }
           });
-          if (this.opened_tab) this.activeTab = this.opened_tab;
-          else if (all_tabs.length > 0) this.activeTab = all_tabs[0].guid;
 
           // if tab have no fields - it must be deleted
           let activeTabGuids = [];
@@ -562,6 +569,9 @@ export default {
             if (activeTabGuids.includes(tab.guid)) clear_tabs.push(tab);
           });
           this.tabs = clear_tabs;
+
+          if (this.opened_tab) this.activeTab = this.opened_tab;
+          else if (clear_tabs.length > 0) this.activeTab = clear_tabs[0].guid;
 
           this.updateValue();
           this.subscribeToActions();
@@ -798,7 +808,12 @@ export default {
         if (res) {
           if (actionResult.closeModal) {
             const theEmit = this.$emit('close', actionResult.retGuid);
-            // incase this form inserted as web-conponent
+
+            setTimeout(() => {
+              this.showMustBeCloseWarning = true;
+            }, 1000);
+
+            // in case this form inserted as web-conponent
             // the close will fail and we need to reload form
             // TODO check if this works with web-compontn
             if (!theEmit) {

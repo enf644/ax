@@ -14,6 +14,7 @@ const axHost = getAxHost();
 const axProtocol = getAxProtocol()
 const axWsProtocol = getAxWsProtocol()
 let refreshingPromise = null;
+console.log(`apollo -> ${axHost}`);
 
 
 const customFetch = (uri, options) => {

@@ -13,7 +13,7 @@
 import AxForm from '@/components/AxForm.vue';
 
 export default {
-  name: 'AxGridComponent',
+  name: 'AxFormComponent',
   components: { AxForm },
   props: {
     db_name: null,

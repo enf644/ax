@@ -15,7 +15,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy import Text, String, CHAR, Float, Unicode, Boolean, Integer,\
-     TIMESTAMP, JSON
+    TIMESTAMP, JSON
 from sqlalchemy import TypeDecorator, Column, LargeBinary
 from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
@@ -28,7 +28,8 @@ engine = None
 # db_session = None
 db_url = None
 Base = declarative_base()
-Session = None # pylint: disable=invalid-name
+Session = None  # pylint: disable=invalid-name
+
 
 @contextmanager
 def scoped_session(error_msg=None):
@@ -92,11 +93,12 @@ def init_model(dialect: str, host: str, port: str, login: str, password: str,
                 this.db_url = 'sqlite:///' + db_path
 
             logger.debug('DB url = {url}', url=this.db_url)
+            # print(f'DB url = {this.db_url}')
             this.engine = create_engine(
                 this.db_url,
                 pool_threadlocal=True,
                 connect_args={'timeout': 10})
-                # TODO take sql timeout from app.yaml
+            # TODO take sql timeout from app.yaml
         elif dialect == 'postgre':
             this.db_url = (
                 f'postgresql+pypostgresql://{login}:{password}@{host}:{port}/{database}')
@@ -222,7 +224,6 @@ class AxForm(Base):
     permissions = relationship(
         "AxRoleFieldPermission", cascade="all, delete-orphan")
 
-
     @property
     def db_fields(self):
         """Only AxFields that are database columns"""
@@ -260,7 +261,6 @@ class AxForm(Base):
             if field.db_name == field_db_name:
                 return field
         return None
-
 
 
 class AxFieldType(Base):
@@ -370,13 +370,13 @@ class AxField(Base):
     is_tab = Column(Boolean, unique=False, default=False)
     is_required = Column(Boolean, unique=False, default=False)
     is_whole_row = Column(Boolean, unique=False, default=False)
-    parent = Column(GUID()) # Tab guid
+    parent = Column(GUID())  # Tab guid
     value = None
     is_hidden = False
     is_readonly = False
     needs_sql_update = False  # Flag that current field must be updated in DB
-    force_sql_update = False # Flag that current field must be updated in DB
-                             # Works even if field is hidden or read_only
+    force_sql_update = False  # Flag that current field must be updated in DB
+    # Works even if field is hidden or read_only
 
     @property
     def is_virtual(self):
@@ -434,9 +434,9 @@ class AxGrid(Base):
     # Must be PascalCase, used in GQL schema Types
     db_name = Column(String(255))
     position = Column(Integer())    # Position in tree
-    options_json = Column(JSON()) # JSON key/value see
-                                        # TheConstructorGridsDrawerSecond.vue
-    code = Column(Text(convert_unicode=True)) # code to build SQL query
+    options_json = Column(JSON())  # JSON key/value see
+    # TheConstructorGridsDrawerSecond.vue
+    code = Column(Text(convert_unicode=True))  # code to build SQL query
     # Columns widths stored here too
     form_guid = Column(GUID(), ForeignKey('_ax_forms.guid'))
     form = relationship("AxForm")
@@ -451,13 +451,13 @@ class AxColumn(Base):
     guid = Column(GUID(), primary_key=True,
                   default=uuid.uuid4, unique=True, nullable=False)
     position = Column(Integer())    # Position in grid and in tree
-    options_json = Column(JSON()) # Currently not used
+    options_json = Column(JSON())  # Currently not used
     field_guid = Column(GUID(), ForeignKey('_ax_fields.guid'))
     field = relationship("AxField")
     grid_guid = Column(GUID(), ForeignKey('_ax_grids.guid'))
     grid = relationship("AxGrid")
     column_type = Column(String(50))  # Not used. Was used for aggregate grid
-    aggregation_type = Column(String(50), nullable=True) # Not used yet.
+    aggregation_type = Column(String(50), nullable=True)  # Not used yet.
 
 
 class AxGroup2Users(Base):
@@ -521,10 +521,10 @@ class AxRole(Base):
     form_guid = Column(GUID(), ForeignKey('_ax_forms.guid'))
     form = relationship("AxForm")
     users = relationship("AxUser", secondary='_ax_role2user')
-    icon = Column(String(255)) # font-awesome key
+    icon = Column(String(255))  # font-awesome key
     # field_tag = Column(String(255))
     is_dynamic = Column(Boolean, unique=False, default=False)
-    code = Column(Text(convert_unicode=True)) # code to build SQL query
+    code = Column(Text(convert_unicode=True))  # code to build SQL query
 
     @property
     def db_name(self):
@@ -586,10 +586,10 @@ class AxAction(Base):
     confirm_text = Column(String(255))
     # If True, the form will be closed after this action
     close_modal = Column(Boolean, unique=False, default=True)
-    icon = Column(String(255)) # font-awesome key
-    radius = Column(Float) # used in d3 worklfow constructor
-    messages = None # Used to store messages and exceptions got from code
-                    # Execution
+    icon = Column(String(255))  # font-awesome key
+    radius = Column(Float)  # used in d3 worklfow constructor
+    messages = None  # Used to store messages and exceptions got from code
+    # Execution
 
 
 class AxRoleFieldPermission(Base):
@@ -663,7 +663,7 @@ class AxMessageThread(Base):
     __tablename__ = '_ax_message_threads'
     guid = Column(GUID(), primary_key=True,
                   default=uuid.uuid4, unique=True, nullable=False)
-    parent = Column(GUID()) # Not used for now. Can be used for threads
+    parent = Column(GUID())  # Not used for now. Can be used for threads
     field_guid = Column(GUID(), ForeignKey('_ax_fields.guid'))
     field = relationship('AxField')
     row_guid = Column(GUID())

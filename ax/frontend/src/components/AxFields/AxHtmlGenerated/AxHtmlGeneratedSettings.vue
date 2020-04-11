@@ -5,13 +5,13 @@
     :privateOptions='changedPrivateOptions'
     @closed='$emit("closed")'
   >
-    {{locale("types.AxHtml.settings-code")}}:
+    {{locale("types.AxHtmlGenerated.settings-code")}}:
     <monaco-editor
       class='editor'
-      language='html'
+      language='python'
       ref='editor'
       theme='vs-dark'
-      v-model='changedOptions.code'
+      v-model='changedPrivateOptions.code'
     ></monaco-editor>
   </AxFieldSettings>
 </template>
@@ -22,7 +22,7 @@ import i18n from '@/locale';
 import MonacoEditor from 'vue-monaco';
 
 export default {
-  name: 'AxHtmlSettings',
+  name: 'AxHtmlGeneratedSettings',
   components: { AxFieldSettings, MonacoEditor },
   props: {
     guid: null,
@@ -40,14 +40,17 @@ export default {
     if (this.privateOptions) {
       this.changedPrivateOptions = this.privateOptions;
     }
-    if (!this.changedOptions.code) {
-      this.changedOptions.code = '<i>hello world</i>\n';
+    if (!this.changedPrivateOptions.code) {
+      this.changedPrivateOptions.code = '# ax.value will be displayed\n';
+      this.changedPrivateOptions.code += 'ax.value = f"""\n';
+      this.changedPrivateOptions.code += '    <i>hello world</i>\n';
+      this.changedPrivateOptions.code += '"""';
     }
   },
   mounted() {},
   methods: {
-    locale(key, param) {
-      return i18n.t(key, param);
+    locale(key) {
+      return i18n.t(key);
     }
   }
 };

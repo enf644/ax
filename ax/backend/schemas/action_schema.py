@@ -69,7 +69,6 @@ class Executor:
         return result
 
 
-
 async def console_log(msg, modal_guid):
     """ Method used in AxAction terminal. It sends message to vue via ws """
     ax_pubsub.publisher.publish(
@@ -83,13 +82,15 @@ async def console_log(msg, modal_guid):
 
 class ConsoleSender:
     """ Used to send ax_console web socket messages to AxForm"""
+
     def __init__(self, modal_guid):
         self.modal_guid = modal_guid
         self.console_was_used = False
 
     def __call__(self, msg):
         self.console_was_used = True
-        console_func = partial(console_log, msg=msg, modal_guid=self.modal_guid)
+        console_func = partial(console_log, msg=msg,
+                               modal_guid=self.modal_guid)
         this.action_loop.call_soon_threadsafe(console_func)
         asyncio.ensure_future(console_log(msg=msg, modal_guid=self.modal_guid),
                               loop=this.action_loop)
@@ -103,9 +104,11 @@ class ConsoleSender:
 
 class ActionExecuter:
     """ Runs execute_action with pre-set db_session """
+
     def __init__(self, db_session, current_user):
         self.db_session = db_session
         self.current_user = current_user
+
     def __call__(
             self,
             row_guid=None,
@@ -165,7 +168,6 @@ async def get_actions(
         if current_state and action.from_state_guid == all_state_guid:
             ret_actions.append(action)
 
-
     # Filter action based on permission cache
     perm_actions = []
     for action in ret_actions:
@@ -177,7 +179,6 @@ async def get_actions(
             perm_actions.append(action)
 
     return perm_actions
-
 
 
 async def do_exec(
@@ -214,8 +215,11 @@ async def do_exec(
     ax.row.guid = form.row_guid
     ax.arguments = arguments
     ax.stripe = stripe
-    ax.user_email = current_user.get("email", None)
-    ax.user_guid = current_user.get("user_id", None)
+    ax.user_email = None
+    ax.user_guid = None
+    if current_user:
+        ax.user_email = current_user.get("email", None)
+        ax.user_guid = current_user.get("user_id", None)
     ax.tom_label = await ax_misc.get_tom_label(form)
     ax.host = host
     ax.form_url = f'{host}/form/{form.db_name}/{form.row_guid}'
@@ -339,8 +343,8 @@ async def get_before_form(db_session, row_guid, form, ax_action):
         for field in tobe_form.db_fields:
             if field.db_name in before_result[0].keys():
                 field.value = before_result[0][field.db_name]
-                if (field.value and isinstance(field.value, str) and
-                        field.field_type.value_type == 'JSON'):
+                if (field.value and isinstance(field.value, str)
+                        and field.field_type.value_type == 'JSON'):
                     field.value = json.loads(field.value)
 
     before_form = copy.deepcopy(tobe_form)
@@ -499,7 +503,6 @@ async def execute_action(
             elif ax_action.to_state.is_deleted:
                 query_type = 'delete'
 
-
             # 3. Get before_form - fill it with values from database row
             before_form, tobe_form = await get_before_form(
                 db_session=db_session,
@@ -540,8 +543,8 @@ async def execute_action(
 
             # 5. Run before backend code for each field.
             for idx, field in enumerate(tobe_form.fields):
-                if (field.is_tab is False
-                        and field.field_type.is_backend_available):
+                if (field.is_tab is False and
+                        field.field_type.is_backend_available):
                     tobe_form.fields[idx].value = await run_field_backend(
                         db_session=db_session,
                         when='before',
@@ -676,18 +679,17 @@ def run_async(corofn, *args):
     return loop.run_until_complete(coro)
 
 
-async def run_execute_action(
-        db_session,
-        row_guid=None,
-        form_guid=None,
-        form_db_name=None,
-        action_guid=None,
-        action_db_name=None,
-        values=None,
-        modal_guid=None,
-        arguments=None,
-        current_user=None
-    ):
+async def run_execute_action(db_session,
+                             row_guid=None,
+                             form_guid=None,
+                             form_db_name=None,
+                             action_guid=None,
+                             action_db_name=None,
+                             values=None,
+                             modal_guid=None,
+                             arguments=None,
+                             current_user=None
+                             ):
     """ This function executes execute_action corutine in different thread """
     loop = asyncio.get_event_loop()
     executor = ThreadPoolExecutor(max_workers=5)
@@ -711,8 +713,6 @@ async def run_execute_action(
         execute_func)
 
     return result
-
-
 
 
 class DoAction(graphene.Mutation):
@@ -836,7 +836,6 @@ class ActionSubscription(graphene.ObjectType):
         except asyncio.CancelledError:
             await subscriber.remove_all_listeners()
 
-
     async def resolve_console_notify(self, info, modal_guid):
         """ Web-socket subscription on ax terminal print
         """
@@ -857,9 +856,8 @@ class ActionSubscription(graphene.ObjectType):
                     yield message
         except asyncio.CancelledError:
             await subscriber.remove_all_listeners()
-        except Exception: # pylint: disable=broad-except
+        except Exception:  # pylint: disable=broad-except
             logger.exception('Error in gql sub resolve_console_notify.')
-
 
 
 class ActionQuery(graphene.ObjectType):
@@ -903,7 +901,6 @@ class ActionQuery(graphene.ObjectType):
                     current_state=current_state,
                     current_user=current_user)
             return ax_actions
-
 
 
 class ActionMutations(graphene.ObjectType):

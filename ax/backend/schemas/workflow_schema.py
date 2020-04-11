@@ -226,6 +226,7 @@ if(ax.row.some_field == ax.user_email):
     ax.result = True"""
     return code
 
+
 class CreateRole(graphene.Mutation):
     """Creates AxRole"""
     class Arguments:  # pylint: disable=missing-docstring
@@ -303,12 +304,12 @@ class DeleteRole(graphene.Mutation):
 
             db_session.query(AxAction2Role).filter(
                 AxAction2Role.role_guid == uuid.UUID(guid)
-            ).delete()            
+            ).delete()
 
             db_session.query(AxRoleFieldPermission).filter(
                 AxRoleFieldPermission.role_guid == uuid.UUID(guid)
-            ).delete()                
-                     
+            ).delete()
+
             ax_role = db_session.query(AxRole).filter(
                 AxRole.guid == uuid.UUID(guid)
             ).first()
@@ -384,15 +385,16 @@ class DeleteRoleFromState(graphene.Mutation):
                     AxState2Role.state_guid == uuid.UUID(state_guid)
                 ).first()
 
-            the_role_guid = role2state.role_guid
-            the_state_guid = role2state.state_guid
+            if role2state:
+                the_role_guid = role2state.role_guid
+                the_state_guid = role2state.state_guid
 
-            db_session.delete(role2state)
-            return DeleteRoleFromState(
-                deleted=guid,
-                role_guid=the_role_guid,
-                state_guid=the_state_guid,
-                ok=True)
+                db_session.delete(role2state)
+                return DeleteRoleFromState(
+                    deleted=guid,
+                    role_guid=the_role_guid,
+                    state_guid=the_state_guid,
+                    ok=True)
 
 
 class AddRoleToAction(graphene.Mutation):

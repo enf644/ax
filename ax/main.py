@@ -222,7 +222,7 @@ def main():
 
     print(ax_logo)
     logger.info(
-        f'Ax is running with {workers} workers.\n Admin is avalible - {protocol}://{host}:{port}/admin/signin\n')
+        f'Ax is running with {workers} workers. Admin is avalible - {protocol}://{host}:{port}/admin/signin\n')
     app.run(
         host=host,
         port=port,
@@ -232,7 +232,7 @@ def main():
         ssl=ssl)
 
 
-app = Sanic()
+app = Sanic("Ax_workflow")
 init_ax()
 
 if __name__ == "__main__":

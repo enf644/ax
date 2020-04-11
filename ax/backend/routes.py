@@ -95,8 +95,13 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
         sanic_app.static('/pages', index_path)
 
         @sanic_app.route('/pages/<path:path>')
-        @sanic_app.route('/signin')
         def pages_index(request, path=None):  # pylint: disable=unused-variable
+            """  """
+            del request, path
+            return response.html(open(index_path).read())
+
+        @sanic_app.route('/signin')
+        def pages_index1(request, path=None):  # pylint: disable=unused-variable
             """  """
             del request, path
             return response.html(open(index_path).read())
@@ -170,9 +175,9 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
 
                 field_guid = str(ax_field.guid)
                 if not user_is_admin:
-                    if (field_guid not in allowed_field_dict
-                            or allowed_field_dict[field_guid] == 0
-                            or allowed_field_dict[field_guid] is None):
+                    if (field_guid not in allowed_field_dict or
+                            allowed_field_dict[field_guid] == 0 or
+                            allowed_field_dict[field_guid] is None):
                         email = current_user.get('email', None)
                         msg = (
                             f'Error in db_file_viewer. ',
@@ -250,9 +255,9 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
                     state_guid=state_guid)
 
                 if not user_is_admin:
-                    if (field_guid not in allowed_field_dict
-                            or allowed_field_dict[field_guid] == 0
-                            or allowed_field_dict[field_guid] is None):
+                    if (field_guid not in allowed_field_dict or
+                            allowed_field_dict[field_guid] == 0 or
+                            allowed_field_dict[field_guid] is None):
                         email = current_user['email']
                         msg = (
                             f'Error in file_viewer. ',
@@ -276,13 +281,31 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
                 return await response.file(file_path)
 
         @sanic_app.route('/admin/<path:path>')
-        @sanic_app.route('/form/<path:path>')
-        @sanic_app.route('/grid/<path:path>')
-        @sanic_app.route('/admin/signin')
         def index(request, path=None):  # pylint: disable=unused-variable
             """ This is MAIN ROUTE. (except other routes listed in this module).
                 All requests are directed to Vue single page app. After that Vue
                 handles routing."""
+            del request, path
+            absolute_path = ax_misc.path('dist/ax/index.html')
+            return response.html(open(absolute_path).read())
+
+        @sanic_app.route('/form/<path:path>')
+        def index1(request, path=None):  # pylint: disable=unused-variable
+            """ Copy of index. Sanic bug - https://github.com/huge-success/sanic/pull/1779"""
+            del request, path
+            absolute_path = ax_misc.path('dist/ax/index.html')
+            return response.html(open(absolute_path).read())
+
+        @sanic_app.route('/grid/<path:path>')
+        def index2(request, path=None):  # pylint: disable=unused-variable
+            """ Copy of index. Sanic bug - https://github.com/huge-success/sanic/pull/1779"""
+            del request, path
+            absolute_path = ax_misc.path('dist/ax/index.html')
+            return response.html(open(absolute_path).read())
+
+        @sanic_app.route('/admin/signin')
+        def index3(request, path=None):  # pylint: disable=unused-variable
+            """ Copy of index. Sanic bug - https://github.com/huge-success/sanic/pull/1779"""
             del request, path
             absolute_path = ax_misc.path('dist/ax/index.html')
             return response.html(open(absolute_path).read())
@@ -292,9 +315,22 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
             del request
             return response.redirect('/pages')
 
-        @sanic_app.route('/draw_ax')
         @sanic_app.route('/api/draw_ax')
         async def draw_ax(request):  # pylint: disable=unused-variable
+            """ Outputs bundle.js. Used when Ax web-components
+                are inputed somewhere. Users can use this url for <script> tag
+                """
+            del request
+            absolute_path = ax_misc.path('dist/ax/static/js/ax-bundle.js')
+            return await response.file(
+                absolute_path,
+                headers={
+                    'Content-Type': 'application/javascript; charset=utf-8'
+                }
+            )
+
+        @sanic_app.route('/draw_ax')
+        async def draw_ax1(request):  # pylint: disable=unused-variable
             """ Outputs bundle.js. Used when Ax web-components
                 are inputed somewhere. Users can use this url for <script> tag
                 """

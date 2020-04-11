@@ -34,8 +34,11 @@ async def execute_field_code(code, form, arguments=None, current_user=None):
     ax.form = form
     ax.host = host
     ax.sql = ax_dialects.dialect.custom_query
-    ax.user_email = current_user.get("email", None)
-    ax.user_guid = current_user.get("user_id", None)
+    ax.user_email = None
+    ax.user_guid = None
+    if current_user:
+        ax.user_email = current_user.get("email", None)
+        ax.user_guid = current_user.get("user_id", None)
     for field in form.db_fields:
         ax.row[field.db_name] = field.value
     if arguments:

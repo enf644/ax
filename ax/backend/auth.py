@@ -22,6 +22,7 @@ import backend.fields.AxAuthor as AxFieldAxAuthor  # pylint: disable=unused-impo
 
 this = sys.modules[__name__]
 
+
 async def get_state_guid(ax_form, state_name):
     """ Returns guid of state by name.
         If no state_name provided -> returns guid of Start state """
@@ -29,8 +30,8 @@ async def get_state_guid(ax_form, state_name):
     for state in ax_form.states:
         if state_name and state.name == state_name:
             state_guid = str(state.guid)
-        elif ((state_name is None or state_name == '')
-              and state.is_start is True):
+        elif ((state_name is None or state_name == '') and
+              state.is_start is True):
             state_guid = str(state.guid)
 
     return state_guid
@@ -163,6 +164,7 @@ async def get_dynamic_roles_guids(ax_form, current_user):
                 role_guids.append(str(role.guid))
     return role_guids
 
+
 async def check_fits_dynamic_role(role, ax_form, current_user):
     """ Runs check_dynamic_role() of field_type py file """
     if role.is_dynamic:
@@ -225,7 +227,6 @@ async def set_form_visibility(
                             field.is_readonly = False
                             field.is_hidden = False
                             field.needs_sql_update = True
-
 
     for field in ax_form.db_fields:
         if not field.field_type.is_updated_always:
@@ -342,16 +343,16 @@ async def write_perm_cache(db_session, user_guid):
                 edit = False
                 # For each perm
                 form_perms = [p for p in perms if (
-                    p.form_guid == ax_form.guid
-                    and p.state_guid == ax_state.guid)]
+                    p.form_guid == ax_form.guid and
+                    p.state_guid == ax_state.guid)]
                 for perm in form_perms:
                     # if perm is set to whole form
                     # if perm is set to tab
                     # if perm is set to field
 
-                    if (perm.field_guid is None
-                            or perm.field_guid == ax_field.parent
-                            or perm.field_guid == ax_field.guid):
+                    if (perm.field_guid is None or
+                            perm.field_guid == ax_field.parent or
+                            perm.field_guid == ax_field.guid):
 
                         if perm.read is True:
                             read = True
@@ -434,16 +435,16 @@ async def write_dynamic_roles_cache(db_session):
                 # For each dynamic role
                 for dyn_role in dynamic_roles:
                     role_perms = [p for p in perms if (
-                        p.role_guid == dyn_role.guid
-                        and p.state_guid == ax_state.guid)]
+                        p.role_guid == dyn_role.guid and
+                        p.state_guid == ax_state.guid)]
 
                     for perm in role_perms:
                         # if perm is set to whole form
                         # if perm is set to tab
                         # if perm is set to field
-                        if (perm.field_guid is None
-                                or perm.field_guid == ax_field.parent
-                                or perm.field_guid == ax_field.guid):
+                        if (perm.field_guid is None or
+                                perm.field_guid == ax_field.parent or
+                                perm.field_guid == ax_field.guid):
 
                             if perm.read is True:
                                 read = True
@@ -619,6 +620,7 @@ client_guid = None
 user_num = None
 expire_date = None
 
+
 def apply_lise(db_session):
     """
         Copyright (C) 2020 Mikhail Marenov - All Rights Reserved
@@ -662,7 +664,7 @@ def apply_lise(db_session):
         this.expire = expire
     else:
         this.client_guid = None
-        this.user_num = 5
+        this.user_num = 5000
         this.expire = None
 
     number_of_users = db_session.query(AxUser).filter(
@@ -721,7 +723,6 @@ def init_auth(sanic_app, secret="This is big secret, set me in app.yaml"):
                cookie_strict=False,
                login_redirect_url='/signin',
                secret=secret)
-
 
     with ax_model.scoped_session("init_auth - ERROR") as db_session:
         apply_lise(db_session)

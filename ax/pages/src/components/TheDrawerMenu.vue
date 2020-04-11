@@ -35,6 +35,7 @@
 // import CatalogItem from '@/components/CatalogItem.vue';
 import store from '@/store';
 import { getAxHostProtocol } from '@/misc';
+import Cookies from 'js-cookie';
 
 export default {
   name: 'TheDrawerMenu',
@@ -94,8 +95,8 @@ export default {
   },
   mounted() {
     this.$store.commit('setTokens', {
-      access: window.$cookies.get('access_token'),
-      refresh: window.$cookies.get('refresh_token')
+      access: Cookies.get('access_token'),
+      refresh: Cookies.get('refresh_token')
     });
     setTimeout(() => {
       this.checkAuth(this.$store.state.accessToken);

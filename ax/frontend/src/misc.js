@@ -3,9 +3,12 @@ let axProtocol = null;
 
 export function getAxHost() {
   if (axHost == null) {
-    const scripts = document.getElementsByTagName('script');
-    const index = scripts.length - 1;
-    const myScript = scripts[index];
+    let myScript = document.getElementById("ax_draw_script")
+    if (!myScript) {
+      const allScripts = document.getElementsByTagName('script');
+      const index = allScripts.length - 1;
+      myScript = allScripts[index];
+    }
     const url = new URL(myScript.src);
     axHost = url.host;
     axProtocol = url.protocol;
