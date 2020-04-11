@@ -7,6 +7,7 @@ include ax/alembic.ini
 include ax/main.py
 include ax/app.template.yaml
 include ax/field_types.yaml
+include ax/ax.sh
 
 recursive-include ax/backend *
 recursive-include ax/dist *

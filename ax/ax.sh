@@ -1,11 +1,12 @@
 #!/bin/bash
 
 process=$1
-PID_FILE="/home/wineuser/.local/lib/python3.6/site-packages/ax/ax.pid"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+PID_FILE="$DIR/ax.pid"
 case $process in
     start)
-        echo "STARTING Ax server in port 8080"
-        python3 /home/wineuser/.local/lib/python3.6/site-packages/ax/main.py --host=10.128.0.34 --port=8080 &
+        echo "STARTING Ax server" > /dev/stderr
+        python3 $DIR/main.py &
         echo $! > $PID_FILE
         ;;
 
@@ -18,17 +19,3 @@ case $process in
         echo "INVALID OPTION"
         ;;
 esac
-
-
-# sudo nano /etc/monit/monitrc
-# sudo monit status
-# sudo monit reload
-# sudo nano /var/log/monit.log
-
-
-#   check host ax with address 84.201.174.246
-#     start program = "/home/wineuser/.local/lib/python3.6/site-packages/ax/ax.sh start"
-#     stop program = "/home/wineuser/.local/lib/python3.6/site-packages/ax/ax.sh stop"
-#     if failed port 8080 protocol http
-#        and request /pages
-#     then restart

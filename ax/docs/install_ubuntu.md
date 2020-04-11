@@ -10,17 +10,17 @@ sudo apt update
 sudo apt install python3-pip
 ```
 
-#### 2. Install Ax
+#### 3. Install Ax
 ```bash
 pip3 install ax
 ```
 
-#### 2. Reload PATH variable for bash
+#### 4. Reload PATH variable for bash
 ```bash
 . ~/.profile
 ```
 
-#### 2. Start Ax Server
+#### 5. Start Ax Server
 ```bash
 ax --host=127.0.0.1 --port=8080
 ```

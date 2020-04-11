@@ -465,16 +465,8 @@ Here are the list of what you can configure:
 
 We recommend running ax using [Monit daemon](https://github.com/arnaudsj/monit). It will restart ax if it freezes of crashes (Ax is in Beta, remember?)
 
-Simple settings for Monit:
-
-```bash
-check host ax with address 84.201.174.246
-    start program = "/home/wineuser/.local/lib/python3.6/site-packages/ax/ax.sh start"
-    stop program = "/home/wineuser/.local/lib/python3.6/site-packages/ax/ax.sh stop"
-    if failed port 8080 protocol http
-        and request /pages
-    then restart
-```
+Check guid for more info:
+- [Setting Monit for Ax on Ubuntu](ax/docs/monit_ubuntu.md)
 
 ## Creating a marketplace app
 

@@ -20,7 +20,7 @@ Run command:
 pip install ax
 ```
 
-#### 2. Start Ax Server
+#### 3. Start Ax Server
 ```bash
 ax --host=127.0.0.1 --port=8080
 ```
