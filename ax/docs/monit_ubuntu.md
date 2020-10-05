@@ -1,17 +1,17 @@
 ## Running Ax with Monit
 
-####1. Install monit
+#### 1. Install monit
 ```bash
 sudo apt-get install monit
 ```
 
-####2. Enable and start Monit service
+#### 2. Enable and start Monit service
 ```bash
 sudo systemctl enable monit
 sudo systemctl start monit
 ```
 
-####3. Make ax.sh executeble
+#### 3. Make ax.sh executeble
 Change directory to **Ax** package. Run ```pip3 show ax``` command if you dont know location.
 Make ax.sh file executeble.
 ```bash
@@ -19,7 +19,7 @@ cd home/enf644/.local/lib/python3.6/site-packages/ax
 chmod +x ax.sh
 ```
 
-####4. Check Ax.yaml configuration
+#### 4. Check Ax.yaml configuration
 ```bash
 sudo nano app.yaml
 ```
@@ -33,7 +33,7 @@ Check logging settings:
 - AX_LOGS_ABSOLUTE_PATH
 
 
-####5. Edit monit config
+#### 5. Edit monit config
 ```bash
 sudo nano /etc/monit/monitrc
 ```
@@ -79,18 +79,18 @@ check host ax with address 84.201.167.104
 
 Save and exit. Check configuration with ``` sudo monit -t``` command.
 
-####6. Reload Monit
+#### 6. Reload Monit
 ```bash
 sudo /etc/init.d/monit reload
 ```
 
-####7. Starting Ax with Monit
+#### 7. Starting Ax with Monit
 ```bash
 sudo monit start ax
 ```
 
 
-####8. Check Ax settings
+#### 8. Check Ax settings
 ```bash
 sudo monit status
 ```

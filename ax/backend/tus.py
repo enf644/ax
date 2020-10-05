@@ -6,7 +6,7 @@ import sys
 import base64
 import uuid
 import shutil
-import ujson as json
+import json
 from pathlib import Path
 from sanic import response
 from sanic import Blueprint
@@ -14,7 +14,6 @@ from sanic_jwt.decorators import inject_user
 from loguru import logger
 import backend.misc as ax_misc
 from backend.auth import ax_protected
-
 
 this = sys.modules[__name__]
 tus_bp = Blueprint('sanic_tus')
@@ -31,11 +30,18 @@ tus_api_extensions = ['creation', 'termination', 'file-check']
 
 def write_info(data):
     """ write <guid>.info file with upload info"""
-    file_guid = data['guid']
+    mod_data = data
+
+    try:
+        mod_data['filename'] = str(data['filename'].decode())
+    except (UnicodeDecodeError, AttributeError):
+        pass
+
+    file_guid = mod_data['guid']
     info_path = os.path.join(
         this.upload_folder, file_guid, file_guid + '.info')
     with open(info_path, 'w') as info_file:
-        json.dump(data, info_file, indent=4)
+        json.dump(mod_data, info_file, indent=4)
 
 
 def read_info(file_guid):

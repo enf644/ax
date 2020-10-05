@@ -1184,8 +1184,8 @@ FEATURES:
         ☐ Imidiate actions - form is not opened, action is performed right-away
         ☐ User registration -> always throw email (Ax does not work without smtp??)
         ☐ Users can modify their info
-        ☐ Web-component copy-paste options
-        ☐ GQL copy-paste options
+        ✔ Web-component copy-paste options @done(20-04-18 17:08)
+        ✔ GQL copy-paste options @done(20-04-18 17:09)
         ☐ Move to letter user avatars like AxMessages
         ☐ Create user image avatars
         ☐ Create reference records (default reference field). Form have 1tomTable field. You must be abble to create reference form without leaving root form. (option)

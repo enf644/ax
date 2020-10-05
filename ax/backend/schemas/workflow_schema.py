@@ -166,6 +166,7 @@ class UpdateAction(graphene.Mutation):
         close_modal = graphene.Boolean(required=False, default_value=None)
         icon = graphene.String(required=False, default_value=None)
         radius = graphene.Float(required=False, default_value=None)
+        job_options = graphene.String(required=False, default_value=None)
 
     ok = graphene.Boolean()
     action = graphene.Field(Action)

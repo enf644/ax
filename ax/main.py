@@ -48,20 +48,20 @@ import backend.auth as ax_auth
 # pylint: enable=wrong-import-position
 
 
-def init_model():
-    """Initiate model. Used in alembic scripts"""
-    ax_model.init_model(
-        dialect=str(os.environ.get('AX_DB_DIALECT') or 'sqlite'),
-        host=str(os.environ.get('AX_DB_HOST') or '127.0.0.1'),
-        port=str(os.environ.get('AX_DB_PORT') or '5432'),
-        login=str(os.environ.get('AX_DB_LOGIN') or ''),
-        password=str(os.environ.get('AX_DB_PASSWORD') or ''),
-        database=str(os.environ.get('AX_DB_DATABASE') or 'ax'),
-        sqlite_filename=str(os.environ.get(
-            'AX_DB_SQLITE_FILENAME') or 'ax_sqlite.db'),
-        sqlite_absolute_path=os.environ.get(
-            'AX_DB_SQLITE_ABSOLUTE_PATH') or None
-    )
+# def init_model():
+#     """Initiate model. Used in alembic scripts"""
+#     ax_model.init_model(
+#         dialect=str(os.environ.get('AX_DB_DIALECT') or 'sqlite'),
+#         host=str(os.environ.get('AX_DB_HOST') or '127.0.0.1'),
+#         port=str(os.environ.get('AX_DB_PORT') or '5432'),
+#         login=str(os.environ.get('AX_DB_LOGIN') or ''),
+#         password=str(os.environ.get('AX_DB_PASSWORD') or ''),
+#         database=str(os.environ.get('AX_DB_DATABASE') or 'ax'),
+#         sqlite_filename=str(os.environ.get(
+#             'AX_DB_SQLITE_FILENAME') or 'ax_sqlite.db'),
+#         sqlite_absolute_path=os.environ.get(
+#             'AX_DB_SQLITE_ABSOLUTE_PATH') or None
+#     )
 
 
 def init_fields():
@@ -95,7 +95,9 @@ def init_ax():
 
     # Initiate SqlAlchemy. Made with separate function for alembic.
     # It initiates database connection on migration.
-    init_model()
+    # init_model()
+    ax_model.init_default_model()
+
     # Init cache module (aiocache). It is not yet used.
     ax_cache.init_cache(
         mode=str(os.environ.get('AX_CACHE_MODE') or 'default'),

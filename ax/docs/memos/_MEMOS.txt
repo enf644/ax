@@ -347,6 +347,10 @@ Posts queue:
     Uploading large files in ax
 
 
+Rivals list:
+    https://www.capterra.com/workflow-management-software/
+    https://www.airslate.com/ - Nice
+
 
 Marketing news themes 
     Introducing Ax. Installing Ax and Creating workflow application in 5 minutes.

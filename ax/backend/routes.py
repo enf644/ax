@@ -232,6 +232,12 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
                         if field.value:
                             field_values = json.loads(field.value)
 
+                            if type(field_values) is str:
+                                try:
+                                    field_values = json.loads(field_values)
+                                except:
+                                    pass
+
                 # Find requested file in value
                 the_file = None
                 for file in field_values:
@@ -355,7 +361,7 @@ def init_routes(sanic_app, pages_path=None, ssl_enabled=False):  # pylint: disab
                 pass
                 # logger.exception('Socket error')
 
-        @sanic_app.route('/api/ping')
+        @sanic_app.route('/api/ping', methods=['GET', 'HEAD'])
         async def ping(request):  # pylint: disable=unused-variable
             """ Ping function checks if Ax is running. Used with monit """
             del request

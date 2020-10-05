@@ -1,6 +1,6 @@
 env_variables:
-  AX_VERSION: 0.47.0
-  AX_DB_REVISION: 9b898740929f
+  AX_VERSION: 0.48.0
+  AX_DB_REVISION: b3eb6ccd4b1f # 9b898740929f
 
   ### Logging settings:
   AX_LOGS_LEVEL: DEBUG # ERROR, WARNING, INFO, DEBUG. default = ERROR

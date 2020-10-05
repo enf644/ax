@@ -179,56 +179,56 @@ def update_field_type(field_types, item):
                 ax_field.name = item['name']
             if 'position' in item and ax_field.position != item['position']:
                 ax_field.position = item['position'],
-            if ('default_name' in item
-                    and ax_field.default_name != item['default_name']):
+            if ('default_name' in item and
+                    ax_field.default_name != item['default_name']):
                 ax_field.name = item['default_name']
-            if ('default_db_name' in item
-                    and ax_field.default_db_name != item['default_db_name']):
+            if ('default_db_name' in item and
+                    ax_field.default_db_name != item['default_db_name']):
                 ax_field.default_db_name = item['default_db_name']
-            if ('value_type' in item
-                    and ax_field.value_type != item['value_type']):
+            if ('value_type' in item and
+                    ax_field.value_type != item['value_type']):
                 ax_field.value_type = item['value_type']
             if 'parent' in item and ax_field.parent != item['parent']:
                 ax_field.parent = item['parent']
             if 'icon' in item and ax_field.icon != item['icon']:
                 ax_field.icon = item['icon']
-            if ('comparator' in item
-                    and ax_field.comparator != item['comparator']):
+            if ('comparator' in item and
+                    ax_field.comparator != item['comparator']):
                 ax_field.comparator = item['comparator']
-            if ('virtual_source' in item and
-                    ax_field.virtual_source != item['virtual_source']):
+            if ('virtual_source' in item
+                    and ax_field.virtual_source != item['virtual_source']):
                 ax_field.virtual_source = item['virtual_source']
-            if ('is_virtual' in item and
-                    ax_field.is_virtual != item['is_virtual']):
+            if ('is_virtual' in item
+                    and ax_field.is_virtual != item['is_virtual']):
                 ax_field.is_virtual = item['is_virtual']
-            if ('is_readonly' in item and
-                    ax_field.is_readonly != item['is_readonly']):
+            if ('is_readonly' in item
+                    and ax_field.is_readonly != item['is_readonly']):
                 ax_field.is_readonly = item['is_readonly']
-            if ('is_inline_editable' in item
-                    and ax_field.is_inline_editable
-                    != item['is_inline_editable']):
+            if ('is_inline_editable' in item and
+                    ax_field.is_inline_editable !=
+                    item['is_inline_editable']):
                 ax_field.is_inline_editable = item['is_inline_editable']
-            if ('is_backend_available' in item
-                    and ax_field.is_backend_available
-                    != item['is_backend_available']):
+            if ('is_backend_available' in item and
+                    ax_field.is_backend_available !=
+                    item['is_backend_available']):
                 ax_field.is_backend_available = item['is_backend_available']
-            if ('is_display_backend_avalible' in item
-                    and ax_field.is_display_backend_avalible
-                    != item['is_display_backend_avalible']):
+            if ('is_display_backend_avalible' in item and
+                    ax_field.is_display_backend_avalible !=
+                    item['is_display_backend_avalible']):
                 the_item = item['is_display_backend_avalible']
                 ax_field.is_display_backend_avalible = the_item
             if ('is_columnn_avalible' in item and
-                    ax_field.is_columnn_avalible
-                    != item['is_columnn_avalible']):
+                    ax_field.is_columnn_avalible !=
+                    item['is_columnn_avalible']):
                 ax_field.is_columnn_avalible = item['is_columnn_avalible']
-            if ('is_updated_always' in item and
-                    ax_field.is_updated_always != item['is_updated_always']):
+            if ('is_updated_always' in item
+                    and ax_field.is_updated_always != item['is_updated_always']):
                 ax_field.is_updated_always = item['is_updated_always']
             if 'is_group' in item and ax_field.is_group != item['is_group']:
                 ax_field.is_group = item['is_group']
             if ('is_always_whole_row' in item and
-                    ax_field.is_always_whole_row
-                    != item['is_always_whole_row']):
+                    ax_field.is_always_whole_row !=
+                    item['is_always_whole_row']):
                 ax_field.is_always_whole_row = item['is_always_whole_row']
 
 
@@ -330,7 +330,8 @@ def sync_field_types():
             existing_tags.append(field_type.tag)
 
         if not os.path.isfile(field_types_yaml):
-            raise FileNotFoundError('Configuration failed, field_types.yaml not found')
+            raise FileNotFoundError(
+                'Configuration failed, field_types.yaml not found')
 
         with open(field_types_yaml, 'r') as stream:
             yaml_vars = yaml.safe_load(stream)
@@ -346,25 +347,37 @@ def sync_field_types():
             db_session.commit()
 
 
+# def database_fits_metadata() -> None:
+#     """Compare metada and database"""
+#     try:
+#         with ax_model.engine.connect() as active_connection:
+#             context = MigrationContext.configure(active_connection)
+#             db_session = ax_model.Session()
+#             ax_model.Base.query = db_session.query_property()
+#             metadata = ax_model.Base.metadata
+#             diff = compare_metadata(context, metadata)
+#             return diff == []
+#     except Exception:
+#         logger.exception('Error in comparing metadata and database.')
+#         raise
+
+
 def database_fits_metadata() -> None:
-    """Compare metada and database"""
-    try:
-        with ax_model.engine.connect() as active_connection:
-            context = MigrationContext.configure(active_connection)
-            db_session = ax_model.Session()
-            ax_model.Base.query = db_session.query_property()
-            metadata = ax_model.Base.metadata
-            diff = compare_metadata(context, metadata)
-            return diff == []
-    except Exception:
-        logger.exception('Error in comparing metadata and database.')
-        raise
+    """Compare yaml db version and version in actual database"""
+    with ax_model.scoped_session() as db_session:
+        alembic_version = db_session.query(AxAlembicVersion).first()
+        version = alembic_version.version_num
+        yaml_version = os.environ.get('AX_DB_REVISION')
+        if yaml_version == version:
+            return True
+        return False
 
 
 def upgrade_database():
     """Run Alembic migration script and update db version"""
     try:
-        logger.info('Database does not fit metadata. Upgrading database.')
+        version = os.environ.get('AX_DB_REVISION')
+        logger.info(f'WARNING! Upgrading database to version {version}')
         command.upgrade(this.alembic_cfg, "head")
         command.stamp(this.alembic_cfg, "head")
     except Exception:
@@ -378,16 +391,15 @@ def init_migration():
     if tables_exist() is False:
         create_tables()
         sync_field_types()
-        # create_field_types()
         create_default_users()
         create_default_pages()
     else:
+        if database_fits_metadata() is False:
+            upgrade_database()
+
         sync_field_types()
         collect_ax_stats()
         try:
             asyncio.get_event_loop().run_until_complete(send_stats())
         except Exception:
             pass
-
-        # if database_fits_metadata() is False:
-        #     upgrade_database()

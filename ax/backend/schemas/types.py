@@ -24,6 +24,7 @@ class Action(SQLAlchemyObjectType):  # pylint: disable=missing-docstring
     class Meta:  # pylint: disable=missing-docstring
         model = AxAction
         interfaces = (relay.Node, )
+    job_running = graphene.Boolean()
 
 
 class Form(SQLAlchemyObjectType):  # pylint: disable=missing-docstring

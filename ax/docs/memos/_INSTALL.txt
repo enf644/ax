@@ -69,7 +69,9 @@ npm run test:e2e
 [working directory = '/ax/' , where 'alembic.ini' is located]
 alembic revision -m "baseline"
 alembic stamp head
+
 alembic revision --autogenerate -m "added field_types"
+
 alembic upgrade head
 
 alembic upgrade --sql head > migration.sql

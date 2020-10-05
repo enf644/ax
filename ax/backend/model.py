@@ -67,6 +67,22 @@ def try_catch(db_session, error_msg=None, no_commit=False):
         raise
 
 
+def init_default_model():
+    """Initiate model. Used in alembic scripts"""
+    init_model(
+        dialect=str(os.environ.get('AX_DB_DIALECT') or 'sqlite'),
+        host=str(os.environ.get('AX_DB_HOST') or '127.0.0.1'),
+        port=str(os.environ.get('AX_DB_PORT') or '5432'),
+        login=str(os.environ.get('AX_DB_LOGIN') or ''),
+        password=str(os.environ.get('AX_DB_PASSWORD') or ''),
+        database=str(os.environ.get('AX_DB_DATABASE') or 'ax'),
+        sqlite_filename=str(os.environ.get(
+            'AX_DB_SQLITE_FILENAME') or 'ax_sqlite.db'),
+        sqlite_absolute_path=os.environ.get(
+            'AX_DB_SQLITE_ABSOLUTE_PATH') or None
+    )
+
+
 def init_model(dialect: str, host: str, port: str, login: str, password: str,
                database: str, sqlite_filename: str, sqlite_absolute_path: str
                ) -> None:
@@ -84,6 +100,9 @@ def init_model(dialect: str, host: str, port: str, login: str, password: str,
             it will be created
     """
     try:
+        if this.engine and this.Session:
+            return False
+
         if dialect == 'sqlite':
             if sqlite_absolute_path is None:
                 db_path = ax_misc.path(sqlite_filename)
@@ -590,6 +609,8 @@ class AxAction(Base):
     radius = Column(Float)  # used in d3 worklfow constructor
     messages = None  # Used to store messages and exceptions got from code
     # Execution
+    private_options_json = Column(JSON())
+    job_running = False
 
 
 class AxRoleFieldPermission(Base):

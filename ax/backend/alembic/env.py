@@ -15,7 +15,7 @@ sys.path.insert(0, str(root_path))
 
 import backend.misc as ax_misc
 import backend.model as ax_model
-import main as ax_app
+# import main as ax_app
 
 
 def include_object(object, name, type_, reflected, compare_to):
@@ -35,7 +35,8 @@ config.set_main_option('script_location', str(alembic_folder))
 
 fileConfig(config.config_file_name)
 ax_misc.load_configuration()
-ax_app.init_model()
+# ax_app.init_model()
+ax_model.init_default_model()
 
 config.set_main_option('sqlalchemy.url', str(ax_model.db_url))
 # target_metadata = ax_model.Base.metadata
@@ -60,7 +61,8 @@ def run_migrations_offline():
         ax_model.Base.query = db_session.query_property()
         target_metadata = ax_model.Base.metadata
         context.configure(
-            url=url, target_metadata=target_metadata,
+            url=url,
+            target_metadata=target_metadata,
             literal_binds=True,
             include_object=include_object,
             version_table='_ax_alembic_version'
@@ -83,6 +85,7 @@ def run_migrations_online():
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
+    target_metadata = ax_model.Base.metadata
 
     with connectable.connect() as connection:
         context.configure(
@@ -95,6 +98,8 @@ def run_migrations_online():
         with context.begin_transaction():
             context.run_migrations()
 
+
+# run_migrations_offline()
 
 if context.is_offline_mode():
     run_migrations_offline()
