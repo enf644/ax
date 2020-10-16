@@ -296,11 +296,19 @@
 
 - tag: AxImageCropDb
   parent: group-images
-  position: 4
+  position: 1
   default_db_name: cropImage
   is_backend_available: True
   value_type: BLOB
   icon: fas fa-image
+
+- tag: AxImageWebcamOverlay
+  parent: group-images
+  position: 2
+  default_db_name: webcam
+  value_type: JSON
+  is_backend_available: True
+  icon: fas fa-camera
 
   # Files
 - tag: group-files

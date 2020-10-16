@@ -178,7 +178,7 @@ def update_field_type(field_types, item):
             if 'name' in item and ax_field.name != item['name']:
                 ax_field.name = item['name']
             if 'position' in item and ax_field.position != item['position']:
-                ax_field.position = item['position'],
+                ax_field.position = item['position']
             if ('default_name' in item and
                     ax_field.default_name != item['default_name']):
                 ax_field.name = item['default_name']

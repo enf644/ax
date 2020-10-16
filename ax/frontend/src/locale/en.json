@@ -508,6 +508,9 @@
             "settings-border-radius": "Border radius",
             "settings-is-round": "Is round image"
         },
+        "types.AxImageWebcamOverlay.name": {
+            "name": "Webcam overlay"
+        },
         "AxFiles": {
             "name": "Filesystem files",
             "upload-btn": "Upload files",

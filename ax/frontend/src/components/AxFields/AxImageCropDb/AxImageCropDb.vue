@@ -1,78 +1,86 @@
 <template>
   <div>
-    <span class='label'>{{name}}</span>
+    <span class="label">{{ name }}</span>
 
     <div
-      :id='divId'
-      :style='placeholderStyle'
-      class='img-placeholder'
-      v-show='placeholderIsVisible'
+      :id="divId"
+      :style="placeholderStyle"
+      class="img-placeholder"
+      v-show="placeholderIsVisible"
     >
       <div
-        :style='{width: this.width + "px", top: this.height/2 - 25 + "px"}'
-        class='placeholder-text'
+        :style="{ width: this.width + 'px', top: this.height / 2 - 25 + 'px' }"
+        class="placeholder-text"
       >
-        <i class='up-ico far fa-images'></i>
+        <i class="up-ico far fa-images"></i>
         <br />
-        {{locale("types.AxImageCropDb.placeholder")}}
+        {{ locale('types.AxImageCropDb.placeholder') }}
       </div>
     </div>
 
     <div
-      :id='divId'
-      :style='placeholderStyle'
-      class='img-placeholder'
-      v-show='miniPlaceholderIsVisible'
+      :id="divId"
+      :style="placeholderStyle"
+      class="img-placeholder"
+      v-show="miniPlaceholderIsVisible"
     >
       <div
-        :style='{width: this.width + "px", top: this.height/2 - 10 + "px"}'
-        class='placeholder-text'
+        :style="{ width: this.width + 'px', top: this.height / 2 - 10 + 'px' }"
+        class="placeholder-text"
       >
-        <i class='far fa-images'></i>
+        <i class="far fa-images"></i>
       </div>
     </div>
 
-    <div v-show='croppaIsVisible'>
+    <div v-show="croppaIsVisible">
       <croppa
-        :canvas-color='"#FFFFFF"'
-        :height='height'
-        :image-border-radius='borderRadius'
-        :initial-image='uppyImage'
-        :remove-button-size='30'
-        :width='width'
-        :zoom-speed='zoomSpeed'
-        @image-remove='resetAll()'
+        :canvas-color="'#FFFFFF'"
+        :height="height"
+        :image-border-radius="borderRadius"
+        :initial-image="uppyImage"
+        :remove-button-size="30"
+        :width="width"
+        :zoom-speed="zoomSpeed"
+        @image-remove="resetAll()"
         prevent-white-space
-        ref='croppa'
-        remove-button-color='black'
-        v-model='croppaData'
+        ref="croppa"
+        remove-button-color="black"
+        v-model="croppaData"
       ></croppa>
       <div>
-        <v-btn @click='doUpload' class='upload-btn' text>
-          <i class='fas fa-upload'></i>
+        <v-btn @click="doUpload" class="upload-btn" text>
+          <i class="fas fa-upload"></i>
           &nbsp;
-          {{locale("types.AxImageCropDb.upload-btn")}}
+          {{ locale('types.AxImageCropDb.upload-btn') }}
         </v-btn>
-        <v-btn @click='croppaData.rotate()' icon text>
-          <i class='fas fa-sync-alt'></i>
+        <v-btn @click="croppaData.rotate()" icon text>
+          <i class="fas fa-sync-alt"></i>
         </v-btn>
       </div>
     </div>
 
-    <div v-show='valueIsVisible'>
-      <img :src='valueSrc' :style='{width: this.width + "px", height: this.height + "px"}' />
+    <div v-show="valueIsVisible">
+      <img
+        :src="valueSrc"
+        :style="{ width: this.width + 'px', height: this.height + 'px' }"
+      />
       <br />
-      <v-btn @click='clearValue' small text v-if='this.isReadonly !== true'>
-        <i class='far fa-trash-alt'></i>
-        &nbsp; {{locale("types.AxImageCropDb.clear-image")}}
+      <v-btn @click="clearValue" small text v-if="this.isReadonly !== true">
+        <i class="far fa-trash-alt"></i>
+        &nbsp; {{ locale('types.AxImageCropDb.clear-image') }}
       </v-btn>
     </div>
 
-    <hr :class='errorClass' />
-    <transition enter-active-class='animated shake' leave-active-class='animated fadeOut'>
-      <span class='required-error' v-show='errorString'>{{errorString}}</span>
+    <hr :class="errorClass" />
+    <transition
+      enter-active-class="animated shake"
+      leave-active-class="animated fadeOut"
+    >
+      <span class="required-error" v-show="errorString">{{ errorString }}</span>
     </transition>
-    <span class='hint' v-show='this.options.hint'>{{this.options.hint}} &nbsp;</span>
+    <span class="hint" v-show="this.options.hint"
+      >{{ this.options.hint }} &nbsp;</span
+    >
   </div>
 </template>
 
@@ -85,6 +93,7 @@ import { getAxHost, getAxHostProtocol } from '../../../misc';
 import '@uppy/core/dist/style.css';
 import '@uppy/dashboard/dist/style.css';
 import getClassNameForExtension from 'font-awesome-filetypes';
+
 // prettier-ignore
 import {
   Webcam, Tus, Core, Dashboard

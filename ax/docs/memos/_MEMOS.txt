@@ -1067,3 +1067,84 @@ Ax applications can potentially have harmful python code. 
 Please install applications only from trusted sources. 
 Please check the source code of applications before installing them. 
 Please make backups before installing apps on production instances.
+
+
+
+====================================================
+Объекты
+    Магазин - у каждого магазина свой товар и свой процесс
+        Товар
+        Категория товара (бренд-бук)
+    Поставщик
+    Медиа-студия
+
+
+У каждой категории товара - своё поле
+
+
+
+    Артикул создан
+
+
+Use cases
+    Магазин загружает каталог
+
+
+
+
+
+TODO
+    isValid can be null 
+
+
+
+
+
+
+
+
+
+LM - 
+    Есть фото
+    Напоминание
+    Не актуальный артикул
+    Не пришлют фото
+    Нет контакта
+    Нет ответа
+    Обратятся к подрядчику
+    Привозят в академию
+    Пришлют фото
+
+
+
+GM - 
+    Все отснято
+    Готовы заказать
+    Едут образцы
+    Отказ
+    Отправлен счет
+    Отправлено предложение о сотрудничестве
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,12 +1,12 @@
 <template>
   <v-text-field
-    :disabled='isReadonly'
-    :error-messages='errors'
-    :hint='options.hint'
-    :label='name'
-    @keyup='isValid'
-    data-cy='input'
-    v-model='currentValue'
+    :disabled="isReadonly"
+    :error-messages="errors"
+    :hint="options.hint"
+    :label="name"
+    @keyup="isValid"
+    data-cy="input"
+    v-model="currentValue"
   ></v-text-field>
 </template>
 
@@ -22,11 +22,11 @@ export default {
     options: null,
     value: null,
     isRequired: null,
-    isReadonly: null
+    isReadonly: null,
   },
   data: () => ({
     currentValue: null,
-    errors: []
+    errors: [],
   }),
   computed: {},
   watch: {
@@ -35,7 +35,7 @@ export default {
     },
     value(newValue) {
       this.currentValue = newValue;
-    }
+    },
   },
   created() {
     this.currentValue = this.value;
@@ -76,8 +76,8 @@ export default {
         return true;
       }
       return true;
-    }
-  }
+    },
+  },
 };
 </script>
 

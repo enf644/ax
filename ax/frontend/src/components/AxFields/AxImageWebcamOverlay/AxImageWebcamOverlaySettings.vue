@@ -10,21 +10,6 @@
       persistent-hint
       v-model="changedOptions.regexp"
     ></v-text-field>
-    <v-text-field
-      :hint="errorHint"
-      :label="errorLabel"
-      persistent-hint
-      v-model="changedOptions.regexp_error"
-    ></v-text-field>
-    <br />
-    {{ testerHint }}:
-    <br />
-    <v-text-field
-      :error-messages="errors"
-      :label="testerLabel"
-      @keyup="checkTester"
-      v-model="testerValue"
-    ></v-text-field>
   </AxFieldSettings>
 </template>
 
@@ -33,7 +18,7 @@ import AxFieldSettings from '@/components/AxFieldSettings.vue';
 import i18n from '@/locale';
 
 export default {
-  name: 'AxStringSettings',
+  name: 'AxImageWebcamOverlay',
   components: { AxFieldSettings },
   props: {
     guid: null,
