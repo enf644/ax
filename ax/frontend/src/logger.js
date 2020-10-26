@@ -7,3 +7,4 @@ const logger = logdown('ax');
 logger.state.isEnabled = true;
 
 export default logger;
+

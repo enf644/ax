@@ -20,12 +20,12 @@ dialect = None
 default_grid_query = '''SELECT {ax.db_fields}
     FROM "{ax.db_table}";'''
 
+
 class PorstgreDialect(object):
     """SQL query for Postgre SQL database"""
 
     name = 'postgre'
     version = None
-
 
     async def get_tom_sql(self, form_db_name, form_name, tom_label, fields):
         """    '{{name}} {{surname}}' -> 'Mikhail Marenov'
@@ -75,7 +75,6 @@ class PorstgreDialect(object):
         sql_tom_name = " || ".join(tom_view_arr_clean)
         return sql_tom_name
 
-
     async def get_type(self, type_name):
         """Get dialect specific type"""
         postgre_types = {
@@ -112,7 +111,6 @@ class PorstgreDialect(object):
             ret_val = f'"{db_name}"'
         return ret_val
 
-
     async def get_value_sql(self, type_name, db_name):
         """Some value types need a cast inside SQL.
         Like [UPDATE <table> SET <field>=<this function>]
@@ -132,7 +130,6 @@ class PorstgreDialect(object):
         else:
             ret_val = f":{db_name}"
         return ret_val
-
 
     async def get_value_param(self, type_name, value=None):
         """ Some value types needs to convert field value before submiting
@@ -162,7 +159,6 @@ class PorstgreDialect(object):
             ret_param = value if value else None
         return ret_param
 
-
     async def get_value(self, type_name, value):
         """ SELECT cat return different types for diferent dialects
         This method makes returning value same.
@@ -172,8 +168,6 @@ class PorstgreDialect(object):
         if "JSON" in type_name:
             ret_value = json.dumps(value) if value else None
         return ret_value
-
-
 
     async def conver_for_graphql(self, value):
         """ Convert SQL field value to GraphQL value """
@@ -187,7 +181,6 @@ class PorstgreDialect(object):
                 except Exception:
                     return None
         return ret_value
-
 
     def custom_query(self, sql, variables=None):
         """ Executes any SQL. Used in action python code.
@@ -204,11 +197,9 @@ class PorstgreDialect(object):
 
         with ax_model.scoped_session("SQL - custom_query") as db_session:
             res = db_session.execute(sql, variables)
-            db_session.commit()
             if res and res.returns_rows:
                 return res.fetchall()
             return res
-
 
     async def select_all(self, db_session, ax_form, quicksearch=None,
                          guids=None):
@@ -302,9 +293,6 @@ class PorstgreDialect(object):
                 f"Error executing SQL - select_all - {sql}")
             raise
 
-
-
-
     async def select_custom_query(
             self, db_session, ax_form, sql, arguments=None):
         """ Custom select query that used in AxGrid and grid_schema
@@ -368,9 +356,6 @@ class PorstgreDialect(object):
                 f"Error executing SQL - select_custom_query - {sql}")
             raise
 
-
-
-
     async def select_one(self, db_session, form, fields_list, row_guid):
         """Select fields from table for one row
 
@@ -430,8 +415,6 @@ class PorstgreDialect(object):
             logger.exception(f"Error executing SQL - select_one - {sql}")
             raise
 
-
-
     async def select_field(self, db_session, form_db_name, field_db_name,
                            row_guid):
         """Gets value of single field from SQL. Used in file viewer.
@@ -460,7 +443,6 @@ class PorstgreDialect(object):
             logger.exception(
                 f"Error executing SQL - select_field {form_db_name}")
             raise
-
 
     async def insert(self, db_session, form, to_state_name, new_guid):
         """ Insert row into database and set state with AxForm field values
@@ -512,7 +494,6 @@ class PorstgreDialect(object):
             logger.exception('Error executing SQL - insert')
             raise
 
-
     async def update(self, db_session, form, to_state_name, row_guid):
         """Update database row based of AxForm fields values
 
@@ -558,7 +539,6 @@ class PorstgreDialect(object):
             logger.exception('Error executing SQL - update')
             raise
 
-
     async def delete(self, db_session, form, row_guid):
         """ Delete row of table of form"""
         try:
@@ -569,7 +549,6 @@ class PorstgreDialect(object):
         except Exception:
             logger.exception('Error executing SQL - delete')
             raise
-
 
     async def create_data_table(self, db_session, db_name):
         """Create table with system columns"""
@@ -592,7 +571,6 @@ class PorstgreDialect(object):
             logger.exception('Error executing SQL - rename_table')
             raise
 
-
     async def drop_table(self, db_session, db_name):
         """Drop table"""
         try:
@@ -601,7 +579,6 @@ class PorstgreDialect(object):
         except Exception:
             logger.exception('Error executing SQL - drop_table')
             raise
-
 
     async def add_column(self, db_session, table, db_name, type_name):
         """Add column"""
@@ -653,7 +630,6 @@ class PorstgreDialect(object):
             logger.exception('Error executing SQL - select_group_users')
             raise
 
-
     async def select_role_users(self, db_session, role_guid):
         """ Select of users of group """
         try:
@@ -671,7 +647,6 @@ class PorstgreDialect(object):
             logger.exception('Error executing SQL - select_role_users')
             raise
 
-
     async def select_page_users(self, db_session, page_guid):
         """ Select of users that can view page """
         try:
@@ -688,7 +663,6 @@ class PorstgreDialect(object):
         except Exception:
             logger.exception('Error executing SQL - select_page_users')
             raise
-
 
     async def select_to1_children(
             self,
@@ -711,7 +685,6 @@ class PorstgreDialect(object):
         except Exception:
             logger.exception('Error executing SQL - select_to1_children')
             raise
-
 
 
 class SqliteDialect(PorstgreDialect):
@@ -806,8 +779,6 @@ class SqliteDialect(PorstgreDialect):
             ret_param = value if value else None
         return ret_param
 
-
-
     async def get_value(self, type_name, value):
         """ SELECT cat return different types for diferent dialects
         This method makes returning value same.
@@ -815,7 +786,6 @@ class SqliteDialect(PorstgreDialect):
             Postgre returns JSON as dict  """
         ret_value = value
         return ret_value
-
 
     async def select_all(self, db_session, ax_form, quicksearch=None,
                          guids=None):
@@ -908,8 +878,6 @@ class SqliteDialect(PorstgreDialect):
             logger.exception(
                 f"Error executing SQL - select_all - {sql}")
             raise
-
-
 
     async def create_data_table(self, db_session, db_name: str) -> None:
         """Create table with system columns"""
@@ -1006,7 +974,6 @@ class SqliteDialect(PorstgreDialect):
             logger.exception('Error executing SQL - drop_column')
             raise
 
-
     async def select_group_users(self, db_session, group_guid):
         """ Select of users of group """
         try:
@@ -1023,7 +990,6 @@ class SqliteDialect(PorstgreDialect):
         except Exception:
             logger.exception('Error executing SQL - select_group_users')
             raise
-
 
     async def select_role_users(self, db_session, role_guid):
         """ Select of users of group """
@@ -1042,7 +1008,6 @@ class SqliteDialect(PorstgreDialect):
             logger.exception('Error executing SQL - select_role_users')
             raise
 
-
     async def select_page_users(self, db_session, page_guid):
         """ Select of users that can view page """
         try:
@@ -1059,7 +1024,6 @@ class SqliteDialect(PorstgreDialect):
         except Exception:
             logger.exception('Error executing SQL - select_page_users')
             raise
-
 
 
 class MysqlDialect(object):
@@ -1082,7 +1046,6 @@ class MysqlDialect(object):
             'BLOB': 'BLOB'
         }
         return mysql_types[type_name]
-
 
     async def get_value(self, type_name, value):
         """ SELECT cat return different types for diferent dialects
