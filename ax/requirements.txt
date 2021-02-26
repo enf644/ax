@@ -15,7 +15,7 @@ graphql-core==2.2.1
 graphql-relay==2.0.0
 graphql_ws==0.3.0
 
-aiohttp==3.6.2
+aiohttp==3.7.4
 aiocache[redis]==0.11.1
 aiopubsub==2.1.5
 aiosmtplib==1.1.2
