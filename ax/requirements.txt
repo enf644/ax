@@ -33,7 +33,7 @@ markdown2==2.3.8
 
 # Appengine specific:
 gunicorn==20.0.4
-rsa==4.0
+rsa==4.7
 
 # Fields specific
 stripe==2.42.0
