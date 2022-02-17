@@ -1,4 +1,4 @@
-sanic==19.12.2
+sanic==20.12.6
 Sanic-Cors==0.9.9.post4
 sanic_compress==0.1.1
 sanic-jwt==1.4.0
